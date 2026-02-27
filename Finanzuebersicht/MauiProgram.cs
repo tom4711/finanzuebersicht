@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Maui;
+using Finanzuebersicht.Services;
 using Finanzuebersicht.Views;
 using Microsoft.Extensions.Logging;
 
@@ -18,6 +19,9 @@ public static class MauiProgram
 				fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
 			});
 
+		// Services
+		builder.Services.AddSingleton<IDataService, CloudKitDataService>();
+
 		// Pages
 		builder.Services.AddTransient<DashboardPage>();
 		builder.Services.AddTransient<TransactionsPage>();
@@ -27,7 +31,7 @@ public static class MauiProgram
 		builder.Services.AddTransient<CategoriesPage>();
 		builder.Services.AddTransient<CategoryDetailPage>();
 
-		// TODO: ViewModels und Services registrieren (Phase 3+)
+		// TODO: ViewModels registrieren (Phase 4+)
 
 #if DEBUG
 		builder.Logging.AddDebug();
