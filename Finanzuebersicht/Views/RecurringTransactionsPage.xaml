@@ -1,9 +1,108 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Finanzuebersicht.ViewModels"
+             xmlns:models="clr-namespace:Finanzuebersicht.Models"
+             xmlns:conv="clr-namespace:Finanzuebersicht.Converters"
              x:Class="Finanzuebersicht.Views.RecurringTransactionsPage"
+             x:DataType="vm:RecurringTransactionsViewModel"
              Title="Daueraufträge">
-    <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center">
-        <Label Text="Daueraufträge" FontSize="24" HorizontalTextAlignment="Center" />
-    </VerticalStackLayout>
+
+    <ContentPage.Resources>
+        <conv:TransactionTypToColorConverter x:Key="TypToColor" />
+        <conv:BoolToOpacityConverter x:Key="BoolToOpacity" />
+        <conv:VorzeichenConverter x:Key="VorzeichenConv" />
+        <conv:AktivTextConverter x:Key="AktivText" />
+    </ContentPage.Resources>
+
+    <Shell.TitleView>
+        <Grid ColumnDefinitions="*, Auto" Padding="0,0,16,0">
+            <Label Text="Daueraufträge" FontSize="20" FontAttributes="Bold"
+                   VerticalOptions="Center" />
+            <Button Grid.Column="1" Text="+" FontSize="24"
+                    BackgroundColor="Transparent"
+                    Command="{Binding GoToDetailCommand}" />
+        </Grid>
+    </Shell.TitleView>
+
+    <RefreshView Command="{Binding LoadDauerauftraegeCommand}"
+                 IsRefreshing="{Binding IsLoading}">
+        <CollectionView ItemsSource="{Binding Dauerauftraege}"
+                        SelectionMode="None">
+
+            <CollectionView.EmptyView>
+                <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Padding="20">
+                    <Label Text="Keine Daueraufträge vorhanden"
+                           FontSize="16" HorizontalTextAlignment="Center" TextColor="Gray" />
+                </VerticalStackLayout>
+            </CollectionView.EmptyView>
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:RecurringTransaction">
+                    <SwipeView>
+                        <SwipeView.LeftItems>
+                            <SwipeItems>
+                                <SwipeItem Text="Aktiv/Inaktiv"
+                                           BackgroundColor="#FF9500"
+                                           Command="{Binding Source={RelativeSource AncestorType={x:Type vm:RecurringTransactionsViewModel}}, Path=ToggleAktivCommand}"
+                                           CommandParameter="{Binding .}" />
+                            </SwipeItems>
+                        </SwipeView.LeftItems>
+                        <SwipeView.RightItems>
+                            <SwipeItems>
+                                <SwipeItem Text="Löschen"
+                                           BackgroundColor="#FF3B30"
+                                           Command="{Binding Source={RelativeSource AncestorType={x:Type vm:RecurringTransactionsViewModel}}, Path=DeleteDauerauftragCommand}"
+                                           CommandParameter="{Binding .}" />
+                            </SwipeItems>
+                        </SwipeView.RightItems>
+
+                        <Grid ColumnDefinitions="44, *, Auto" Padding="16,12" ColumnSpacing="12"
+                              Opacity="{Binding Aktiv, Converter={StaticResource BoolToOpacity}}">
+                            <Grid.GestureRecognizers>
+                                <TapGestureRecognizer
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:RecurringTransactionsViewModel}}, Path=GoToDetailCommand}"
+                                    CommandParameter="{Binding .}" />
+                            </Grid.GestureRecognizers>
+
+                            <Border Grid.Column="0" BackgroundColor="#F2F2F7"
+                                    StrokeShape="RoundRectangle 10"
+                                    Stroke="Transparent"
+                                    WidthRequest="40" HeightRequest="40"
+                                    HorizontalOptions="Center" VerticalOptions="Center">
+                                <Label Text="🔄" FontSize="18"
+                                       HorizontalOptions="Center" VerticalOptions="Center" />
+                            </Border>
+
+                            <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2">
+                                <Label Text="{Binding Titel}" FontSize="16" FontAttributes="Bold"
+                                       LineBreakMode="TailTruncation" />
+                                <Label FontSize="12" TextColor="Gray">
+                                    <Label.Text>
+                                        <MultiBinding StringFormat="{}{0} · {1}">
+                                            <Binding Path="Typ" />
+                                            <Binding Path="Aktiv"
+                                                     Converter="{StaticResource AktivText}" />
+                                        </MultiBinding>
+                                    </Label.Text>
+                                </Label>
+                            </VerticalStackLayout>
+
+                            <Label Grid.Column="2"
+                                   TextColor="{Binding Typ, Converter={StaticResource TypToColor}}"
+                                   FontSize="16" FontAttributes="Bold"
+                                   VerticalTextAlignment="Center">
+                                <Label.Text>
+                                    <MultiBinding StringFormat="{}{0}{1:N2} €">
+                                        <Binding Path="Typ" Converter="{StaticResource VorzeichenConv}" />
+                                        <Binding Path="Betrag" />
+                                    </MultiBinding>
+                                </Label.Text>
+                            </Label>
+                        </Grid>
+                    </SwipeView>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </RefreshView>
 </ContentPage>

@@ -1,9 +1,88 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Finanzuebersicht.ViewModels"
+             xmlns:conv="clr-namespace:Finanzuebersicht.Converters"
              x:Class="Finanzuebersicht.Views.RecurringTransactionDetailPage"
+             x:DataType="vm:RecurringTransactionDetailViewModel"
              Title="Dauerauftrag">
-    <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center">
-        <Label Text="Dauerauftrag Detail" FontSize="24" HorizontalTextAlignment="Center" />
-    </VerticalStackLayout>
+
+    <ContentPage.Resources>
+        <conv:TypButtonColorConverter x:Key="TypButtonColor" />
+    </ContentPage.Resources>
+
+    <ScrollView Padding="16">
+        <VerticalStackLayout Spacing="20">
+
+            <!-- Typ-Auswahl -->
+            <Grid ColumnDefinitions="*, *" ColumnSpacing="8">
+                <Button Grid.Column="0" Text="Ausgabe"
+                        BackgroundColor="{Binding Typ, Converter={StaticResource TypButtonColor}, ConverterParameter=Ausgabe}"
+                        TextColor="White" CornerRadius="10" HeightRequest="44"
+                        Command="{Binding SetTypCommand}" CommandParameter="Ausgabe" />
+                <Button Grid.Column="1" Text="Einnahme"
+                        BackgroundColor="{Binding Typ, Converter={StaticResource TypButtonColor}, ConverterParameter=Einnahme}"
+                        TextColor="White" CornerRadius="10" HeightRequest="44"
+                        Command="{Binding SetTypCommand}" CommandParameter="Einnahme" />
+            </Grid>
+
+            <!-- Betrag -->
+            <VerticalStackLayout Spacing="4">
+                <Label Text="Betrag" FontSize="13" TextColor="Gray" />
+                <Entry Text="{Binding BetragText}" Placeholder="0,00"
+                       Keyboard="Numeric" FontSize="28" FontAttributes="Bold"
+                       HorizontalTextAlignment="Center" />
+            </VerticalStackLayout>
+
+            <!-- Titel -->
+            <VerticalStackLayout Spacing="4">
+                <Label Text="Titel" FontSize="13" TextColor="Gray" />
+                <Entry Text="{Binding Titel}" Placeholder="z.B. Miete, Netflix, Gehalt"
+                       FontSize="16" />
+            </VerticalStackLayout>
+
+            <!-- Kategorie -->
+            <VerticalStackLayout Spacing="4">
+                <Label Text="Kategorie" FontSize="13" TextColor="Gray" />
+                <Picker ItemsSource="{Binding Kategorien}"
+                        SelectedItem="{Binding SelectedKategorie}"
+                        ItemDisplayBinding="{Binding Name}"
+                        Title="Kategorie wählen"
+                        FontSize="16" />
+            </VerticalStackLayout>
+
+            <!-- Startdatum -->
+            <VerticalStackLayout Spacing="4">
+                <Label Text="Startdatum" FontSize="13" TextColor="Gray" />
+                <DatePicker Date="{Binding Startdatum}" FontSize="16"
+                            Format="dd. MMMM yyyy" />
+            </VerticalStackLayout>
+
+            <!-- Enddatum (optional) -->
+            <Grid ColumnDefinitions="*, Auto" Padding="0">
+                <Label Text="Enddatum festlegen" FontSize="16"
+                       VerticalTextAlignment="Center" />
+                <Switch Grid.Column="1" IsToggled="{Binding HatEnddatum}" />
+            </Grid>
+
+            <DatePicker Date="{Binding EnddatumWert}" FontSize="16"
+                        Format="dd. MMMM yyyy"
+                        IsVisible="{Binding HatEnddatum}" />
+
+            <!-- Aktiv -->
+            <Grid ColumnDefinitions="*, Auto" Padding="0">
+                <Label Text="Aktiv" FontSize="16"
+                       VerticalTextAlignment="Center" />
+                <Switch Grid.Column="1" IsToggled="{Binding Aktiv}" />
+            </Grid>
+
+            <!-- Speichern -->
+            <Button Text="Speichern" Command="{Binding SaveCommand}"
+                    BackgroundColor="#007AFF" TextColor="White"
+                    CornerRadius="12" HeightRequest="50"
+                    FontSize="16" FontAttributes="Bold"
+                    Margin="0,20,0,0" />
+
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>

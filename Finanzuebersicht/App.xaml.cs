@@ -4,14 +4,30 @@ namespace Finanzuebersicht;
 
 public partial class App : Application
 {
-	public App(InitializationService initService)
+	private readonly IDataService _dataService;
+
+	public App(InitializationService initService, IDataService dataService)
 	{
 		InitializeComponent();
+		_dataService = dataService;
 		Task.Run(async () => await initService.InitializeAsync());
 	}
 
 	protected override Window CreateWindow(IActivationState? activationState)
 	{
-		return new Window(new AppShell());
+		var window = new Window(new AppShell());
+
+		window.Resumed += async (s, e) =>
+		{
+			await _dataService.GeneratePendingRecurringTransactionsAsync();
+		};
+
+		return window;
+	}
+
+	protected override async void OnStart()
+	{
+		base.OnStart();
+		await _dataService.GeneratePendingRecurringTransactionsAsync();
 	}
 }
