@@ -17,7 +17,7 @@
 
         <!-- Monatsnavigation -->
         <Grid Grid.Row="0" ColumnDefinitions="Auto, *, Auto"
-              Padding="16,12" BackgroundColor="#F2F2F7">
+              Padding="16,12">
             <Button Grid.Column="0" Text="‹" FontSize="28"
                     BackgroundColor="Transparent" TextColor="#007AFF"
                     Command="{Binding PreviousMonthCommand}"
@@ -73,7 +73,8 @@
                                         CommandParameter="{Binding .}" />
                                 </Grid.GestureRecognizers>
 
-                                <Border Grid.Column="0" BackgroundColor="#F2F2F7"
+                                <Border Grid.Column="0"
+                                        BackgroundColor="{AppThemeBinding Light=#F2F2F7, Dark=#3A3A3C}"
                                         StrokeShape="RoundRectangle 10"
                                         Stroke="Transparent"
                                         WidthRequest="40" HeightRequest="40"
