@@ -9,27 +9,33 @@
     <TabBar>
         <ShellContent
             Title="Dashboard"
-            Icon="dashboard.png"
+            Icon="dashboard.svg"
             ContentTemplate="{DataTemplate views:DashboardPage}"
             Route="DashboardPage" />
 
         <ShellContent
             Title="Transaktionen"
-            Icon="transactions.png"
+            Icon="transactions.svg"
             ContentTemplate="{DataTemplate views:TransactionsPage}"
             Route="TransactionsPage" />
 
         <ShellContent
             Title="Daueraufträge"
-            Icon="recurring.png"
+            Icon="recurring.svg"
             ContentTemplate="{DataTemplate views:RecurringTransactionsPage}"
             Route="RecurringTransactionsPage" />
 
         <ShellContent
             Title="Kategorien"
-            Icon="categories.png"
+            Icon="categories.svg"
             ContentTemplate="{DataTemplate views:CategoriesPage}"
             Route="CategoriesPage" />
+
+        <ShellContent
+            Title="Einstellungen"
+            Icon="settings.svg"
+            ContentTemplate="{DataTemplate views:SettingsPage}"
+            Route="SettingsPage" />
     </TabBar>
 
 </Shell>

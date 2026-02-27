@@ -15,11 +15,11 @@
 
     <!-- Hintergrund -->
     <Color x:Key="PageBackground">#F2F2F7</Color>
-    <Color x:Key="PageBackgroundDark">#000000</Color>
+    <Color x:Key="PageBackgroundDark">#1C1C1E</Color>
     <Color x:Key="CardBackground">#FFFFFF</Color>
-    <Color x:Key="CardBackgroundDark">#1C1C1E</Color>
+    <Color x:Key="CardBackgroundDark">#2C2C2E</Color>
     <Color x:Key="GroupedBackground">#F2F2F7</Color>
-    <Color x:Key="GroupedBackgroundDark">#1C1C1E</Color>
+    <Color x:Key="GroupedBackgroundDark">#2C2C2E</Color>
 
     <!-- Text -->
     <Color x:Key="TextPrimary">#000000</Color>

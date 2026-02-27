@@ -4,17 +4,19 @@ using Finanzuebersicht.Models;
 namespace Finanzuebersicht.Services;
 
 /// <summary>
-/// Lokale JSON-basierte Implementierung von IDataService zum Testen ohne CloudKit.
+/// Lokale JSON-basierte Implementierung von IDataService.
+/// Unterstützt einen konfigurierbaren Speicherpfad (z.B. iCloud Drive).
 /// </summary>
 public class LocalDataService : IDataService
 {
-    private static readonly string DataDir = Path.Combine(
+    private static readonly string DefaultDataDir = Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
         "Finanzuebersicht");
 
-    private static readonly string CategoriesFile = Path.Combine(DataDir, "categories.json");
-    private static readonly string TransactionsFile = Path.Combine(DataDir, "transactions.json");
-    private static readonly string RecurringFile = Path.Combine(DataDir, "recurring.json");
+    private readonly string _dataDir;
+    private string CategoriesFile => Path.Combine(_dataDir, "categories.json");
+    private string TransactionsFile => Path.Combine(_dataDir, "transactions.json");
+    private string RecurringFile => Path.Combine(_dataDir, "recurring.json");
 
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
@@ -22,10 +24,16 @@ public class LocalDataService : IDataService
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase
     };
 
-    public LocalDataService()
+    public LocalDataService() : this(null) { }
+
+    public LocalDataService(SettingsService? settings)
     {
-        Directory.CreateDirectory(DataDir);
+        var customPath = settings?.Get("DataPath", "");
+        _dataDir = string.IsNullOrWhiteSpace(customPath) ? DefaultDataDir : customPath;
+        Directory.CreateDirectory(_dataDir);
     }
+
+    public string CurrentDataDir => _dataDir;
 
     #region Categories
 

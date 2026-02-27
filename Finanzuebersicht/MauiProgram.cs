@@ -20,8 +20,10 @@ public static class MauiProgram
 				fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
 			});
 
-		// Services – LocalDataService für lokales Testen, CloudKitDataService für Produktion
-		builder.Services.AddSingleton<IDataService, LocalDataService>();
+		// Services
+		builder.Services.AddSingleton<SettingsService>();
+		builder.Services.AddSingleton<IDataService>(sp =>
+			new LocalDataService(sp.GetRequiredService<SettingsService>()));
 		// builder.Services.AddSingleton<IDataService, CloudKitDataService>();
 		builder.Services.AddSingleton<InitializationService>();
 
@@ -33,6 +35,7 @@ public static class MauiProgram
 		builder.Services.AddTransient<TransactionDetailViewModel>();
 		builder.Services.AddTransient<RecurringTransactionsViewModel>();
 		builder.Services.AddTransient<RecurringTransactionDetailViewModel>();
+		builder.Services.AddTransient<SettingsViewModel>();
 
 		// Pages
 		builder.Services.AddTransient<DashboardPage>();
@@ -42,6 +45,7 @@ public static class MauiProgram
 		builder.Services.AddTransient<RecurringTransactionDetailPage>();
 		builder.Services.AddTransient<CategoriesPage>();
 		builder.Services.AddTransient<CategoryDetailPage>();
+		builder.Services.AddTransient<SettingsPage>();
 
 #if DEBUG
 		builder.Logging.AddDebug();

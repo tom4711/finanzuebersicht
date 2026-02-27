@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Finanzuebersicht.Views.SettingsPage"
+             Title="Einstellungen"
+             BackgroundColor="{AppThemeBinding Light={StaticResource PageBackground}, Dark={StaticResource PageBackgroundDark}}">
+
+    <ScrollView Padding="16">
+        <VerticalStackLayout Spacing="24">
+
+            <!-- Darstellung -->
+            <Border StrokeShape="RoundRectangle 12"
+                    Stroke="{AppThemeBinding Light={StaticResource Separator}, Dark={StaticResource SeparatorDark}}"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource CardBackground}, Dark={StaticResource CardBackgroundDark}}"
+                    Padding="16">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Darstellung"
+                           FontSize="18"
+                           FontAttributes="Bold"
+                           TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
+
+                    <Grid ColumnDefinitions="*,*,*" ColumnSpacing="8">
+                        <Button Text="System"
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.SetThemeCommand}"
+                                CommandParameter="0"
+                                BackgroundColor="{Binding SelectedThemeIndex, Converter={StaticResource ThemeButtonConverter}, ConverterParameter=0}"
+                                TextColor="{Binding SelectedThemeIndex, Converter={StaticResource ThemeButtonTextConverter}, ConverterParameter=0}" />
+                        <Button Text="☀️ Hell"
+                                Grid.Column="1"
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.SetThemeCommand}"
+                                CommandParameter="1"
+                                BackgroundColor="{Binding SelectedThemeIndex, Converter={StaticResource ThemeButtonConverter}, ConverterParameter=1}"
+                                TextColor="{Binding SelectedThemeIndex, Converter={StaticResource ThemeButtonTextConverter}, ConverterParameter=1}" />
+                        <Button Text="🌙 Dunkel"
+                                Grid.Column="2"
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.SetThemeCommand}"
+                                CommandParameter="2"
+                                BackgroundColor="{Binding SelectedThemeIndex, Converter={StaticResource ThemeButtonConverter}, ConverterParameter=2}"
+                                TextColor="{Binding SelectedThemeIndex, Converter={StaticResource ThemeButtonTextConverter}, ConverterParameter=2}" />
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Speicherort -->
+            <Border StrokeShape="RoundRectangle 12"
+                    Stroke="{AppThemeBinding Light={StaticResource Separator}, Dark={StaticResource SeparatorDark}}"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource CardBackground}, Dark={StaticResource CardBackgroundDark}}"
+                    Padding="16">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Speicherort"
+                           FontSize="18"
+                           FontAttributes="Bold"
+                           TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
+
+                    <Label Text="Daten werden hier gespeichert:"
+                           FontSize="14"
+                           TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}" />
+
+                    <Border StrokeShape="RoundRectangle 8"
+                            BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray900}}"
+                            Padding="12,8"
+                            StrokeThickness="0">
+                        <Label Text="{Binding DataPath}"
+                               FontSize="13"
+                               FontFamily="monospace"
+                               LineBreakMode="TailTruncation"
+                               TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}" />
+                    </Border>
+
+                    <HorizontalStackLayout Spacing="8">
+                        <Button Text="📁 Ordner wählen"
+                                Command="{Binding ChooseDataPathCommand}"
+                                FontSize="14"
+                                Padding="12,8" />
+                        <Button Text="Zurücksetzen"
+                                Command="{Binding ResetDataPathCommand}"
+                                FontSize="14"
+                                Padding="12,8"
+                                BackgroundColor="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray800}}"
+                                TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
+                    </HorizontalStackLayout>
+
+                    <Label Text="💡 Tipp: Wähle einen Ordner in iCloud Drive, um die Daten automatisch zu sichern."
+                           FontSize="12"
+                           TextColor="{StaticResource TextTertiary}" />
+                </VerticalStackLayout>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
