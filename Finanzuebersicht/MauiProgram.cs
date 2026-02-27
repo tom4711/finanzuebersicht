@@ -20,8 +20,9 @@ public static class MauiProgram
 				fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
 			});
 
-		// Services
-		builder.Services.AddSingleton<IDataService, CloudKitDataService>();
+		// Services – LocalDataService für lokales Testen, CloudKitDataService für Produktion
+		builder.Services.AddSingleton<IDataService, LocalDataService>();
+		// builder.Services.AddSingleton<IDataService, CloudKitDataService>();
 		builder.Services.AddSingleton<InitializationService>();
 
 		// ViewModels
