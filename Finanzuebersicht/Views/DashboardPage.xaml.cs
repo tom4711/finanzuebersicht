@@ -1,9 +1,19 @@
+using Finanzuebersicht.ViewModels;
+
 namespace Finanzuebersicht.Views;
 
 public partial class DashboardPage : ContentPage
 {
-    public DashboardPage()
+    public DashboardPage(DashboardViewModel viewModel)
     {
         InitializeComponent();
+        BindingContext = viewModel;
+    }
+
+    protected override void OnAppearing()
+    {
+        base.OnAppearing();
+        if (BindingContext is DashboardViewModel vm)
+            vm.LoadDashboardCommand.Execute(null);
     }
 }

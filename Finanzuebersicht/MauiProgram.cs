@@ -25,6 +25,7 @@ public static class MauiProgram
 		builder.Services.AddSingleton<InitializationService>();
 
 		// ViewModels
+		builder.Services.AddTransient<DashboardViewModel>();
 		builder.Services.AddTransient<CategoriesViewModel>();
 		builder.Services.AddTransient<CategoryDetailViewModel>();
 		builder.Services.AddTransient<TransactionsViewModel>();

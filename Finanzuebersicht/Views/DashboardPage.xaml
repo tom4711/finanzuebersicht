@@ -1,9 +1,143 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Finanzuebersicht.ViewModels"
+             xmlns:models="clr-namespace:Finanzuebersicht.Models"
+             xmlns:conv="clr-namespace:Finanzuebersicht.Converters"
              x:Class="Finanzuebersicht.Views.DashboardPage"
+             x:DataType="vm:DashboardViewModel"
              Title="Dashboard">
-    <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center">
-        <Label Text="Dashboard" FontSize="24" HorizontalTextAlignment="Center" />
-    </VerticalStackLayout>
+
+    <ContentPage.Resources>
+        <conv:BilanzColorConverter x:Key="BilanzColor" />
+        <conv:DecimalCurrencyConverter x:Key="Currency" />
+        <conv:BilanzDisplayConverter x:Key="BilanzDisplay" />
+        <conv:ProzentToWidthConverter x:Key="ProzentToWidth" />
+        <conv:CountToBoolConverter x:Key="CountToBool" />
+    </ContentPage.Resources>
+
+    <RefreshView Command="{Binding LoadDashboardCommand}"
+                 IsRefreshing="{Binding IsLoading}">
+        <ScrollView>
+            <VerticalStackLayout Spacing="16" Padding="16">
+
+                <!-- Monatsnavigation -->
+                <Grid ColumnDefinitions="Auto, *, Auto">
+                    <Button Grid.Column="0" Text="‹" FontSize="28"
+                            BackgroundColor="Transparent" TextColor="#007AFF"
+                            Command="{Binding PreviousMonthCommand}"
+                            WidthRequest="44" />
+                    <VerticalStackLayout Grid.Column="1" HorizontalOptions="Center" VerticalOptions="Center">
+                        <Label Text="{Binding MonatAnzeige}"
+                               FontSize="20" FontAttributes="Bold"
+                               HorizontalTextAlignment="Center" />
+                        <Label Text="(Prognose)" FontSize="12" TextColor="Gray"
+                               HorizontalTextAlignment="Center"
+                               IsVisible="{Binding IstPrognose}" />
+                    </VerticalStackLayout>
+                    <Button Grid.Column="2" Text="›" FontSize="28"
+                            BackgroundColor="Transparent" TextColor="#007AFF"
+                            Command="{Binding NextMonthCommand}"
+                            WidthRequest="44" />
+                </Grid>
+
+                <!-- Saldo-Karten -->
+                <Grid ColumnDefinitions="*, *, *" ColumnSpacing="10">
+
+                    <!-- Einnahmen -->
+                    <Border Grid.Column="0" StrokeShape="RoundRectangle 12"
+                            Stroke="Transparent" BackgroundColor="#E8F8ED" Padding="12">
+                        <VerticalStackLayout Spacing="4">
+                            <Label Text="Einnahmen" FontSize="11" TextColor="#34C759" />
+                            <Label Text="{Binding GesamtEinnahmen, Converter={StaticResource Currency}}"
+                                   FontSize="15" FontAttributes="Bold" TextColor="#34C759" />
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- Ausgaben -->
+                    <Border Grid.Column="1" StrokeShape="RoundRectangle 12"
+                            Stroke="Transparent" BackgroundColor="#FDECEA" Padding="12">
+                        <VerticalStackLayout Spacing="4">
+                            <Label Text="Ausgaben" FontSize="11" TextColor="#FF3B30" />
+                            <Label Text="{Binding GesamtAusgaben, Converter={StaticResource Currency}}"
+                                   FontSize="15" FontAttributes="Bold" TextColor="#FF3B30" />
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- Bilanz -->
+                    <Border Grid.Column="2" StrokeShape="RoundRectangle 12"
+                            Stroke="Transparent" BackgroundColor="#F2F2F7" Padding="12">
+                        <VerticalStackLayout Spacing="4">
+                            <Label Text="Bilanz" FontSize="11" TextColor="Gray" />
+                            <Label Text="{Binding Bilanz, Converter={StaticResource BilanzDisplay}}"
+                                   TextColor="{Binding Bilanz, Converter={StaticResource BilanzColor}}"
+                                   FontSize="15" FontAttributes="Bold" />
+                        </VerticalStackLayout>
+                    </Border>
+                </Grid>
+
+                <!-- Ausgaben nach Kategorie -->
+                <Label Text="Ausgaben nach Kategorie" FontSize="18" FontAttributes="Bold"
+                       Margin="0,8,0,0"
+                       IsVisible="{Binding KategorieAusgaben.Count, Converter={StaticResource CountToBool}}" />
+
+                <CollectionView ItemsSource="{Binding KategorieAusgaben}"
+                                SelectionMode="None">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="models:KategorieZusammenfassung">
+                            <VerticalStackLayout Padding="0,6" Spacing="4">
+                                <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="10">
+                                    <Label Grid.Column="0"
+                                           Text="{Binding Kategorie.Icon}"
+                                           FontSize="16" VerticalTextAlignment="Center" />
+                                    <Label Grid.Column="1"
+                                           Text="{Binding Kategorie.Name}"
+                                           FontSize="15" VerticalTextAlignment="Center" />
+                                    <Label Grid.Column="2"
+                                           Text="{Binding Summe, Converter={StaticResource Currency}}"
+                                           FontSize="15" FontAttributes="Bold"
+                                           TextColor="#FF3B30" VerticalTextAlignment="Center" />
+                                </Grid>
+                                <!-- Fortschrittsbalken -->
+                                <ProgressBar Progress="{Binding Prozent, Converter={StaticResource ProzentToWidth}}"
+                                             ProgressColor="{Binding Kategorie.Color}"
+                                             HeightRequest="6" />
+                            </VerticalStackLayout>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+                <!-- Einnahmen nach Kategorie -->
+                <Label Text="Einnahmen nach Kategorie" FontSize="18" FontAttributes="Bold"
+                       Margin="0,8,0,0"
+                       IsVisible="{Binding KategorieEinnahmen.Count, Converter={StaticResource CountToBool}}" />
+
+                <CollectionView ItemsSource="{Binding KategorieEinnahmen}"
+                                SelectionMode="None">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="models:KategorieZusammenfassung">
+                            <VerticalStackLayout Padding="0,6" Spacing="4">
+                                <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="10">
+                                    <Label Grid.Column="0"
+                                           Text="{Binding Kategorie.Icon}"
+                                           FontSize="16" VerticalTextAlignment="Center" />
+                                    <Label Grid.Column="1"
+                                           Text="{Binding Kategorie.Name}"
+                                           FontSize="15" VerticalTextAlignment="Center" />
+                                    <Label Grid.Column="2"
+                                           Text="{Binding Summe, Converter={StaticResource Currency}}"
+                                           FontSize="15" FontAttributes="Bold"
+                                           TextColor="#34C759" VerticalTextAlignment="Center" />
+                                </Grid>
+                                <ProgressBar Progress="{Binding Prozent, Converter={StaticResource ProzentToWidth}}"
+                                             ProgressColor="{Binding Kategorie.Color}"
+                                             HeightRequest="6" />
+                            </VerticalStackLayout>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </RefreshView>
 </ContentPage>
