@@ -1,9 +1,66 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Finanzuebersicht.ViewModels"
+             xmlns:models="clr-namespace:Finanzuebersicht.Models"
              x:Class="Finanzuebersicht.Views.CategoriesPage"
+             x:DataType="vm:CategoriesViewModel"
              Title="Kategorien">
-    <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center">
-        <Label Text="Kategorien" FontSize="24" HorizontalTextAlignment="Center" />
-    </VerticalStackLayout>
+
+    <Shell.TitleView>
+        <Grid ColumnDefinitions="*, Auto" Padding="0,0,16,0">
+            <Label Text="Kategorien" FontSize="20" FontAttributes="Bold"
+                   VerticalOptions="Center" />
+            <Button Grid.Column="1" Text="+" FontSize="24"
+                    BackgroundColor="Transparent"
+                    Command="{Binding GoToDetailCommand}" />
+        </Grid>
+    </Shell.TitleView>
+
+    <RefreshView Command="{Binding LoadKategorienCommand}"
+                 IsRefreshing="{Binding IsLoading}">
+        <CollectionView ItemsSource="{Binding Kategorien}"
+                        SelectionMode="None">
+            <CollectionView.EmptyView>
+                <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Padding="20">
+                    <Label Text="Keine Kategorien vorhanden" FontSize="16"
+                           HorizontalTextAlignment="Center" TextColor="Gray" />
+                </VerticalStackLayout>
+            </CollectionView.EmptyView>
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:Category">
+                    <SwipeView>
+                        <SwipeView.RightItems>
+                            <SwipeItems>
+                                <SwipeItem Text="Löschen"
+                                           BackgroundColor="#FF3B30"
+                                           Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CategoriesViewModel}}, Path=DeleteKategorieCommand}"
+                                           CommandParameter="{Binding .}" />
+                            </SwipeItems>
+                        </SwipeView.RightItems>
+
+                        <Grid ColumnDefinitions="50, *, Auto" Padding="16,12" ColumnSpacing="12">
+                            <Border Grid.Column="0" BackgroundColor="{Binding Color}"
+                                    StrokeShape="RoundRectangle 12"
+                                    Stroke="Transparent"
+                                    WidthRequest="44" HeightRequest="44"
+                                    Padding="0" HorizontalOptions="Center" VerticalOptions="Center">
+                                <Label Text="{Binding Icon}" FontSize="20"
+                                       HorizontalOptions="Center" VerticalOptions="Center" />
+                            </Border>
+
+                            <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
+                                <Label Text="{Binding Name}" FontSize="16" FontAttributes="Bold" />
+                                <Label Text="{Binding Typ}" FontSize="13" TextColor="Gray" />
+                            </VerticalStackLayout>
+
+                            <Label Grid.Column="2" Text="›" FontSize="24" TextColor="Gray"
+                                   VerticalOptions="Center" />
+                        </Grid>
+                    </SwipeView>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </RefreshView>
 </ContentPage>

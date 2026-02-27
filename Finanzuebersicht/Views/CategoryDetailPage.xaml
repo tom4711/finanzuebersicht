@@ -1,9 +1,87 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Finanzuebersicht.ViewModels"
              x:Class="Finanzuebersicht.Views.CategoryDetailPage"
+             x:DataType="vm:CategoryDetailViewModel"
              Title="Kategorie">
-    <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center">
-        <Label Text="Kategorie Detail" FontSize="24" HorizontalTextAlignment="Center" />
-    </VerticalStackLayout>
+
+    <ScrollView Padding="16">
+        <VerticalStackLayout Spacing="20">
+
+            <!-- Name -->
+            <VerticalStackLayout Spacing="4">
+                <Label Text="Name" FontSize="13" TextColor="Gray" />
+                <Entry Text="{Binding Name}" Placeholder="Kategoriename"
+                       FontSize="16" />
+            </VerticalStackLayout>
+
+            <!-- Icon-Auswahl -->
+            <VerticalStackLayout Spacing="4">
+                <Label Text="Icon" FontSize="13" TextColor="Gray" />
+                <CollectionView ItemsSource="{Binding VerfuegbareIcons}"
+                                SelectionMode="Single"
+                                SelectedItem="{Binding Icon}"
+                                HeightRequest="120">
+                    <CollectionView.ItemsLayout>
+                        <GridItemsLayout Orientation="Vertical" Span="7"
+                                         HorizontalItemSpacing="8" VerticalItemSpacing="8" />
+                    </CollectionView.ItemsLayout>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="x:String">
+                            <Border Padding="8" StrokeShape="RoundRectangle 10"
+                                   Stroke="Transparent"
+                                   BackgroundColor="#F2F2F7"
+                                   HorizontalOptions="Center">
+                                <Label Text="{Binding .}" FontSize="22"
+                                       HorizontalOptions="Center" VerticalOptions="Center" />
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </VerticalStackLayout>
+
+            <!-- Farb-Auswahl -->
+            <VerticalStackLayout Spacing="4">
+                <Label Text="Farbe" FontSize="13" TextColor="Gray" />
+                <CollectionView ItemsSource="{Binding VerfuegbareFarben}"
+                                SelectionMode="Single"
+                                SelectedItem="{Binding Color}"
+                                HeightRequest="60">
+                    <CollectionView.ItemsLayout>
+                        <GridItemsLayout Orientation="Vertical" Span="5"
+                                         HorizontalItemSpacing="10" VerticalItemSpacing="10" />
+                    </CollectionView.ItemsLayout>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="x:String">
+                            <Border WidthRequest="40" HeightRequest="40"
+                                   StrokeShape="RoundRectangle 20"
+                                   Stroke="Transparent" Padding="0"
+                                   BackgroundColor="{Binding .}"
+                                   HorizontalOptions="Center" />
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </VerticalStackLayout>
+
+            <!-- Typ -->
+            <VerticalStackLayout Spacing="4">
+                <Label Text="Typ" FontSize="13" TextColor="Gray" />
+                <Picker SelectedIndex="{Binding Typ}">
+                    <Picker.Items>
+                        <x:String>Einnahme</x:String>
+                        <x:String>Ausgabe</x:String>
+                    </Picker.Items>
+                </Picker>
+            </VerticalStackLayout>
+
+            <!-- Speichern -->
+            <Button Text="Speichern" Command="{Binding SaveCommand}"
+                    BackgroundColor="#007AFF" TextColor="White"
+                    CornerRadius="12" HeightRequest="50"
+                    FontSize="16" FontAttributes="Bold"
+                    Margin="0,20,0,0" />
+
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>

@@ -1,12 +1,13 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Finanzuebersicht.Services;
 
 namespace Finanzuebersicht;
 
 public partial class App : Application
 {
-	public App()
+	public App(InitializationService initService)
 	{
 		InitializeComponent();
+		Task.Run(async () => await initService.InitializeAsync());
 	}
 
 	protected override Window CreateWindow(IActivationState? activationState)

@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Maui;
 using Finanzuebersicht.Services;
+using Finanzuebersicht.ViewModels;
 using Finanzuebersicht.Views;
 using Microsoft.Extensions.Logging;
 
@@ -21,6 +22,11 @@ public static class MauiProgram
 
 		// Services
 		builder.Services.AddSingleton<IDataService, CloudKitDataService>();
+		builder.Services.AddSingleton<InitializationService>();
+
+		// ViewModels
+		builder.Services.AddTransient<CategoriesViewModel>();
+		builder.Services.AddTransient<CategoryDetailViewModel>();
 
 		// Pages
 		builder.Services.AddTransient<DashboardPage>();
@@ -30,8 +36,6 @@ public static class MauiProgram
 		builder.Services.AddTransient<RecurringTransactionDetailPage>();
 		builder.Services.AddTransient<CategoriesPage>();
 		builder.Services.AddTransient<CategoryDetailPage>();
-
-		// TODO: ViewModels registrieren (Phase 4+)
 
 #if DEBUG
 		builder.Logging.AddDebug();
