@@ -2,69 +2,101 @@
 
 ## Project Overview
 
-A personal finance overview app built with **.NET 10 and .NET MAUI**, targeting **iOS and macOS** (Mac Catalyst). Data is persisted via **iCloud / CloudKit**. Architecture follows **MVVM**.
+A personal finance overview app built with **.NET 10 and .NET MAUI**, targeting **iOS and macOS** (Mac Catalyst). Data is persisted via **iCloud / CloudKit**. Architecture follows **MVVM**. Language: German only.
 
 ## Build & Run
 
 ```bash
-# Restore dependencies
 dotnet restore
-
-# Build for iOS (device)
-dotnet build -f net10.0-ios
 
 # Build for macOS (Mac Catalyst)
 dotnet build -f net10.0-maccatalyst
 
-# Run on iOS simulator
-dotnet run -f net10.0-ios
-
-# Run on macOS
-dotnet run -f net10.0-maccatalyst
+# Build for iOS
+dotnet build -f net10.0-ios
 ```
 
-> Use Xcode's Simulator or a connected device for iOS. Mac Catalyst builds run natively on macOS.
+> Xcode version validation is disabled in the `.csproj` (`ValidateXcodeVersion=false`) due to SDK/Xcode version mismatch.
 
 ## Architecture
 
-**MVVM** using `CommunityToolkit.Mvvm`:
+**MVVM** using `CommunityToolkit.Mvvm` source generators:
 
-- `Models/` – Plain data models (e.g., `Transaction`, `Account`, `Category`)
-- `ViewModels/` – Inherit from `ObservableObject`; use `[ObservableProperty]` and `[RelayCommand]` source generators
-- `Views/` – XAML pages and controls; bind to ViewModels via `BindingContext`
-- `Services/` – Business logic and data access (e.g., CloudKit sync service)
+- `Models/` – `Transaction`, `Category`, `RecurringTransaction`, `TransactionType` enum, helper types (`TransactionGroup`, `KategorieZusammenfassung`)
+- `ViewModels/` – Inherit from `ObservableObject`; use `[ObservableProperty]` and `[RelayCommand]`
+- `Views/` – XAML pages bound to ViewModels via `BindingContext` (set in code-behind constructor via DI)
+- `Services/` – `IDataService` interface with `CloudKitDataService` implementation; `InitializationService` for first-launch setup
+- `Converters/` – Value converters for UI (currency display, colors, status text)
 
-Navigation is handled via Shell (`AppShell.xaml`).
+Navigation: Shell with 4 tabs (Dashboard, Transaktionen, Daueraufträge, Kategorien) + 3 detail pages via Shell routing.
 
 ## CloudKit / iCloud Persistence
 
-- Data sync goes through a dedicated service in `Services/` implementing an interface (e.g., `IDataService`)
-- ViewModels depend on `IDataService` via constructor injection
-- Use `CloudKit` via `CommunityToolkit.Maui` or native bindings; avoid direct `NSUbiquitousKeyValueStore` for complex records — use `CKDatabase` / `CKRecord`
-- Always handle sync conflicts and offline states gracefully
+- All CRUD goes through `IDataService` → `CloudKitDataService` (Singleton)
+- Uses `CKContainer.DefaultContainer.PrivateCloudDatabase`
+- CKRecord types: `"Category"`, `"Transaction"`, `"RecurringTransaction"`
+- `decimal` values stored as strings in CloudKit (no native decimal type)
+- `DateTime` ↔ `NSDate` conversion in mapping helpers
+- Recurring transaction auto-generation runs on `App.OnStart()` and `Window.Resumed`
 
 ## Key Conventions
 
-- Use `CommunityToolkit.Mvvm` source generators (`[ObservableProperty]`, `[RelayCommand]`) — avoid manual `INotifyPropertyChanged` boilerplate
-- ViewModels are registered in `MauiProgram.cs` via `builder.Services.AddTransient<>()` / `AddSingleton<>()`; pages resolve their ViewModel via DI
-- XAML resource dictionaries in `Resources/Styles/` — define colors, brushes, and styles there, not inline
-- Monetary values use `decimal`, never `double` or `float`
-- All user-facing strings should be culture-aware (use `CultureInfo.CurrentCulture` for formatting currencies/dates)
-- Platform-specific code lives in `Platforms/iOS/` or `Platforms/MacCatalyst/` using partial classes or `#if` preprocessor directives
+- `CommunityToolkit.Mvvm` source generators everywhere — no manual `INotifyPropertyChanged`
+- All services and ViewModels registered in `MauiProgram.cs` via DI (`AddSingleton` / `AddTransient`)
+- Pages receive their ViewModel via constructor injection
+- `OnAppearing()` triggers data loading via command execution
+- Monetary values: `decimal` in C#, formatted with `CultureInfo.CurrentCulture`
+- Use `Border` with `StrokeShape="RoundRectangle"` instead of deprecated `Frame`
+- Colors defined in `Resources/Styles/Colors.xaml` (Apple System Colors palette)
+- Light/Dark mode via `AppThemeBinding` in Styles.xaml
+- German-only UI — no localization infrastructure
 
-## Project Structure (expected)
+## Project Structure
 
 ```
-Finanzübersicht/
-├── MauiProgram.cs          # DI setup, app bootstrap
-├── AppShell.xaml           # Shell navigation
+Finanzuebersicht/
+├── MauiProgram.cs
+├── App.xaml / App.xaml.cs
+├── AppShell.xaml / AppShell.xaml.cs
 ├── Models/
+│   ├── TransactionType.cs
+│   ├── Category.cs
+│   ├── Transaction.cs
+│   ├── RecurringTransaction.cs
+│   ├── TransactionGroup.cs
+│   └── KategorieZusammenfassung.cs
 ├── ViewModels/
+│   ├── DashboardViewModel.cs
+│   ├── TransactionsViewModel.cs
+│   ├── TransactionDetailViewModel.cs
+│   ├── RecurringTransactionsViewModel.cs
+│   ├── RecurringTransactionDetailViewModel.cs
+│   ├── CategoriesViewModel.cs
+│   └── CategoryDetailViewModel.cs
 ├── Views/
+│   ├── DashboardPage.xaml
+│   ├── TransactionsPage.xaml
+│   ├── TransactionDetailPage.xaml
+│   ├── RecurringTransactionsPage.xaml
+│   ├── RecurringTransactionDetailPage.xaml
+│   ├── CategoriesPage.xaml
+│   └── CategoryDetailPage.xaml
 ├── Services/
+│   ├── IDataService.cs
+│   ├── CloudKitDataService.cs
+│   └── InitializationService.cs
+├── Converters/
+│   ├── TransactionTypToColorConverter.cs
+│   ├── BetragDisplayConverter.cs
+│   ├── TypButtonColorConverter.cs
+│   ├── BoolToOpacityConverter.cs
+│   ├── StatusConverters.cs
+│   ├── DashboardConverters.cs
+│   └── CountToBoolConverter.cs
 ├── Resources/
-│   ├── Styles/
-│   └── Images/
+│   ├── Styles/Colors.xaml
+│   ├── Styles/Styles.xaml
+│   └── ...
 └── Platforms/
     ├── iOS/
     └── MacCatalyst/
