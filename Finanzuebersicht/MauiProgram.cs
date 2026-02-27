@@ -20,6 +20,14 @@ public static class MauiProgram
 				fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
 			});
 
+#if MACCATALYST || IOS
+		// Faster tab switch animation via custom Shell renderer
+		builder.ConfigureMauiHandlers(handlers =>
+		{
+			handlers.AddHandler<Shell, Finanzuebersicht.Handlers.FastShellRenderer>();
+		});
+#endif
+
 		// Services
 		builder.Services.AddSingleton<SettingsService>();
 		builder.Services.AddSingleton<IDataService>(sp =>

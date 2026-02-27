@@ -4,36 +4,39 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:views="clr-namespace:Finanzuebersicht.Views"
-    Title="Finanzübersicht">
+    Title="Finanzübersicht"
+    Shell.TabBarBackgroundColor="{AppThemeBinding Light={StaticResource CardBackground}, Dark={StaticResource CardBackgroundDark}}"
+    Shell.TabBarTitleColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+    Shell.TabBarUnselectedColor="{AppThemeBinding Light={StaticResource TextTertiary}, Dark={StaticResource Gray600}}">
 
     <TabBar>
         <ShellContent
             Title="Dashboard"
-            Icon="dashboard.svg"
+            Icon="dashboard.png"
             ContentTemplate="{DataTemplate views:DashboardPage}"
             Route="DashboardPage" />
 
         <ShellContent
             Title="Transaktionen"
-            Icon="transactions.svg"
+            Icon="transactions.png"
             ContentTemplate="{DataTemplate views:TransactionsPage}"
             Route="TransactionsPage" />
 
         <ShellContent
             Title="Daueraufträge"
-            Icon="recurring.svg"
+            Icon="recurring.png"
             ContentTemplate="{DataTemplate views:RecurringTransactionsPage}"
             Route="RecurringTransactionsPage" />
 
         <ShellContent
             Title="Kategorien"
-            Icon="categories.svg"
+            Icon="categories.png"
             ContentTemplate="{DataTemplate views:CategoriesPage}"
             Route="CategoriesPage" />
 
         <ShellContent
             Title="Einstellungen"
-            Icon="settings.svg"
+            Icon="settings.png"
             ContentTemplate="{DataTemplate views:SettingsPage}"
             Route="SettingsPage" />
     </TabBar>
