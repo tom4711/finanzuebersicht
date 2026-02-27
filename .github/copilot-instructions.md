@@ -101,3 +101,65 @@ Finanzuebersicht/
     ├── iOS/
     └── MacCatalyst/
 ```
+
+## Git Commit Conventions
+
+**Format:** Gitmoji + Conventional Commits (English)
+
+```
+<emoji> <type>(<scope>): <short summary>
+
+<body – what changed and why>
+
+<footer>
+```
+
+**Types & Gitmoji:**
+
+| Emoji | Type | Usage |
+|-------|------|-------|
+| ✨ | `feat` | New feature or functionality |
+| 🐛 | `fix` | Bug fix |
+| ♻️ | `refactor` | Code restructuring without behavior change |
+| 💄 | `style` | UI/UX changes, styling, design |
+| 🧪 | `test` | Adding or updating tests |
+| 📝 | `docs` | Documentation changes |
+| 🔧 | `chore` | Build config, dependencies, tooling |
+| ⚡ | `perf` | Performance improvement |
+| 🗑️ | `remove` | Removing code or files |
+| 🚀 | `deploy` | Deployment-related changes |
+| 🏗️ | `arch` | Architecture changes (project structure) |
+
+**Scopes:** `core`, `ui`, `viewmodel`, `service`, `model`, `converter`, `test`, `config`, `shell`, `settings`
+
+**Rules:**
+- Subject line: imperative mood, max 72 chars, no period at end
+- Body: wrap at 80 chars, explain *what* and *why* (not *how*)
+- Always list affected files/components in the body
+- Breaking changes: add `BREAKING CHANGE:` in footer
+- Always include `Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>` trailer
+
+**Examples:**
+
+```
+✨ feat(service): add configurable data path for LocalDataService
+
+- LocalDataService now accepts SettingsService to read custom data path
+- Users can choose iCloud Drive folder for automatic backup
+- Falls back to LocalApplicationData when no custom path is set
+
+Affected: LocalDataService.cs, SettingsService.cs, MauiProgram.cs
+
+Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>
+```
+
+```
+🐛 fix(converter): handle null values in BetragDisplayConverter
+
+- Return "0,00 €" instead of throwing NullReferenceException
+- Added null check for decimal input parameter
+
+Affected: BetragDisplayConverter.cs
+
+Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>
+```
