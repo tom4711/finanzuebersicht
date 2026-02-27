@@ -56,9 +56,38 @@ jobs:
             -p:CodesignKey="" \
             -p:CodesignProvision=""
 
-      - name: Upload app artifact
+  build-windows:
+    name: Build (Windows)
+    runs-on: windows-latest
+    needs: test
+    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/release/')
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Install .NET MAUI workloads
+        run: dotnet workload install maui-windows
+
+      - name: Get version
+        id: version
+        run: |
+          dotnet tool install -g nbgv
+          echo "VERSION=$(nbgv get-version -v SemVer2)" >> $env:GITHUB_OUTPUT
+
+      - name: Build Windows
+        run: |
+          cd Finanzuebersicht
+          dotnet build -f net10.0-windows10.0.19041.0 -c Release
+
+      - name: Upload Windows artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Finanzuebersicht-${{ steps.version.outputs.VERSION }}-maccatalyst
-          path: Finanzuebersicht/bin/Release/net10.0-maccatalyst/**/*.app
+          name: Finanzuebersicht-${{ steps.version.outputs.VERSION }}-windows
+          path: Finanzuebersicht/bin/Release/net10.0-windows10.0.19041.0/**
           retention-days: 14
