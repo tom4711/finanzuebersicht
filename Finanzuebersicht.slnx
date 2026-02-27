@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="Finanzuebersicht.Core/Finanzuebersicht.Core.csproj" />
+  <Project Path="Finanzuebersicht.Tests/Finanzuebersicht.Tests.csproj" />
+  <Project Path="Finanzuebersicht/Finanzuebersicht.csproj" />
+</Solution>

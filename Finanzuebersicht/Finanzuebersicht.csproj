@@ -54,4 +54,8 @@
 		<PackageReference Include="CommunityToolkit.Maui" Version="14.*" />
 	</ItemGroup>
 
+	<ItemGroup>
+		<ProjectReference Include="..\Finanzuebersicht.Core\Finanzuebersicht.Core.csproj" />
+	</ItemGroup>
+
 </Project>
