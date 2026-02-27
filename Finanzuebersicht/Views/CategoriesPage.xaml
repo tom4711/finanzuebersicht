@@ -7,18 +7,9 @@
              x:DataType="vm:CategoriesViewModel"
              Title="Kategorien">
 
-    <Shell.TitleView>
-        <Grid ColumnDefinitions="*, Auto" Padding="0,0,16,0">
-            <Label Text="Kategorien" FontSize="20" FontAttributes="Bold"
-                   VerticalOptions="Center" />
-            <Button Grid.Column="1" Text="+" FontSize="24"
-                    BackgroundColor="Transparent" TextColor="#007AFF"
-                    Command="{Binding GoToDetailCommand}" />
-        </Grid>
-    </Shell.TitleView>
-
-    <RefreshView Command="{Binding LoadKategorienCommand}"
-                 IsRefreshing="{Binding IsLoading}">
+    <Grid>
+        <RefreshView Command="{Binding LoadKategorienCommand}"
+                     IsRefreshing="{Binding IsLoading}">
         <CollectionView ItemsSource="{Binding Kategorien}"
                         SelectionMode="None">
             <CollectionView.EmptyView>
@@ -63,4 +54,16 @@
             </CollectionView.ItemTemplate>
         </CollectionView>
     </RefreshView>
+
+        <!-- FAB -->
+        <Button Text="+"
+                FontSize="28" TextColor="White"
+                BackgroundColor="#007AFF"
+                CornerRadius="28"
+                WidthRequest="56" HeightRequest="56"
+                HorizontalOptions="End" VerticalOptions="End"
+                Margin="0,0,20,20"
+                Shadow="{Shadow Brush='#40000000', Offset='0,4', Radius=8}"
+                Command="{Binding GoToDetailCommand}" />
+    </Grid>
 </ContentPage>
