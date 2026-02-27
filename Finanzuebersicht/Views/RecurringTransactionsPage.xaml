@@ -20,7 +20,7 @@
             <Label Text="Daueraufträge" FontSize="20" FontAttributes="Bold"
                    VerticalOptions="Center" />
             <Button Grid.Column="1" Text="+" FontSize="24"
-                    BackgroundColor="Transparent"
+                    BackgroundColor="Transparent" TextColor="#007AFF"
                     Command="{Binding GoToDetailCommand}" />
         </Grid>
     </Shell.TitleView>
