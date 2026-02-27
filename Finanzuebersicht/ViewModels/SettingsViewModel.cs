@@ -125,6 +125,30 @@ public partial class SettingsViewModel : ObservableObject
             "Dark" => AppTheme.Dark,
             _ => AppTheme.Unspecified
         };
+
+#if MACCATALYST || IOS
+        // Sync UIKit interface style so native controls (nav bar, etc.) follow the theme
+        MainThread.BeginInvokeOnMainThread(() =>
+        {
+            var style = themeKey switch
+            {
+                "Light" => UIKit.UIUserInterfaceStyle.Light,
+                "Dark" => UIKit.UIUserInterfaceStyle.Dark,
+                _ => UIKit.UIUserInterfaceStyle.Unspecified
+            };
+
+            foreach (var scene in UIKit.UIApplication.SharedApplication.ConnectedScenes)
+            {
+                if (scene is UIKit.UIWindowScene windowScene)
+                {
+                    foreach (var window in windowScene.Windows)
+                    {
+                        window.OverrideUserInterfaceStyle = style;
+                    }
+                }
+            }
+        });
+#endif
     }
 }
 

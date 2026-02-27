@@ -404,9 +404,7 @@
     </Style>
 
     <Style TargetType="Shell" ApplyToDerivedTypes="True">
-        <Setter Property="Shell.BackgroundColor" Value="{AppThemeBinding Light={StaticResource CardBackground}, Dark={StaticResource CardBackgroundDark}}" />
-        <Setter Property="Shell.ForegroundColor" Value="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
-        <Setter Property="Shell.TitleColor" Value="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
+        <!-- BackgroundColor, ForegroundColor, TitleColor set in AppShell.xaml.cs (UpdateShellColors) -->
         <Setter Property="Shell.DisabledColor" Value="{StaticResource Gray400}" />
         <Setter Property="Shell.UnselectedColor" Value="{StaticResource Gray600}" />
         <Setter Property="Shell.NavBarHasShadow" Value="False" />
