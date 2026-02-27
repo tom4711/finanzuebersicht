@@ -1,3 +1,4 @@
+using System.Reflection;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Finanzuebersicht.Services;
@@ -14,11 +15,28 @@ public partial class SettingsViewModel : ObservableObject
     [ObservableProperty]
     private string dataPath = string.Empty;
 
-    public string[] ThemeOptions { get; } = ["System", "Hell", "Dunkel"];
+    public string AppVersion { get; }
+    public string BuildInfo { get; }
+
+    public List<LibraryInfo> Libraries { get; } =
+    [
+        new("CommunityToolkit.Mvvm", "MVVM-Toolkit mit Source Generators"),
+        new("CommunityToolkit.Maui", "UI-Erweiterungen für .NET MAUI"),
+        new("Nerdbank.GitVersioning", "Automatische SemVer-Versionierung"),
+        new("xUnit", "Unit-Test-Framework (nur Tests)"),
+    ];
 
     public SettingsViewModel(SettingsService settings)
     {
         _settings = settings;
+
+        // Version aus Assembly-Metadaten lesen (von Nerdbank.GitVersioning gesetzt)
+        var asm = Assembly.GetExecutingAssembly();
+        var infoVersion = asm.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? "unbekannt";
+        var version = asm.GetName().Version;
+
+        AppVersion = version is not null ? $"{version.Major}.{version.Minor}.{version.Build}" : infoVersion;
+        BuildInfo = infoVersion.Contains('+') ? infoVersion[(infoVersion.IndexOf('+') + 1)..] : "";
 
         // Theme laden
         var theme = _settings.Get("Theme", "System");
@@ -109,3 +127,5 @@ public partial class SettingsViewModel : ObservableObject
         };
     }
 }
+
+public record LibraryInfo(string Name, string Description);
