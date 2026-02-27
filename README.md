@@ -5,7 +5,7 @@
 **Persönliche Finanzverwaltung für iOS, macOS und Windows**
 
 [![CI](https://github.com/tom4711/finanzuebersicht/actions/workflows/ci.yml/badge.svg)](https://github.com/tom4711/finanzuebersicht/actions/workflows/ci.yml)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
 [![.NET 10](https://img.shields.io/badge/.NET-10-blueviolet)](https://dotnet.microsoft.com/download)
 [![Platform](https://img.shields.io/badge/platform-iOS%20%7C%20macOS%20%7C%20Windows-lightgrey)](#plattformen)
 
@@ -79,4 +79,4 @@ Alle Änderungen an `main` müssen über einen Pull Request laufen – direkte P
 
 ## Lizenz
 
-[MIT](LICENSE) © Thomas Menzl
+[GPL v3](LICENSE) © Thomas Menzl
