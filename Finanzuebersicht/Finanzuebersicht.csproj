@@ -18,8 +18,8 @@
 		<!-- App Identifier -->
 		<ApplicationId>com.thomasmenzl.finanzuebersicht</ApplicationId>
 
-		<!-- Versions -->
-		<ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
+		<!-- Versions (overridden at build time by Nerdbank.GitVersioning target below) -->
+		<ApplicationDisplayVersion>0.1.0</ApplicationDisplayVersion>
 		<ApplicationVersion>1</ApplicationVersion>
 
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">15.0</SupportedOSPlatformVersion>
@@ -57,5 +57,13 @@
 	<ItemGroup>
 		<ProjectReference Include="..\Finanzuebersicht.Core\Finanzuebersicht.Core.csproj" />
 	</ItemGroup>
+
+	<!-- Set MAUI version properties from Nerdbank.GitVersioning at build time -->
+	<Target Name="SetMauiVersionFromNBGV" BeforeTargets="Build;_GenerateBundleInfoPlist;_DetectAppManifest" DependsOnTargets="GetBuildVersion">
+		<PropertyGroup>
+			<ApplicationDisplayVersion>$(BuildVersionSimple)</ApplicationDisplayVersion>
+			<ApplicationVersion Condition="'$(BuildNumber)' != '' and '$(BuildNumber)' != '0'">$(BuildNumber)</ApplicationVersion>
+		</PropertyGroup>
+	</Target>
 
 </Project>
