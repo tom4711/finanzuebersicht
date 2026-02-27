@@ -27,6 +27,7 @@ jobs:
     name: Build (Mac Catalyst)
     runs-on: macos-15
     needs: test
+    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/release/')
     steps:
       - uses: actions/checkout@v4
         with:
