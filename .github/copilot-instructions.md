@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-A personal finance overview app built with **.NET 10 and .NET MAUI**, targeting **iOS and macOS** (Mac Catalyst). Data is persisted via **iCloud / CloudKit**. Architecture follows **MVVM**. Language: German only.
+A personal finance overview app built with **.NET 10 and .NET MAUI**, targeting **iOS and macOS** (Mac Catalyst). Data is persisted locally via JSON files (`LocalDataService`); CloudKit support requires a paid Apple Developer account. Architecture follows **MVVM**. Language: German only.
 
 ## Build & Run
 
@@ -14,6 +14,9 @@ dotnet build -f net10.0-maccatalyst
 
 # Build for iOS
 dotnet build -f net10.0-ios
+
+# Run tests
+dotnet test Finanzuebersicht.Tests
 ```
 
 > Xcode version validation is disabled in the `.csproj` (`ValidateXcodeVersion=false`) due to SDK/Xcode version mismatch.
@@ -22,21 +25,17 @@ dotnet build -f net10.0-ios
 
 **MVVM** using `CommunityToolkit.Mvvm` source generators:
 
-- `Models/` – `Transaction`, `Category`, `RecurringTransaction`, `TransactionType` enum, helper types (`TransactionGroup`, `KategorieZusammenfassung`)
-- `ViewModels/` – Inherit from `ObservableObject`; use `[ObservableProperty]` and `[RelayCommand]`
-- `Views/` – XAML pages bound to ViewModels via `BindingContext` (set in code-behind constructor via DI)
-- `Services/` – `IDataService` interface with `CloudKitDataService` implementation; `InitializationService` for first-launch setup
-- `Converters/` – Value converters for UI (currency display, colors, status text)
+- `Finanzuebersicht.Core/` – Shared .NET 10 class library (models, services, interfaces)
+- `Finanzuebersicht/` – .NET MAUI app (ViewModels, Views, Converters, platform code)
+- `Finanzuebersicht.Tests/` – xUnit test project (references Core only)
 
-Navigation: Shell with 4 tabs (Dashboard, Transaktionen, Daueraufträge, Kategorien) + 3 detail pages via Shell routing.
+Navigation: Shell with 5 tabs (Dashboard, Transaktionen, Daueraufträge, Kategorien, Einstellungen) + 3 detail pages via Shell routing.
 
-## CloudKit / iCloud Persistence
+## Data Persistence
 
-- All CRUD goes through `IDataService` → `CloudKitDataService` (Singleton)
-- Uses `CKContainer.DefaultContainer.PrivateCloudDatabase`
-- CKRecord types: `"Category"`, `"Transaction"`, `"RecurringTransaction"`
-- `decimal` values stored as strings in CloudKit (no native decimal type)
-- `DateTime` ↔ `NSDate` conversion in mapping helpers
+- All CRUD goes through `IDataService` → `LocalDataService` (Singleton, JSON files)
+- Storage path configurable via `SettingsService` ("DataPath" key), default: `LocalApplicationData/Finanzuebersicht`
+- CloudKit code exists (`CloudKitDataService`) but is disabled (requires paid Apple Developer account)
 - Recurring transaction auto-generation runs on `App.OnStart()` and `Window.Resumed`
 
 ## Key Conventions
@@ -48,58 +47,66 @@ Navigation: Shell with 4 tabs (Dashboard, Transaktionen, Daueraufträge, Kategor
 - Monetary values: `decimal` in C#, formatted with `CultureInfo.CurrentCulture`
 - Use `Border` with `StrokeShape="RoundRectangle"` instead of deprecated `Frame`
 - Colors defined in `Resources/Styles/Colors.xaml` (Apple System Colors palette)
-- Light/Dark mode via `AppThemeBinding` in Styles.xaml
+- Light/Dark mode via `AppThemeBinding` — avoid hardcoded color values in XAML
 - German-only UI — no localization infrastructure
+
+## Versioning
+
+Automatic **SemVer** via **Nerdbank.GitVersioning** (`version.json` in repo root):
+
+- Version = `<major>.<minor>.<git-height>` (e.g., `0.1.5` = 5 commits since 0.1.0)
+- MAUI `ApplicationDisplayVersion` and `ApplicationVersion` are set automatically at build time
+- **Bump version:** edit `version.json` or run `nbgv set-version <new-version>`
+- **Current version:** run `nbgv get-version`
+- `publicReleaseRefSpec`: `main` and `release/v*` branches produce stable versions
+- Cloud build numbers enabled for CI pipelines
+
+## Git Branching Strategy
+
+**`main` is protected** — no direct commits to `main`.
+
+All changes go through feature/fix branches and are merged via Pull Request:
+
+```
+main              ← stable, release-ready
+├── feature/*     ← new features (e.g., feature/cloud-sync)
+├── fix/*         ← bug fixes (e.g., fix/dark-mode-contrast)
+├── chore/*       ← tooling, deps, config (e.g., chore/update-packages)
+└── release/v*    ← release preparation (e.g., release/v1.0)
+```
+
+**Workflow:**
+1. Create branch from `main`: `git checkout -b feature/<name>`
+2. Make changes, commit following conventions below
+3. Push branch and create Pull Request
+4. Merge to `main` (squash or merge commit)
+
+**Branch naming:** `<type>/<short-description>` in kebab-case (English)
 
 ## Project Structure
 
 ```
-Finanzuebersicht/
+Finanzuebersicht.slnx              ← Solution file
+version.json                       ← Nerdbank.GitVersioning config
+Directory.Build.props              ← Shared MSBuild properties (nbgv package)
+
+Finanzuebersicht.Core/             ← Shared library (net10.0)
+├── Models/                        ← Transaction, Category, RecurringTransaction, etc.
+└── Services/                      ← IDataService, LocalDataService, SettingsService, InitializationService
+
+Finanzuebersicht/                  ← MAUI app (net10.0-ios, net10.0-maccatalyst)
 ├── MauiProgram.cs
 ├── App.xaml / App.xaml.cs
 ├── AppShell.xaml / AppShell.xaml.cs
-├── Models/
-│   ├── TransactionType.cs
-│   ├── Category.cs
-│   ├── Transaction.cs
-│   ├── RecurringTransaction.cs
-│   ├── TransactionGroup.cs
-│   └── KategorieZusammenfassung.cs
-├── ViewModels/
-│   ├── DashboardViewModel.cs
-│   ├── TransactionsViewModel.cs
-│   ├── TransactionDetailViewModel.cs
-│   ├── RecurringTransactionsViewModel.cs
-│   ├── RecurringTransactionDetailViewModel.cs
-│   ├── CategoriesViewModel.cs
-│   └── CategoryDetailViewModel.cs
-├── Views/
-│   ├── DashboardPage.xaml
-│   ├── TransactionsPage.xaml
-│   ├── TransactionDetailPage.xaml
-│   ├── RecurringTransactionsPage.xaml
-│   ├── RecurringTransactionDetailPage.xaml
-│   ├── CategoriesPage.xaml
-│   └── CategoryDetailPage.xaml
-├── Services/
-│   ├── IDataService.cs
-│   ├── CloudKitDataService.cs
-│   └── InitializationService.cs
-├── Converters/
-│   ├── TransactionTypToColorConverter.cs
-│   ├── BetragDisplayConverter.cs
-│   ├── TypButtonColorConverter.cs
-│   ├── BoolToOpacityConverter.cs
-│   ├── StatusConverters.cs
-│   ├── DashboardConverters.cs
-│   └── CountToBoolConverter.cs
-├── Resources/
-│   ├── Styles/Colors.xaml
-│   ├── Styles/Styles.xaml
-│   └── ...
-└── Platforms/
-    ├── iOS/
-    └── MacCatalyst/
+├── ViewModels/                    ← DashboardVM, TransactionsVM, SettingsVM, etc.
+├── Views/                         ← XAML pages
+├── Converters/                    ← Value converters for UI
+├── Handlers/                      ← Custom Shell renderer (FastShellRenderer)
+├── Resources/Styles/              ← Colors.xaml, Styles.xaml
+└── Platforms/                     ← iOS, MacCatalyst
+
+Finanzuebersicht.Tests/            ← xUnit tests (net10.0, references Core only)
+└── Services/                      ← LocalDataService, InitializationService tests
 ```
 
 ## Git Commit Conventions
