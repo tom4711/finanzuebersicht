@@ -33,9 +33,9 @@ public partial class SettingsViewModel : ObservableObject
         // Version aus Assembly-Metadaten lesen (von Nerdbank.GitVersioning gesetzt)
         var asm = Assembly.GetExecutingAssembly();
         var infoVersion = asm.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? "unbekannt";
-        var version = asm.GetName().Version;
 
-        AppVersion = version is not null ? $"{version.Major}.{version.Minor}.{version.Build}" : infoVersion;
+        // InformationalVersion format: "0.1.1+64089cc7a3" — extract version before '+'
+        AppVersion = infoVersion.Contains('+') ? infoVersion[..infoVersion.IndexOf('+')] : infoVersion;
         BuildInfo = infoVersion.Contains('+') ? infoVersion[(infoVersion.IndexOf('+') + 1)..] : "";
 
         // Theme laden
