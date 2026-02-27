@@ -27,6 +27,8 @@ public static class MauiProgram
 		// ViewModels
 		builder.Services.AddTransient<CategoriesViewModel>();
 		builder.Services.AddTransient<CategoryDetailViewModel>();
+		builder.Services.AddTransient<TransactionsViewModel>();
+		builder.Services.AddTransient<TransactionDetailViewModel>();
 
 		// Pages
 		builder.Services.AddTransient<DashboardPage>();

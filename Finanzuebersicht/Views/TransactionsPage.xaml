@@ -1,9 +1,112 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Finanzuebersicht.ViewModels"
+             xmlns:models="clr-namespace:Finanzuebersicht.Models"
+             xmlns:conv="clr-namespace:Finanzuebersicht.Converters"
              x:Class="Finanzuebersicht.Views.TransactionsPage"
+             x:DataType="vm:TransactionsViewModel"
              Title="Transaktionen">
-    <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center">
-        <Label Text="Transaktionen" FontSize="24" HorizontalTextAlignment="Center" />
-    </VerticalStackLayout>
+
+    <ContentPage.Resources>
+        <conv:TransactionTypToColorConverter x:Key="TypToColor" />
+        <conv:BetragDisplayConverter x:Key="BetragDisplay" />
+    </ContentPage.Resources>
+
+    <Grid RowDefinitions="Auto, *">
+
+        <!-- Monatsnavigation -->
+        <Grid Grid.Row="0" ColumnDefinitions="Auto, *, Auto"
+              Padding="16,12" BackgroundColor="#F2F2F7">
+            <Button Grid.Column="0" Text="‹" FontSize="28"
+                    BackgroundColor="Transparent" TextColor="#007AFF"
+                    Command="{Binding PreviousMonthCommand}"
+                    WidthRequest="44" />
+            <Label Grid.Column="1" Text="{Binding MonatAnzeige}"
+                   FontSize="18" FontAttributes="Bold"
+                   HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
+            <Button Grid.Column="2" Text="›" FontSize="28"
+                    BackgroundColor="Transparent" TextColor="#007AFF"
+                    Command="{Binding NextMonthCommand}"
+                    WidthRequest="44" />
+        </Grid>
+
+        <!-- Transaktionsliste -->
+        <RefreshView Grid.Row="1"
+                     Command="{Binding LoadTransaktionenCommand}"
+                     IsRefreshing="{Binding IsLoading}">
+            <CollectionView ItemsSource="{Binding TransaktionsGruppen}"
+                            IsGrouped="True"
+                            SelectionMode="None">
+
+                <CollectionView.EmptyView>
+                    <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Padding="20">
+                        <Label Text="Keine Transaktionen in diesem Monat"
+                               FontSize="16" HorizontalTextAlignment="Center" TextColor="Gray" />
+                    </VerticalStackLayout>
+                </CollectionView.EmptyView>
+
+                <CollectionView.GroupHeaderTemplate>
+                    <DataTemplate x:DataType="models:TransactionGroup">
+                        <Label Text="{Binding DatumFormatiert}"
+                               FontSize="14" TextColor="Gray"
+                               Padding="16,12,16,4" />
+                    </DataTemplate>
+                </CollectionView.GroupHeaderTemplate>
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:Transaction">
+                        <SwipeView>
+                            <SwipeView.RightItems>
+                                <SwipeItems>
+                                    <SwipeItem Text="Löschen"
+                                               BackgroundColor="#FF3B30"
+                                               Command="{Binding Source={RelativeSource AncestorType={x:Type vm:TransactionsViewModel}}, Path=DeleteTransaktionCommand}"
+                                               CommandParameter="{Binding .}" />
+                                </SwipeItems>
+                            </SwipeView.RightItems>
+
+                            <Grid ColumnDefinitions="44, *, Auto" Padding="16,10" ColumnSpacing="12">
+                                <Grid.GestureRecognizers>
+                                    <TapGestureRecognizer
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:TransactionsViewModel}}, Path=GoToDetailCommand}"
+                                        CommandParameter="{Binding .}" />
+                                </Grid.GestureRecognizers>
+
+                                <Border Grid.Column="0" BackgroundColor="#F2F2F7"
+                                        StrokeShape="RoundRectangle 10"
+                                        Stroke="Transparent"
+                                        WidthRequest="40" HeightRequest="40"
+                                        HorizontalOptions="Center" VerticalOptions="Center">
+                                    <Label Text="💰" FontSize="18"
+                                           HorizontalOptions="Center" VerticalOptions="Center" />
+                                </Border>
+
+                                <Label Grid.Column="1" Text="{Binding Titel}"
+                                       FontSize="16" VerticalTextAlignment="Center"
+                                       LineBreakMode="TailTruncation" />
+
+                                <Label Grid.Column="2"
+                                       Text="{Binding ., Converter={StaticResource BetragDisplay}}"
+                                       TextColor="{Binding Typ, Converter={StaticResource TypToColor}}"
+                                       FontSize="16" FontAttributes="Bold"
+                                       VerticalTextAlignment="Center" />
+                            </Grid>
+                        </SwipeView>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </RefreshView>
+
+        <!-- FAB -->
+        <Button Grid.Row="1" Text="+"
+                FontSize="28" TextColor="White"
+                BackgroundColor="#007AFF"
+                CornerRadius="28"
+                WidthRequest="56" HeightRequest="56"
+                HorizontalOptions="End" VerticalOptions="End"
+                Margin="0,0,20,20"
+                Shadow="{Shadow Brush='#40000000', Offset='0,4', Radius=8}"
+                Command="{Binding GoToDetailCommand}" />
+    </Grid>
 </ContentPage>
