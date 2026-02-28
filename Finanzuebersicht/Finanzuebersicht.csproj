@@ -30,6 +30,14 @@
 
 		<!-- Xcode 26.3 installiert, SDK erwartet 26.2 – Prüfung deaktiviert bis SDK-Update -->
 		<ValidateXcodeVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) != 'windows'">false</ValidateXcodeVersion>
+
+		<!-- Suppress MT4162 warning from mtouch (but not via ILLink) -->
+		<!-- Note: passing -nowarn:MT4162 directly to MtouchExtraArgs might be picked up by ILLink and fail -->
+		<!-- We rely on MtouchLink=None to disable ILLink instead -->
+		
+		<!-- Disable ILLink completely to avoid MT2301/NETSDK1144 crash -->
+		<PublishTrimmed>false</PublishTrimmed>
+		<MtouchLink>None</MtouchLink>
 	</PropertyGroup>
 
 	<ItemGroup>
