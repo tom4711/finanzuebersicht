@@ -20,9 +20,9 @@
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
-                                <BoxView WidthRequest="16" HeightRequest="16" BackgroundColor="LightGray" />
+                                <BoxView WidthRequest="16" HeightRequest="16" BackgroundColor="{Binding Color}" />
                                 <Label Grid.Column="1" Text="{Binding CategoryName}" />
-                                <Button Grid.Column="2" Text="{Binding Total}" Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:YearOverviewViewModel}}, Path=SelectCategoryCommand}" CommandParameter="{Binding CategoryId}" />
+                                <Button Grid.Column="2" Text="{Binding Total, StringFormat='{}{0:N2} €'}" Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.SelectCategoryCommand}" CommandParameter="{Binding CategoryId}" />
                             </Grid>
                         </Frame>
                     </DataTemplate>

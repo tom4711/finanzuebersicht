@@ -113,7 +113,8 @@ public class LocalDataService : IDataService
                 {
                     CategoryId = g.Key,
                     CategoryName = categories.FirstOrDefault(c => c.Id == g.Key)?.Name ?? string.Empty,
-                    Total = g.Sum(t => t.Betrag)
+                    Total = g.Sum(t => t.Betrag),
+                    Color = categories.FirstOrDefault(c => c.Id == g.Key)?.Color ?? "#007AFF"
                 })
                 .ToList()
         };
@@ -151,7 +152,8 @@ public class LocalDataService : IDataService
                     {
                         CategoryId = g.Key,
                         CategoryName = categories.FirstOrDefault(c => c.Id == g.Key)?.Name ?? string.Empty,
-                        Total = g.Sum(t => t.Betrag)
+                        Total = g.Sum(t => t.Betrag),
+                        Color = categories.FirstOrDefault(c => c.Id == g.Key)?.Color ?? "#007AFF"
                     })
                     .ToList()
             };
@@ -164,7 +166,8 @@ public class LocalDataService : IDataService
             {
                 CategoryId = g.Key,
                 CategoryName = categories.FirstOrDefault(c => c.Id == g.Key)?.Name ?? string.Empty,
-                Total = g.Sum(t => t.Betrag)
+                Total = g.Sum(t => t.Betrag),
+                Color = categories.FirstOrDefault(c => c.Id == g.Key)?.Color ?? "#007AFF"
             })
             .ToList();
 

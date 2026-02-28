@@ -7,6 +7,8 @@ namespace Finanzuebersicht.Models
         public string CategoryId { get; set; } = string.Empty;
         public string CategoryName { get; set; } = string.Empty;
         public decimal Total { get; set; }
+        // Hex color string for UI/legend (e.g. "#FF5733"). Optional — LocalDataService fills it when available.
+        public string? Color { get; set; }
     }
 
     public class MonthSummary

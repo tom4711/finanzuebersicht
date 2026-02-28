@@ -3,6 +3,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using LiveChartsCore;
@@ -69,15 +70,26 @@ namespace Finanzuebersicht.ViewModels
 
         private void UpdateSeries(YearSummary summary, string? categoryId)
         {
-            var colors = new uint[] { 0xFF4CAF50, 0xFFFF9800, 0xFF2196F3, 0xFFE91E63, 0xFF9C27B0, 0xFFFFC107 };
-
-            // Pie: always show by category
+            // Pie: always show by category. Use category color when available.
             var pie = summary.ByCategory
-                .Select((c, i) => (ISeries)new PieSeries<double>
-                {
-                    Values = new double[] { (double)c.Total },
-                    Name = c.CategoryName,
-                    Fill = new SKColor((int)colors[i % colors.Length])
+                .Select((c, i) => {
+                    // default fallback color if parsing fails
+                    var hex = string.IsNullOrWhiteSpace(c.Color) ? "#007AFF" : c.Color;
+                    int argb = 0xFF007AFF; // fallback ARGB
+                    try
+                    {
+                        var hexDigits = hex.TrimStart('#');
+                        var rgb = int.Parse(hexDigits, System.Globalization.NumberStyles.HexNumber, CultureInfo.InvariantCulture);
+                        argb = unchecked((int)(0xFF000000 | (uint)rgb));
+                    }
+                    catch { }
+
+                    return (ISeries)new PieSeries<double>
+                    {
+                        Values = new double[] { (double)c.Total },
+                        Name = c.CategoryName,
+                        Fill = new SKColor(argb)
+                    };
                 })
                 .ToArray();
 
