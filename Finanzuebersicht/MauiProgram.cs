@@ -44,6 +44,7 @@ public static class MauiProgram
 		builder.Services.AddTransient<RecurringTransactionsViewModel>();
 		builder.Services.AddTransient<RecurringTransactionDetailViewModel>();
 		builder.Services.AddTransient<SettingsViewModel>();
+		builder.Services.AddTransient<YearOverviewViewModel>();
 
 		// Pages
 		builder.Services.AddTransient<DashboardPage>();

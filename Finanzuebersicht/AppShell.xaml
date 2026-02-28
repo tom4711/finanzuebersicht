@@ -35,6 +35,12 @@
             Route="CategoriesPage" />
 
         <ShellContent
+            Title="Jahresansicht"
+            Icon="year.png"
+            ContentTemplate="{DataTemplate views:YearOverviewPage}"
+            Route="YearOverviewPage" />
+
+        <ShellContent
             Title="Einstellungen"
             Icon="settings.png"
             ContentTemplate="{DataTemplate views:SettingsPage}"

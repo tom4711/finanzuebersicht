@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage x:Class="Finanzuebersicht.Views.YearOverviewPage"
+             xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             Title="Jahresansicht">
+    <VerticalStackLayout Padding="10">
+        <Label Text="Jahresansicht (Prototyp)" FontSize="Large" />
+        <Label Text="{Binding Year}" />
+        <!-- Chart placeholders -->
+        <Frame HeightRequest="200" BackgroundColor="{StaticResource CardBackground}">
+            <Label Text="Pie Chart Placeholder" HorizontalOptions="Center" VerticalOptions="Center"/>
+        </Frame>
+        <Frame HeightRequest="200" BackgroundColor="{StaticResource CardBackground}">
+            <Label Text="Bar Chart Placeholder" HorizontalOptions="Center" VerticalOptions="Center"/>
+        </Frame>
+    </VerticalStackLayout>
+</ContentPage>
