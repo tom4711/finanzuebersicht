@@ -13,9 +13,16 @@ public partial class YearOverviewPage : ContentPage
         _vm = vm;
     }
 
-    protected override void OnAppearing()
+    protected override async void OnAppearing()
     {
         base.OnAppearing();
-        _ = _vm.LoadCommand.ExecuteAsync(null);
+        try
+        {
+            await _vm.LoadCommand.ExecuteAsync(null);
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"YearOverviewPage error: {ex}");
+        }
     }
 }

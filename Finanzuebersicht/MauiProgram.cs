@@ -55,6 +55,7 @@ public static class MauiProgram
 		builder.Services.AddTransient<CategoriesPage>();
 		builder.Services.AddTransient<CategoryDetailPage>();
 		builder.Services.AddTransient<SettingsPage>();
+		builder.Services.AddTransient<YearOverviewPage>();
 
 #if DEBUG
 		builder.Logging.AddDebug();

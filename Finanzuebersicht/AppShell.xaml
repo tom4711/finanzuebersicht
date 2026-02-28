@@ -36,7 +36,7 @@
 
         <ShellContent
             Title="Jahresansicht"
-            Icon="year.png"
+            Icon="year.svg"
             ContentTemplate="{DataTemplate views:YearOverviewPage}"
             Route="YearOverviewPage" />
 
