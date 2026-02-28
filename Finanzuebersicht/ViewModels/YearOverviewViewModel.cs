@@ -47,19 +47,8 @@ namespace Finanzuebersicht.ViewModels
         [ObservableProperty]
         private string? selectedCategoryId;
 
-        [ObservableProperty]
-        private IEnumerable<Axis> xAxes = new Axis[] { new Axis { Labels = GetMonthLabels().ToList() } };
-
-        [ObservableProperty]
-        private IEnumerable<Axis> yAxes = new Axis[] { new Axis() };
-
         public IAsyncRelayCommand LoadCommand { get; }
         public IRelayCommand<string?> SelectCategoryCommand { get; }
-
-        private static IEnumerable<string> GetMonthLabels()
-        {
-            return new[] { "Jan", "Feb", "Mär", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez" };
-        }
 
         private async Task LoadAsync()
         {
