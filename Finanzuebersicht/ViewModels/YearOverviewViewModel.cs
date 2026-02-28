@@ -36,6 +36,9 @@ namespace Finanzuebersicht.ViewModels
         private int year;
 
         [ObservableProperty]
+        private decimal yearTotal;
+
+        [ObservableProperty]
         private ISeries[] pieSeries = Array.Empty<ISeries>();
 
         [ObservableProperty]
@@ -57,16 +60,15 @@ namespace Finanzuebersicht.ViewModels
                 var summary = await _dataService.GetYearSummaryAsync(Year);
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
-                    if (summary?.ByCategory != null)
+                    if (summary != null)
                     {
-                        Categories = summary.ByCategory;
-                        UpdateSeries(summary, SelectedCategoryId);
+                        YearTotal = summary.Total;
+                        Categories = summary.ByCategory ?? new List<CategorySummary>();
                     }
                     else
                     {
+                        YearTotal = 0;
                         Categories = new List<CategorySummary>();
-                        PieSeries = Array.Empty<ISeries>();
-                        BarSeries = Array.Empty<ISeries>();
                     }
                 });
             }
@@ -74,9 +76,8 @@ namespace Finanzuebersicht.ViewModels
             {
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
+                    YearTotal = 0;
                     Categories = new List<CategorySummary>();
-                    PieSeries = Array.Empty<ISeries>();
-                    BarSeries = Array.Empty<ISeries>();
                 });
             }
         }
