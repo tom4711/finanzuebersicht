@@ -60,6 +60,11 @@ public static class MauiProgram
 		builder.Logging.AddDebug();
 #endif
 
-		return builder.Build();
+		var app = builder.Build();
+		
+		// Initialize service registry for converters
+		ServiceRegistry.Initialize(app.Services.GetRequiredService<IDataService>());
+		
+		return app;
 	}
 }
