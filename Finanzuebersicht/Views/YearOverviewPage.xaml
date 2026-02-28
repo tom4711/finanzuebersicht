@@ -18,14 +18,21 @@
             <CollectionView.ItemTemplate>
                 <DataTemplate>
                     <Border BackgroundColor="{StaticResource CardBackground}" StrokeShape="RoundRectangle 8" Padding="12" Margin="0,4">
-                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
-                            <BoxView Grid.Column="0" WidthRequest="16" HeightRequest="16" BackgroundColor="{Binding Color}" CornerRadius="2" VerticalOptions="Center" />
-                            <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
-                                <Label Text="{Binding CategoryName}" FontSize="13" FontAttributes="Bold" />
-                                <Label Text="{Binding Total, StringFormat='{0:N2}€'}" FontSize="11" TextColor="Gray" />
-                            </VerticalStackLayout>
-                            <Label Grid.Column="2" FontSize="12" FontAttributes="Bold" VerticalOptions="Center" TextColor="Gray"
-                                   Text="{Binding PercentageDisplay}" />
+                        <Grid ColumnDefinitions="20,30,*,Auto,Auto" ColumnSpacing="10">
+                            <!-- Farbbox -->
+                            <BoxView Grid.Column="0" WidthRequest="16" HeightRequest="16" BackgroundColor="{Binding Color}" CornerRadius="3" VerticalOptions="Center" />
+                            
+                            <!-- Icon -->
+                            <Label Grid.Column="1" Text="{Binding Icon}" FontSize="14" VerticalOptions="Center" HorizontalOptions="Center" />
+                            
+                            <!-- Kategoriename -->
+                            <Label Grid.Column="2" Text="{Binding CategoryName}" FontSize="13" FontAttributes="Bold" VerticalOptions="Center" />
+                            
+                            <!-- Betrag -->
+                            <Label Grid.Column="3" Text="{Binding Total, StringFormat='{0:N2}€'}" FontSize="12" VerticalOptions="Center" TextColor="Gray" />
+                            
+                            <!-- Prozent -->
+                            <Label Grid.Column="4" Text="{Binding PercentageDisplay}" FontSize="12" FontAttributes="Bold" VerticalOptions="Center" TextColor="Gray" />
                         </Grid>
                     </Border>
                 </DataTemplate>
