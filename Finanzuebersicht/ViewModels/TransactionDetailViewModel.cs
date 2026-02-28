@@ -79,15 +79,22 @@ public partial class TransactionDetailViewModel : ObservableObject
         if (string.IsNullOrWhiteSpace(Titel)) return;
         if (SelectedKategorie == null) return;
 
-        var transaction = _existingTransaction ?? new Transaction();
-        transaction.Betrag = betrag;
-        transaction.Titel = Titel;
-        transaction.Datum = Datum;
-        transaction.KategorieId = SelectedKategorie.Id;
-        transaction.Typ = Typ;
+        try
+        {
+            var transaction = _existingTransaction ?? new Transaction();
+            transaction.Betrag = betrag;
+            transaction.Titel = Titel;
+            transaction.Datum = Datum;
+            transaction.KategorieId = SelectedKategorie.Id;
+            transaction.Typ = Typ;
 
-        await _dataService.SaveTransactionAsync(transaction);
-        await Shell.Current.GoToAsync("..");
+            await _dataService.SaveTransactionAsync(transaction);
+            await Shell.Current.GoToAsync("..");
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error saving transaction: {ex.Message}");
+        }
     }
 
     private async Task SetKategorieAsync(string kategorieId)
