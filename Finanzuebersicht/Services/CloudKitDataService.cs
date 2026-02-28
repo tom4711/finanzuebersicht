@@ -1,3 +1,4 @@
+#if IOS || MACCATALYST
 using CloudKit;
 using Foundation;
 using Finanzuebersicht.Models;
@@ -249,3 +250,4 @@ public class CloudKitDataService : IDataService
 
     #endregion
 }
+#endif
