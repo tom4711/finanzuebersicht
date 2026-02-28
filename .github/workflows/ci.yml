@@ -55,7 +55,7 @@ jobs:
             -p:ValidateXcodeVersion=false \
             -p:CodesignKey="" \
             -p:CodesignProvision="" \
-            -p:MtouchLink=None \
+            -p:MtouchLink=SdkOnly \
             -p:EnableILLink=false
 
   build-windows:
