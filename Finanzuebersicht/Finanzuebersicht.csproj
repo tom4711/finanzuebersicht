@@ -36,7 +36,6 @@
 		<!-- We rely on MtouchLink=None to disable ILLink instead -->
 		
 		<!-- Disable ILLink completely to avoid MT2301/NETSDK1144 crash -->
-		<PublishTrimmed>false</PublishTrimmed>
 		<MtouchLink>None</MtouchLink>
 	</PropertyGroup>
 
