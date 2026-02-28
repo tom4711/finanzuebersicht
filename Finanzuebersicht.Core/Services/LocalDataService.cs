@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Linq;
 using Finanzuebersicht.Models;
 
 namespace Finanzuebersicht.Services;
@@ -89,6 +90,85 @@ public class LocalDataService : IDataService
         var items = await LoadAsync<Transaction>(TransactionsFile);
         items.RemoveAll(t => t.Id == id);
         await SaveAsync(TransactionsFile, items);
+    }
+
+    // Aggregation: month summary
+    public async Task<MonthSummary> GetMonthSummaryAsync(int year, int month)
+    {
+        var from = new DateTime(year, month, 1);
+        var to = from.AddMonths(1).AddTicks(-1);
+        var items = await GetTransactionsAsync(from, to);
+        var expenditure = items.Where(t => t.Typ == TransactionType.Ausgabe).ToList();
+
+        var categories = await GetCategoriesAsync();
+
+        var monthSummary = new MonthSummary
+        {
+            Year = year,
+            Month = month,
+            Total = expenditure.Sum(t => t.Betrag),
+            ByCategory = expenditure
+                .GroupBy(t => t.KategorieId)
+                .Select(g => new CategorySummary
+                {
+                    CategoryId = g.Key,
+                    CategoryName = categories.FirstOrDefault(c => c.Id == g.Key)?.Name ?? string.Empty,
+                    Total = g.Sum(t => t.Betrag)
+                })
+                .ToList()
+        };
+
+        return monthSummary;
+    }
+
+    // Aggregation: year summary (12 months + by category)
+    public async Task<YearSummary> GetYearSummaryAsync(int year)
+    {
+        var from = new DateTime(year, 1, 1);
+        var to = new DateTime(year, 12, 31, 23, 59, 59);
+        var items = await GetTransactionsAsync(from, to);
+        var expenditure = items.Where(t => t.Typ == TransactionType.Ausgabe).ToList();
+
+        var categories = await GetCategoriesAsync();
+
+        var yearSummary = new YearSummary
+        {
+            Year = year,
+            Total = expenditure.Sum(t => t.Betrag)
+        };
+
+        for (int m = 1; m <= 12; m++)
+        {
+            var monthItems = expenditure.Where(t => t.Datum.Month == m).ToList();
+            var ms = new MonthSummary
+            {
+                Year = year,
+                Month = m,
+                Total = monthItems.Sum(t => t.Betrag),
+                ByCategory = monthItems
+                    .GroupBy(t => t.KategorieId)
+                    .Select(g => new CategorySummary
+                    {
+                        CategoryId = g.Key,
+                        CategoryName = categories.FirstOrDefault(c => c.Id == g.Key)?.Name ?? string.Empty,
+                        Total = g.Sum(t => t.Betrag)
+                    })
+                    .ToList()
+            };
+            yearSummary.Months.Add(ms);
+        }
+
+        yearSummary.ByCategory = expenditure
+            .GroupBy(t => t.KategorieId)
+            .Select(g => new CategorySummary
+            {
+                CategoryId = g.Key,
+                CategoryName = categories.FirstOrDefault(c => c.Id == g.Key)?.Name ?? string.Empty,
+                Total = g.Sum(t => t.Betrag)
+            })
+            .ToList();
+
+        return yearSummary;
     }
 
     #endregion

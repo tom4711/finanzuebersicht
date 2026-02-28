@@ -21,4 +21,8 @@ public interface IDataService
 
     // Fällige wiederkehrende Zahlungen als Transactions erzeugen
     Task GeneratePendingRecurringTransactionsAsync();
+
+    // Aggregation helpers for year/month/category summaries
+    Task<YearSummary> GetYearSummaryAsync(int year);
+    Task<MonthSummary> GetMonthSummaryAsync(int year, int month);
 }
