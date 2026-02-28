@@ -30,6 +30,10 @@
 
 		<!-- Xcode 26.3 installiert, SDK erwartet 26.2 – Prüfung deaktiviert bis SDK-Update -->
 		<ValidateXcodeVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) != 'windows'">false</ValidateXcodeVersion>
+
+		<!-- Suppress MT4162: .NET 10 MAUI SDK bindings reference MacCatalyst 26.0 APIs
+		     which are not yet in the Xcode version used by CI runners -->
+		<MtouchExtraArgs Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst' Or $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">$(MtouchExtraArgs) --nowarn:MT4162</MtouchExtraArgs>
 	</PropertyGroup>
 
 	<ItemGroup>
