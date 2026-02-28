@@ -54,7 +54,9 @@ jobs:
             -c Debug \
             -p:ValidateXcodeVersion=false \
             -p:CodesignKey="" \
-            -p:CodesignProvision=""
+            -p:CodesignProvision="" \
+            -p:MtouchLink=None \
+            -p:EnableILLink=false
 
   build-windows:
     name: Build (Windows)

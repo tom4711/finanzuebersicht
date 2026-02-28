@@ -37,6 +37,9 @@
 		
 		<!-- Disable ILLink completely to avoid MT2301/NETSDK1144 crash -->
 		<MtouchLink>None</MtouchLink>
+		<UserDialogs>false</UserDialogs>
+		<!-- Ensure UseInterpreter is true if link is None, though usually implied for Debug -->
+		<UseInterpreter Condition="'$(Configuration)' == 'Debug'">true</UseInterpreter>
 	</PropertyGroup>
 
 	<ItemGroup>
