@@ -3,18 +3,42 @@
              xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.Maui;assembly=LiveChartsCore.SkiaSharpView.Maui"
+             xmlns:viewmodels="clr-namespace:Finanzuebersicht.ViewModels"
              Title="Jahresansicht">
     <VerticalStackLayout Padding="10">
         <Label Text="Jahresansicht (Prototyp)" FontSize="Large" />
         <Label Text="{Binding Year}" />
 
-        <Frame HeightRequest="220" BackgroundColor="{StaticResource CardBackground}">
-            <lvc:PieChart Series="{Binding PieSeries}" />
-        </Frame>
+        <Grid ColumnDefinitions="*,2*" RowDefinitions="Auto">
+            <CollectionView ItemsSource="{Binding Categories}" SelectionMode="Single">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Frame Padding="6" Margin="4" BackgroundColor="{StaticResource CardBackground}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <BoxView WidthRequest="16" HeightRequest="16" BackgroundColor="LightGray" />
+                                <Label Grid.Column="1" Text="{Binding CategoryName}" />
+                                <Button Grid.Column="2" Text="{Binding Total}" Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:YearOverviewViewModel}}, Path=SelectCategoryCommand}" CommandParameter="{Binding CategoryId}" />
+                            </Grid>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
 
-        <Frame HeightRequest="220" BackgroundColor="{StaticResource CardBackground}">
-            <lvc:CartesianChart Series="{Binding BarSeries}" />
-        </Frame>
+            <Grid Grid.Column="1">
+                <Frame HeightRequest="220" BackgroundColor="{StaticResource CardBackground}">
+                    <lvc:PieChart Series="{Binding PieSeries}" />
+                </Frame>
+
+                <Frame HeightRequest="220" BackgroundColor="{StaticResource CardBackground}" VerticalOptions="End">
+                    <lvc:CartesianChart Series="{Binding BarSeries}" />
+                </Frame>
+            </Grid>
+        </Grid>
 
     </VerticalStackLayout>
 </ContentPage>
