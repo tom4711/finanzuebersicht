@@ -9,6 +9,7 @@ namespace Finanzuebersicht.Models
         public decimal Total { get; set; }
         // Hex color string for UI/legend (e.g. "#FF5733"). Optional — LocalDataService fills it when available.
         public string? Color { get; set; }
+        public string Icon { get; set; } = "📁";
     }
 
     public class MonthSummary

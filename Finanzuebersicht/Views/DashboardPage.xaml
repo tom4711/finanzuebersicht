@@ -84,24 +84,20 @@
                 <CollectionView ItemsSource="{Binding KategorieAusgaben}"
                                 SelectionMode="None">
                     <CollectionView.ItemTemplate>
-                        <DataTemplate x:DataType="models:KategorieZusammenfassung">
+                        <DataTemplate x:DataType="models:CategorySummary">
                             <VerticalStackLayout Padding="0,6" Spacing="4">
                                 <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="10">
                                     <Label Grid.Column="0"
-                                           Text="{Binding Kategorie.Icon}"
+                                           Text="{Binding Icon}"
                                            FontSize="16" VerticalTextAlignment="Center" />
                                     <Label Grid.Column="1"
-                                           Text="{Binding Kategorie.Name}"
+                                           Text="{Binding CategoryName}"
                                            FontSize="15" VerticalTextAlignment="Center" />
                                     <Label Grid.Column="2"
-                                           Text="{Binding Summe, Converter={StaticResource Currency}}"
+                                           Text="{Binding Total, Converter={StaticResource Currency}}"
                                            FontSize="15" FontAttributes="Bold"
                                            TextColor="#FF3B30" VerticalTextAlignment="Center" />
                                 </Grid>
-                                <!-- Fortschrittsbalken -->
-                                <ProgressBar Progress="{Binding Prozent, Converter={StaticResource ProzentToWidth}}"
-                                             ProgressColor="{Binding Kategorie.Color}"
-                                             HeightRequest="6" />
                             </VerticalStackLayout>
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
@@ -115,23 +111,20 @@
                 <CollectionView ItemsSource="{Binding KategorieEinnahmen}"
                                 SelectionMode="None">
                     <CollectionView.ItemTemplate>
-                        <DataTemplate x:DataType="models:KategorieZusammenfassung">
+                        <DataTemplate x:DataType="models:CategorySummary">
                             <VerticalStackLayout Padding="0,6" Spacing="4">
                                 <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="10">
                                     <Label Grid.Column="0"
-                                           Text="{Binding Kategorie.Icon}"
+                                           Text="{Binding Icon}"
                                            FontSize="16" VerticalTextAlignment="Center" />
                                     <Label Grid.Column="1"
-                                           Text="{Binding Kategorie.Name}"
+                                           Text="{Binding CategoryName}"
                                            FontSize="15" VerticalTextAlignment="Center" />
                                     <Label Grid.Column="2"
-                                           Text="{Binding Summe, Converter={StaticResource Currency}}"
+                                           Text="{Binding Total, Converter={StaticResource Currency}}"
                                            FontSize="15" FontAttributes="Bold"
                                            TextColor="#34C759" VerticalTextAlignment="Center" />
                                 </Grid>
-                                <ProgressBar Progress="{Binding Prozent, Converter={StaticResource ProzentToWidth}}"
-                                             ProgressColor="{Binding Kategorie.Color}"
-                                             HeightRequest="6" />
                             </VerticalStackLayout>
                         </DataTemplate>
                     </CollectionView.ItemTemplate>

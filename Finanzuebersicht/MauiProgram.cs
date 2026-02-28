@@ -32,7 +32,7 @@ public static class MauiProgram
 		builder.Services.AddSingleton<SettingsService>();
 		builder.Services.AddSingleton<IDataService>(sp =>
 			new LocalDataService(sp.GetRequiredService<SettingsService>()));
-		// builder.Services.AddSingleton<IDataService, CloudKitDataService>();
+		
 		builder.Services.AddSingleton<InitializationService>();
 
 		// ViewModels

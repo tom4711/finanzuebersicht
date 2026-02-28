@@ -8,6 +8,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using LiveChartsCore;
 using LiveChartsCore.SkiaSharpView;
+using LiveChartsCore.SkiaSharpView.Painting;
 using SkiaSharp;
 using Finanzuebersicht.Services;
 using Finanzuebersicht.Models;
@@ -51,36 +52,64 @@ namespace Finanzuebersicht.ViewModels
 
         private async Task LoadAsync()
         {
-            var summary = await _dataService.GetYearSummaryAsync(Year);
-            Categories = summary.ByCategory;
-            UpdateSeries(summary, SelectedCategoryId);
+            try
+            {
+                var summary = await _dataService.GetYearSummaryAsync(Year);
+                MainThread.BeginInvokeOnMainThread(() =>
+                {
+                    if (summary?.ByCategory != null)
+                    {
+                        Categories = summary.ByCategory;
+                        UpdateSeries(summary, SelectedCategoryId);
+                    }
+                    else
+                    {
+                        Categories = new List<CategorySummary>();
+                        PieSeries = Array.Empty<ISeries>();
+                        BarSeries = Array.Empty<ISeries>();
+                    }
+                });
+            }
+            catch
+            {
+                MainThread.BeginInvokeOnMainThread(() =>
+                {
+                    Categories = new List<CategorySummary>();
+                    PieSeries = Array.Empty<ISeries>();
+                    BarSeries = Array.Empty<ISeries>();
+                });
+            }
         }
 
         private void SelectCategory(string? categoryId)
         {
             SelectedCategoryId = categoryId;
-            // reload year summary and update series filtered by category
             var summaryTask = _dataService.GetYearSummaryAsync(Year);
             summaryTask.ContinueWith(t =>
             {
-                if (t.IsCompletedSuccessfully)
+                if (t.IsCompletedSuccessfully && t.Result != null)
                     UpdateSeries(t.Result, categoryId);
             });
         }
 
         private void UpdateSeries(YearSummary summary, string? categoryId)
         {
+            if (summary?.ByCategory == null || summary.ByCategory.Count == 0)
+            {
+                PieSeries = Array.Empty<ISeries>();
+                BarSeries = Array.Empty<ISeries>();
+                return;
+            }
+
             // Pie: always show by category. Use category color when available.
             var pie = summary.ByCategory
                 .Select((c, i) => {
-                    // default fallback color if parsing fails
                     var hex = string.IsNullOrWhiteSpace(c.Color) ? "#007AFF" : c.Color;
-                    int argb = 0xFF007AFF; // fallback ARGB
+                    uint argb = 0xFF007AFF;
                     try
                     {
                         var hexDigits = hex.TrimStart('#');
-                        var rgb = int.Parse(hexDigits, System.Globalization.NumberStyles.HexNumber, CultureInfo.InvariantCulture);
-                        argb = unchecked((int)(0xFF000000 | (uint)rgb));
+                        argb = 0xFF000000 | uint.Parse(hexDigits, System.Globalization.NumberStyles.HexNumber, CultureInfo.InvariantCulture);
                     }
                     catch { }
 
@@ -88,7 +117,7 @@ namespace Finanzuebersicht.ViewModels
                     {
                         Values = new double[] { (double)c.Total },
                         Name = c.CategoryName,
-                        Fill = new SKColor(argb)
+                        Fill = new SolidColorPaint((uint)argb)
                     };
                 })
                 .ToArray();
@@ -98,15 +127,15 @@ namespace Finanzuebersicht.ViewModels
             // Bar: if category selected, show months for that category; otherwise show monthly totals
             if (string.IsNullOrEmpty(categoryId))
             {
-                var months = summary.Months.OrderBy(m => m.Month).Select(m => (double)m.Total).ToArray();
-                BarSeries = new ISeries[] { new ColumnSeries<double> { Values = months } };
+                var months = summary.Months?.OrderBy(m => m.Month).Select(m => (double)m.Total).ToArray() ?? Array.Empty<double>();
+                BarSeries = months.Length > 0 ? new ISeries[] { new ColumnSeries<double> { Values = months } } : Array.Empty<ISeries>();
             }
             else
             {
-                var months = summary.Months.OrderBy(m => m.Month)
-                    .Select(m => (double)(m.ByCategory.FirstOrDefault(b => b.CategoryId == categoryId)?.Total ?? 0m))
-                    .ToArray();
-                BarSeries = new ISeries[] { new ColumnSeries<double> { Values = months } };
+                var months = summary.Months?.OrderBy(m => m.Month)
+                    .Select(m => (double)(m.ByCategory?.FirstOrDefault(b => b.CategoryId == categoryId)?.Total ?? 0m))
+                    .ToArray() ?? Array.Empty<double>();
+                BarSeries = months.Length > 0 ? new ISeries[] { new ColumnSeries<double> { Values = months } } : Array.Empty<ISeries>();
             }
         }
     }

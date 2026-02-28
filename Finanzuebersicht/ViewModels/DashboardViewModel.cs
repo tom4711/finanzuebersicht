@@ -23,10 +23,10 @@ public partial class DashboardViewModel : ObservableObject
     private string monatAnzeige = string.Empty;
 
     [ObservableProperty]
-    private ObservableCollection<KategorieZusammenfassung> kategorieAusgaben = [];
+    private ObservableCollection<CategorySummary> kategorieAusgaben = [];
 
     [ObservableProperty]
-    private ObservableCollection<KategorieZusammenfassung> kategorieEinnahmen = [];
+    private ObservableCollection<CategorySummary> kategorieEinnahmen = [];
 
     [ObservableProperty]
     private bool isLoading;
@@ -97,31 +97,35 @@ public partial class DashboardViewModel : ObservableObject
             var ausgabenGruppiert = transaktionen
                 .Where(t => t.Typ == TransactionType.Ausgabe)
                 .GroupBy(t => t.KategorieId)
-                .Select(g => new KategorieZusammenfassung
+                .Select(g => new CategorySummary
                 {
-                    Kategorie = _alleKategorien.FirstOrDefault(k => k.Id == g.Key) ?? new Category { Name = "Unbekannt" },
-                    Summe = g.Sum(t => t.Betrag),
-                    Prozent = GesamtAusgaben > 0 ? (double)(g.Sum(t => t.Betrag) / GesamtAusgaben * 100) : 0
+                    CategoryId = g.Key,
+                    CategoryName = _alleKategorien.FirstOrDefault(k => k.Id == g.Key)?.Name ?? "Unbekannt",
+                    Total = g.Sum(t => t.Betrag),
+                    Color = _alleKategorien.FirstOrDefault(k => k.Id == g.Key)?.Color ?? "#007AFF",
+                    Icon = _alleKategorien.FirstOrDefault(k => k.Id == g.Key)?.Icon ?? "📁"
                 })
-                .OrderByDescending(k => k.Summe)
+                .OrderByDescending(k => k.Total)
                 .ToList();
 
-            KategorieAusgaben = new ObservableCollection<KategorieZusammenfassung>(ausgabenGruppiert);
+            KategorieAusgaben = new ObservableCollection<CategorySummary>(ausgabenGruppiert); // Property sollte CategorySummary verwenden
 
             // Kategorie-Aufschlüsselung Einnahmen
             var einnahmenGruppiert = transaktionen
                 .Where(t => t.Typ == TransactionType.Einnahme)
                 .GroupBy(t => t.KategorieId)
-                .Select(g => new KategorieZusammenfassung
+                .Select(g => new CategorySummary
                 {
-                    Kategorie = _alleKategorien.FirstOrDefault(k => k.Id == g.Key) ?? new Category { Name = "Unbekannt" },
-                    Summe = g.Sum(t => t.Betrag),
-                    Prozent = GesamtEinnahmen > 0 ? (double)(g.Sum(t => t.Betrag) / GesamtEinnahmen * 100) : 0
+                    CategoryId = g.Key,
+                    CategoryName = _alleKategorien.FirstOrDefault(k => k.Id == g.Key)?.Name ?? "Unbekannt",
+                    Total = g.Sum(t => t.Betrag),
+                    Color = _alleKategorien.FirstOrDefault(k => k.Id == g.Key)?.Color ?? "#34C759",
+                    Icon = _alleKategorien.FirstOrDefault(k => k.Id == g.Key)?.Icon ?? "📁"
                 })
-                .OrderByDescending(k => k.Summe)
+                .OrderByDescending(k => k.Total)
                 .ToList();
 
-            KategorieEinnahmen = new ObservableCollection<KategorieZusammenfassung>(einnahmenGruppiert);
+            KategorieEinnahmen = new ObservableCollection<CategorySummary>(einnahmenGruppiert);
         }
         finally
         {
