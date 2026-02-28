@@ -35,8 +35,9 @@ namespace Finanzuebersicht.Tests.Services
                 new Transaction { Betrag = 25m, Datum = new DateTime(2025,1,20), KategorieId = "c1", Typ = TransactionType.Ausgabe }
             };
 
-            await File.WriteAllTextAsync(Path.Combine(_tempDir, "categories.json"), JsonSerializer.Serialize(categories, new JsonSerializerOptions { WriteIndented = true }));
-            await File.WriteAllTextAsync(Path.Combine(_tempDir, "transactions.json"), JsonSerializer.Serialize(transactions, new JsonSerializerOptions { WriteIndented = true }));
+            var jsonOptions = new JsonSerializerOptions { WriteIndented = true, PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+            await File.WriteAllTextAsync(Path.Combine(_tempDir, "categories.json"), JsonSerializer.Serialize(categories, jsonOptions));
+            await File.WriteAllTextAsync(Path.Combine(_tempDir, "transactions.json"), JsonSerializer.Serialize(transactions, jsonOptions));
 
             // Use SettingsService to point LocalDataService to temp dir
             var settings = new SettingsService();
