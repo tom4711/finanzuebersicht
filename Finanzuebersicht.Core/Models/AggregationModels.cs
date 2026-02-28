@@ -10,6 +10,11 @@ namespace Finanzuebersicht.Models
         // Hex color string for UI/legend (e.g. "#FF5733"). Optional — LocalDataService fills it when available.
         public string? Color { get; set; }
         public string Icon { get; set; } = "📁";
+        
+        // For UI display: calculated percentage (0-100)
+        public decimal PercentageAmount { get; set; }
+        
+        public string PercentageDisplay => $"{PercentageAmount:F1}%";
     }
 
     public class MonthSummary

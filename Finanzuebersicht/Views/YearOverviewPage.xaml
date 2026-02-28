@@ -24,7 +24,8 @@
                                 <Label Text="{Binding CategoryName}" FontSize="13" FontAttributes="Bold" />
                                 <Label Text="{Binding Total, StringFormat='{0:N2}€'}" FontSize="11" TextColor="Gray" />
                             </VerticalStackLayout>
-                            <Label Grid.Column="2" Text="{Binding Total, StringFormat='{0:P}'}" FontSize="12" FontAttributes="Bold" VerticalOptions="Center" TextColor="Gray" />
+                            <Label Grid.Column="2" FontSize="12" FontAttributes="Bold" VerticalOptions="Center" TextColor="Gray"
+                                   Text="{Binding PercentageDisplay}" />
                         </Grid>
                     </Border>
                 </DataTemplate>

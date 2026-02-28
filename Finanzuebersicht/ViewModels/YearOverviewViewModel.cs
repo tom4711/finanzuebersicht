@@ -63,6 +63,16 @@ namespace Finanzuebersicht.ViewModels
                     if (summary != null)
                     {
                         YearTotal = summary.Total;
+                        
+                        // Calculate percentages for each category
+                        if (summary.ByCategory != null && summary.Total > 0)
+                        {
+                            foreach (var cat in summary.ByCategory)
+                            {
+                                cat.PercentageAmount = (cat.Total / summary.Total) * 100;
+                            }
+                        }
+                        
                         Categories = summary.ByCategory ?? new List<CategorySummary>();
                     }
                     else
