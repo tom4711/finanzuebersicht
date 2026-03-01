@@ -4,7 +4,7 @@
              xmlns:vm="clr-namespace:Finanzuebersicht.ViewModels"
              x:Class="Finanzuebersicht.Views.CategoryDetailPage"
              x:DataType="vm:CategoryDetailViewModel"
-             Title="Kategorie">
+             Title="{Binding PageTitle}">
 
     <ScrollView Padding="16">
         <VerticalStackLayout Spacing="20">
@@ -21,8 +21,7 @@
                 <Label Text="Icon" FontSize="13" TextColor="Gray" />
                 <CollectionView ItemsSource="{Binding VerfuegbareIcons}"
                                 SelectionMode="Single"
-                                SelectedItem="{Binding Icon}"
-                                HeightRequest="120">
+                                SelectedItem="{Binding Icon}">
                     <CollectionView.ItemsLayout>
                         <GridItemsLayout Orientation="Vertical" Span="7"
                                          HorizontalItemSpacing="8" VerticalItemSpacing="8" />
@@ -46,8 +45,7 @@
                 <Label Text="Farbe" FontSize="13" TextColor="Gray" />
                 <CollectionView ItemsSource="{Binding VerfuegbareFarben}"
                                 SelectionMode="Single"
-                                SelectedItem="{Binding Color}"
-                                HeightRequest="60">
+                                SelectedItem="{Binding Color}">
                     <CollectionView.ItemsLayout>
                         <GridItemsLayout Orientation="Vertical" Span="5"
                                          HorizontalItemSpacing="10" VerticalItemSpacing="10" />
