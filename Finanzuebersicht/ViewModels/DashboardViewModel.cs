@@ -179,7 +179,11 @@ public partial class DashboardViewModel : ObservableObject
                 foreach (var cat in summary.ByCategory)
                     cat.PercentageAmount = (cat.Total / summary.Total) * 100;
             }
-            JahrKategorien = new ObservableCollection<CategorySummary>(summary.ByCategory ?? []);
+            // Kategorien ohne gültigen Namen (fehlende/alte kategorieId) nicht im Diagramm anzeigen
+            var jahrKatGefiltert = (summary.ByCategory ?? [])
+                .Where(c => !string.IsNullOrWhiteSpace(c.CategoryName))
+                .ToList();
+            JahrKategorien = new ObservableCollection<CategorySummary>(jahrKatGefiltert);
         }
         else
         {
