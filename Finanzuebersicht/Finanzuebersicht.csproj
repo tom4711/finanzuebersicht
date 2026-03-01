@@ -37,6 +37,11 @@
 		<!-- Debug: Mit Apple Development Zertifikat signieren -->
 		<CodesignKey Condition="'$(Configuration)' == 'Debug' AND $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">Apple Development</CodesignKey>
 
+		<!-- iOS: Entitlements und Signing -->
+		<CodesignEntitlements Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">Platforms/iOS/Entitlements.plist</CodesignEntitlements>
+		<CodesignKey Condition="'$(Configuration)' == 'Debug' AND $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">Apple Development</CodesignKey>
+		<CodesignProvision Condition="'$(Configuration)' == 'Debug' AND $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">Automatic</CodesignProvision>
+
 		<!-- Suppress MT4162 warning from mtouch (but not via ILLink) -->
 		<!-- Note: passing -nowarn:MT4162 directly to MtouchExtraArgs might be picked up by ILLink and fail -->
 		<!-- We rely on MtouchLink=None to disable ILLink instead -->
