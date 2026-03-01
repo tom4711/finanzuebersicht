@@ -50,11 +50,7 @@ public partial class SettingsViewModel : ObservableObject
         // Datenpfad laden
         DataPath = _settings.Get("DataPath", "");
         if (string.IsNullOrWhiteSpace(DataPath))
-        {
-            DataPath = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                "Finanzuebersicht");
-        }
+            DataPath = GetDefaultDataDir();
     }
 
     partial void OnSelectedThemeIndexChanged(int value)
@@ -86,6 +82,20 @@ public partial class SettingsViewModel : ObservableObject
             if (result.IsSuccessful && result.Folder != null)
             {
                 var newPath = result.Folder.Path;
+
+                // Temp-Pfade ablehnen – FolderPicker gibt auf macOS manchmal einen
+                // Sandbox-Temp-Pfad zurück (/var/folders/.../T/GUID) statt dem echten Pfad.
+                var tempPath = Path.GetTempPath().TrimEnd(Path.DirectorySeparatorChar);
+                if (newPath.StartsWith(tempPath, StringComparison.OrdinalIgnoreCase) ||
+                    newPath.Contains(Path.Combine("var", "folders"), StringComparison.OrdinalIgnoreCase))
+                {
+                    await Shell.Current.DisplayAlert(
+                        "Ungültiger Ordner",
+                        "Der gewählte Ordner liegt in einem temporären Verzeichnis und kann nicht als Datenspeicherort verwendet werden.\n\nBitte wähle einen Ordner in deinem Home-Verzeichnis (z. B. iCloud Drive oder Dokumente).",
+                        "OK");
+                    return;
+                }
+
                 _settings.Set("DataPath", newPath);
                 DataPath = newPath;
 
@@ -105,14 +115,25 @@ public partial class SettingsViewModel : ObservableObject
     private async Task ResetDataPath()
     {
         _settings.Set("DataPath", "");
-        DataPath = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-            "Finanzuebersicht");
+        DataPath = GetDefaultDataDir();
 
         await Shell.Current.DisplayAlert(
             "Speicherort zurückgesetzt",
             "Daten werden ab dem nächsten Neustart im Standard-Verzeichnis gespeichert.",
             "OK");
+    }
+
+    private static string GetDefaultDataDir()
+    {
+        if (OperatingSystem.IsMacOS() || OperatingSystem.IsMacCatalyst())
+        {
+            return Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+                "Library", "Application Support", "Finanzuebersicht");
+        }
+        return Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "Finanzuebersicht");
     }
 
     public static void ApplyTheme(string themeKey)

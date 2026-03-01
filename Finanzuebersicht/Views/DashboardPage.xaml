@@ -14,12 +14,44 @@
         <conv:BilanzDisplayConverter x:Key="BilanzDisplay" />
         <conv:ProzentToWidthConverter x:Key="ProzentToWidth" />
         <conv:CountToBoolConverter x:Key="CountToBool" />
+        <conv:ToggleActiveColorConverter x:Key="ToggleActiveColor" />
+        <conv:ToggleActiveTextColorConverter x:Key="ToggleActiveText" />
     </ContentPage.Resources>
 
     <RefreshView Command="{Binding LoadDashboardCommand}"
                  IsRefreshing="{Binding IsLoading}">
         <ScrollView>
             <VerticalStackLayout Spacing="16" Padding="16">
+
+                <!-- Ansicht-Umschalter -->
+                <Border StrokeShape="RoundRectangle 10" Stroke="#E5E5EA"
+                        BackgroundColor="#F2F2F7" Padding="2">
+                    <Grid ColumnDefinitions="*, *" ColumnSpacing="2">
+                        <Border Grid.Column="0" StrokeShape="RoundRectangle 8" Stroke="Transparent"
+                                BackgroundColor="{Binding IsMonthView, Converter={StaticResource ToggleActiveColor}}"
+                                Padding="8,6">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding ZeigeMonateCommand}" />
+                            </Border.GestureRecognizers>
+                            <Label Text="Monat" HorizontalTextAlignment="Center"
+                                   FontAttributes="Bold"
+                                   TextColor="{Binding IsMonthView, Converter={StaticResource ToggleActiveText}}" />
+                        </Border>
+                        <Border Grid.Column="1" StrokeShape="RoundRectangle 8" Stroke="Transparent"
+                                BackgroundColor="{Binding IsYearView, Converter={StaticResource ToggleActiveColor}}"
+                                Padding="8,6">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding ZeigeJahrCommand}" />
+                            </Border.GestureRecognizers>
+                            <Label Text="Jahr" HorizontalTextAlignment="Center"
+                                   FontAttributes="Bold"
+                                   TextColor="{Binding IsYearView, Converter={StaticResource ToggleActiveText}}" />
+                        </Border>
+                    </Grid>
+                </Border>
+
+                <!-- Monatsansicht -->
+                <VerticalStackLayout Spacing="16" IsVisible="{Binding IsMonthView}">
 
                 <!-- Monatsnavigation -->
                 <Grid ColumnDefinitions="Auto, *, Auto">
@@ -81,27 +113,29 @@
                        Margin="0,8,0,0"
                        IsVisible="{Binding KategorieAusgaben.Count, Converter={StaticResource CountToBool}}" />
 
+                <!-- Donut-Diagramm Monatsausgaben -->
+                <GraphicsView x:Name="MonthDonutChart"
+                              HeightRequest="200"
+                              IsVisible="{Binding KategorieAusgaben.Count, Converter={StaticResource CountToBool}}"
+                              Margin="0,4,0,0" />
+
                 <CollectionView ItemsSource="{Binding KategorieAusgaben}"
                                 SelectionMode="None">
                     <CollectionView.ItemTemplate>
-                        <DataTemplate x:DataType="models:KategorieZusammenfassung">
+                        <DataTemplate x:DataType="models:CategorySummary">
                             <VerticalStackLayout Padding="0,6" Spacing="4">
                                 <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="10">
                                     <Label Grid.Column="0"
-                                           Text="{Binding Kategorie.Icon}"
+                                           Text="{Binding Icon}"
                                            FontSize="16" VerticalTextAlignment="Center" />
                                     <Label Grid.Column="1"
-                                           Text="{Binding Kategorie.Name}"
+                                           Text="{Binding CategoryName}"
                                            FontSize="15" VerticalTextAlignment="Center" />
                                     <Label Grid.Column="2"
-                                           Text="{Binding Summe, Converter={StaticResource Currency}}"
+                                           Text="{Binding Total, Converter={StaticResource Currency}}"
                                            FontSize="15" FontAttributes="Bold"
                                            TextColor="#FF3B30" VerticalTextAlignment="Center" />
                                 </Grid>
-                                <!-- Fortschrittsbalken -->
-                                <ProgressBar Progress="{Binding Prozent, Converter={StaticResource ProzentToWidth}}"
-                                             ProgressColor="{Binding Kategorie.Color}"
-                                             HeightRequest="6" />
                             </VerticalStackLayout>
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
@@ -115,27 +149,103 @@
                 <CollectionView ItemsSource="{Binding KategorieEinnahmen}"
                                 SelectionMode="None">
                     <CollectionView.ItemTemplate>
-                        <DataTemplate x:DataType="models:KategorieZusammenfassung">
+                        <DataTemplate x:DataType="models:CategorySummary">
                             <VerticalStackLayout Padding="0,6" Spacing="4">
                                 <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="10">
                                     <Label Grid.Column="0"
-                                           Text="{Binding Kategorie.Icon}"
+                                           Text="{Binding Icon}"
                                            FontSize="16" VerticalTextAlignment="Center" />
                                     <Label Grid.Column="1"
-                                           Text="{Binding Kategorie.Name}"
+                                           Text="{Binding CategoryName}"
                                            FontSize="15" VerticalTextAlignment="Center" />
                                     <Label Grid.Column="2"
-                                           Text="{Binding Summe, Converter={StaticResource Currency}}"
+                                           Text="{Binding Total, Converter={StaticResource Currency}}"
                                            FontSize="15" FontAttributes="Bold"
                                            TextColor="#34C759" VerticalTextAlignment="Center" />
                                 </Grid>
-                                <ProgressBar Progress="{Binding Prozent, Converter={StaticResource ProzentToWidth}}"
-                                             ProgressColor="{Binding Kategorie.Color}"
-                                             HeightRequest="6" />
                             </VerticalStackLayout>
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
                 </CollectionView>
+
+                </VerticalStackLayout>
+
+                <!-- Jahresansicht -->
+                <VerticalStackLayout Spacing="16" IsVisible="{Binding IsYearView}">
+
+                <!-- Jahresnavigation -->
+                <Grid ColumnDefinitions="Auto, *, Auto">
+                    <Button Grid.Column="0" Text="‹" FontSize="28"
+                            BackgroundColor="Transparent" TextColor="#007AFF"
+                            Command="{Binding PreviousYearCommand}"
+                            WidthRequest="44" />
+                    <Label Grid.Column="1" Text="{Binding JahrAnzeige}"
+                           FontSize="20" FontAttributes="Bold"
+                           HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
+                    <Button Grid.Column="2" Text="›" FontSize="28"
+                            BackgroundColor="Transparent" TextColor="#007AFF"
+                            Command="{Binding NextYearCommand}"
+                            WidthRequest="44" />
+                </Grid>
+
+                <!-- Jahres-Saldo -->
+                <Border StrokeShape="RoundRectangle 12" Stroke="Transparent"
+                        BackgroundColor="#FDECEA" Padding="12">
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Jahresausgaben" FontSize="11" TextColor="#FF3B30" />
+                        <Label Text="{Binding JahrGesamtAusgaben, Converter={StaticResource Currency}}"
+                               FontSize="20" FontAttributes="Bold" TextColor="#FF3B30" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Balkendiagramm Monatsvergleich -->
+                <Label Text="Ausgaben pro Monat" FontSize="18" FontAttributes="Bold"
+                       Margin="0,8,0,0"
+                       IsVisible="{Binding JahrMonate.Count, Converter={StaticResource CountToBool}}" />
+
+                <GraphicsView x:Name="YearBarChart"
+                              HeightRequest="150"
+                              IsVisible="{Binding JahrMonate.Count, Converter={StaticResource CountToBool}}"
+                              Margin="0,4,0,8" />
+
+                <!-- Kategorien im Jahr -->
+                <Label Text="Ausgaben nach Kategorie" FontSize="18" FontAttributes="Bold"
+                       Margin="0,8,0,0"
+                       IsVisible="{Binding JahrKategorien.Count, Converter={StaticResource CountToBool}}" />
+
+                <!-- Donut-Diagramm Jahreskategorien -->
+                <GraphicsView x:Name="YearDonutChart"
+                              HeightRequest="200"
+                              IsVisible="{Binding JahrKategorien.Count, Converter={StaticResource CountToBool}}"
+                              Margin="0,4,0,0" />
+
+                <VerticalStackLayout BindableLayout.ItemsSource="{Binding JahrKategorien}"
+                                     Spacing="0">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="models:CategorySummary">
+                            <VerticalStackLayout Padding="0,6" Spacing="4">
+                                <Grid ColumnDefinitions="Auto, *, Auto, Auto" ColumnSpacing="10">
+                                    <Label Grid.Column="0"
+                                           Text="{Binding Icon}"
+                                           FontSize="16" VerticalTextAlignment="Center" />
+                                    <Label Grid.Column="1"
+                                           Text="{Binding CategoryName}"
+                                           FontSize="15" VerticalTextAlignment="Center" />
+                                    <Label Grid.Column="2"
+                                           Text="{Binding Total, Converter={StaticResource Currency}}"
+                                           FontSize="15" FontAttributes="Bold"
+                                           TextColor="#FF3B30" VerticalTextAlignment="Center" />
+                                    <Label Grid.Column="3"
+                                           Text="{Binding PercentageDisplay}"
+                                           FontSize="13" TextColor="Gray"
+                                           VerticalTextAlignment="Center" />
+                                </Grid>
+                            </VerticalStackLayout>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </VerticalStackLayout>
+
+                </VerticalStackLayout>
 
             </VerticalStackLayout>
         </ScrollView>

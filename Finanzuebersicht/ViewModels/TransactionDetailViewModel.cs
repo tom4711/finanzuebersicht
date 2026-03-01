@@ -70,24 +70,56 @@ public partial class TransactionDetailViewModel : ObservableObject
     [RelayCommand]
     private async Task Save()
     {
-        if (!decimal.TryParse(BetragText,
-                System.Globalization.NumberStyles.Any,
-                System.Globalization.CultureInfo.CurrentCulture,
-                out var betrag) || betrag <= 0)
-            return;
+        try
+        {
+            // Validierung
+            if (!decimal.TryParse(BetragText,
+                    System.Globalization.NumberStyles.Any,
+                    System.Globalization.CultureInfo.CurrentCulture,
+                    out var betrag))
+            {
+                await MainThread.InvokeOnMainThreadAsync(() => 
+                    Shell.Current.DisplayAlert("Fehler", "Ungültiger Betrag", "OK"));
+                return;
+            }
 
-        if (string.IsNullOrWhiteSpace(Titel)) return;
-        if (SelectedKategorie == null) return;
+            if (betrag <= 0)
+            {
+                await MainThread.InvokeOnMainThreadAsync(() => 
+                    Shell.Current.DisplayAlert("Fehler", "Betrag muss größer als 0 sein", "OK"));
+                return;
+            }
 
-        var transaction = _existingTransaction ?? new Transaction();
-        transaction.Betrag = betrag;
-        transaction.Titel = Titel;
-        transaction.Datum = Datum;
-        transaction.KategorieId = SelectedKategorie.Id;
-        transaction.Typ = Typ;
+            if (string.IsNullOrWhiteSpace(Titel))
+            {
+                await MainThread.InvokeOnMainThreadAsync(() => 
+                    Shell.Current.DisplayAlert("Fehler", "Titel ist erforderlich", "OK"));
+                return;
+            }
 
-        await _dataService.SaveTransactionAsync(transaction);
-        await Shell.Current.GoToAsync("..");
+            if (SelectedKategorie == null)
+            {
+                await MainThread.InvokeOnMainThreadAsync(() => 
+                    Shell.Current.DisplayAlert("Fehler", "Kategorie ist erforderlich", "OK"));
+                return;
+            }
+
+            var transaction = _existingTransaction ?? new Transaction();
+            transaction.Betrag = betrag;
+            transaction.Titel = Titel;
+            transaction.Datum = Datum;
+            transaction.KategorieId = SelectedKategorie.Id;
+            transaction.Typ = Typ;
+
+            await _dataService.SaveTransactionAsync(transaction);
+            await Shell.Current.GoToAsync("..");
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error saving transaction: {ex.Message}");
+            await MainThread.InvokeOnMainThreadAsync(() => 
+                Shell.Current.DisplayAlert("Fehler", $"Fehler beim Speichern: {ex.Message}", "OK"));
+        }
     }
 
     private async Task SetKategorieAsync(string kategorieId)

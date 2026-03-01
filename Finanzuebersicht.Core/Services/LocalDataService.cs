@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Linq;
 using Finanzuebersicht.Models;
 
 namespace Finanzuebersicht.Services;
@@ -9,14 +10,31 @@ namespace Finanzuebersicht.Services;
 /// </summary>
 public class LocalDataService : IDataService
 {
-    private static readonly string DefaultDataDir = Path.Combine(
-        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-        "Finanzuebersicht");
+    private static readonly string DefaultDataDir = GetDefaultDataDir();
+
+    private static string GetDefaultDataDir()
+    {
+        // On macOS, .NET maps LocalApplicationData to ~/.local/share (Linux convention).
+        // The correct macOS path is ~/Library/Application Support.
+        if (OperatingSystem.IsMacOS() || OperatingSystem.IsMacCatalyst())
+        {
+            return Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+                "Library", "Application Support", "Finanzuebersicht");
+        }
+        return Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "Finanzuebersicht");
+    }
 
     private readonly string _dataDir;
     private string CategoriesFile => Path.Combine(_dataDir, "categories.json");
     private string TransactionsFile => Path.Combine(_dataDir, "transactions.json");
     private string RecurringFile => Path.Combine(_dataDir, "recurring.json");
+
+    private readonly SemaphoreSlim _categoriesLock = new(1, 1);
+    private readonly SemaphoreSlim _transactionsLock = new(1, 1);
+    private readonly SemaphoreSlim _recurringLock = new(1, 1);
 
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
@@ -39,25 +57,37 @@ public class LocalDataService : IDataService
 
     public async Task<List<Category>> GetCategoriesAsync()
     {
-        return await LoadAsync<Category>(CategoriesFile);
+        await _categoriesLock.WaitAsync();
+        try { return await LoadAsync<Category>(CategoriesFile); }
+        finally { _categoriesLock.Release(); }
     }
 
     public async Task SaveCategoryAsync(Category category)
     {
-        var items = await LoadAsync<Category>(CategoriesFile);
-        var idx = items.FindIndex(c => c.Id == category.Id);
-        if (idx >= 0)
-            items[idx] = category;
-        else
-            items.Add(category);
-        await SaveAsync(CategoriesFile, items);
+        await _categoriesLock.WaitAsync();
+        try
+        {
+            var items = await LoadAsync<Category>(CategoriesFile);
+            var idx = items.FindIndex(c => c.Id == category.Id);
+            if (idx >= 0)
+                items[idx] = category;
+            else
+                items.Add(category);
+            await SaveAsync(CategoriesFile, items);
+        }
+        finally { _categoriesLock.Release(); }
     }
 
     public async Task DeleteCategoryAsync(string id)
     {
-        var items = await LoadAsync<Category>(CategoriesFile);
-        items.RemoveAll(c => c.Id == id);
-        await SaveAsync(CategoriesFile, items);
+        await _categoriesLock.WaitAsync();
+        try
+        {
+            var items = await LoadAsync<Category>(CategoriesFile);
+            items.RemoveAll(c => c.Id == id);
+            await SaveAsync(CategoriesFile, items);
+        }
+        finally { _categoriesLock.Release(); }
     }
 
     #endregion
@@ -66,29 +96,129 @@ public class LocalDataService : IDataService
 
     public async Task<List<Transaction>> GetTransactionsAsync(DateTime vonDatum, DateTime bisDatum)
     {
-        var items = await LoadAsync<Transaction>(TransactionsFile);
-        return items
-            .Where(t => t.Datum >= vonDatum && t.Datum <= bisDatum)
-            .OrderByDescending(t => t.Datum)
-            .ToList();
+        await _transactionsLock.WaitAsync();
+        try
+        {
+            var items = await LoadAsync<Transaction>(TransactionsFile);
+            return items
+                .Where(t => t.Datum >= vonDatum && t.Datum <= bisDatum)
+                .OrderByDescending(t => t.Datum)
+                .ToList();
+        }
+        finally { _transactionsLock.Release(); }
     }
 
     public async Task SaveTransactionAsync(Transaction transaction)
     {
-        var items = await LoadAsync<Transaction>(TransactionsFile);
-        var idx = items.FindIndex(t => t.Id == transaction.Id);
-        if (idx >= 0)
-            items[idx] = transaction;
-        else
-            items.Add(transaction);
-        await SaveAsync(TransactionsFile, items);
+        await _transactionsLock.WaitAsync();
+        try
+        {
+            var items = await LoadAsync<Transaction>(TransactionsFile);
+            var idx = items.FindIndex(t => t.Id == transaction.Id);
+            if (idx >= 0)
+                items[idx] = transaction;
+            else
+                items.Add(transaction);
+            await SaveAsync(TransactionsFile, items);
+        }
+        finally { _transactionsLock.Release(); }
     }
 
     public async Task DeleteTransactionAsync(string id)
     {
-        var items = await LoadAsync<Transaction>(TransactionsFile);
-        items.RemoveAll(t => t.Id == id);
-        await SaveAsync(TransactionsFile, items);
+        await _transactionsLock.WaitAsync();
+        try
+        {
+            var items = await LoadAsync<Transaction>(TransactionsFile);
+            items.RemoveAll(t => t.Id == id);
+            await SaveAsync(TransactionsFile, items);
+        }
+        finally { _transactionsLock.Release(); }
+    }
+
+    // Aggregation: month summary
+    public async Task<MonthSummary> GetMonthSummaryAsync(int year, int month)
+    {
+        var from = new DateTime(year, month, 1);
+        var to = from.AddMonths(1).AddTicks(-1);
+        var items = await GetTransactionsAsync(from, to);
+        var expenditure = items.Where(t => t.Typ == TransactionType.Ausgabe).ToList();
+
+        var categories = await GetCategoriesAsync();
+
+        var monthSummary = new MonthSummary
+        {
+            Year = year,
+            Month = month,
+            Total = expenditure.Sum(t => t.Betrag),
+            ByCategory = expenditure
+                .GroupBy(t => t.KategorieId)
+                .Select(g => new CategorySummary
+                {
+                    CategoryId = g.Key,
+                    CategoryName = categories.FirstOrDefault(c => c.Id == g.Key)?.Name ?? string.Empty,
+                    Total = g.Sum(t => t.Betrag),
+                    Color = categories.FirstOrDefault(c => c.Id == g.Key)?.Color ?? "#007AFF",
+                    Icon = categories.FirstOrDefault(c => c.Id == g.Key)?.Icon ?? "📁"
+                })
+                .ToList()
+        };
+
+        return monthSummary;
+    }
+
+    // Aggregation: year summary (12 months + by category)
+    public async Task<YearSummary> GetYearSummaryAsync(int year)
+    {
+        var from = new DateTime(year, 1, 1);
+        var to = new DateTime(year, 12, 31, 23, 59, 59);
+        var items = await GetTransactionsAsync(from, to);
+        var expenditure = items.Where(t => t.Typ == TransactionType.Ausgabe).ToList();
+
+        var categories = await GetCategoriesAsync();
+
+        var yearSummary = new YearSummary
+        {
+            Year = year,
+            Total = expenditure.Sum(t => t.Betrag)
+        };
+
+        for (int m = 1; m <= 12; m++)
+        {
+            var monthItems = expenditure.Where(t => t.Datum.Month == m).ToList();
+            var ms = new MonthSummary
+            {
+                Year = year,
+                Month = m,
+                Total = monthItems.Sum(t => t.Betrag),
+                ByCategory = monthItems
+                    .GroupBy(t => t.KategorieId)
+                    .Select(g => new CategorySummary
+                    {
+                        CategoryId = g.Key,
+                        CategoryName = categories.FirstOrDefault(c => c.Id == g.Key)?.Name ?? string.Empty,
+                        Total = g.Sum(t => t.Betrag),
+                        Color = categories.FirstOrDefault(c => c.Id == g.Key)?.Color ?? "#007AFF",
+                        Icon = categories.FirstOrDefault(c => c.Id == g.Key)?.Icon ?? "📁"
+                    })
+                    .ToList()
+            };
+            yearSummary.Months.Add(ms);
+        }
+
+        yearSummary.ByCategory = expenditure
+            .GroupBy(t => t.KategorieId)
+            .Select(g => new CategorySummary
+            {
+                CategoryId = g.Key,
+                CategoryName = categories.FirstOrDefault(c => c.Id == g.Key)?.Name ?? string.Empty,
+                Total = g.Sum(t => t.Betrag),
+                Color = categories.FirstOrDefault(c => c.Id == g.Key)?.Color ?? "#007AFF",
+                Icon = categories.FirstOrDefault(c => c.Id == g.Key)?.Icon ?? "📁"
+            })
+            .ToList();
+
+        return yearSummary;
     }
 
     #endregion
@@ -97,25 +227,37 @@ public class LocalDataService : IDataService
 
     public async Task<List<RecurringTransaction>> GetRecurringTransactionsAsync()
     {
-        return await LoadAsync<RecurringTransaction>(RecurringFile);
+        await _recurringLock.WaitAsync();
+        try { return await LoadAsync<RecurringTransaction>(RecurringFile); }
+        finally { _recurringLock.Release(); }
     }
 
     public async Task SaveRecurringTransactionAsync(RecurringTransaction recurring)
     {
-        var items = await LoadAsync<RecurringTransaction>(RecurringFile);
-        var idx = items.FindIndex(r => r.Id == recurring.Id);
-        if (idx >= 0)
-            items[idx] = recurring;
-        else
-            items.Add(recurring);
-        await SaveAsync(RecurringFile, items);
+        await _recurringLock.WaitAsync();
+        try
+        {
+            var items = await LoadAsync<RecurringTransaction>(RecurringFile);
+            var idx = items.FindIndex(r => r.Id == recurring.Id);
+            if (idx >= 0)
+                items[idx] = recurring;
+            else
+                items.Add(recurring);
+            await SaveAsync(RecurringFile, items);
+        }
+        finally { _recurringLock.Release(); }
     }
 
     public async Task DeleteRecurringTransactionAsync(string id)
     {
-        var items = await LoadAsync<RecurringTransaction>(RecurringFile);
-        items.RemoveAll(r => r.Id == id);
-        await SaveAsync(RecurringFile, items);
+        await _recurringLock.WaitAsync();
+        try
+        {
+            var items = await LoadAsync<RecurringTransaction>(RecurringFile);
+            items.RemoveAll(r => r.Id == id);
+            await SaveAsync(RecurringFile, items);
+        }
+        finally { _recurringLock.Release(); }
     }
 
     public async Task GeneratePendingRecurringTransactionsAsync()
@@ -129,9 +271,8 @@ public class LocalDataService : IDataService
                 continue;
 
             var naechsterMonat = da.LetzteAusfuehrung == default
-                ? new DateTime(da.Startdatum.Year, da.Startdatum.Month, 1)
-                : da.LetzteAusfuehrung.AddMonths(1);
-            naechsterMonat = new DateTime(naechsterMonat.Year, naechsterMonat.Month, 1);
+                ? da.Startdatum
+                : new DateTime(da.LetzteAusfuehrung.Year, da.LetzteAusfuehrung.Month, 1).AddMonths(1);
 
             while (naechsterMonat <= heute)
             {

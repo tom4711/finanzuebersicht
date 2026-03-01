@@ -11,6 +11,7 @@
     <ContentPage.Resources>
         <conv:TransactionTypToColorConverter x:Key="TypToColor" />
         <conv:BetragDisplayConverter x:Key="BetragDisplay" />
+        <conv:KategorieIdToIconConverter x:Key="KategorieIdToIcon" />
     </ContentPage.Resources>
 
     <Grid RowDefinitions="Auto, *">
@@ -79,7 +80,7 @@
                                         Stroke="Transparent"
                                         WidthRequest="40" HeightRequest="40"
                                         HorizontalOptions="Center" VerticalOptions="Center">
-                                    <Label Text="💰" FontSize="18"
+                                    <Label Text="{Binding KategorieId, Converter={StaticResource KategorieIdToIcon}}" FontSize="18"
                                            HorizontalOptions="Center" VerticalOptions="Center" />
                                 </Border>
 

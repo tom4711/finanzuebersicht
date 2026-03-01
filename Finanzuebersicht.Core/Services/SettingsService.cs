@@ -6,10 +6,25 @@ namespace Finanzuebersicht.Services;
 public class SettingsService
 {
     private static readonly string SettingsFile = Path.Combine(
-        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-        "Finanzuebersicht", "settings.json");
+        GetDefaultDataDir(), "settings.json");
+
+    private static string GetDefaultDataDir()
+    {
+        // On macOS, .NET maps LocalApplicationData to ~/.local/share (Linux convention).
+        // The correct macOS path is ~/Library/Application Support.
+        if (OperatingSystem.IsMacOS() || OperatingSystem.IsMacCatalyst())
+        {
+            return Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+                "Library", "Application Support", "Finanzuebersicht");
+        }
+        return Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "Finanzuebersicht");
+    }
 
     private Dictionary<string, string> _settings = [];
+    private readonly object _lock = new();
 
     public SettingsService()
     {
@@ -18,13 +33,19 @@ public class SettingsService
 
     public string Get(string key, string defaultValue = "")
     {
-        return _settings.TryGetValue(key, out var value) ? value : defaultValue;
+        lock (_lock)
+        {
+            return _settings.TryGetValue(key, out var value) ? value : defaultValue;
+        }
     }
 
     public void Set(string key, string value)
     {
-        _settings[key] = value;
-        Save();
+        lock (_lock)
+        {
+            _settings[key] = value;
+            Save();
+        }
     }
 
     private void Load()

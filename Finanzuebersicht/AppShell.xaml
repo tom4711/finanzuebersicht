@@ -34,6 +34,7 @@
             ContentTemplate="{DataTemplate views:CategoriesPage}"
             Route="CategoriesPage" />
 
+
         <ShellContent
             Title="Einstellungen"
             Icon="settings.png"

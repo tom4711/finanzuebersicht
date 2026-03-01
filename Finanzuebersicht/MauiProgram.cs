@@ -32,7 +32,7 @@ public static class MauiProgram
 		builder.Services.AddSingleton<SettingsService>();
 		builder.Services.AddSingleton<IDataService>(sp =>
 			new LocalDataService(sp.GetRequiredService<SettingsService>()));
-		// builder.Services.AddSingleton<IDataService, CloudKitDataService>();
+		
 		builder.Services.AddSingleton<InitializationService>();
 
 		// ViewModels
@@ -44,6 +44,7 @@ public static class MauiProgram
 		builder.Services.AddTransient<RecurringTransactionsViewModel>();
 		builder.Services.AddTransient<RecurringTransactionDetailViewModel>();
 		builder.Services.AddTransient<SettingsViewModel>();
+		builder.Services.AddTransient<YearOverviewViewModel>();
 
 		// Pages
 		builder.Services.AddTransient<DashboardPage>();
@@ -54,11 +55,17 @@ public static class MauiProgram
 		builder.Services.AddTransient<CategoriesPage>();
 		builder.Services.AddTransient<CategoryDetailPage>();
 		builder.Services.AddTransient<SettingsPage>();
+		builder.Services.AddTransient<YearOverviewPage>();
 
 #if DEBUG
 		builder.Logging.AddDebug();
 #endif
 
-		return builder.Build();
+		var app = builder.Build();
+		
+		// Initialize service registry for converters
+		ServiceRegistry.Initialize(app.Services.GetRequiredService<IDataService>());
+		
+		return app;
 	}
 }
