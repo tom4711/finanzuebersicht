@@ -133,13 +133,15 @@ public partial class DashboardViewModel : ObservableObject
         var ausgabenGruppiert = transaktionen
             .Where(t => t.Typ == TransactionType.Ausgabe)
             .GroupBy(t => t.KategorieId)
-            .Select(g => new CategorySummary
+            .Select(g => new { Key = g.Key, Cat = _alleKategorien.FirstOrDefault(k => k.Id == g.Key), Total = g.Sum(t => t.Betrag) })
+            .Where(x => x.Cat != null) // Transaktionen ohne gültige Kategorie nicht im Diagramm anzeigen
+            .Select(x => new CategorySummary
             {
-                CategoryId = g.Key,
-                CategoryName = _alleKategorien.FirstOrDefault(k => k.Id == g.Key)?.Name ?? "Unbekannt",
-                Total = g.Sum(t => t.Betrag),
-                Color = _alleKategorien.FirstOrDefault(k => k.Id == g.Key)?.Color ?? "#007AFF",
-                Icon = _alleKategorien.FirstOrDefault(k => k.Id == g.Key)?.Icon ?? "📁"
+                CategoryId = x.Key,
+                CategoryName = x.Cat!.Name,
+                Total = x.Total,
+                Color = x.Cat.Color,
+                Icon = x.Cat.Icon
             })
             .OrderByDescending(k => k.Total)
             .ToList();
@@ -149,13 +151,15 @@ public partial class DashboardViewModel : ObservableObject
         var einnahmenGruppiert = transaktionen
             .Where(t => t.Typ == TransactionType.Einnahme)
             .GroupBy(t => t.KategorieId)
-            .Select(g => new CategorySummary
+            .Select(g => new { Key = g.Key, Cat = _alleKategorien.FirstOrDefault(k => k.Id == g.Key), Total = g.Sum(t => t.Betrag) })
+            .Where(x => x.Cat != null)
+            .Select(x => new CategorySummary
             {
-                CategoryId = g.Key,
-                CategoryName = _alleKategorien.FirstOrDefault(k => k.Id == g.Key)?.Name ?? "Unbekannt",
-                Total = g.Sum(t => t.Betrag),
-                Color = _alleKategorien.FirstOrDefault(k => k.Id == g.Key)?.Color ?? "#34C759",
-                Icon = _alleKategorien.FirstOrDefault(k => k.Id == g.Key)?.Icon ?? "📁"
+                CategoryId = x.Key,
+                CategoryName = x.Cat!.Name,
+                Total = x.Total,
+                Color = x.Cat.Color,
+                Icon = x.Cat.Icon
             })
             .OrderByDescending(k => k.Total)
             .ToList();

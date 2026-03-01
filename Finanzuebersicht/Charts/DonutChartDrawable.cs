@@ -13,9 +13,22 @@ public class DonutChartDrawable : IDrawable
 {
     private const int ArcSteps = 60;
     private static readonly Color FallbackColor = Color.FromArgb("#007AFF");
-    private static readonly Color TextColor = Color.FromArgb("#1C1C1E");
-    private static readonly Color SecondaryTextColor = Color.FromArgb("#8E8E93");
-    private static readonly Color HoleColor = Color.FromArgb("#F2F2F7");
+
+    // Theme-abhängige Farben werden zur Laufzeit ausgelesen
+    private static Color TextColor =>
+        Application.Current?.RequestedTheme == AppTheme.Dark
+            ? Color.FromArgb("#F2F2F7")
+            : Color.FromArgb("#1C1C1E");
+
+    private static Color SecondaryTextColor =>
+        Application.Current?.RequestedTheme == AppTheme.Dark
+            ? Color.FromArgb("#8E8E93")
+            : Color.FromArgb("#6C6C70");
+
+    private static Color HoleColor =>
+        Application.Current?.RequestedTheme == AppTheme.Dark
+            ? Color.FromArgb("#1C1C1E")
+            : Color.FromArgb("#F2F2F7");
 
     public IReadOnlyList<CategorySummary> Items { get; set; } = [];
 
