@@ -10,6 +10,7 @@ public class SettingsService
         "Finanzuebersicht", "settings.json");
 
     private Dictionary<string, string> _settings = [];
+    private readonly object _lock = new();
 
     public SettingsService()
     {
@@ -18,13 +19,19 @@ public class SettingsService
 
     public string Get(string key, string defaultValue = "")
     {
-        return _settings.TryGetValue(key, out var value) ? value : defaultValue;
+        lock (_lock)
+        {
+            return _settings.TryGetValue(key, out var value) ? value : defaultValue;
+        }
     }
 
     public void Set(string key, string value)
     {
-        _settings[key] = value;
-        Save();
+        lock (_lock)
+        {
+            _settings[key] = value;
+            Save();
+        }
     }
 
     private void Load()
