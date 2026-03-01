@@ -42,12 +42,18 @@ public partial class CategoriesViewModel : ObservableObject
     [RelayCommand]
     private async Task DeleteKategorie(Category kategorie)
     {
+        var confirm = await Shell.Current.DisplayAlert(
+            "Kategorie löschen",
+            $"\"{kategorie.Name}\" wirklich löschen?",
+            "Löschen", "Abbrechen");
+        if (!confirm) return;
+
         await _dataService.DeleteCategoryAsync(kategorie.Id);
         Kategorien.Remove(kategorie);
     }
 
     [RelayCommand]
-    private async Task GoToDetail(Category? kategorie)
+    private async Task GoToDetail(Category? kategorie = null)
     {
         var parameter = new Dictionary<string, object>();
         if (kategorie != null)

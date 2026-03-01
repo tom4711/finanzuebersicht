@@ -32,6 +32,11 @@
                         </SwipeView.RightItems>
 
                         <Grid ColumnDefinitions="50, *, Auto" Padding="16,12" ColumnSpacing="12">
+                            <Grid.GestureRecognizers>
+                                <TapGestureRecognizer
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CategoriesViewModel}}, Path=GoToDetailCommand}"
+                                    CommandParameter="{Binding .}" />
+                            </Grid.GestureRecognizers>
                             <Border Grid.Column="0" BackgroundColor="{Binding Color}"
                                     StrokeShape="RoundRectangle 12"
                                     Stroke="Transparent"

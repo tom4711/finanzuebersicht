@@ -23,6 +23,8 @@ public partial class CategoryDetailViewModel : ObservableObject
     [ObservableProperty]
     private TransactionType typ = TransactionType.Ausgabe;
 
+    public string PageTitle => _existingCategory == null ? "Neue Kategorie" : "Kategorie bearbeiten";
+
     public List<string> VerfuegbareIcons { get; } =
     [
         "🛒", "🚗", "🏠", "🎬", "💊", "💼", "📦",
