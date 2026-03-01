@@ -1,13 +1,27 @@
+using Finanzuebersicht.Charts;
 using Finanzuebersicht.ViewModels;
+using System.ComponentModel;
 
 namespace Finanzuebersicht.Views;
 
 public partial class DashboardPage : ContentPage
 {
+    private readonly DashboardViewModel _vm;
+    private readonly DonutChartDrawable _monthDonut = new();
+    private readonly BarChartDrawable _yearBar = new();
+    private readonly DonutChartDrawable _yearDonut = new();
+
     public DashboardPage(DashboardViewModel viewModel)
     {
         InitializeComponent();
         BindingContext = viewModel;
+        _vm = viewModel;
+
+        MonthDonutChart.Drawable = _monthDonut;
+        YearBarChart.Drawable = _yearBar;
+        YearDonutChart.Drawable = _yearDonut;
+
+        _vm.PropertyChanged += OnViewModelPropertyChanged;
     }
 
     protected override void OnAppearing()
@@ -15,5 +29,25 @@ public partial class DashboardPage : ContentPage
         base.OnAppearing();
         if (BindingContext is DashboardViewModel vm)
             vm.LoadDashboardCommand.Execute(null);
+    }
+
+    private void OnViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        switch (e.PropertyName)
+        {
+            case nameof(DashboardViewModel.KategorieAusgaben):
+                _monthDonut.Items = _vm.KategorieAusgaben;
+                MainThread.BeginInvokeOnMainThread(() => MonthDonutChart.Invalidate());
+                break;
+            case nameof(DashboardViewModel.JahrMonate):
+                _yearBar.Months = _vm.JahrMonate;
+                _yearBar.CurrentMonth = _vm.IsYearView ? 0 : DateTime.Today.Month;
+                MainThread.BeginInvokeOnMainThread(() => YearBarChart.Invalidate());
+                break;
+            case nameof(DashboardViewModel.JahrKategorien):
+                _yearDonut.Items = _vm.JahrKategorien;
+                MainThread.BeginInvokeOnMainThread(() => YearDonutChart.Invalidate());
+                break;
+        }
     }
 }

@@ -44,6 +44,9 @@ public partial class DashboardViewModel : ObservableObject
     [ObservableProperty]
     private ObservableCollection<CategorySummary> jahrKategorien = [];
 
+    [ObservableProperty]
+    private List<MonthSummary> jahrMonate = [];
+
     // --- Allgemein ---
 
     [ObservableProperty]
@@ -166,6 +169,7 @@ public partial class DashboardViewModel : ObservableObject
         if (summary != null)
         {
             JahrGesamtAusgaben = summary.Total;
+            JahrMonate = summary.Months;
             if (summary.ByCategory != null && summary.Total > 0)
             {
                 foreach (var cat in summary.ByCategory)
@@ -176,6 +180,7 @@ public partial class DashboardViewModel : ObservableObject
         else
         {
             JahrGesamtAusgaben = 0;
+            JahrMonate = [];
             JahrKategorien = [];
         }
     }

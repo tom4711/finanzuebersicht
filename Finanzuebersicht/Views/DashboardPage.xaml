@@ -113,6 +113,12 @@
                        Margin="0,8,0,0"
                        IsVisible="{Binding KategorieAusgaben.Count, Converter={StaticResource CountToBool}}" />
 
+                <!-- Donut-Diagramm Monatsausgaben -->
+                <GraphicsView x:Name="MonthDonutChart"
+                              HeightRequest="180"
+                              IsVisible="{Binding KategorieAusgaben.Count, Converter={StaticResource CountToBool}}"
+                              Margin="0,4,0,0" />
+
                 <CollectionView ItemsSource="{Binding KategorieAusgaben}"
                                 SelectionMode="None">
                     <CollectionView.ItemTemplate>
@@ -192,10 +198,26 @@
                     </VerticalStackLayout>
                 </Border>
 
+                <!-- Balkendiagramm Monatsvergleich -->
+                <Label Text="Ausgaben pro Monat" FontSize="18" FontAttributes="Bold"
+                       Margin="0,8,0,0"
+                       IsVisible="{Binding JahrMonate.Count, Converter={StaticResource CountToBool}}" />
+
+                <GraphicsView x:Name="YearBarChart"
+                              HeightRequest="150"
+                              IsVisible="{Binding JahrMonate.Count, Converter={StaticResource CountToBool}}"
+                              Margin="0,4,0,8" />
+
                 <!-- Kategorien im Jahr -->
                 <Label Text="Ausgaben nach Kategorie" FontSize="18" FontAttributes="Bold"
                        Margin="0,8,0,0"
                        IsVisible="{Binding JahrKategorien.Count, Converter={StaticResource CountToBool}}" />
+
+                <!-- Donut-Diagramm Jahreskategorien -->
+                <GraphicsView x:Name="YearDonutChart"
+                              HeightRequest="180"
+                              IsVisible="{Binding JahrKategorien.Count, Converter={StaticResource CountToBool}}"
+                              Margin="0,4,0,0" />
 
                 <VerticalStackLayout BindableLayout.ItemsSource="{Binding JahrKategorien}"
                                      Spacing="0">
