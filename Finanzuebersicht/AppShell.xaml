@@ -34,11 +34,6 @@
             ContentTemplate="{DataTemplate views:CategoriesPage}"
             Route="CategoriesPage" />
 
-        <ShellContent
-            Title="Jahresansicht"
-            Icon="year.svg"
-            ContentTemplate="{DataTemplate views:YearOverviewPage}"
-            Route="YearOverviewPage" />
 
         <ShellContent
             Title="Einstellungen"

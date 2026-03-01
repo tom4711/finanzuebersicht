@@ -197,9 +197,9 @@
                        Margin="0,8,0,0"
                        IsVisible="{Binding JahrKategorien.Count, Converter={StaticResource CountToBool}}" />
 
-                <CollectionView ItemsSource="{Binding JahrKategorien}"
-                                SelectionMode="None">
-                    <CollectionView.ItemTemplate>
+                <VerticalStackLayout BindableLayout.ItemsSource="{Binding JahrKategorien}"
+                                     Spacing="0">
+                    <BindableLayout.ItemTemplate>
                         <DataTemplate x:DataType="models:CategorySummary">
                             <VerticalStackLayout Padding="0,6" Spacing="4">
                                 <Grid ColumnDefinitions="Auto, *, Auto, Auto" ColumnSpacing="10">
@@ -220,8 +220,8 @@
                                 </Grid>
                             </VerticalStackLayout>
                         </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                </CollectionView>
+                    </BindableLayout.ItemTemplate>
+                </VerticalStackLayout>
 
                 </VerticalStackLayout>
 
