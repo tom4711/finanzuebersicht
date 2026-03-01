@@ -115,7 +115,7 @@
 
                 <!-- Donut-Diagramm Monatsausgaben -->
                 <GraphicsView x:Name="MonthDonutChart"
-                              HeightRequest="180"
+                              HeightRequest="200"
                               IsVisible="{Binding KategorieAusgaben.Count, Converter={StaticResource CountToBool}}"
                               Margin="0,4,0,0" />
 
@@ -215,7 +215,7 @@
 
                 <!-- Donut-Diagramm Jahreskategorien -->
                 <GraphicsView x:Name="YearDonutChart"
-                              HeightRequest="180"
+                              HeightRequest="200"
                               IsVisible="{Binding JahrKategorien.Count, Converter={StaticResource CountToBool}}"
                               Margin="0,4,0,0" />
 
