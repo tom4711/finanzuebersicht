@@ -4,12 +4,14 @@ using CommunityToolkit.Mvvm.Input;
 using Finanzuebersicht.Models;
 using Finanzuebersicht.Services;
 using Finanzuebersicht.Views;
+using Finanzuebersicht.Resources.Strings;
 
 namespace Finanzuebersicht.ViewModels;
 
 public partial class RecurringTransactionsViewModel : ObservableObject
 {
     private readonly IDataService _dataService;
+    private readonly ILocalizationService _loc;
 
     [ObservableProperty]
     private ObservableCollection<RecurringTransaction> dauerauftraege = [];
@@ -17,9 +19,10 @@ public partial class RecurringTransactionsViewModel : ObservableObject
     [ObservableProperty]
     private bool isLoading;
 
-    public RecurringTransactionsViewModel(IDataService dataService)
+    public RecurringTransactionsViewModel(IDataService dataService, ILocalizationService localizationService)
     {
         _dataService = dataService;
+        _loc = localizationService;
     }
 
     [RelayCommand]
@@ -52,9 +55,9 @@ public partial class RecurringTransactionsViewModel : ObservableObject
     private async Task DeleteDauerauftrag(RecurringTransaction dauerauftrag)
     {
         var bestaetigt = await Shell.Current.DisplayAlert(
-            "Dauerauftrag löschen",
-            $"\"{dauerauftrag.Titel}\" wirklich löschen?",
-            "Löschen", "Abbrechen");
+            _loc.GetString(ResourceKeys.Dlg_DauerauftragLoeschen),
+            _loc.GetString(ResourceKeys.Dlg_DauerauftragLoeschenFrage, dauerauftrag.Titel),
+            _loc.GetString(ResourceKeys.Btn_Ja), _loc.GetString(ResourceKeys.Btn_Nein));
 
         if (!bestaetigt) return;
 

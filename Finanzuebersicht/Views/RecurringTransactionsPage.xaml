@@ -4,6 +4,7 @@
              xmlns:vm="clr-namespace:Finanzuebersicht.ViewModels"
              xmlns:models="clr-namespace:Finanzuebersicht.Models"
              xmlns:conv="clr-namespace:Finanzuebersicht.Converters"
+             xmlns:loc="clr-namespace:Finanzuebersicht.Extensions"
              x:Class="Finanzuebersicht.Views.RecurringTransactionsPage"
              x:DataType="vm:RecurringTransactionsViewModel"
              Title="Daueraufträge">
@@ -23,7 +24,7 @@
 
             <CollectionView.EmptyView>
                 <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Padding="20">
-                    <Label Text="Keine Daueraufträge vorhanden"
+                    <Label Text="{loc:Translate Empty_KeineDauerauftraege}"
                            FontSize="16" HorizontalTextAlignment="Center" TextColor="Gray" />
                 </VerticalStackLayout>
             </CollectionView.EmptyView>
@@ -33,7 +34,7 @@
                     <SwipeView>
                         <SwipeView.LeftItems>
                             <SwipeItems>
-                                <SwipeItem Text="Aktiv/Inaktiv"
+                                <SwipeItem Text="{loc:Translate Btn_AktivInaktiv}"
                                            BackgroundColor="#FF9500"
                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:RecurringTransactionsViewModel}}, Path=ToggleAktivCommand}"
                                            CommandParameter="{Binding .}" />
@@ -41,7 +42,7 @@
                         </SwipeView.LeftItems>
                         <SwipeView.RightItems>
                             <SwipeItems>
-                                <SwipeItem Text="Löschen"
+                                <SwipeItem Text="{loc:Translate Btn_Loeschen}"
                                            BackgroundColor="#FF3B30"
                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:RecurringTransactionsViewModel}}, Path=DeleteDauerauftragCommand}"
                                            CommandParameter="{Binding .}" />

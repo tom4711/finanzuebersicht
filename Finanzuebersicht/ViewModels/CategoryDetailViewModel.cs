@@ -2,6 +2,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Finanzuebersicht.Models;
 using Finanzuebersicht.Services;
+using Finanzuebersicht.Resources.Strings;
 
 namespace Finanzuebersicht.ViewModels;
 
@@ -23,7 +24,9 @@ public partial class CategoryDetailViewModel : ObservableObject
     [ObservableProperty]
     private TransactionType typ = TransactionType.Ausgabe;
 
-    public string PageTitle => _existingCategory == null ? "Neue Kategorie" : "Kategorie bearbeiten";
+    public string PageTitle => _existingCategory == null 
+        ? LocalizationResourceManager.Current[ResourceKeys.Title_NeueKategorie] 
+        : LocalizationResourceManager.Current[ResourceKeys.Title_KategorieBearbeiten];
 
     public List<string> VerfuegbareIcons { get; } =
     [

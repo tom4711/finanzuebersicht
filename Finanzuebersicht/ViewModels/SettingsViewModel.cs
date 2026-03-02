@@ -2,6 +2,7 @@ using System.Reflection;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Finanzuebersicht.Services;
+using Finanzuebersicht.Resources.Strings;
 
 namespace Finanzuebersicht.ViewModels;
 
@@ -9,6 +10,7 @@ public partial class SettingsViewModel : ObservableObject
 {
     private readonly SettingsService _settings;
     private readonly ThemeService _themeService;
+    private readonly ILocalizationService _loc;
 
     [ObservableProperty]
     private int selectedThemeIndex;
@@ -27,10 +29,11 @@ public partial class SettingsViewModel : ObservableObject
         new("xUnit", "Unit-Test-Framework (nur Tests)"),
     ];
 
-    public SettingsViewModel(SettingsService settings, ThemeService themeService)
+    public SettingsViewModel(SettingsService settings, ThemeService themeService, ILocalizationService localizationService)
     {
         _settings = settings;
         _themeService = themeService;
+        _loc = localizationService;
 
         // Version aus Assembly-Metadaten lesen (von Nerdbank.GitVersioning gesetzt)
         var asm = Assembly.GetExecutingAssembly();
@@ -92,9 +95,9 @@ public partial class SettingsViewModel : ObservableObject
                     newPath.Contains(Path.Combine("var", "folders"), StringComparison.OrdinalIgnoreCase))
                 {
                     await Shell.Current.DisplayAlert(
-                        "Ungültiger Ordner",
-                        "Der gewählte Ordner liegt in einem temporären Verzeichnis und kann nicht als Datenspeicherort verwendet werden.\n\nBitte wähle einen Ordner in deinem Home-Verzeichnis (z. B. iCloud Drive oder Dokumente).",
-                        "OK");
+                        _loc.GetString(ResourceKeys.Stn_UngueltigerOrdner),
+                        _loc.GetString(ResourceKeys.Stn_UngueltigerOrdnerDesc),
+                        _loc.GetString(ResourceKeys.Btn_OK));
                     return;
                 }
 
@@ -102,14 +105,14 @@ public partial class SettingsViewModel : ObservableObject
                 DataPath = newPath;
 
                 await Shell.Current.DisplayAlert(
-                    "Speicherort geändert",
-                    $"Daten werden ab dem nächsten Neustart unter\n{newPath}\ngespeichert.\n\nBitte starte die App neu.",
-                    "OK");
+                    _loc.GetString(ResourceKeys.Stn_SpeicherortGeaendert),
+                    _loc.GetString(ResourceKeys.Stn_SpeicherortGeaendertDesc, newPath),
+                    _loc.GetString(ResourceKeys.Btn_OK));
             }
         }
         catch (Exception ex)
         {
-            await Shell.Current.DisplayAlert("Fehler", $"Ordner konnte nicht gewählt werden: {ex.Message}", "OK");
+            await Shell.Current.DisplayAlert(_loc.GetString(ResourceKeys.Err_Titel), _loc.GetString(ResourceKeys.Err_OrdnerNichtWaehlbar, ex.Message), _loc.GetString(ResourceKeys.Btn_OK));
         }
     }
 
@@ -120,9 +123,9 @@ public partial class SettingsViewModel : ObservableObject
         DataPath = GetDefaultDataDir();
 
         await Shell.Current.DisplayAlert(
-            "Speicherort zurückgesetzt",
-            "Daten werden ab dem nächsten Neustart im Standard-Verzeichnis gespeichert.",
-            "OK");
+            _loc.GetString(ResourceKeys.Stn_SpeicherortZurueckgesetzt),
+            _loc.GetString(ResourceKeys.Stn_SpeicherortZurueckgesetztDesc),
+            _loc.GetString(ResourceKeys.Btn_OK));
     }
 
     private static string GetDefaultDataDir() => AppPaths.GetDefaultDataDir();

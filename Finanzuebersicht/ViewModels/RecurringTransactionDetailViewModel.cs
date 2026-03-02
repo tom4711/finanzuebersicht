@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Finanzuebersicht.Models;
 using Finanzuebersicht.Services;
+using Finanzuebersicht.Resources.Strings;
 
 namespace Finanzuebersicht.ViewModels;
 
@@ -11,6 +12,7 @@ public partial class RecurringTransactionDetailViewModel : ObservableObject
 {
     private readonly IDataService _dataService;
     private RecurringTransaction? _existing;
+    private readonly ILocalizationService _loc;
 
     [ObservableProperty]
     private string betragText = string.Empty;
@@ -67,9 +69,10 @@ public partial class RecurringTransactionDetailViewModel : ObservableObject
         }
     }
 
-    public RecurringTransactionDetailViewModel(IDataService dataService)
+    public RecurringTransactionDetailViewModel(IDataService dataService, ILocalizationService localizationService)
     {
         _dataService = dataService;
+        _loc = localizationService;
     }
 
     [RelayCommand]

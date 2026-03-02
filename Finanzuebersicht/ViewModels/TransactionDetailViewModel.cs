@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Finanzuebersicht.Models;
 using Finanzuebersicht.Services;
+using Finanzuebersicht.Resources.Strings;
 
 namespace Finanzuebersicht.ViewModels;
 
@@ -11,6 +12,7 @@ public partial class TransactionDetailViewModel : ObservableObject
 {
     private readonly IDataService _dataService;
     private Transaction? _existingTransaction;
+    private readonly ILocalizationService _loc;
 
     [ObservableProperty]
     private string betragText = string.Empty;
@@ -49,9 +51,10 @@ public partial class TransactionDetailViewModel : ObservableObject
         }
     }
 
-    public TransactionDetailViewModel(IDataService dataService)
+    public TransactionDetailViewModel(IDataService dataService, ILocalizationService localizationService)
     {
         _dataService = dataService;
+        _loc = localizationService;
     }
 
     [RelayCommand]
@@ -79,28 +82,28 @@ public partial class TransactionDetailViewModel : ObservableObject
                     out var betrag))
             {
                 await MainThread.InvokeOnMainThreadAsync(() => 
-                    Shell.Current.DisplayAlert("Fehler", "Ungültiger Betrag", "OK"));
+                    Shell.Current.DisplayAlert(_loc.GetString(ResourceKeys.Err_Titel), _loc.GetString(ResourceKeys.Err_UngueltigerBetrag), _loc.GetString(ResourceKeys.Btn_OK)));
                 return;
             }
 
             if (betrag <= 0)
             {
                 await MainThread.InvokeOnMainThreadAsync(() => 
-                    Shell.Current.DisplayAlert("Fehler", "Betrag muss größer als 0 sein", "OK"));
+                    Shell.Current.DisplayAlert(_loc.GetString(ResourceKeys.Err_Titel), _loc.GetString(ResourceKeys.Err_BetragGroesserNull), _loc.GetString(ResourceKeys.Btn_OK)));
                 return;
             }
 
             if (string.IsNullOrWhiteSpace(Titel))
             {
                 await MainThread.InvokeOnMainThreadAsync(() => 
-                    Shell.Current.DisplayAlert("Fehler", "Titel ist erforderlich", "OK"));
+                    Shell.Current.DisplayAlert(_loc.GetString(ResourceKeys.Err_Titel), _loc.GetString(ResourceKeys.Err_TitelErforderlich), _loc.GetString(ResourceKeys.Btn_OK)));
                 return;
             }
 
             if (SelectedKategorie == null)
             {
                 await MainThread.InvokeOnMainThreadAsync(() => 
-                    Shell.Current.DisplayAlert("Fehler", "Kategorie ist erforderlich", "OK"));
+                    Shell.Current.DisplayAlert(_loc.GetString(ResourceKeys.Err_Titel), _loc.GetString(ResourceKeys.Err_KategorieErforderlich), _loc.GetString(ResourceKeys.Btn_OK)));
                 return;
             }
 
@@ -118,7 +121,7 @@ public partial class TransactionDetailViewModel : ObservableObject
         {
             System.Diagnostics.Debug.WriteLine($"Error saving transaction: {ex.Message}");
             await MainThread.InvokeOnMainThreadAsync(() => 
-                Shell.Current.DisplayAlert("Fehler", $"Fehler beim Speichern: {ex.Message}", "OK"));
+                Shell.Current.DisplayAlert(_loc.GetString(ResourceKeys.Err_Titel), _loc.GetString(ResourceKeys.Err_SpeichernFehlgeschlagen, ex.Message), _loc.GetString(ResourceKeys.Btn_OK)));
         }
     }
 

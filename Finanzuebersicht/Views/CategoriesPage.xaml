@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:Finanzuebersicht.ViewModels"
              xmlns:models="clr-namespace:Finanzuebersicht.Models"
+             xmlns:loc="clr-namespace:Finanzuebersicht.Extensions"
              x:Class="Finanzuebersicht.Views.CategoriesPage"
              x:DataType="vm:CategoriesViewModel"
              Title="Kategorien">
@@ -14,7 +15,7 @@
                         SelectionMode="None">
             <CollectionView.EmptyView>
                 <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Padding="20">
-                    <Label Text="Keine Kategorien vorhanden" FontSize="16"
+                    <Label Text="{loc:Translate Empty_KeineKategorien}" FontSize="16"
                            HorizontalTextAlignment="Center" TextColor="Gray" />
                 </VerticalStackLayout>
             </CollectionView.EmptyView>
@@ -24,7 +25,7 @@
                     <SwipeView>
                         <SwipeView.RightItems>
                             <SwipeItems>
-                                <SwipeItem Text="Löschen"
+                                <SwipeItem Text="{loc:Translate Btn_Loeschen}"
                                            BackgroundColor="#FF3B30"
                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CategoriesViewModel}}, Path=DeleteKategorieCommand}"
                                            CommandParameter="{Binding .}" />
