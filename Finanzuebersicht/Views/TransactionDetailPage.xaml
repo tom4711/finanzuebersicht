@@ -3,20 +3,21 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:Finanzuebersicht.ViewModels"
              xmlns:models="clr-namespace:Finanzuebersicht.Models"
+             xmlns:loc="clr-namespace:Finanzuebersicht.Extensions"
              x:Class="Finanzuebersicht.Views.TransactionDetailPage"
              x:DataType="vm:TransactionDetailViewModel"
-             Title="Transaktion">
+             Title="{loc:Translate Title_Transaktion}">
 
     <ScrollView Padding="16">
         <VerticalStackLayout Spacing="20">
 
             <!-- Typ-Auswahl -->
             <Grid ColumnDefinitions="*, *" ColumnSpacing="8">
-                <Button Grid.Column="0" Text="Ausgabe"
+                <Button Grid.Column="0" Text="{loc:Translate Lbl_Ausgabe}"
                         BackgroundColor="{Binding Typ, Converter={StaticResource TypButtonColor}, ConverterParameter=Ausgabe}"
                         TextColor="White" CornerRadius="10" HeightRequest="44"
                         Command="{Binding SetTypCommand}" CommandParameter="Ausgabe" />
-                <Button Grid.Column="1" Text="Einnahme"
+                <Button Grid.Column="1" Text="{loc:Translate Lbl_Einnahme}"
                         BackgroundColor="{Binding Typ, Converter={StaticResource TypButtonColor}, ConverterParameter=Einnahme}"
                         TextColor="White" CornerRadius="10" HeightRequest="44"
                         Command="{Binding SetTypCommand}" CommandParameter="Einnahme" />
@@ -24,38 +25,38 @@
 
             <!-- Betrag -->
             <VerticalStackLayout Spacing="4">
-                <Label Text="Betrag" FontSize="13" TextColor="Gray" />
-                <Entry Text="{Binding BetragText}" Placeholder="0,00"
+                <Label Text="{loc:Translate Lbl_Betrag}" FontSize="13" TextColor="Gray" />
+                <Entry Text="{Binding BetragText}" Placeholder="{loc:Translate Hint_Betrag}"
                        Keyboard="Numeric" FontSize="28" FontAttributes="Bold"
                        HorizontalTextAlignment="Center" />
             </VerticalStackLayout>
 
             <!-- Titel -->
             <VerticalStackLayout Spacing="4">
-                <Label Text="Titel" FontSize="13" TextColor="Gray" />
-                <Entry Text="{Binding Titel}" Placeholder="Beschreibung"
+                <Label Text="{loc:Translate Lbl_Titel}" FontSize="13" TextColor="Gray" />
+                <Entry Text="{Binding Titel}" Placeholder="{loc:Translate Hint_Beschreibung}"
                        FontSize="16" />
             </VerticalStackLayout>
 
             <!-- Datum -->
             <VerticalStackLayout Spacing="4">
-                <Label Text="Datum" FontSize="13" TextColor="Gray" />
+                <Label Text="{loc:Translate Lbl_Datum}" FontSize="13" TextColor="Gray" />
                 <DatePicker Date="{Binding Datum}" FontSize="16"
                             Format="dd. MMMM yyyy" />
             </VerticalStackLayout>
 
             <!-- Kategorie -->
             <VerticalStackLayout Spacing="4">
-                <Label Text="Kategorie" FontSize="13" TextColor="Gray" />
+                <Label Text="{loc:Translate Lbl_Kategorie}" FontSize="13" TextColor="Gray" />
                 <Picker ItemsSource="{Binding Kategorien}"
                         SelectedItem="{Binding SelectedKategorie}"
                         ItemDisplayBinding="{Binding Name}"
-                        Title="Kategorie wählen"
+                        Title="{loc:Translate Hint_KategorieWaehlen}"
                         FontSize="16" />
             </VerticalStackLayout>
 
             <!-- Speichern -->
-            <Button Text="Speichern" Command="{Binding SaveCommand}"
+            <Button Text="{loc:Translate Btn_Speichern}" Command="{Binding SaveCommand}"
                     BackgroundColor="#007AFF" TextColor="White"
                     CornerRadius="12" HeightRequest="50"
                     FontSize="16" FontAttributes="Bold"

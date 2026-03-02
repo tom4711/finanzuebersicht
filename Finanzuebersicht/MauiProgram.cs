@@ -34,6 +34,7 @@ public static class MauiProgram
 			new LocalDataService(sp.GetRequiredService<SettingsService>()));
 		builder.Services.AddSingleton<InitializationService>();
 		builder.Services.AddSingleton<ThemeService>();
+		builder.Services.AddSingleton<ILocalizationService, LocalizationService>();
 
 		// ViewModels
 		builder.Services.AddTransient<DashboardViewModel>();

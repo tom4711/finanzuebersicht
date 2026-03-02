@@ -9,8 +9,12 @@ public partial class App : Application
 	private readonly ThemeService _themeService;
 	private readonly string _savedTheme;
 
-	public App(InitializationService initService, IDataService dataService, SettingsService settings, ThemeService themeService)
+	public App(InitializationService initService, IDataService dataService, SettingsService settings,
+		ThemeService themeService, ILocalizationService localizationService)
 	{
+		// Sprache vor InitializeComponent setzen, damit XAML-Bindings korrekt aufgelöst werden
+		localizationService.Initialize();
+
 		InitializeComponent();
 		_dataService = dataService;
 		_initService = initService;

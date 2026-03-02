@@ -2,6 +2,7 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:Finanzuebersicht.ViewModels"
+             xmlns:loc="clr-namespace:Finanzuebersicht.Extensions"
              x:Class="Finanzuebersicht.Views.CategoryDetailPage"
              x:DataType="vm:CategoryDetailViewModel"
              Title="{Binding PageTitle}">
@@ -11,14 +12,14 @@
 
             <!-- Name -->
             <VerticalStackLayout Spacing="4">
-                <Label Text="Name" FontSize="13" TextColor="Gray" />
-                <Entry Text="{Binding Name}" Placeholder="Kategoriename"
+                <Label Text="{loc:Translate Lbl_Name}" FontSize="13" TextColor="Gray" />
+                <Entry Text="{Binding Name}" Placeholder="{loc:Translate Hint_Kategoriename}"
                        FontSize="16" />
             </VerticalStackLayout>
 
             <!-- Icon-Auswahl -->
             <VerticalStackLayout Spacing="4">
-                <Label Text="Icon" FontSize="13" TextColor="Gray" />
+                <Label Text="{loc:Translate Lbl_Icon}" FontSize="13" TextColor="Gray" />
                 <CollectionView ItemsSource="{Binding VerfuegbareIcons}"
                                 SelectionMode="Single"
                                 SelectedItem="{Binding Icon}">
@@ -42,7 +43,7 @@
 
             <!-- Farb-Auswahl -->
             <VerticalStackLayout Spacing="4">
-                <Label Text="Farbe" FontSize="13" TextColor="Gray" />
+                <Label Text="{loc:Translate Lbl_Farbe}" FontSize="13" TextColor="Gray" />
                 <CollectionView ItemsSource="{Binding VerfuegbareFarben}"
                                 SelectionMode="Single"
                                 SelectedItem="{Binding Color}">
@@ -64,7 +65,7 @@
 
             <!-- Typ -->
             <VerticalStackLayout Spacing="4">
-                <Label Text="Typ" FontSize="13" TextColor="Gray" />
+                <Label Text="{loc:Translate Lbl_Typ}" FontSize="13" TextColor="Gray" />
                 <Picker SelectedIndex="{Binding Typ}">
                     <Picker.Items>
                         <x:String>Einnahme</x:String>
@@ -74,7 +75,7 @@
             </VerticalStackLayout>
 
             <!-- Speichern -->
-            <Button Text="Speichern" Command="{Binding SaveCommand}"
+            <Button Text="{loc:Translate Btn_Speichern}" Command="{Binding SaveCommand}"
                     BackgroundColor="#007AFF" TextColor="White"
                     CornerRadius="12" HeightRequest="50"
                     FontSize="16" FontAttributes="Bold"
