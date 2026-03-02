@@ -14,7 +14,7 @@ public class LocalDataServiceEdgeCaseTests : IDisposable
         _tempDir = Path.Combine(Path.GetTempPath(), $"finanz_edge_{Guid.NewGuid():N}");
         Directory.CreateDirectory(_tempDir);
 
-        var settings = new SettingsService();
+        var settings = new SettingsService(Path.Combine(_tempDir, "settings.json"));
         settings.Set("DataPath", _tempDir);
         _service = new LocalDataService(settings);
     }

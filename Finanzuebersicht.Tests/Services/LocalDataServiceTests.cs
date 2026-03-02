@@ -14,7 +14,7 @@ public class LocalDataServiceTests : IDisposable
         _testDir = Path.Combine(Path.GetTempPath(), $"finanz_test_{Guid.NewGuid():N}");
         Directory.CreateDirectory(_testDir);
 
-        var settings = new SettingsService();
+        var settings = new SettingsService(Path.Combine(_testDir, "settings.json"));
         settings.Set("DataPath", _testDir);
         _service = new LocalDataService(settings);
     }
