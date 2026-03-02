@@ -5,14 +5,17 @@ namespace Finanzuebersicht.Services;
 /// </summary>
 public class SettingsService
 {
-    private static readonly string SettingsFile = Path.Combine(
-        AppPaths.GetDefaultDataDir(), "settings.json");
+    private readonly string _settingsFile;
 
     private Dictionary<string, string> _settings = [];
     private readonly object _lock = new();
 
     public SettingsService()
+        : this(Path.Combine(AppPaths.GetDefaultDataDir(), "settings.json")) { }
+
+    internal SettingsService(string settingsFilePath)
     {
+        _settingsFile = settingsFilePath;
         Load();
     }
 
@@ -37,9 +40,9 @@ public class SettingsService
     {
         try
         {
-            if (File.Exists(SettingsFile))
+            if (File.Exists(_settingsFile))
             {
-                var json = File.ReadAllText(SettingsFile);
+                var json = File.ReadAllText(_settingsFile);
                 _settings = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(json) ?? [];
             }
         }
@@ -54,11 +57,11 @@ public class SettingsService
     {
         try
         {
-            var dir = Path.GetDirectoryName(SettingsFile)!;
+            var dir = Path.GetDirectoryName(_settingsFile)!;
             Directory.CreateDirectory(dir);
             var json = System.Text.Json.JsonSerializer.Serialize(_settings,
                 new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
-            File.WriteAllText(SettingsFile, json);
+            File.WriteAllText(_settingsFile, json);
         }
         catch (Exception ex)
         {

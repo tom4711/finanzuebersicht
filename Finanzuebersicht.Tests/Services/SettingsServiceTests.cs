@@ -11,11 +11,7 @@ public class SettingsServiceTests : IDisposable
     {
         _tempDir = Path.Combine(Path.GetTempPath(), $"finanz_settings_test_{Guid.NewGuid():N}");
         Directory.CreateDirectory(_tempDir);
-
-        // Damit SettingsService den Temp-Pfad nutzt, setzen wir DataPath nach der Initialisierung.
-        // SettingsService speichert settings.json im AppPaths.GetDefaultDataDir() –
-        // dieser Test validiert Get/Set-Verhalten (nicht den Dateipfad selbst).
-        _settings = new SettingsService();
+        _settings = new SettingsService(Path.Combine(_tempDir, "settings.json"));
     }
 
     public void Dispose()

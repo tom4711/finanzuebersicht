@@ -54,7 +54,7 @@ public class LocalDataServiceTests : IDisposable
         await _service.SaveCategoryAsync(cat);
 
         var result = await _service.GetCategoriesAsync();
-        Assert.Single(result.Where(c => c.Id == cat.Id));
+        Assert.Single(result, c => c.Id == cat.Id);
         Assert.Equal("Neu", result.First(c => c.Id == cat.Id).Name);
     }
 
