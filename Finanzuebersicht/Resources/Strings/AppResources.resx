@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+
+  <!-- Navigation / Tabs -->
+  <data name="Nav_Dashboard" xml:space="preserve"><value>Dashboard</value></data>
+  <data name="Nav_Transaktionen" xml:space="preserve"><value>Transactions</value></data>
+  <data name="Nav_Dauerauftraege" xml:space="preserve"><value>Recurring</value></data>
+  <data name="Nav_Kategorien" xml:space="preserve"><value>Categories</value></data>
+  <data name="Nav_Einstellungen" xml:space="preserve"><value>Settings</value></data>
+
+  <!-- Page Titles -->
+  <data name="Title_Transaktion" xml:space="preserve"><value>Transaction</value></data>
+  <data name="Title_Dauerauftrag" xml:space="preserve"><value>Recurring Transaction</value></data>
+  <data name="Title_NeueKategorie" xml:space="preserve"><value>New Category</value></data>
+  <data name="Title_KategorieBearbeiten" xml:space="preserve"><value>Edit Category</value></data>
+  <data name="Title_Jahresansicht" xml:space="preserve"><value>Year Overview</value></data>
+
+  <!-- Labels -->
+  <data name="Lbl_Name" xml:space="preserve"><value>Name</value></data>
+  <data name="Lbl_Icon" xml:space="preserve"><value>Icon</value></data>
+  <data name="Lbl_Farbe" xml:space="preserve"><value>Color</value></data>
+  <data name="Lbl_Typ" xml:space="preserve"><value>Type</value></data>
+  <data name="Lbl_Betrag" xml:space="preserve"><value>Amount</value></data>
+  <data name="Lbl_Titel" xml:space="preserve"><value>Title</value></data>
+  <data name="Lbl_Kategorie" xml:space="preserve"><value>Category</value></data>
+  <data name="Lbl_Datum" xml:space="preserve"><value>Date</value></data>
+  <data name="Lbl_Startdatum" xml:space="preserve"><value>Start Date</value></data>
+  <data name="Lbl_Enddatum" xml:space="preserve"><value>End Date</value></data>
+  <data name="Lbl_EnddatumFestlegen" xml:space="preserve"><value>Set End Date</value></data>
+  <data name="Lbl_Aktiv" xml:space="preserve"><value>Active</value></data>
+  <data name="Lbl_Einnahme" xml:space="preserve"><value>Income</value></data>
+  <data name="Lbl_Ausgabe" xml:space="preserve"><value>Expense</value></data>
+  <data name="Lbl_Einnahmen" xml:space="preserve"><value>Income</value></data>
+  <data name="Lbl_Ausgaben" xml:space="preserve"><value>Expenses</value></data>
+  <data name="Lbl_Bilanz" xml:space="preserve"><value>Balance</value></data>
+  <data name="Lbl_Monat" xml:space="preserve"><value>Month</value></data>
+  <data name="Lbl_Jahr" xml:space="preserve"><value>Year</value></data>
+  <data name="Lbl_Prognose" xml:space="preserve"><value>(Forecast)</value></data>
+  <data name="Lbl_AusgabenNachKategorie" xml:space="preserve"><value>Expenses by Category</value></data>
+  <data name="Lbl_EinnahmenNachKategorie" xml:space="preserve"><value>Income by Category</value></data>
+  <data name="Lbl_Jahresausgaben" xml:space="preserve"><value>Annual Expenses</value></data>
+  <data name="Lbl_AusgabenProMonat" xml:space="preserve"><value>Expenses per Month</value></data>
+  <data name="Lbl_Darstellung" xml:space="preserve"><value>Appearance</value></data>
+  <data name="Lbl_Speicherort" xml:space="preserve"><value>Data Storage</value></data>
+  <data name="Lbl_Ueber" xml:space="preserve"><value>About</value></data>
+  <data name="Lbl_VerwendeteBibliotheken" xml:space="preserve"><value>Used Libraries</value></data>
+  <data name="Lbl_DatenWerdenGespeichert" xml:space="preserve"><value>Data is stored here:</value></data>
+  <data name="Lbl_Sprache" xml:space="preserve"><value>Language</value></data>
+  <data name="Lbl_KategorienColon" xml:space="preserve"><value>Categories:</value></data>
+
+  <!-- Buttons -->
+  <data name="Btn_Speichern" xml:space="preserve"><value>Save</value></data>
+  <data name="Btn_Loeschen" xml:space="preserve"><value>Delete</value></data>
+  <data name="Btn_Abbrechen" xml:space="preserve"><value>Cancel</value></data>
+  <data name="Btn_OK" xml:space="preserve"><value>OK</value></data>
+  <data name="Btn_OrdnerWaehlen" xml:space="preserve"><value>📁 Choose Folder</value></data>
+  <data name="Btn_Zuruecksetzen" xml:space="preserve"><value>Reset</value></data>
+  <data name="Btn_System" xml:space="preserve"><value>System</value></data>
+  <data name="Btn_Hell" xml:space="preserve"><value>☀️ Light</value></data>
+  <data name="Btn_Dunkel" xml:space="preserve"><value>🌙 Dark</value></data>
+  <data name="Btn_Ja" xml:space="preserve"><value>Yes</value></data>
+  <data name="Btn_Nein" xml:space="preserve"><value>No</value></data>
+  <data name="Btn_AktivInaktiv" xml:space="preserve"><value>Toggle Active</value></data>
+
+  <!-- Hints / Placeholders -->
+  <data name="Hint_Kategoriename" xml:space="preserve"><value>Category Name</value></data>
+  <data name="Hint_Betrag" xml:space="preserve"><value>0.00</value></data>
+  <data name="Hint_Beschreibung" xml:space="preserve"><value>Description</value></data>
+  <data name="Hint_Titelbeispiel" xml:space="preserve"><value>e.g. Rent, Netflix, Salary</value></data>
+  <data name="Hint_KategorieWaehlen" xml:space="preserve"><value>Select Category</value></data>
+  <data name="Hint_iCloudTipp" xml:space="preserve"><value>💡 Tip: Choose a folder in iCloud Drive to automatically back up your data.</value></data>
+
+  <!-- Empty States -->
+  <data name="Empty_KeineKategorien" xml:space="preserve"><value>No categories available</value></data>
+  <data name="Empty_KeineDauerauftraege" xml:space="preserve"><value>No recurring transactions available</value></data>
+  <data name="Empty_KeineTransaktionen" xml:space="preserve"><value>No transactions this month</value></data>
+
+  <!-- Error Messages -->
+  <data name="Err_Titel" xml:space="preserve"><value>Error</value></data>
+  <data name="Err_UngueltigerBetrag" xml:space="preserve"><value>Invalid Amount</value></data>
+  <data name="Err_BetragGroesserNull" xml:space="preserve"><value>Amount must be greater than 0</value></data>
+  <data name="Err_TitelErforderlich" xml:space="preserve"><value>Title is required</value></data>
+  <data name="Err_KategorieErforderlich" xml:space="preserve"><value>Category is required</value></data>
+  <data name="Err_SpeichernFehlgeschlagen" xml:space="preserve"><value>Error saving: {0}</value></data>
+  <data name="Err_OrdnerNichtWaehlbar" xml:space="preserve"><value>Folder could not be selected: {0}</value></data>
+
+  <!-- Confirmation Dialogs -->
+  <data name="Dlg_KategorieLoeschen" xml:space="preserve"><value>Delete Category</value></data>
+  <data name="Dlg_KategorieLoeschenFrage" xml:space="preserve"><value>Really delete "{0}"?</value></data>
+  <data name="Dlg_DauerauftragLoeschen" xml:space="preserve"><value>Delete Recurring Transaction</value></data>
+  <data name="Dlg_DauerauftragLoeschenFrage" xml:space="preserve"><value>Really delete "{0}"?</value></data>
+
+  <!-- Settings Messages -->
+  <data name="Stn_UngueltigerOrdner" xml:space="preserve"><value>Invalid Folder</value></data>
+  <data name="Stn_UngueltigerOrdnerDesc" xml:space="preserve"><value>The selected folder is in a temporary directory and cannot be used as a data storage location.
+
+Please choose a folder in your home directory (e.g. iCloud Drive or Documents).</value></data>
+  <data name="Stn_SpeicherortGeaendert" xml:space="preserve"><value>Storage Location Changed</value></data>
+  <data name="Stn_SpeicherortGeaendertDesc" xml:space="preserve"><value>Data will be stored at
+{0}
+from the next restart.
+
+Please restart the app.</value></data>
+  <data name="Stn_SpeicherortZurueckgesetzt" xml:space="preserve"><value>Storage Location Reset</value></data>
+  <data name="Stn_SpeicherortZurueckgesetztDesc" xml:space="preserve"><value>Data will be stored in the default directory from the next restart.</value></data>
+  <data name="Stn_SpracheDeutsch" xml:space="preserve"><value>German</value></data>
+  <data name="Stn_SpracheEnglisch" xml:space="preserve"><value>English</value></data>
+  <data name="Stn_SpracheSystem" xml:space="preserve"><value>System Language</value></data>
+
+  <!-- Status -->
+  <data name="Status_Aktiv" xml:space="preserve"><value>Active</value></data>
+  <data name="Status_Inaktiv" xml:space="preserve"><value>Inactive</value></data>
+
+  <!-- System Category Names -->
+  <data name="SysCat_Lebensmittel" xml:space="preserve"><value>Groceries</value></data>
+  <data name="SysCat_Transport" xml:space="preserve"><value>Transport</value></data>
+  <data name="SysCat_Wohnen" xml:space="preserve"><value>Housing</value></data>
+  <data name="SysCat_Unterhaltung" xml:space="preserve"><value>Entertainment</value></data>
+  <data name="SysCat_Gesundheit" xml:space="preserve"><value>Health</value></data>
+  <data name="SysCat_Gehalt" xml:space="preserve"><value>Salary</value></data>
+  <data name="SysCat_Sonstiges" xml:space="preserve"><value>Miscellaneous</value></data>
+</root>
