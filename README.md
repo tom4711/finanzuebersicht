@@ -2,7 +2,7 @@
 
 # Finanzübersicht
 
-**Persönliche Finanzverwaltung für iOS, macOS und Windows**
+**Persönliche Finanzverwaltung für iOS und macOS**
 
 [![CI](https://github.com/tom4711/finanzuebersicht/actions/workflows/ci.yml/badge.svg)](https://github.com/tom4711/finanzuebersicht/actions/workflows/ci.yml)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
@@ -22,20 +22,19 @@ Finanzübersicht ist eine Open-Source-App zur einfachen Verwaltung von Einnahmen
 - 🔁 **Wiederkehrende Buchungen** – Miete, Abos & Co. einmalig anlegen
 - 🏷️ **Kategorien** – Eigene Kategorien mit Farbe und Icon
 - 🌙 **Dark Mode** – Vollständige Unterstützung für Light & Dark Mode
+- 🌐 **Mehrsprachigkeit** – Deutsch und Englisch, live umschaltbar in den Einstellungen
 
 ## Plattformen
 
-| Plattform | Status       |
-|-----------|--------------|
-| macOS     | ✅ Stabil    |
-| iOS       | ✅ Stabil    |
-| Windows   | 🚧 In Entwicklung |
+| Plattform | Status    |
+|-----------|-----------|
+| macOS     | ✅ Stabil |
+| iOS       | ✅ Stabil |
 
 ## Voraussetzungen
 
 - [.NET 10 SDK](https://dotnet.microsoft.com/download)
-- macOS mit Xcode (für iOS/macOS)
-- Windows 10/11 mit Visual Studio 2022 (für Windows)
+- macOS mit Xcode (für iOS/macOS Build)
 
 ```bash
 dotnet workload install maui
@@ -49,10 +48,13 @@ cd finanzuebersicht
 dotnet restore
 ```
 
-**App starten:**
+**App starten (macOS):**
 ```bash
-# macOS
-dotnet build Finanzuebersicht/Finanzuebersicht.csproj -t:Run -f net10.0-maccatalyst
+# Build
+dotnet build Finanzuebersicht/Finanzuebersicht.csproj -f net10.0-maccatalyst
+
+# Anschließend die .app aus dem bin/-Ordner nach /Applications/ kopieren und dort starten
+# (macOS startet die App korrekt aus /Applications/)
 
 # Tests
 dotnet test Finanzuebersicht.Tests
@@ -64,7 +66,7 @@ dotnet test Finanzuebersicht.Tests
 |---------|-------------|
 | Framework | [.NET 10 MAUI](https://github.com/dotnet/maui) |
 | Architektur | MVVM via [CommunityToolkit.Mvvm](https://github.com/CommunityToolkit/dotnet) |
-| Datenbank | SQLite ([sqlite-net-pcl](https://github.com/praeclarum/sqlite-net)) |
+| Persistenz | JSON-Dateien (lokal, kein Cloud-Zwang) |
 | Versionierung | [Nerdbank.GitVersioning](https://github.com/dotnet/Nerdbank.GitVersioning) |
 
 ## Contributing
