@@ -8,8 +8,6 @@ public class SettingsService
     private static readonly string SettingsFile = Path.Combine(
         AppPaths.GetDefaultDataDir(), "settings.json");
 
-    private static string GetDefaultDataDir() => AppPaths.GetDefaultDataDir();
-
     private Dictionary<string, string> _settings = [];
     private readonly object _lock = new();
 

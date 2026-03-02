@@ -12,8 +12,6 @@ public class LocalDataService : IDataService, IDisposable
 {
     private static readonly string DefaultDataDir = AppPaths.GetDefaultDataDir();
 
-    private static string GetDefaultDataDir() => AppPaths.GetDefaultDataDir();
-
     private readonly string _dataDir;
     private string CategoriesFile => Path.Combine(_dataDir, "categories.json");
     private string TransactionsFile => Path.Combine(_dataDir, "transactions.json");
