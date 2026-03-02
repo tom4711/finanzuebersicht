@@ -32,8 +32,8 @@ public static class MauiProgram
 		builder.Services.AddSingleton<SettingsService>();
 		builder.Services.AddSingleton<IDataService>(sp =>
 			new LocalDataService(sp.GetRequiredService<SettingsService>()));
-		
 		builder.Services.AddSingleton<InitializationService>();
+		builder.Services.AddSingleton<ThemeService>();
 
 		// ViewModels
 		builder.Services.AddTransient<DashboardViewModel>();
@@ -62,10 +62,7 @@ public static class MauiProgram
 #endif
 
 		var app = builder.Build();
-		
-		// Initialize service registry for converters
-		ServiceRegistry.Initialize(app.Services.GetRequiredService<IDataService>());
-		
+
 		return app;
 	}
 }

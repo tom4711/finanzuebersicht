@@ -40,7 +40,7 @@ namespace Finanzuebersicht.Tests.Services
             await File.WriteAllTextAsync(Path.Combine(_tempDir, "transactions.json"), JsonSerializer.Serialize(transactions, jsonOptions));
 
             // Use SettingsService to point LocalDataService to temp dir
-            var settings = new SettingsService();
+            var settings = new SettingsService(Path.Combine(_tempDir, "settings.json"));
             settings.Set("DataPath", _tempDir);
             var ds = new LocalDataService(settings);
 
@@ -51,6 +51,7 @@ namespace Finanzuebersicht.Tests.Services
             Assert.Equal(175m, summary.Total);
             Assert.Equal(2, summary.ByCategory.Count);
             var essen = summary.ByCategory.Find(c => c.CategoryId == "c1");
+            Assert.NotNull(essen);
             Assert.Equal(125m, essen.Total);
         }
 

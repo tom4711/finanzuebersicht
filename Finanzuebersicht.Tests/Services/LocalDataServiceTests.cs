@@ -14,8 +14,9 @@ public class LocalDataServiceTests : IDisposable
         _testDir = Path.Combine(Path.GetTempPath(), $"finanz_test_{Guid.NewGuid():N}");
         Directory.CreateDirectory(_testDir);
 
-        // LocalDataService nutzt Environment.SpecialFolder – wir testen indirekt über die public API
-        _service = new LocalDataService();
+        var settings = new SettingsService(Path.Combine(_testDir, "settings.json"));
+        settings.Set("DataPath", _testDir);
+        _service = new LocalDataService(settings);
     }
 
     public void Dispose()
@@ -53,7 +54,7 @@ public class LocalDataServiceTests : IDisposable
         await _service.SaveCategoryAsync(cat);
 
         var result = await _service.GetCategoriesAsync();
-        Assert.Single(result.Where(c => c.Id == cat.Id));
+        Assert.Single(result, c => c.Id == cat.Id);
         Assert.Equal("Neu", result.First(c => c.Id == cat.Id).Name);
     }
 

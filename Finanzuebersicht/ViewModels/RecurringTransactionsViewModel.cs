@@ -51,6 +51,13 @@ public partial class RecurringTransactionsViewModel : ObservableObject
     [RelayCommand]
     private async Task DeleteDauerauftrag(RecurringTransaction dauerauftrag)
     {
+        var bestaetigt = await Shell.Current.DisplayAlert(
+            "Dauerauftrag löschen",
+            $"\"{dauerauftrag.Titel}\" wirklich löschen?",
+            "Löschen", "Abbrechen");
+
+        if (!bestaetigt) return;
+
         await _dataService.DeleteRecurringTransactionAsync(dauerauftrag.Id);
         Dauerauftraege.Remove(dauerauftrag);
     }

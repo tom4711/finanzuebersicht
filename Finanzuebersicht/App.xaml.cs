@@ -1,23 +1,24 @@
 ﻿using Finanzuebersicht.Services;
-using Finanzuebersicht.ViewModels;
 
 namespace Finanzuebersicht;
 
 public partial class App : Application
 {
 	private readonly IDataService _dataService;
+	private readonly InitializationService _initService;
+	private readonly ThemeService _themeService;
 	private readonly string _savedTheme;
 
-	public App(InitializationService initService, IDataService dataService, SettingsService settings)
+	public App(InitializationService initService, IDataService dataService, SettingsService settings, ThemeService themeService)
 	{
 		InitializeComponent();
 		_dataService = dataService;
+		_initService = initService;
+		_themeService = themeService;
 
 		// Gespeichertes Theme anwenden (MAUI-Ebene)
 		_savedTheme = settings.Get("Theme", "System");
-		SettingsViewModel.ApplyTheme(_savedTheme);
-
-		Task.Run(async () => await initService.InitializeAsync());
+		_themeService.Apply(_savedTheme);
 	}
 
 	protected override Window CreateWindow(IActivationState? activationState)
@@ -25,7 +26,7 @@ public partial class App : Application
 		var window = new Window(new AppShell());
 
 		// UIKit-Style nach Window-Erstellung setzen
-		window.Created += (_, _) => SettingsViewModel.ApplyTheme(_savedTheme);
+		window.Created += (_, _) => _themeService.Apply(_savedTheme);
 
 		window.Resumed += async (s, e) =>
 		{
@@ -38,6 +39,7 @@ public partial class App : Application
 	protected override async void OnStart()
 	{
 		base.OnStart();
+		await _initService.InitializeAsync();
 		await _dataService.GeneratePendingRecurringTransactionsAsync();
 	}
 }

@@ -21,6 +21,21 @@ dotnet test Finanzuebersicht.Tests
 
 > Xcode version validation is disabled in the `.csproj` (`ValidateXcodeVersion=false`) due to SDK/Xcode version mismatch.
 
+### Running on macOS (Mac Catalyst)
+
+`dotnet run` and `-t:Run` fail due to macOS sandboxing. To launch the app, copy it to `/Applications` first:
+
+```bash
+cp -R Finanzuebersicht/bin/Debug/net10.0-maccatalyst/maccatalyst-x64/Finanzübersicht.app /Applications/
+open /Applications/Finanzübersicht.app
+```
+
+For a one-liner after every build:
+
+```bash
+dotnet build -f net10.0-maccatalyst && cp -R Finanzuebersicht/bin/Debug/net10.0-maccatalyst/maccatalyst-x64/Finanzübersicht.app /Applications/ && open /Applications/Finanzübersicht.app
+```
+
 ## Architecture
 
 **MVVM** using `CommunityToolkit.Mvvm` source generators:
