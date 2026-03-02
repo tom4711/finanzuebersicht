@@ -2,7 +2,7 @@
 
 # Finanzübersicht
 
-**Persönliche Finanzverwaltung für iOS und macOS**
+**Persönliche Finanzverwaltung für iOS, macOS und Windows**
 
 [![CI](https://github.com/tom4711/finanzuebersicht/actions/workflows/ci.yml/badge.svg)](https://github.com/tom4711/finanzuebersicht/actions/workflows/ci.yml)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
