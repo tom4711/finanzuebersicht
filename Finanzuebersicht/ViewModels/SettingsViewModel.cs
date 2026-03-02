@@ -16,6 +16,9 @@ public partial class SettingsViewModel : ObservableObject
     private int selectedThemeIndex;
 
     [ObservableProperty]
+    private int selectedLanguageIndex;
+
+    [ObservableProperty]
     private string dataPath = string.Empty;
 
     public string AppVersion { get; }
@@ -52,6 +55,15 @@ public partial class SettingsViewModel : ObservableObject
             _ => 0
         };
 
+        // Sprache laden
+        var lang = _loc.CurrentLanguageCode;
+        SelectedLanguageIndex = lang switch
+        {
+            "de" => 1,
+            "en" => 2,
+            _ => 0
+        };
+
         // Datenpfad laden
         DataPath = _settings.Get("DataPath", "");
         if (string.IsNullOrWhiteSpace(DataPath))
@@ -68,6 +80,24 @@ public partial class SettingsViewModel : ObservableObject
         };
         _settings.Set("Theme", themeKey);
         _themeService.Apply(themeKey);
+    }
+
+    partial void OnSelectedLanguageIndexChanged(int value)
+    {
+        var code = value switch
+        {
+            1 => "de",
+            2 => "en",
+            _ => string.Empty  // Systemsprache
+        };
+        _loc.SetLanguage(string.IsNullOrEmpty(code) ? null : code);
+    }
+
+    [RelayCommand]
+    private void SetLanguage(string indexStr)
+    {
+        if (int.TryParse(indexStr, out var idx))
+            SelectedLanguageIndex = idx;
     }
 
     [RelayCommand]
