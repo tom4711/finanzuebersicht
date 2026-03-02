@@ -30,11 +30,13 @@ Finanzübersicht ist eine Open-Source-App zur einfachen Verwaltung von Einnahmen
 |-----------|-----------|
 | macOS     | ✅ Stabil |
 | iOS       | ✅ Stabil |
+| Windows   | ✅ Stabil |
 
 ## Voraussetzungen
 
 - [.NET 10 SDK](https://dotnet.microsoft.com/download)
 - macOS mit Xcode (für iOS/macOS Build)
+- Windows 10/11 mit Visual Studio 2022 (für Windows Build)
 
 ```bash
 dotnet workload install maui
