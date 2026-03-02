@@ -117,9 +117,16 @@ public partial class RecurringTransactionDetailViewModel : ObservableObject
 
     private async Task SetKategorieAsync(string kategorieId)
     {
-        if (Kategorien.Count == 0)
-            await LoadKategorien();
+        try
+        {
+            if (Kategorien.Count == 0)
+                await LoadKategorien();
 
-        SelectedKategorie = Kategorien.FirstOrDefault(k => k.Id == kategorieId);
+            SelectedKategorie = Kategorien.FirstOrDefault(k => k.Id == kategorieId);
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Fehler beim Laden der Kategorie: {ex.Message}");
+        }
     }
 }

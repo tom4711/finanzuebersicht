@@ -18,8 +18,6 @@ namespace Finanzuebersicht.ViewModels
         {
             _dataService = dataService;
             Year = DateTime.Now.Year;
-            LoadCommand = new AsyncRelayCommand(LoadAsync);
-
             Categories = new List<CategorySummary>();
         }
 
@@ -32,8 +30,7 @@ namespace Finanzuebersicht.ViewModels
         [ObservableProperty]
         private List<CategorySummary> categories;
 
-        public IAsyncRelayCommand LoadCommand { get; }
-
+        [RelayCommand]
         private async Task LoadAsync()
         {
             try

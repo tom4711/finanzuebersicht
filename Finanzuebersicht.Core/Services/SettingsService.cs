@@ -6,22 +6,9 @@ namespace Finanzuebersicht.Services;
 public class SettingsService
 {
     private static readonly string SettingsFile = Path.Combine(
-        GetDefaultDataDir(), "settings.json");
+        AppPaths.GetDefaultDataDir(), "settings.json");
 
-    private static string GetDefaultDataDir()
-    {
-        // On macOS, .NET maps LocalApplicationData to ~/.local/share (Linux convention).
-        // The correct macOS path is ~/Library/Application Support.
-        if (OperatingSystem.IsMacOS() || OperatingSystem.IsMacCatalyst())
-        {
-            return Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
-                "Library", "Application Support", "Finanzuebersicht");
-        }
-        return Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-            "Finanzuebersicht");
-    }
+    private static string GetDefaultDataDir() => AppPaths.GetDefaultDataDir();
 
     private Dictionary<string, string> _settings = [];
     private readonly object _lock = new();
@@ -58,8 +45,9 @@ public class SettingsService
                 _settings = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(json) ?? [];
             }
         }
-        catch
+        catch (Exception ex)
         {
+            System.Diagnostics.Debug.WriteLine($"Fehler beim Laden der Einstellungen: {ex.Message}");
             _settings = [];
         }
     }
@@ -74,9 +62,9 @@ public class SettingsService
                 new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
             File.WriteAllText(SettingsFile, json);
         }
-        catch
+        catch (Exception ex)
         {
-            // Fehler beim Speichern ignorieren
+            System.Diagnostics.Debug.WriteLine($"Fehler beim Speichern der Einstellungen: {ex.Message}");
         }
     }
 }

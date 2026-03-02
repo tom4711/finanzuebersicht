@@ -14,8 +14,9 @@ public class LocalDataServiceTests : IDisposable
         _testDir = Path.Combine(Path.GetTempPath(), $"finanz_test_{Guid.NewGuid():N}");
         Directory.CreateDirectory(_testDir);
 
-        // LocalDataService nutzt Environment.SpecialFolder – wir testen indirekt über die public API
-        _service = new LocalDataService();
+        var settings = new SettingsService();
+        settings.Set("DataPath", _testDir);
+        _service = new LocalDataService(settings);
     }
 
     public void Dispose()

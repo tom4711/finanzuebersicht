@@ -6,7 +6,7 @@ using Finanzuebersicht.Services;
 
 namespace Finanzuebersicht.ViewModels;
 
-public partial class DashboardViewModel : ObservableObject
+public partial class DashboardViewModel : MonthNavigationViewModel
 {
     private readonly IDataService _dataService;
 
@@ -20,9 +20,6 @@ public partial class DashboardViewModel : ObservableObject
 
     [ObservableProperty]
     private decimal bilanz;
-
-    [ObservableProperty]
-    private string monatAnzeige = string.Empty;
 
     [ObservableProperty]
     private ObservableCollection<CategorySummary> kategorieAusgaben = [];
@@ -58,16 +55,16 @@ public partial class DashboardViewModel : ObservableObject
 
     public bool IsYearView => !IsMonthView;
 
-    private DateTime _aktuellerMonat = new(DateTime.Today.Year, DateTime.Today.Month, 1);
     private int _aktuellesJahr = DateTime.Today.Year;
     private List<Category> _alleKategorien = [];
 
     public DashboardViewModel(IDataService dataService)
     {
         _dataService = dataService;
-        UpdateMonatAnzeige();
         UpdateJahrAnzeige();
     }
+
+    protected override async Task OnMonthChangedAsync() => await LoadDashboard();
 
     [RelayCommand]
     private async Task LoadDashboard()
@@ -91,12 +88,12 @@ public partial class DashboardViewModel : ObservableObject
     {
         _alleKategorien = await _dataService.GetCategoriesAsync();
 
-        var von = _aktuellerMonat;
-        var bis = _aktuellerMonat.AddMonths(1).AddDays(-1);
+        var von = AktuellerMonat;
+        var bis = AktuellerMonat.AddMonths(1).AddDays(-1);
         var transaktionen = await _dataService.GetTransactionsAsync(von, bis);
 
         // Prognose: zukünftige Monate mit erwarteten Daueraufträgen ergänzen
-        IstPrognose = _aktuellerMonat > new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);
+        IstPrognose = AktuellerMonat > new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);
         if (IstPrognose)
         {
             var dauerauftraege = await _dataService.GetRecurringTransactionsAsync();
@@ -210,22 +207,6 @@ public partial class DashboardViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private async Task NextMonth()
-    {
-        _aktuellerMonat = _aktuellerMonat.AddMonths(1);
-        UpdateMonatAnzeige();
-        await LoadDashboard();
-    }
-
-    [RelayCommand]
-    private async Task PreviousMonth()
-    {
-        _aktuellerMonat = _aktuellerMonat.AddMonths(-1);
-        UpdateMonatAnzeige();
-        await LoadDashboard();
-    }
-
-    [RelayCommand]
     private async Task NextYear()
     {
         _aktuellesJahr++;
@@ -239,12 +220,6 @@ public partial class DashboardViewModel : ObservableObject
         _aktuellesJahr--;
         UpdateJahrAnzeige();
         await LoadDashboard();
-    }
-
-    private void UpdateMonatAnzeige()
-    {
-        MonatAnzeige = _aktuellerMonat.ToString("MMMM yyyy",
-            System.Globalization.CultureInfo.GetCultureInfo("de-DE"));
     }
 
     private void UpdateJahrAnzeige()

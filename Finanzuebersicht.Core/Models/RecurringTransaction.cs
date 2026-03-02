@@ -10,5 +10,5 @@ public class RecurringTransaction
     public DateTime Startdatum { get; set; } = DateTime.Today;
     public DateTime? Enddatum { get; set; }
     public bool Aktiv { get; set; } = true;
-    public DateTime LetzteAusfuehrung { get; set; }
+    public DateTime? LetzteAusfuehrung { get; set; }
 }

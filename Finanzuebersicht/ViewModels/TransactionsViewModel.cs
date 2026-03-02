@@ -7,7 +7,7 @@ using Finanzuebersicht.Views;
 
 namespace Finanzuebersicht.ViewModels;
 
-public partial class TransactionsViewModel : ObservableObject
+public partial class TransactionsViewModel : MonthNavigationViewModel
 {
     private readonly IDataService _dataService;
 
@@ -17,16 +17,12 @@ public partial class TransactionsViewModel : ObservableObject
     [ObservableProperty]
     private bool isLoading;
 
-    [ObservableProperty]
-    private string monatAnzeige = string.Empty;
-
-    private DateTime _aktuellerMonat = new(DateTime.Today.Year, DateTime.Today.Month, 1);
-
     public TransactionsViewModel(IDataService dataService)
     {
         _dataService = dataService;
-        UpdateMonatAnzeige();
     }
+
+    protected override async Task OnMonthChangedAsync() => await LoadTransaktionen();
 
     [RelayCommand]
     private async Task LoadTransaktionen()
@@ -36,8 +32,8 @@ public partial class TransactionsViewModel : ObservableObject
 
         try
         {
-            var von = _aktuellerMonat;
-            var bis = _aktuellerMonat.AddMonths(1).AddDays(-1);
+            var von = AktuellerMonat;
+            var bis = AktuellerMonat.AddMonths(1).AddDays(-1);
             var liste = await _dataService.GetTransactionsAsync(von, bis);
 
             var gruppen = liste
@@ -47,6 +43,11 @@ public partial class TransactionsViewModel : ObservableObject
                 .ToList();
 
             TransaktionsGruppen = new ObservableCollection<TransactionGroup>(gruppen);
+
+            // Kategorie-Icon-Cache für Converter aktualisieren
+            var categories = await _dataService.GetCategoriesAsync();
+            Converters.KategorieIdToIconConverter.SetCache(
+                categories.ToDictionary(c => c.Id, c => c.Icon ?? "📁"));
         }
         finally
         {
@@ -77,27 +78,5 @@ public partial class TransactionsViewModel : ObservableObject
             parameter["Transaction"] = transaktion;
 
         await Shell.Current.GoToAsync(nameof(TransactionDetailPage), parameter);
-    }
-
-    [RelayCommand]
-    private async Task NextMonth()
-    {
-        _aktuellerMonat = _aktuellerMonat.AddMonths(1);
-        UpdateMonatAnzeige();
-        await LoadTransaktionen();
-    }
-
-    [RelayCommand]
-    private async Task PreviousMonth()
-    {
-        _aktuellerMonat = _aktuellerMonat.AddMonths(-1);
-        UpdateMonatAnzeige();
-        await LoadTransaktionen();
-    }
-
-    private void UpdateMonatAnzeige()
-    {
-        MonatAnzeige = _aktuellerMonat.ToString("MMMM yyyy",
-            System.Globalization.CultureInfo.GetCultureInfo("de-DE"));
     }
 }

@@ -8,6 +8,7 @@ namespace Finanzuebersicht.ViewModels;
 public partial class SettingsViewModel : ObservableObject
 {
     private readonly SettingsService _settings;
+    private readonly ThemeService _themeService;
 
     [ObservableProperty]
     private int selectedThemeIndex;
@@ -26,9 +27,10 @@ public partial class SettingsViewModel : ObservableObject
         new("xUnit", "Unit-Test-Framework (nur Tests)"),
     ];
 
-    public SettingsViewModel(SettingsService settings)
+    public SettingsViewModel(SettingsService settings, ThemeService themeService)
     {
         _settings = settings;
+        _themeService = themeService;
 
         // Version aus Assembly-Metadaten lesen (von Nerdbank.GitVersioning gesetzt)
         var asm = Assembly.GetExecutingAssembly();
@@ -62,7 +64,7 @@ public partial class SettingsViewModel : ObservableObject
             _ => "System"
         };
         _settings.Set("Theme", themeKey);
-        ApplyTheme(themeKey);
+        _themeService.Apply(themeKey);
     }
 
     [RelayCommand]
@@ -123,54 +125,7 @@ public partial class SettingsViewModel : ObservableObject
             "OK");
     }
 
-    private static string GetDefaultDataDir()
-    {
-        if (OperatingSystem.IsMacOS() || OperatingSystem.IsMacCatalyst())
-        {
-            return Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
-                "Library", "Application Support", "Finanzuebersicht");
-        }
-        return Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-            "Finanzuebersicht");
-    }
-
-    public static void ApplyTheme(string themeKey)
-    {
-        if (Application.Current is null) return;
-
-        Application.Current.UserAppTheme = themeKey switch
-        {
-            "Light" => AppTheme.Light,
-            "Dark" => AppTheme.Dark,
-            _ => AppTheme.Unspecified
-        };
-
-#if MACCATALYST || IOS
-        // Sync UIKit interface style so native controls (nav bar, etc.) follow the theme
-        MainThread.BeginInvokeOnMainThread(() =>
-        {
-            var style = themeKey switch
-            {
-                "Light" => UIKit.UIUserInterfaceStyle.Light,
-                "Dark" => UIKit.UIUserInterfaceStyle.Dark,
-                _ => UIKit.UIUserInterfaceStyle.Unspecified
-            };
-
-            foreach (var scene in UIKit.UIApplication.SharedApplication.ConnectedScenes)
-            {
-                if (scene is UIKit.UIWindowScene windowScene)
-                {
-                    foreach (var window in windowScene.Windows)
-                    {
-                        window.OverrideUserInterfaceStyle = style;
-                    }
-                }
-            }
-        });
-#endif
-    }
+    private static string GetDefaultDataDir() => AppPaths.GetDefaultDataDir();
 }
 
 public record LibraryInfo(string Name, string Description);

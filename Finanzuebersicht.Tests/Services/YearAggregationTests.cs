@@ -51,6 +51,7 @@ namespace Finanzuebersicht.Tests.Services
             Assert.Equal(175m, summary.Total);
             Assert.Equal(2, summary.ByCategory.Count);
             var essen = summary.ByCategory.Find(c => c.CategoryId == "c1");
+            Assert.NotNull(essen);
             Assert.Equal(125m, essen.Total);
         }
 

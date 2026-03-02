@@ -8,24 +8,11 @@ namespace Finanzuebersicht.Services;
 /// Lokale JSON-basierte Implementierung von IDataService.
 /// Unterstützt einen konfigurierbaren Speicherpfad (z.B. iCloud Drive).
 /// </summary>
-public class LocalDataService : IDataService
+public class LocalDataService : IDataService, IDisposable
 {
-    private static readonly string DefaultDataDir = GetDefaultDataDir();
+    private static readonly string DefaultDataDir = AppPaths.GetDefaultDataDir();
 
-    private static string GetDefaultDataDir()
-    {
-        // On macOS, .NET maps LocalApplicationData to ~/.local/share (Linux convention).
-        // The correct macOS path is ~/Library/Application Support.
-        if (OperatingSystem.IsMacOS() || OperatingSystem.IsMacCatalyst())
-        {
-            return Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
-                "Library", "Application Support", "Finanzuebersicht");
-        }
-        return Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-            "Finanzuebersicht");
-    }
+    private static string GetDefaultDataDir() => AppPaths.GetDefaultDataDir();
 
     private readonly string _dataDir;
     private string CategoriesFile => Path.Combine(_dataDir, "categories.json");
@@ -145,6 +132,7 @@ public class LocalDataService : IDataService
         var expenditure = items.Where(t => t.Typ == TransactionType.Ausgabe).ToList();
 
         var categories = await GetCategoriesAsync();
+        var catDict = categories.ToDictionary(c => c.Id);
 
         var monthSummary = new MonthSummary
         {
@@ -153,13 +141,17 @@ public class LocalDataService : IDataService
             Total = expenditure.Sum(t => t.Betrag),
             ByCategory = expenditure
                 .GroupBy(t => t.KategorieId)
-                .Select(g => new CategorySummary
+                .Select(g =>
                 {
-                    CategoryId = g.Key,
-                    CategoryName = categories.FirstOrDefault(c => c.Id == g.Key)?.Name ?? string.Empty,
-                    Total = g.Sum(t => t.Betrag),
-                    Color = categories.FirstOrDefault(c => c.Id == g.Key)?.Color ?? "#007AFF",
-                    Icon = categories.FirstOrDefault(c => c.Id == g.Key)?.Icon ?? "📁"
+                    catDict.TryGetValue(g.Key, out var cat);
+                    return new CategorySummary
+                    {
+                        CategoryId = g.Key,
+                        CategoryName = cat?.Name ?? string.Empty,
+                        Total = g.Sum(t => t.Betrag),
+                        Color = cat?.Color ?? "#007AFF",
+                        Icon = cat?.Icon ?? "📁"
+                    };
                 })
                 .ToList()
         };
@@ -176,6 +168,7 @@ public class LocalDataService : IDataService
         var expenditure = items.Where(t => t.Typ == TransactionType.Ausgabe).ToList();
 
         var categories = await GetCategoriesAsync();
+        var catDict = categories.ToDictionary(c => c.Id);
 
         var yearSummary = new YearSummary
         {
@@ -193,13 +186,17 @@ public class LocalDataService : IDataService
                 Total = monthItems.Sum(t => t.Betrag),
                 ByCategory = monthItems
                     .GroupBy(t => t.KategorieId)
-                    .Select(g => new CategorySummary
+                    .Select(g =>
                     {
-                        CategoryId = g.Key,
-                        CategoryName = categories.FirstOrDefault(c => c.Id == g.Key)?.Name ?? string.Empty,
-                        Total = g.Sum(t => t.Betrag),
-                        Color = categories.FirstOrDefault(c => c.Id == g.Key)?.Color ?? "#007AFF",
-                        Icon = categories.FirstOrDefault(c => c.Id == g.Key)?.Icon ?? "📁"
+                        catDict.TryGetValue(g.Key, out var cat);
+                        return new CategorySummary
+                        {
+                            CategoryId = g.Key,
+                            CategoryName = cat?.Name ?? string.Empty,
+                            Total = g.Sum(t => t.Betrag),
+                            Color = cat?.Color ?? "#007AFF",
+                            Icon = cat?.Icon ?? "📁"
+                        };
                     })
                     .ToList()
             };
@@ -208,13 +205,17 @@ public class LocalDataService : IDataService
 
         yearSummary.ByCategory = expenditure
             .GroupBy(t => t.KategorieId)
-            .Select(g => new CategorySummary
+            .Select(g =>
             {
-                CategoryId = g.Key,
-                CategoryName = categories.FirstOrDefault(c => c.Id == g.Key)?.Name ?? string.Empty,
-                Total = g.Sum(t => t.Betrag),
-                Color = categories.FirstOrDefault(c => c.Id == g.Key)?.Color ?? "#007AFF",
-                Icon = categories.FirstOrDefault(c => c.Id == g.Key)?.Icon ?? "📁"
+                catDict.TryGetValue(g.Key, out var cat);
+                return new CategorySummary
+                {
+                    CategoryId = g.Key,
+                    CategoryName = cat?.Name ?? string.Empty,
+                    Total = g.Sum(t => t.Betrag),
+                    Color = cat?.Color ?? "#007AFF",
+                    Icon = cat?.Icon ?? "📁"
+                };
             })
             .ToList();
 
@@ -270,9 +271,9 @@ public class LocalDataService : IDataService
             if (da.Enddatum.HasValue && da.Enddatum.Value < heute)
                 continue;
 
-            var naechsterMonat = da.LetzteAusfuehrung == default
+            var naechsterMonat = !da.LetzteAusfuehrung.HasValue
                 ? da.Startdatum
-                : new DateTime(da.LetzteAusfuehrung.Year, da.LetzteAusfuehrung.Month, 1).AddMonths(1);
+                : new DateTime(da.LetzteAusfuehrung.Value.Year, da.LetzteAusfuehrung.Value.Month, 1).AddMonths(1);
 
             while (naechsterMonat <= heute)
             {
@@ -306,7 +307,15 @@ public class LocalDataService : IDataService
             return [];
 
         var json = await File.ReadAllTextAsync(path);
-        return JsonSerializer.Deserialize<List<T>>(json, JsonOptions) ?? [];
+        try
+        {
+            return JsonSerializer.Deserialize<List<T>>(json, JsonOptions) ?? [];
+        }
+        catch (JsonException ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Fehler beim Deserialisieren von {path}: {ex.Message}");
+            return [];
+        }
     }
 
     private static async Task SaveAsync<T>(string path, List<T> items)
@@ -316,4 +325,11 @@ public class LocalDataService : IDataService
     }
 
     #endregion
+
+    public void Dispose()
+    {
+        _categoriesLock.Dispose();
+        _transactionsLock.Dispose();
+        _recurringLock.Dispose();
+    }
 }
