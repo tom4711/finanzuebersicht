@@ -173,6 +173,49 @@ Finanzuebersicht/
 
 ---
 
+## Phase 2 (später) — Projektaufteilung ohne Framework-Wechsel
+
+**Ziel:** Architektur weiter entkoppeln, dabei bewusst bei `CommunityToolkit.Mvvm` bleiben
+(kein Wechsel auf Prism geplant).
+
+### Hintergrund
+- Für ein Solo-Projekt ist `CommunityToolkit.Mvvm` leichtgewichtig und ausreichend.
+- Die Trennung in zusätzliche Projekte verbessert dennoch Wartbarkeit und Austauschbarkeit.
+
+### Geplante Zielstruktur
+
+```text
+Finanzuebersicht.Domain/          (optional, fachliche Kernmodelle)
+Finanzuebersicht.Application/     (UseCases, Ports/Interfaces, Validierung)
+Finanzuebersicht.Infrastructure/  (JSON/SQLite/Cloud-Adapter, z. B. LocalDataService)
+Finanzuebersicht/                 (MAUI UI, ViewModels, DI-Komposition)
+Finanzuebersicht.Tests/           (Tests pro Layer)
+```
+
+### Migrationsvorschlag in kleinen PRs
+
+1. **PR A — `Finanzuebersicht.Application` einführen (strukturierend)**
+  - Neues Projekt anlegen
+  - Bestehende Interfaces/Verträge (Repositories/Services) dorthin verschieben
+  - Referenzen und Namespaces ohne Logikänderung anpassen
+
+2. **PR B — `Finanzuebersicht.Infrastructure` einführen (adapterseitig)**
+  - Neues Projekt anlegen
+  - `LocalDataService` und künftige Persistenzadapter dorthin verschieben
+  - DI in `MauiProgram.cs` neu verdrahten
+
+3. **PR C — Teststruktur nachziehen und konsolidieren**
+  - Tests je Layer sauber zuordnen
+  - Build-/Testläufe für alle Projekte absichern
+
+### Akzeptanzkriterien für Phase 2
+- Keine funktionale Verhaltensänderung in der App
+- Alle bestehenden Tests bleiben grün
+- UI referenziert nur Application-Contracts, keine konkreten Infrastructure-Typen
+- Persistenzadapter sind austauschbar, ohne ViewModels anzupassen
+
+---
+
 ## Technische Schulden / Beobachtungen
 
 1. `LocalDataService` enthält aktuell mehrere Verantwortungen (CRUD + Reporting + Recurring).
@@ -188,6 +231,36 @@ Finanzuebersicht/
 - Austausch der Persistenz ist auf Infrastructure/Adapter begrenzt.
 - ViewModels bleiben dünn und testbar.
 - Tests schützen Kernlogik und verhindern Regressionsfehler bei Wachstum.
+
+---
+
+## Umsetzungsstand (Stand: PR #34)
+
+### Bereits umgesetzt
+
+- **PR 1 (UI-Kopplung lösen):** abgeschlossen
+  - Navigation/Dialog über `INavigationService` und `IDialogService`
+  - ViewModels ohne direkte `Shell.Current`-/`DisplayAlert`-Zugriffe
+
+- **PR 2 (`IDataService` hinter Ports aufsplitten):** abgeschlossen
+  - Aufteilung in kleinere Verträge (`ICategoryRepository`, `ITransactionRepository`,
+    `IRecurringTransactionRepository`)
+  - Consumer auf granulare Ports migriert
+  - Kompatibilitäts-Fassade (`DataServiceFacade`) eingeführt
+
+- **PR 3 (Fachlogik zentralisieren):** weitgehend abgeschlossen
+  - `ITransactionValidationService` + `TransactionValidationService`
+  - `IRecurringGenerationService` + `RecurringGenerationService`
+  - `IReportingService` + `ReportingService`
+
+- **Styles/Farbkonsolidierung:** teilweise umgesetzt
+  - Converter-Farben zentralisiert (`ColorResourceHelper`, PR #34)
+
+### Noch offen
+
+- UseCase-Ordner-/Typstruktur in Core konsequent aufbauen (`UseCases/*`)
+- Restliche hardcodierte Farbwerte (u. a. in ViewModels/Charts) auf zentrale Tokens umstellen
+- Später optional: Phase 2 mit separaten Projekten (`Application`/`Infrastructure`)
 
 ---
 
