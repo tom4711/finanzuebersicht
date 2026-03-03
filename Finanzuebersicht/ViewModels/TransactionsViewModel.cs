@@ -9,7 +9,8 @@ namespace Finanzuebersicht.ViewModels;
 
 public partial class TransactionsViewModel : MonthNavigationViewModel
 {
-    private readonly IDataService _dataService;
+    private readonly ITransactionRepository _transactionRepository;
+    private readonly ICategoryRepository _categoryRepository;
     private readonly INavigationService _navigationService;
 
     [ObservableProperty]
@@ -18,9 +19,13 @@ public partial class TransactionsViewModel : MonthNavigationViewModel
     [ObservableProperty]
     private bool isLoading;
 
-    public TransactionsViewModel(IDataService dataService, INavigationService navigationService)
+    public TransactionsViewModel(
+        ITransactionRepository transactionRepository,
+        ICategoryRepository categoryRepository,
+        INavigationService navigationService)
     {
-        _dataService = dataService;
+        _transactionRepository = transactionRepository;
+        _categoryRepository = categoryRepository;
         _navigationService = navigationService;
     }
 
@@ -36,7 +41,7 @@ public partial class TransactionsViewModel : MonthNavigationViewModel
         {
             var von = AktuellerMonat;
             var bis = AktuellerMonat.AddMonths(1).AddDays(-1);
-            var liste = await _dataService.GetTransactionsAsync(von, bis);
+            var liste = await _transactionRepository.GetTransactionsAsync(von, bis);
 
             var gruppen = liste
                 .GroupBy(t => t.Datum.Date)
@@ -47,7 +52,7 @@ public partial class TransactionsViewModel : MonthNavigationViewModel
             TransaktionsGruppen = new ObservableCollection<TransactionGroup>(gruppen);
 
             // Kategorie-Icon-Cache für Converter aktualisieren
-            var categories = await _dataService.GetCategoriesAsync();
+            var categories = await _categoryRepository.GetCategoriesAsync();
             Converters.KategorieIdToIconConverter.SetCache(
                 categories.ToDictionary(c => c.Id, c => c.Icon ?? "📁"));
         }
@@ -60,7 +65,7 @@ public partial class TransactionsViewModel : MonthNavigationViewModel
     [RelayCommand]
     private async Task DeleteTransaktion(Transaction transaktion)
     {
-        await _dataService.DeleteTransactionAsync(transaktion.Id);
+        await _transactionRepository.DeleteTransactionAsync(transaktion.Id);
         foreach (var gruppe in TransaktionsGruppen)
         {
             if (gruppe.Remove(transaktion))

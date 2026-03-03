@@ -10,7 +10,7 @@ namespace Finanzuebersicht.ViewModels;
 
 public partial class RecurringTransactionsViewModel : ObservableObject
 {
-    private readonly IDataService _dataService;
+    private readonly IRecurringTransactionRepository _recurringTransactionRepository;
     private readonly ILocalizationService _loc;
     private readonly INavigationService _navigationService;
     private readonly IDialogService _dialogService;
@@ -22,12 +22,12 @@ public partial class RecurringTransactionsViewModel : ObservableObject
     private bool isLoading;
 
     public RecurringTransactionsViewModel(
-        IDataService dataService,
+        IRecurringTransactionRepository recurringTransactionRepository,
         ILocalizationService localizationService,
         INavigationService navigationService,
         IDialogService dialogService)
     {
-        _dataService = dataService;
+        _recurringTransactionRepository = recurringTransactionRepository;
         _loc = localizationService;
         _navigationService = navigationService;
         _dialogService = dialogService;
@@ -41,7 +41,7 @@ public partial class RecurringTransactionsViewModel : ObservableObject
 
         try
         {
-            var liste = await _dataService.GetRecurringTransactionsAsync();
+            var liste = await _recurringTransactionRepository.GetRecurringTransactionsAsync();
             Dauerauftraege = new ObservableCollection<RecurringTransaction>(
                 liste.OrderByDescending(d => d.Aktiv).ThenBy(d => d.Titel));
         }
@@ -55,7 +55,7 @@ public partial class RecurringTransactionsViewModel : ObservableObject
     private async Task ToggleAktiv(RecurringTransaction dauerauftrag)
     {
         dauerauftrag.Aktiv = !dauerauftrag.Aktiv;
-        await _dataService.SaveRecurringTransactionAsync(dauerauftrag);
+        await _recurringTransactionRepository.SaveRecurringTransactionAsync(dauerauftrag);
         await LoadDauerauftraege();
     }
 
@@ -69,7 +69,7 @@ public partial class RecurringTransactionsViewModel : ObservableObject
 
         if (!bestaetigt) return;
 
-        await _dataService.DeleteRecurringTransactionAsync(dauerauftrag.Id);
+        await _recurringTransactionRepository.DeleteRecurringTransactionAsync(dauerauftrag.Id);
         Dauerauftraege.Remove(dauerauftrag);
     }
 

@@ -10,7 +10,7 @@ namespace Finanzuebersicht.ViewModels;
 
 public partial class CategoriesViewModel : ObservableObject
 {
-    private readonly IDataService _dataService;
+    private readonly ICategoryRepository _categoryRepository;
     private readonly ILocalizationService _loc;
     private readonly INavigationService _navigationService;
     private readonly IDialogService _dialogService;
@@ -22,12 +22,12 @@ public partial class CategoriesViewModel : ObservableObject
     private bool isLoading;
 
     public CategoriesViewModel(
-        IDataService dataService,
+        ICategoryRepository categoryRepository,
         ILocalizationService localizationService,
         INavigationService navigationService,
         IDialogService dialogService)
     {
-        _dataService = dataService;
+        _categoryRepository = categoryRepository;
         _loc = localizationService;
         _navigationService = navigationService;
         _dialogService = dialogService;
@@ -41,7 +41,7 @@ public partial class CategoriesViewModel : ObservableObject
 
         try
         {
-            var liste = await _dataService.GetCategoriesAsync();
+            var liste = await _categoryRepository.GetCategoriesAsync();
             Kategorien = new ObservableCollection<Category>(liste);
         }
         finally
@@ -59,7 +59,7 @@ public partial class CategoriesViewModel : ObservableObject
             _loc.GetString(ResourceKeys.Btn_Ja), _loc.GetString(ResourceKeys.Btn_Nein));
         if (!confirm) return;
 
-        await _dataService.DeleteCategoryAsync(kategorie.Id);
+        await _categoryRepository.DeleteCategoryAsync(kategorie.Id);
         Kategorien.Remove(kategorie);
     }
 

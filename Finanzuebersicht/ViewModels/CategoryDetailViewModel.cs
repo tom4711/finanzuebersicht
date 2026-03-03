@@ -9,7 +9,7 @@ namespace Finanzuebersicht.ViewModels;
 [QueryProperty(nameof(Category), "Category")]
 public partial class CategoryDetailViewModel : ObservableObject
 {
-    private readonly IDataService _dataService;
+    private readonly ICategoryRepository _categoryRepository;
     private readonly INavigationService _navigationService;
     private Category? _existingCategory;
 
@@ -58,9 +58,9 @@ public partial class CategoryDetailViewModel : ObservableObject
         }
     }
 
-    public CategoryDetailViewModel(IDataService dataService, INavigationService navigationService)
+    public CategoryDetailViewModel(ICategoryRepository categoryRepository, INavigationService navigationService)
     {
-        _dataService = dataService;
+        _categoryRepository = categoryRepository;
         _navigationService = navigationService;
     }
 
@@ -75,7 +75,7 @@ public partial class CategoryDetailViewModel : ObservableObject
         category.Color = Color;
         category.Typ = Typ;
 
-        await _dataService.SaveCategoryAsync(category);
+        await _categoryRepository.SaveCategoryAsync(category);
         await _navigationService.GoBackAsync();
     }
 }

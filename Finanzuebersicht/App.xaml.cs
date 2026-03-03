@@ -4,19 +4,19 @@ namespace Finanzuebersicht;
 
 public partial class App : Application
 {
-	private readonly IDataService _dataService;
+	private readonly IRecurringGenerationService _recurringGenerationService;
 	private readonly InitializationService _initService;
 	private readonly ThemeService _themeService;
 	private readonly string _savedTheme;
 
-	public App(InitializationService initService, IDataService dataService, SettingsService settings,
+	public App(InitializationService initService, IRecurringGenerationService recurringGenerationService, SettingsService settings,
 		ThemeService themeService, ILocalizationService localizationService)
 	{
 		// Sprache vor InitializeComponent setzen, damit XAML-Bindings korrekt aufgelöst werden
 		localizationService.Initialize();
 
 		InitializeComponent();
-		_dataService = dataService;
+		_recurringGenerationService = recurringGenerationService;
 		_initService = initService;
 		_themeService = themeService;
 
@@ -34,7 +34,7 @@ public partial class App : Application
 
 		window.Resumed += async (s, e) =>
 		{
-			await _dataService.GeneratePendingRecurringTransactionsAsync();
+			await _recurringGenerationService.GeneratePendingRecurringTransactionsAsync();
 		};
 
 		return window;
@@ -44,6 +44,6 @@ public partial class App : Application
 	{
 		base.OnStart();
 		await _initService.InitializeAsync();
-		await _dataService.GeneratePendingRecurringTransactionsAsync();
+		await _recurringGenerationService.GeneratePendingRecurringTransactionsAsync();
 	}
 }

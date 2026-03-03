@@ -10,7 +10,8 @@ namespace Finanzuebersicht.ViewModels;
 [QueryProperty(nameof(Transaction), "Transaction")]
 public partial class TransactionDetailViewModel : ObservableObject
 {
-    private readonly IDataService _dataService;
+    private readonly ITransactionRepository _transactionRepository;
+    private readonly ICategoryRepository _categoryRepository;
     private Transaction? _existingTransaction;
     private readonly ILocalizationService _loc;
     private readonly INavigationService _navigationService;
@@ -54,12 +55,14 @@ public partial class TransactionDetailViewModel : ObservableObject
     }
 
     public TransactionDetailViewModel(
-        IDataService dataService,
+        ITransactionRepository transactionRepository,
+        ICategoryRepository categoryRepository,
         ILocalizationService localizationService,
         INavigationService navigationService,
         IDialogService dialogService)
     {
-        _dataService = dataService;
+        _transactionRepository = transactionRepository;
+        _categoryRepository = categoryRepository;
         _loc = localizationService;
         _navigationService = navigationService;
         _dialogService = dialogService;
@@ -68,7 +71,7 @@ public partial class TransactionDetailViewModel : ObservableObject
     [RelayCommand]
     private async Task LoadKategorien()
     {
-        var liste = await _dataService.GetCategoriesAsync();
+        var liste = await _categoryRepository.GetCategoriesAsync();
         Kategorien = new ObservableCollection<Category>(liste);
     }
 
@@ -130,7 +133,7 @@ public partial class TransactionDetailViewModel : ObservableObject
             transaction.KategorieId = SelectedKategorie.Id;
             transaction.Typ = Typ;
 
-            await _dataService.SaveTransactionAsync(transaction);
+            await _transactionRepository.SaveTransactionAsync(transaction);
             await _navigationService.GoBackAsync();
         }
         catch (Exception ex)
