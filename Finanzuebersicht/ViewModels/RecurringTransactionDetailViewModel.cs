@@ -11,6 +11,7 @@ public partial class RecurringTransactionDetailViewModel : ObservableObject
 {
     private readonly IRecurringTransactionRepository _recurringTransactionRepository;
     private readonly ICategoryRepository _categoryRepository;
+    private readonly ITransactionValidationService _validationService;
     private RecurringTransaction? _existing;
     private readonly INavigationService _navigationService;
 
@@ -72,10 +73,12 @@ public partial class RecurringTransactionDetailViewModel : ObservableObject
     public RecurringTransactionDetailViewModel(
         IRecurringTransactionRepository recurringTransactionRepository,
         ICategoryRepository categoryRepository,
+        ITransactionValidationService validationService,
         INavigationService navigationService)
     {
         _recurringTransactionRepository = recurringTransactionRepository;
         _categoryRepository = categoryRepository;
+        _validationService = validationService;
         _navigationService = navigationService;
     }
 
@@ -100,19 +103,21 @@ public partial class RecurringTransactionDetailViewModel : ObservableObject
     [RelayCommand]
     private async Task Save()
     {
-        if (!decimal.TryParse(BetragText,
-                System.Globalization.NumberStyles.Any,
+        if (!_validationService.TryValidate(
+                BetragText,
+                Titel,
+                SelectedKategorie != null,
                 System.Globalization.CultureInfo.CurrentCulture,
-                out var betrag) || betrag <= 0)
+                out var betrag,
+                out _))
             return;
 
-        if (string.IsNullOrWhiteSpace(Titel)) return;
-        if (SelectedKategorie == null) return;
+        var selectedCategory = SelectedKategorie!;
 
         var recurring = _existing ?? new RecurringTransaction();
         recurring.Betrag = betrag;
         recurring.Titel = Titel;
-        recurring.KategorieId = SelectedKategorie.Id;
+        recurring.KategorieId = selectedCategory.Id;
         recurring.Typ = Typ;
         recurring.Startdatum = Startdatum;
         recurring.Enddatum = HatEnddatum ? EnddatumWert : null;
