@@ -12,6 +12,7 @@ public partial class TransactionDetailViewModel : ObservableObject
 {
     private readonly ITransactionRepository _transactionRepository;
     private readonly ICategoryRepository _categoryRepository;
+    private readonly ITransactionValidationService _validationService;
     private Transaction? _existingTransaction;
     private readonly ILocalizationService _loc;
     private readonly INavigationService _navigationService;
@@ -57,12 +58,14 @@ public partial class TransactionDetailViewModel : ObservableObject
     public TransactionDetailViewModel(
         ITransactionRepository transactionRepository,
         ICategoryRepository categoryRepository,
+        ITransactionValidationService validationService,
         ILocalizationService localizationService,
         INavigationService navigationService,
         IDialogService dialogService)
     {
         _transactionRepository = transactionRepository;
         _categoryRepository = categoryRepository;
+        _validationService = validationService;
         _loc = localizationService;
         _navigationService = navigationService;
         _dialogService = dialogService;
@@ -86,51 +89,37 @@ public partial class TransactionDetailViewModel : ObservableObject
     {
         try
         {
-            // Validierung
-            if (!decimal.TryParse(BetragText,
-                    System.Globalization.NumberStyles.Any,
+            if (!_validationService.TryValidate(
+                    BetragText,
+                    Titel,
+                    SelectedKategorie != null,
                     System.Globalization.CultureInfo.CurrentCulture,
-                    out var betrag))
+                    out var betrag,
+                    out var error))
             {
+                var message = error switch
+                {
+                    TransactionInputError.InvalidAmountFormat => _loc.GetString(ResourceKeys.Err_UngueltigerBetrag),
+                    TransactionInputError.AmountMustBePositive => _loc.GetString(ResourceKeys.Err_BetragGroesserNull),
+                    TransactionInputError.TitleRequired => _loc.GetString(ResourceKeys.Err_TitelErforderlich),
+                    TransactionInputError.CategoryRequired => _loc.GetString(ResourceKeys.Err_KategorieErforderlich),
+                    _ => _loc.GetString(ResourceKeys.Err_UngueltigerBetrag)
+                };
+
                 await _dialogService.ShowAlertAsync(
                     _loc.GetString(ResourceKeys.Err_Titel),
-                    _loc.GetString(ResourceKeys.Err_UngueltigerBetrag),
+                    message,
                     _loc.GetString(ResourceKeys.Btn_OK));
                 return;
             }
 
-            if (betrag <= 0)
-            {
-                await _dialogService.ShowAlertAsync(
-                    _loc.GetString(ResourceKeys.Err_Titel),
-                    _loc.GetString(ResourceKeys.Err_BetragGroesserNull),
-                    _loc.GetString(ResourceKeys.Btn_OK));
-                return;
-            }
-
-            if (string.IsNullOrWhiteSpace(Titel))
-            {
-                await _dialogService.ShowAlertAsync(
-                    _loc.GetString(ResourceKeys.Err_Titel),
-                    _loc.GetString(ResourceKeys.Err_TitelErforderlich),
-                    _loc.GetString(ResourceKeys.Btn_OK));
-                return;
-            }
-
-            if (SelectedKategorie == null)
-            {
-                await _dialogService.ShowAlertAsync(
-                    _loc.GetString(ResourceKeys.Err_Titel),
-                    _loc.GetString(ResourceKeys.Err_KategorieErforderlich),
-                    _loc.GetString(ResourceKeys.Btn_OK));
-                return;
-            }
+            var selectedCategory = SelectedKategorie!;
 
             var transaction = _existingTransaction ?? new Transaction();
             transaction.Betrag = betrag;
             transaction.Titel = Titel;
             transaction.Datum = Datum;
-            transaction.KategorieId = SelectedKategorie.Id;
+            transaction.KategorieId = selectedCategory.Id;
             transaction.Typ = Typ;
 
             await _transactionRepository.SaveTransactionAsync(transaction);
