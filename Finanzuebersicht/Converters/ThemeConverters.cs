@@ -14,13 +14,15 @@ public class ThemeButtonConverter : IValueConverter
         {
             if (selected == idx)
             {
-                return Application.Current?.Resources.TryGetValue("Primary", out var primary) == true
-                    ? primary : Colors.Blue;
+                return ColorResourceHelper.GetColor("Primary", Colors.Blue);
             }
         }
-        return Application.Current?.RequestedTheme == AppTheme.Dark
-            ? Color.FromArgb("#3A3A3C")
-            : Color.FromArgb("#E5E5EA");
+
+        return ColorResourceHelper.GetThemeColor(
+            "Gray200",
+            "Gray900",
+            Color.FromArgb("#E5E5EA"),
+            Color.FromArgb("#3A3A3C"));
     }
 
     public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
@@ -38,10 +40,14 @@ public class ThemeButtonTextConverter : IValueConverter
         if (value is int selected && parameter is string paramStr && int.TryParse(paramStr, out var idx))
         {
             if (selected == idx)
-                return Colors.White;
+                return ColorResourceHelper.GetColor("White", Colors.White);
         }
-        return Application.Current?.RequestedTheme == AppTheme.Dark
-            ? Colors.White : Color.FromArgb("#000000");
+
+        return ColorResourceHelper.GetThemeColor(
+            "Black",
+            "White",
+            Color.FromArgb("#000000"),
+            Colors.White);
     }
 
     public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)

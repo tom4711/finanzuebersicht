@@ -7,9 +7,11 @@ public class BilanzColorConverter : IValueConverter
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
         if (value is decimal bilanz)
-            return bilanz >= 0 ? Color.FromArgb("#34C759") : Color.FromArgb("#FF3B30");
+            return bilanz >= 0
+                ? ColorResourceHelper.GetColor("Einnahme", Color.FromArgb("#34C759"))
+                : ColorResourceHelper.GetColor("Ausgabe", Color.FromArgb("#FF3B30"));
 
-        return Colors.Gray;
+        return ColorResourceHelper.GetColor("Gray600", Colors.Gray);
     }
 
     public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
@@ -64,7 +66,9 @@ public class BilanzDisplayConverter : IValueConverter
 public class ToggleActiveColorConverter : IValueConverter
 {
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
-        => value is true ? Color.FromArgb("#007AFF") : Colors.Transparent;
+        => value is true
+            ? ColorResourceHelper.GetColor("Primary", Color.FromArgb("#007AFF"))
+            : Colors.Transparent;
 
     public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
         => throw new NotImplementedException();
@@ -73,7 +77,9 @@ public class ToggleActiveColorConverter : IValueConverter
 public class ToggleActiveTextColorConverter : IValueConverter
 {
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
-        => value is true ? Colors.White : Color.FromArgb("#007AFF");
+        => value is true
+            ? ColorResourceHelper.GetColor("White", Colors.White)
+            : ColorResourceHelper.GetColor("Primary", Color.FromArgb("#007AFF"));
 
     public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
         => throw new NotImplementedException();
