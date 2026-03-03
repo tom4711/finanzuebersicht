@@ -3,7 +3,6 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Finanzuebersicht.Models;
 using Finanzuebersicht.Services;
-using Finanzuebersicht.Resources.Strings;
 
 namespace Finanzuebersicht.ViewModels;
 
@@ -12,7 +11,7 @@ public partial class RecurringTransactionDetailViewModel : ObservableObject
 {
     private readonly IDataService _dataService;
     private RecurringTransaction? _existing;
-    private readonly ILocalizationService _loc;
+    private readonly INavigationService _navigationService;
 
     [ObservableProperty]
     private string betragText = string.Empty;
@@ -69,10 +68,12 @@ public partial class RecurringTransactionDetailViewModel : ObservableObject
         }
     }
 
-    public RecurringTransactionDetailViewModel(IDataService dataService, ILocalizationService localizationService)
+    public RecurringTransactionDetailViewModel(
+        IDataService dataService,
+        INavigationService navigationService)
     {
         _dataService = dataService;
-        _loc = localizationService;
+        _navigationService = navigationService;
     }
 
     [RelayCommand]
@@ -115,7 +116,7 @@ public partial class RecurringTransactionDetailViewModel : ObservableObject
         recurring.Aktiv = Aktiv;
 
         await _dataService.SaveRecurringTransactionAsync(recurring);
-        await Shell.Current.GoToAsync("..");
+        await _navigationService.GoBackAsync();
     }
 
     private async Task SetKategorieAsync(string kategorieId)

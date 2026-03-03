@@ -71,6 +71,12 @@ dotnet test Finanzuebersicht.Tests
 | Persistenz | JSON-Dateien (lokal, kein Cloud-Zwang) |
 | Versionierung | [Nerdbank.GitVersioning](https://github.com/dotnet/Nerdbank.GitVersioning) |
 
+## Architektur-Roadmap
+
+Eine konkrete Zielarchitektur inkl. inkrementellem Migrationspfad findest du in:
+
+- [docs/ARCHITEKTUR-ROADMAP.md](docs/ARCHITEKTUR-ROADMAP.md)
+
 ## Contributing
 
 Pull Requests sind willkommen! Bitte erstelle zuerst einen Branch:

@@ -12,6 +12,8 @@ public partial class CategoriesViewModel : ObservableObject
 {
     private readonly IDataService _dataService;
     private readonly ILocalizationService _loc;
+    private readonly INavigationService _navigationService;
+    private readonly IDialogService _dialogService;
 
     [ObservableProperty]
     private ObservableCollection<Category> kategorien = [];
@@ -19,10 +21,16 @@ public partial class CategoriesViewModel : ObservableObject
     [ObservableProperty]
     private bool isLoading;
 
-    public CategoriesViewModel(IDataService dataService, ILocalizationService localizationService)
+    public CategoriesViewModel(
+        IDataService dataService,
+        ILocalizationService localizationService,
+        INavigationService navigationService,
+        IDialogService dialogService)
     {
         _dataService = dataService;
         _loc = localizationService;
+        _navigationService = navigationService;
+        _dialogService = dialogService;
     }
 
     [RelayCommand]
@@ -45,7 +53,7 @@ public partial class CategoriesViewModel : ObservableObject
     [RelayCommand]
     private async Task DeleteKategorie(Category kategorie)
     {
-        var confirm = await Shell.Current.DisplayAlert(
+        var confirm = await _dialogService.ShowConfirmationAsync(
             _loc.GetString(ResourceKeys.Dlg_KategorieLoeschen),
             _loc.GetString(ResourceKeys.Dlg_KategorieLoeschenFrage, kategorie.Name),
             _loc.GetString(ResourceKeys.Btn_Ja), _loc.GetString(ResourceKeys.Btn_Nein));
@@ -62,6 +70,6 @@ public partial class CategoriesViewModel : ObservableObject
         if (kategorie != null)
             parameter["Category"] = kategorie;
 
-        await Shell.Current.GoToAsync(nameof(CategoryDetailPage), parameter);
+        await _navigationService.GoToAsync(nameof(CategoryDetailPage), parameter);
     }
 }

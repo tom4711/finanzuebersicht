@@ -10,6 +10,7 @@ namespace Finanzuebersicht.ViewModels;
 public partial class CategoryDetailViewModel : ObservableObject
 {
     private readonly IDataService _dataService;
+    private readonly INavigationService _navigationService;
     private Category? _existingCategory;
 
     [ObservableProperty]
@@ -57,9 +58,10 @@ public partial class CategoryDetailViewModel : ObservableObject
         }
     }
 
-    public CategoryDetailViewModel(IDataService dataService)
+    public CategoryDetailViewModel(IDataService dataService, INavigationService navigationService)
     {
         _dataService = dataService;
+        _navigationService = navigationService;
     }
 
     [RelayCommand]
@@ -74,6 +76,6 @@ public partial class CategoryDetailViewModel : ObservableObject
         category.Typ = Typ;
 
         await _dataService.SaveCategoryAsync(category);
-        await Shell.Current.GoToAsync("..");
+        await _navigationService.GoBackAsync();
     }
 }

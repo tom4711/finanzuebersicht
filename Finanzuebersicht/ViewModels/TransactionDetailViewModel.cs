@@ -13,6 +13,8 @@ public partial class TransactionDetailViewModel : ObservableObject
     private readonly IDataService _dataService;
     private Transaction? _existingTransaction;
     private readonly ILocalizationService _loc;
+    private readonly INavigationService _navigationService;
+    private readonly IDialogService _dialogService;
 
     [ObservableProperty]
     private string betragText = string.Empty;
@@ -51,10 +53,16 @@ public partial class TransactionDetailViewModel : ObservableObject
         }
     }
 
-    public TransactionDetailViewModel(IDataService dataService, ILocalizationService localizationService)
+    public TransactionDetailViewModel(
+        IDataService dataService,
+        ILocalizationService localizationService,
+        INavigationService navigationService,
+        IDialogService dialogService)
     {
         _dataService = dataService;
         _loc = localizationService;
+        _navigationService = navigationService;
+        _dialogService = dialogService;
     }
 
     [RelayCommand]
@@ -81,29 +89,37 @@ public partial class TransactionDetailViewModel : ObservableObject
                     System.Globalization.CultureInfo.CurrentCulture,
                     out var betrag))
             {
-                await MainThread.InvokeOnMainThreadAsync(() => 
-                    Shell.Current.DisplayAlert(_loc.GetString(ResourceKeys.Err_Titel), _loc.GetString(ResourceKeys.Err_UngueltigerBetrag), _loc.GetString(ResourceKeys.Btn_OK)));
+                await _dialogService.ShowAlertAsync(
+                    _loc.GetString(ResourceKeys.Err_Titel),
+                    _loc.GetString(ResourceKeys.Err_UngueltigerBetrag),
+                    _loc.GetString(ResourceKeys.Btn_OK));
                 return;
             }
 
             if (betrag <= 0)
             {
-                await MainThread.InvokeOnMainThreadAsync(() => 
-                    Shell.Current.DisplayAlert(_loc.GetString(ResourceKeys.Err_Titel), _loc.GetString(ResourceKeys.Err_BetragGroesserNull), _loc.GetString(ResourceKeys.Btn_OK)));
+                await _dialogService.ShowAlertAsync(
+                    _loc.GetString(ResourceKeys.Err_Titel),
+                    _loc.GetString(ResourceKeys.Err_BetragGroesserNull),
+                    _loc.GetString(ResourceKeys.Btn_OK));
                 return;
             }
 
             if (string.IsNullOrWhiteSpace(Titel))
             {
-                await MainThread.InvokeOnMainThreadAsync(() => 
-                    Shell.Current.DisplayAlert(_loc.GetString(ResourceKeys.Err_Titel), _loc.GetString(ResourceKeys.Err_TitelErforderlich), _loc.GetString(ResourceKeys.Btn_OK)));
+                await _dialogService.ShowAlertAsync(
+                    _loc.GetString(ResourceKeys.Err_Titel),
+                    _loc.GetString(ResourceKeys.Err_TitelErforderlich),
+                    _loc.GetString(ResourceKeys.Btn_OK));
                 return;
             }
 
             if (SelectedKategorie == null)
             {
-                await MainThread.InvokeOnMainThreadAsync(() => 
-                    Shell.Current.DisplayAlert(_loc.GetString(ResourceKeys.Err_Titel), _loc.GetString(ResourceKeys.Err_KategorieErforderlich), _loc.GetString(ResourceKeys.Btn_OK)));
+                await _dialogService.ShowAlertAsync(
+                    _loc.GetString(ResourceKeys.Err_Titel),
+                    _loc.GetString(ResourceKeys.Err_KategorieErforderlich),
+                    _loc.GetString(ResourceKeys.Btn_OK));
                 return;
             }
 
@@ -115,13 +131,15 @@ public partial class TransactionDetailViewModel : ObservableObject
             transaction.Typ = Typ;
 
             await _dataService.SaveTransactionAsync(transaction);
-            await Shell.Current.GoToAsync("..");
+            await _navigationService.GoBackAsync();
         }
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine($"Error saving transaction: {ex.Message}");
-            await MainThread.InvokeOnMainThreadAsync(() => 
-                Shell.Current.DisplayAlert(_loc.GetString(ResourceKeys.Err_Titel), _loc.GetString(ResourceKeys.Err_SpeichernFehlgeschlagen, ex.Message), _loc.GetString(ResourceKeys.Btn_OK)));
+            await _dialogService.ShowAlertAsync(
+                _loc.GetString(ResourceKeys.Err_Titel),
+                _loc.GetString(ResourceKeys.Err_SpeichernFehlgeschlagen, ex.Message),
+                _loc.GetString(ResourceKeys.Btn_OK));
         }
     }
 
