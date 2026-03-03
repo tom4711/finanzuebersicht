@@ -12,6 +12,8 @@ public partial class RecurringTransactionsViewModel : ObservableObject
 {
     private readonly IDataService _dataService;
     private readonly ILocalizationService _loc;
+    private readonly INavigationService _navigationService;
+    private readonly IDialogService _dialogService;
 
     [ObservableProperty]
     private ObservableCollection<RecurringTransaction> dauerauftraege = [];
@@ -19,10 +21,16 @@ public partial class RecurringTransactionsViewModel : ObservableObject
     [ObservableProperty]
     private bool isLoading;
 
-    public RecurringTransactionsViewModel(IDataService dataService, ILocalizationService localizationService)
+    public RecurringTransactionsViewModel(
+        IDataService dataService,
+        ILocalizationService localizationService,
+        INavigationService navigationService,
+        IDialogService dialogService)
     {
         _dataService = dataService;
         _loc = localizationService;
+        _navigationService = navigationService;
+        _dialogService = dialogService;
     }
 
     [RelayCommand]
@@ -54,7 +62,7 @@ public partial class RecurringTransactionsViewModel : ObservableObject
     [RelayCommand]
     private async Task DeleteDauerauftrag(RecurringTransaction dauerauftrag)
     {
-        var bestaetigt = await Shell.Current.DisplayAlert(
+        var bestaetigt = await _dialogService.ShowConfirmationAsync(
             _loc.GetString(ResourceKeys.Dlg_DauerauftragLoeschen),
             _loc.GetString(ResourceKeys.Dlg_DauerauftragLoeschenFrage, dauerauftrag.Titel),
             _loc.GetString(ResourceKeys.Btn_Ja), _loc.GetString(ResourceKeys.Btn_Nein));
@@ -72,6 +80,6 @@ public partial class RecurringTransactionsViewModel : ObservableObject
         if (dauerauftrag != null)
             parameter["RecurringTransaction"] = dauerauftrag;
 
-        await Shell.Current.GoToAsync(nameof(RecurringTransactionDetailPage), parameter);
+        await _navigationService.GoToAsync(nameof(RecurringTransactionDetailPage), parameter);
     }
 }

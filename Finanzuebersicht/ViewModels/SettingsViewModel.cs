@@ -11,6 +11,7 @@ public partial class SettingsViewModel : ObservableObject
     private readonly SettingsService _settings;
     private readonly ThemeService _themeService;
     private readonly ILocalizationService _loc;
+    private readonly IDialogService _dialogService;
 
     [ObservableProperty]
     private int selectedThemeIndex;
@@ -32,11 +33,16 @@ public partial class SettingsViewModel : ObservableObject
         new("xUnit", "Unit-Test-Framework (nur Tests)"),
     ];
 
-    public SettingsViewModel(SettingsService settings, ThemeService themeService, ILocalizationService localizationService)
+    public SettingsViewModel(
+        SettingsService settings,
+        ThemeService themeService,
+        ILocalizationService localizationService,
+        IDialogService dialogService)
     {
         _settings = settings;
         _themeService = themeService;
         _loc = localizationService;
+        _dialogService = dialogService;
 
         // Version aus Assembly-Metadaten lesen (von Nerdbank.GitVersioning gesetzt)
         var asm = Assembly.GetExecutingAssembly();
@@ -124,7 +130,7 @@ public partial class SettingsViewModel : ObservableObject
                 if (newPath.StartsWith(tempPath, StringComparison.OrdinalIgnoreCase) ||
                     newPath.Contains(Path.Combine("var", "folders"), StringComparison.OrdinalIgnoreCase))
                 {
-                    await Shell.Current.DisplayAlert(
+                    await _dialogService.ShowAlertAsync(
                         _loc.GetString(ResourceKeys.Stn_UngueltigerOrdner),
                         _loc.GetString(ResourceKeys.Stn_UngueltigerOrdnerDesc),
                         _loc.GetString(ResourceKeys.Btn_OK));
@@ -134,7 +140,7 @@ public partial class SettingsViewModel : ObservableObject
                 _settings.Set("DataPath", newPath);
                 DataPath = newPath;
 
-                await Shell.Current.DisplayAlert(
+                await _dialogService.ShowAlertAsync(
                     _loc.GetString(ResourceKeys.Stn_SpeicherortGeaendert),
                     _loc.GetString(ResourceKeys.Stn_SpeicherortGeaendertDesc, newPath),
                     _loc.GetString(ResourceKeys.Btn_OK));
@@ -142,7 +148,10 @@ public partial class SettingsViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            await Shell.Current.DisplayAlert(_loc.GetString(ResourceKeys.Err_Titel), _loc.GetString(ResourceKeys.Err_OrdnerNichtWaehlbar, ex.Message), _loc.GetString(ResourceKeys.Btn_OK));
+            await _dialogService.ShowAlertAsync(
+                _loc.GetString(ResourceKeys.Err_Titel),
+                _loc.GetString(ResourceKeys.Err_OrdnerNichtWaehlbar, ex.Message),
+                _loc.GetString(ResourceKeys.Btn_OK));
         }
     }
 
@@ -152,7 +161,7 @@ public partial class SettingsViewModel : ObservableObject
         _settings.Set("DataPath", "");
         DataPath = GetDefaultDataDir();
 
-        await Shell.Current.DisplayAlert(
+        await _dialogService.ShowAlertAsync(
             _loc.GetString(ResourceKeys.Stn_SpeicherortZurueckgesetzt),
             _loc.GetString(ResourceKeys.Stn_SpeicherortZurueckgesetztDesc),
             _loc.GetString(ResourceKeys.Btn_OK));

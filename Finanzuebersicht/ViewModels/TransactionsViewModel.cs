@@ -10,6 +10,7 @@ namespace Finanzuebersicht.ViewModels;
 public partial class TransactionsViewModel : MonthNavigationViewModel
 {
     private readonly IDataService _dataService;
+    private readonly INavigationService _navigationService;
 
     [ObservableProperty]
     private ObservableCollection<TransactionGroup> transaktionsGruppen = [];
@@ -17,9 +18,10 @@ public partial class TransactionsViewModel : MonthNavigationViewModel
     [ObservableProperty]
     private bool isLoading;
 
-    public TransactionsViewModel(IDataService dataService)
+    public TransactionsViewModel(IDataService dataService, INavigationService navigationService)
     {
         _dataService = dataService;
+        _navigationService = navigationService;
     }
 
     protected override async Task OnMonthChangedAsync() => await LoadTransaktionen();
@@ -77,6 +79,6 @@ public partial class TransactionsViewModel : MonthNavigationViewModel
         if (transaktion != null)
             parameter["Transaction"] = transaktion;
 
-        await Shell.Current.GoToAsync(nameof(TransactionDetailPage), parameter);
+        await _navigationService.GoToAsync(nameof(TransactionDetailPage), parameter);
     }
 }

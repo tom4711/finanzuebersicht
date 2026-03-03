@@ -35,6 +35,8 @@ public static class MauiProgram
 		builder.Services.AddSingleton<InitializationService>();
 		builder.Services.AddSingleton<ThemeService>();
 		builder.Services.AddSingleton<ILocalizationService, LocalizationService>();
+		builder.Services.AddSingleton<INavigationService, ShellNavigationService>();
+		builder.Services.AddSingleton<IDialogService, ShellDialogService>();
 
 		// ViewModels
 		builder.Services.AddTransient<DashboardViewModel>();
