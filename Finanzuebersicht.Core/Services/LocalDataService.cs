@@ -5,10 +5,10 @@ using Finanzuebersicht.Models;
 namespace Finanzuebersicht.Services;
 
 /// <summary>
-/// Lokale JSON-basierte Implementierung von IDataService.
+/// Lokale JSON-basierte Implementierung der Repository-Ports.
 /// Unterstützt einen konfigurierbaren Speicherpfad (z.B. iCloud Drive).
 /// </summary>
-public class LocalDataService : IDataService, IDisposable
+public class LocalDataService : ICategoryRepository, ITransactionRepository, IRecurringTransactionRepository, IDisposable
 {
     private static readonly string DefaultDataDir = AppPaths.GetDefaultDataDir();
 
