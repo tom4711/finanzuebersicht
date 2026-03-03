@@ -36,7 +36,7 @@ public static class MauiProgram
 		builder.Services.AddSingleton<ICategoryRepository>(sp => sp.GetRequiredService<LocalDataService>());
 		builder.Services.AddSingleton<ITransactionRepository>(sp => sp.GetRequiredService<LocalDataService>());
 		builder.Services.AddSingleton<IRecurringTransactionRepository>(sp => sp.GetRequiredService<LocalDataService>());
-		builder.Services.AddSingleton<IRecurringGenerationService>(sp => sp.GetRequiredService<LocalDataService>());
+		builder.Services.AddSingleton<IRecurringGenerationService, RecurringGenerationService>();
 		builder.Services.AddSingleton<IReportingService>(sp => sp.GetRequiredService<LocalDataService>());
 		builder.Services.AddSingleton<ITransactionValidationService, TransactionValidationService>();
 		builder.Services.AddSingleton<InitializationService>();
