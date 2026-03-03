@@ -261,38 +261,8 @@ public class LocalDataService : IDataService, IDisposable
 
     public async Task GeneratePendingRecurringTransactionsAsync()
     {
-        var dauerauftraege = await GetRecurringTransactionsAsync();
-        var heute = DateTime.Today;
-
-        foreach (var da in dauerauftraege.Where(d => d.Aktiv))
-        {
-            if (da.Enddatum.HasValue && da.Enddatum.Value < heute)
-                continue;
-
-            var naechsterMonat = !da.LetzteAusfuehrung.HasValue
-                ? da.Startdatum
-                : new DateTime(da.LetzteAusfuehrung.Value.Year, da.LetzteAusfuehrung.Value.Month, 1).AddMonths(1);
-
-            while (naechsterMonat <= heute)
-            {
-                var transaction = new Transaction
-                {
-                    Betrag = da.Betrag,
-                    Titel = da.Titel,
-                    Datum = naechsterMonat,
-                    KategorieId = da.KategorieId,
-                    Typ = da.Typ,
-                    DauerauftragId = da.Id
-                };
-
-                await SaveTransactionAsync(transaction);
-
-                da.LetzteAusfuehrung = naechsterMonat;
-                naechsterMonat = naechsterMonat.AddMonths(1);
-            }
-
-            await SaveRecurringTransactionAsync(da);
-        }
+        var service = new RecurringGenerationService(this, this);
+        await service.GeneratePendingRecurringTransactionsAsync();
     }
 
     #endregion
