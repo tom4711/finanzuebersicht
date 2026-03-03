@@ -9,7 +9,8 @@ namespace Finanzuebersicht.ViewModels;
 [QueryProperty(nameof(RecurringTransaction), "RecurringTransaction")]
 public partial class RecurringTransactionDetailViewModel : ObservableObject
 {
-    private readonly IDataService _dataService;
+    private readonly IRecurringTransactionRepository _recurringTransactionRepository;
+    private readonly ICategoryRepository _categoryRepository;
     private RecurringTransaction? _existing;
     private readonly INavigationService _navigationService;
 
@@ -69,17 +70,19 @@ public partial class RecurringTransactionDetailViewModel : ObservableObject
     }
 
     public RecurringTransactionDetailViewModel(
-        IDataService dataService,
+        IRecurringTransactionRepository recurringTransactionRepository,
+        ICategoryRepository categoryRepository,
         INavigationService navigationService)
     {
-        _dataService = dataService;
+        _recurringTransactionRepository = recurringTransactionRepository;
+        _categoryRepository = categoryRepository;
         _navigationService = navigationService;
     }
 
     [RelayCommand]
     private async Task LoadKategorien()
     {
-        var liste = await _dataService.GetCategoriesAsync();
+        var liste = await _categoryRepository.GetCategoriesAsync();
         // Merke die aktuelle ID bevor die Collection ersetzt wird
         var currentId = SelectedKategorie?.Id ?? _existing?.KategorieId;
         Kategorien = new ObservableCollection<Category>(liste);
@@ -115,7 +118,7 @@ public partial class RecurringTransactionDetailViewModel : ObservableObject
         recurring.Enddatum = HatEnddatum ? EnddatumWert : null;
         recurring.Aktiv = Aktiv;
 
-        await _dataService.SaveRecurringTransactionAsync(recurring);
+        await _recurringTransactionRepository.SaveRecurringTransactionAsync(recurring);
         await _navigationService.GoBackAsync();
     }
 

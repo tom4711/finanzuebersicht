@@ -12,11 +12,11 @@ namespace Finanzuebersicht.ViewModels
 {
     public partial class YearOverviewViewModel : ObservableObject
     {
-        private readonly IDataService _dataService;
+        private readonly IReportingService _reportingService;
 
-        public YearOverviewViewModel(IDataService dataService)
+        public YearOverviewViewModel(IReportingService reportingService)
         {
-            _dataService = dataService;
+            _reportingService = reportingService;
             Year = DateTime.Now.Year;
             Categories = new List<CategorySummary>();
         }
@@ -35,7 +35,7 @@ namespace Finanzuebersicht.ViewModels
         {
             try
             {
-                var summary = await _dataService.GetYearSummaryAsync(Year);
+                var summary = await _reportingService.GetYearSummaryAsync(Year);
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
                     try

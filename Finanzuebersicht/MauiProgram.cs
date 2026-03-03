@@ -30,8 +30,14 @@ public static class MauiProgram
 
 		// Services
 		builder.Services.AddSingleton<SettingsService>();
-		builder.Services.AddSingleton<IDataService>(sp =>
+		builder.Services.AddSingleton<LocalDataService>(sp =>
 			new LocalDataService(sp.GetRequiredService<SettingsService>()));
+		builder.Services.AddSingleton<IDataService>(sp => sp.GetRequiredService<LocalDataService>());
+		builder.Services.AddSingleton<ICategoryRepository>(sp => sp.GetRequiredService<LocalDataService>());
+		builder.Services.AddSingleton<ITransactionRepository>(sp => sp.GetRequiredService<LocalDataService>());
+		builder.Services.AddSingleton<IRecurringTransactionRepository>(sp => sp.GetRequiredService<LocalDataService>());
+		builder.Services.AddSingleton<IRecurringGenerationService>(sp => sp.GetRequiredService<LocalDataService>());
+		builder.Services.AddSingleton<IReportingService>(sp => sp.GetRequiredService<LocalDataService>());
 		builder.Services.AddSingleton<InitializationService>();
 		builder.Services.AddSingleton<ThemeService>();
 		builder.Services.AddSingleton<ILocalizationService, LocalizationService>();

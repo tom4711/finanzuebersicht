@@ -4,16 +4,16 @@ namespace Finanzuebersicht.Services;
 
 public class InitializationService
 {
-    private readonly IDataService _dataService;
+    private readonly ICategoryRepository _categoryRepository;
 
-    public InitializationService(IDataService dataService)
+    public InitializationService(ICategoryRepository categoryRepository)
     {
-        _dataService = dataService;
+        _categoryRepository = categoryRepository;
     }
 
     public async Task InitializeAsync()
     {
-        var kategorien = await _dataService.GetCategoriesAsync();
+        var kategorien = await _categoryRepository.GetCategoriesAsync();
         if (kategorien.Count > 0) return;
 
         var standardKategorien = new List<Category>
@@ -29,7 +29,7 @@ public class InitializationService
 
         foreach (var kategorie in standardKategorien)
         {
-            await _dataService.SaveCategoryAsync(kategorie);
+            await _categoryRepository.SaveCategoryAsync(kategorie);
         }
     }
 }

@@ -8,7 +8,10 @@ namespace Finanzuebersicht.ViewModels;
 
 public partial class DashboardViewModel : MonthNavigationViewModel
 {
-    private readonly IDataService _dataService;
+    private readonly ICategoryRepository _categoryRepository;
+    private readonly ITransactionRepository _transactionRepository;
+    private readonly IRecurringTransactionRepository _recurringTransactionRepository;
+    private readonly IReportingService _reportingService;
 
     // --- Monatsansicht ---
 
@@ -58,9 +61,16 @@ public partial class DashboardViewModel : MonthNavigationViewModel
     private int _aktuellesJahr = DateTime.Today.Year;
     private List<Category> _alleKategorien = [];
 
-    public DashboardViewModel(IDataService dataService)
+    public DashboardViewModel(
+        ICategoryRepository categoryRepository,
+        ITransactionRepository transactionRepository,
+        IRecurringTransactionRepository recurringTransactionRepository,
+        IReportingService reportingService)
     {
-        _dataService = dataService;
+        _categoryRepository = categoryRepository;
+        _transactionRepository = transactionRepository;
+        _recurringTransactionRepository = recurringTransactionRepository;
+        _reportingService = reportingService;
         UpdateJahrAnzeige();
     }
 
@@ -86,17 +96,17 @@ public partial class DashboardViewModel : MonthNavigationViewModel
 
     private async Task LadeMonatAsync()
     {
-        _alleKategorien = await _dataService.GetCategoriesAsync();
+        _alleKategorien = await _categoryRepository.GetCategoriesAsync();
 
         var von = AktuellerMonat;
         var bis = AktuellerMonat.AddMonths(1).AddDays(-1);
-        var transaktionen = await _dataService.GetTransactionsAsync(von, bis);
+        var transaktionen = await _transactionRepository.GetTransactionsAsync(von, bis);
 
         // Prognose: zukünftige Monate mit erwarteten Daueraufträgen ergänzen
         IstPrognose = AktuellerMonat > new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);
         if (IstPrognose)
         {
-            var dauerauftraege = await _dataService.GetRecurringTransactionsAsync();
+            var dauerauftraege = await _recurringTransactionRepository.GetRecurringTransactionsAsync();
             foreach (var da in dauerauftraege.Where(d => d.Aktiv))
             {
                 if (da.Startdatum <= bis && (!da.Enddatum.HasValue || da.Enddatum.Value >= von))
@@ -166,7 +176,7 @@ public partial class DashboardViewModel : MonthNavigationViewModel
 
     private async Task LadeJahrAsync()
     {
-        var summary = await _dataService.GetYearSummaryAsync(_aktuellesJahr);
+        var summary = await _reportingService.GetYearSummaryAsync(_aktuellesJahr);
         if (summary != null)
         {
             JahrGesamtAusgaben = summary.Total;
