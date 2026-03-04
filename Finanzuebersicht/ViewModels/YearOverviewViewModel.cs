@@ -1,8 +1,6 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Finanzuebersicht.Application.UseCases.Dashboard;
@@ -12,11 +10,11 @@ namespace Finanzuebersicht.ViewModels
 {
     public partial class YearOverviewViewModel : ObservableObject
     {
-        private readonly GetYearSummaryUseCase _getYearSummaryUseCase;
+        private readonly LoadDashboardYearUseCase _loadDashboardYearUseCase;
 
-        public YearOverviewViewModel(GetYearSummaryUseCase getYearSummaryUseCase)
+        public YearOverviewViewModel(LoadDashboardYearUseCase loadDashboardYearUseCase)
         {
-            _getYearSummaryUseCase = getYearSummaryUseCase;
+            _loadDashboardYearUseCase = loadDashboardYearUseCase;
             Year = DateTime.Now.Year;
             Categories = new List<CategorySummary>();
         }
@@ -35,30 +33,13 @@ namespace Finanzuebersicht.ViewModels
         {
             try
             {
-                var summary = await _getYearSummaryUseCase.ExecuteAsync(Year);
+                var data = await _loadDashboardYearUseCase.ExecuteAsync(Year);
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
                     try
                     {
-                        if (summary != null)
-                        {
-                            YearTotal = summary.Total;
-                            
-                            if (summary.ByCategory != null && summary.Total > 0)
-                            {
-                                foreach (var cat in summary.ByCategory)
-                                {
-                                    cat.PercentageAmount = (cat.Total / summary.Total) * 100;
-                                }
-                            }
-                            
-                            Categories = summary.ByCategory ?? new List<CategorySummary>();
-                        }
-                        else
-                        {
-                            YearTotal = 0;
-                            Categories = new List<CategorySummary>();
-                        }
+                        YearTotal = data.GesamtAusgaben;
+                        Categories = data.Kategorien;
                     }
                     catch (Exception ex)
                     {
