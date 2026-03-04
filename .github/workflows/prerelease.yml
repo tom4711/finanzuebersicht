@@ -23,7 +23,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '10.0.x'
+          dotnet-version: '10.0.100'
 
       - name: Resolve prerelease tag
         id: version
@@ -49,7 +49,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '10.0.x'
+          dotnet-version: '10.0.100'
 
       - name: Install .NET MAUI workloads
         run: dotnet workload install maui-maccatalyst maui-ios
@@ -65,10 +65,9 @@ jobs:
             -p:ValidateXcodeVersion=false \
             -p:CodesignKey="" \
             -p:CodesignProvision="" \
-            -p:MtouchLink=SdkOnly \
+            -p:MtouchLink=None \
             -p:UseInterpreter=true \
-            -p:EnableILLink=false \
-            -p:PublishTrimmed=false
+            -p:EnableILLink=false
 
       - name: Pack macOS artifact
         shell: bash
@@ -96,7 +95,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '10.0.x'
+          dotnet-version: '10.0.100'
 
       - name: Install .NET MAUI workloads
         run: dotnet workload install maui-windows maui-ios maui-maccatalyst
