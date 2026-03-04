@@ -32,7 +32,8 @@ public class RecurringGenerationServiceTests
         var savedTransactions = transactionRepository
             .ReceivedCalls()
             .Where(call => call.GetMethodInfo().Name == nameof(ITransactionRepository.SaveTransactionAsync))
-            .Select(call => (Transaction)call.GetArguments()[0])
+            .Select(call => call.GetArguments().FirstOrDefault())
+            .OfType<Transaction>()
             .ToList();
 
         Assert.True(savedTransactions.Count >= 2);
