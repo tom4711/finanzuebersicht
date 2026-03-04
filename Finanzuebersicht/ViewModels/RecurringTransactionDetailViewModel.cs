@@ -10,7 +10,7 @@ namespace Finanzuebersicht.ViewModels;
 [QueryProperty(nameof(RecurringTransaction), "RecurringTransaction")]
 public partial class RecurringTransactionDetailViewModel : ObservableObject
 {
-    private readonly IRecurringTransactionRepository _recurringTransactionRepository;
+    private readonly SaveRecurringTransactionDetailUseCase _saveRecurringTransactionDetailUseCase;
     private readonly LoadRecurringTransactionDetailDataUseCase _loadRecurringTransactionDetailDataUseCase;
     private readonly ITransactionValidationService _validationService;
     private RecurringTransaction? _existing;
@@ -72,12 +72,12 @@ public partial class RecurringTransactionDetailViewModel : ObservableObject
     }
 
     public RecurringTransactionDetailViewModel(
-        IRecurringTransactionRepository recurringTransactionRepository,
+        SaveRecurringTransactionDetailUseCase saveRecurringTransactionDetailUseCase,
         LoadRecurringTransactionDetailDataUseCase loadRecurringTransactionDetailDataUseCase,
         ITransactionValidationService validationService,
         INavigationService navigationService)
     {
-        _recurringTransactionRepository = recurringTransactionRepository;
+        _saveRecurringTransactionDetailUseCase = saveRecurringTransactionDetailUseCase;
         _loadRecurringTransactionDetailDataUseCase = loadRecurringTransactionDetailDataUseCase;
         _validationService = validationService;
         _navigationService = navigationService;
@@ -110,18 +110,15 @@ public partial class RecurringTransactionDetailViewModel : ObservableObject
                 out _))
             return;
 
-        var selectedCategory = SelectedKategorie!;
-
-        var recurring = _existing ?? new RecurringTransaction();
-        recurring.Betrag = betrag;
-        recurring.Titel = Titel;
-        recurring.KategorieId = selectedCategory.Id;
-        recurring.Typ = Typ;
-        recurring.Startdatum = Startdatum;
-        recurring.Enddatum = HatEnddatum ? EnddatumWert : null;
-        recurring.Aktiv = Aktiv;
-
-        await _recurringTransactionRepository.SaveRecurringTransactionAsync(recurring);
+        await _saveRecurringTransactionDetailUseCase.ExecuteAsync(
+            _existing,
+            betrag,
+            Titel,
+            SelectedKategorie!.Id,
+            Typ,
+            Startdatum,
+            HatEnddatum ? EnddatumWert : null,
+            Aktiv);
         await _navigationService.GoBackAsync();
     }
 
