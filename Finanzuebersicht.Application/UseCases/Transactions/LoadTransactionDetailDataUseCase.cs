@@ -19,6 +19,9 @@ public class LoadTransactionDetailDataUseCase
             ? null
             : categories.FirstOrDefault(c => c.Id == selectedCategoryId);
 
+        selectedCategory ??= categories.FirstOrDefault(c => c.SystemKey == "SysCat_Sonstiges")
+            ?? categories.FirstOrDefault();
+
         return new TransactionDetailData
         {
             Kategorien = categories,
