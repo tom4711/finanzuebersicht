@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Finanzuebersicht.Application.UseCases.RecurringTransactions;
 using Finanzuebersicht.Models;
 using Finanzuebersicht.Services;
 using Finanzuebersicht.Views;
@@ -10,7 +11,9 @@ namespace Finanzuebersicht.ViewModels;
 
 public partial class RecurringTransactionsViewModel : ObservableObject
 {
-    private readonly IRecurringTransactionRepository _recurringTransactionRepository;
+    private readonly DeleteRecurringTransactionUseCase _deleteRecurringTransactionUseCase;
+    private readonly LoadRecurringTransactionsUseCase _loadRecurringTransactionsUseCase;
+    private readonly ToggleRecurringTransactionActiveUseCase _toggleRecurringTransactionActiveUseCase;
     private readonly ILocalizationService _loc;
     private readonly INavigationService _navigationService;
     private readonly IDialogService _dialogService;
@@ -22,12 +25,16 @@ public partial class RecurringTransactionsViewModel : ObservableObject
     private bool isLoading;
 
     public RecurringTransactionsViewModel(
-        IRecurringTransactionRepository recurringTransactionRepository,
+        DeleteRecurringTransactionUseCase deleteRecurringTransactionUseCase,
+        LoadRecurringTransactionsUseCase loadRecurringTransactionsUseCase,
+        ToggleRecurringTransactionActiveUseCase toggleRecurringTransactionActiveUseCase,
         ILocalizationService localizationService,
         INavigationService navigationService,
         IDialogService dialogService)
     {
-        _recurringTransactionRepository = recurringTransactionRepository;
+        _deleteRecurringTransactionUseCase = deleteRecurringTransactionUseCase;
+        _loadRecurringTransactionsUseCase = loadRecurringTransactionsUseCase;
+        _toggleRecurringTransactionActiveUseCase = toggleRecurringTransactionActiveUseCase;
         _loc = localizationService;
         _navigationService = navigationService;
         _dialogService = dialogService;
@@ -41,9 +48,8 @@ public partial class RecurringTransactionsViewModel : ObservableObject
 
         try
         {
-            var liste = await _recurringTransactionRepository.GetRecurringTransactionsAsync();
-            Dauerauftraege = new ObservableCollection<RecurringTransaction>(
-                liste.OrderByDescending(d => d.Aktiv).ThenBy(d => d.Titel));
+            var liste = await _loadRecurringTransactionsUseCase.ExecuteAsync();
+            Dauerauftraege = new ObservableCollection<RecurringTransaction>(liste);
         }
         finally
         {
@@ -54,8 +60,7 @@ public partial class RecurringTransactionsViewModel : ObservableObject
     [RelayCommand]
     private async Task ToggleAktiv(RecurringTransaction dauerauftrag)
     {
-        dauerauftrag.Aktiv = !dauerauftrag.Aktiv;
-        await _recurringTransactionRepository.SaveRecurringTransactionAsync(dauerauftrag);
+        await _toggleRecurringTransactionActiveUseCase.ExecuteAsync(dauerauftrag);
         await LoadDauerauftraege();
     }
 
@@ -69,7 +74,7 @@ public partial class RecurringTransactionsViewModel : ObservableObject
 
         if (!bestaetigt) return;
 
-        await _recurringTransactionRepository.DeleteRecurringTransactionAsync(dauerauftrag.Id);
+        await _deleteRecurringTransactionUseCase.ExecuteAsync(dauerauftrag.Id);
         Dauerauftraege.Remove(dauerauftrag);
     }
 

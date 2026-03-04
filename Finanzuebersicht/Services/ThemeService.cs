@@ -7,9 +7,9 @@ public class ThemeService
 {
     public void Apply(string themeKey)
     {
-        if (Application.Current is null) return;
+        if (global::Microsoft.Maui.Controls.Application.Current is null) return;
 
-        Application.Current.UserAppTheme = themeKey switch
+        global::Microsoft.Maui.Controls.Application.Current.UserAppTheme = themeKey switch
         {
             "Light" => AppTheme.Light,
             "Dark" => AppTheme.Dark,

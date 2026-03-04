@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Finanzuebersicht.Application.UseCases.RecurringTransactions;
 using Finanzuebersicht.Models;
 using Finanzuebersicht.Services;
 
@@ -9,8 +10,8 @@ namespace Finanzuebersicht.ViewModels;
 [QueryProperty(nameof(RecurringTransaction), "RecurringTransaction")]
 public partial class RecurringTransactionDetailViewModel : ObservableObject
 {
-    private readonly IRecurringTransactionRepository _recurringTransactionRepository;
-    private readonly ICategoryRepository _categoryRepository;
+    private readonly SaveRecurringTransactionDetailUseCase _saveRecurringTransactionDetailUseCase;
+    private readonly LoadRecurringTransactionDetailDataUseCase _loadRecurringTransactionDetailDataUseCase;
     private readonly ITransactionValidationService _validationService;
     private RecurringTransaction? _existing;
     private readonly INavigationService _navigationService;
@@ -71,13 +72,13 @@ public partial class RecurringTransactionDetailViewModel : ObservableObject
     }
 
     public RecurringTransactionDetailViewModel(
-        IRecurringTransactionRepository recurringTransactionRepository,
-        ICategoryRepository categoryRepository,
+        SaveRecurringTransactionDetailUseCase saveRecurringTransactionDetailUseCase,
+        LoadRecurringTransactionDetailDataUseCase loadRecurringTransactionDetailDataUseCase,
         ITransactionValidationService validationService,
         INavigationService navigationService)
     {
-        _recurringTransactionRepository = recurringTransactionRepository;
-        _categoryRepository = categoryRepository;
+        _saveRecurringTransactionDetailUseCase = saveRecurringTransactionDetailUseCase;
+        _loadRecurringTransactionDetailDataUseCase = loadRecurringTransactionDetailDataUseCase;
         _validationService = validationService;
         _navigationService = navigationService;
     }
@@ -85,13 +86,10 @@ public partial class RecurringTransactionDetailViewModel : ObservableObject
     [RelayCommand]
     private async Task LoadKategorien()
     {
-        var liste = await _categoryRepository.GetCategoriesAsync();
-        // Merke die aktuelle ID bevor die Collection ersetzt wird
         var currentId = SelectedKategorie?.Id ?? _existing?.KategorieId;
-        Kategorien = new ObservableCollection<Category>(liste);
-        // SelectedKategorie muss auf Objekt der neuen Collection zeigen (Referenzgleichheit Picker)
-        if (currentId != null)
-            SelectedKategorie = Kategorien.FirstOrDefault(k => k.Id == currentId);
+        var data = await _loadRecurringTransactionDetailDataUseCase.ExecuteAsync(currentId);
+        Kategorien = new ObservableCollection<Category>(data.Kategorien);
+        SelectedKategorie = data.SelectedKategorie;
     }
 
     [RelayCommand]
@@ -112,18 +110,15 @@ public partial class RecurringTransactionDetailViewModel : ObservableObject
                 out _))
             return;
 
-        var selectedCategory = SelectedKategorie!;
-
-        var recurring = _existing ?? new RecurringTransaction();
-        recurring.Betrag = betrag;
-        recurring.Titel = Titel;
-        recurring.KategorieId = selectedCategory.Id;
-        recurring.Typ = Typ;
-        recurring.Startdatum = Startdatum;
-        recurring.Enddatum = HatEnddatum ? EnddatumWert : null;
-        recurring.Aktiv = Aktiv;
-
-        await _recurringTransactionRepository.SaveRecurringTransactionAsync(recurring);
+        await _saveRecurringTransactionDetailUseCase.ExecuteAsync(
+            _existing,
+            betrag,
+            Titel,
+            SelectedKategorie!.Id,
+            Typ,
+            Startdatum,
+            HatEnddatum ? EnddatumWert : null,
+            Aktiv);
         await _navigationService.GoBackAsync();
     }
 

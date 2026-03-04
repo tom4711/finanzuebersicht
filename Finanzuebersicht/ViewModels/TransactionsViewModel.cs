@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Finanzuebersicht.Application.UseCases.Transactions;
 using Finanzuebersicht.Models;
 using Finanzuebersicht.Services;
 using Finanzuebersicht.Views;
@@ -9,8 +10,8 @@ namespace Finanzuebersicht.ViewModels;
 
 public partial class TransactionsViewModel : MonthNavigationViewModel
 {
-    private readonly ITransactionRepository _transactionRepository;
-    private readonly ICategoryRepository _categoryRepository;
+    private readonly DeleteTransactionUseCase _deleteTransactionUseCase;
+    private readonly LoadTransactionsMonthUseCase _loadTransactionsMonthUseCase;
     private readonly INavigationService _navigationService;
 
     [ObservableProperty]
@@ -20,12 +21,12 @@ public partial class TransactionsViewModel : MonthNavigationViewModel
     private bool isLoading;
 
     public TransactionsViewModel(
-        ITransactionRepository transactionRepository,
-        ICategoryRepository categoryRepository,
+        DeleteTransactionUseCase deleteTransactionUseCase,
+        LoadTransactionsMonthUseCase loadTransactionsMonthUseCase,
         INavigationService navigationService)
     {
-        _transactionRepository = transactionRepository;
-        _categoryRepository = categoryRepository;
+        _deleteTransactionUseCase = deleteTransactionUseCase;
+        _loadTransactionsMonthUseCase = loadTransactionsMonthUseCase;
         _navigationService = navigationService;
     }
 
@@ -39,22 +40,9 @@ public partial class TransactionsViewModel : MonthNavigationViewModel
 
         try
         {
-            var von = AktuellerMonat;
-            var bis = AktuellerMonat.AddMonths(1).AddDays(-1);
-            var liste = await _transactionRepository.GetTransactionsAsync(von, bis);
-
-            var gruppen = liste
-                .GroupBy(t => t.Datum.Date)
-                .OrderByDescending(g => g.Key)
-                .Select(g => new TransactionGroup(g.Key, g.OrderByDescending(t => t.Datum)))
-                .ToList();
-
-            TransaktionsGruppen = new ObservableCollection<TransactionGroup>(gruppen);
-
-            // Kategorie-Icon-Cache für Converter aktualisieren
-            var categories = await _categoryRepository.GetCategoriesAsync();
-            Converters.KategorieIdToIconConverter.SetCache(
-                categories.ToDictionary(c => c.Id, c => c.Icon ?? "📁"));
+            var data = await _loadTransactionsMonthUseCase.ExecuteAsync(AktuellerMonat);
+            TransaktionsGruppen = new ObservableCollection<TransactionGroup>(data.Gruppen);
+            Converters.KategorieIdToIconConverter.SetCache(data.IconMap);
         }
         finally
         {
@@ -65,7 +53,7 @@ public partial class TransactionsViewModel : MonthNavigationViewModel
     [RelayCommand]
     private async Task DeleteTransaktion(Transaction transaktion)
     {
-        await _transactionRepository.DeleteTransactionAsync(transaktion.Id);
+        await _deleteTransactionUseCase.ExecuteAsync(transaktion.Id);
         foreach (var gruppe in TransaktionsGruppen)
         {
             if (gruppe.Remove(transaktion))

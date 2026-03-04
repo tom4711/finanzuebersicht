@@ -4,7 +4,7 @@ internal static class ColorResourceHelper
 {
     public static Color GetColor(string resourceKey, Color fallback)
     {
-        if (Application.Current?.Resources.TryGetValue(resourceKey, out var resource) == true)
+        if (global::Microsoft.Maui.Controls.Application.Current?.Resources.TryGetValue(resourceKey, out var resource) == true)
         {
             if (resource is Color color)
                 return color;
@@ -18,7 +18,7 @@ internal static class ColorResourceHelper
 
     public static Color GetThemeColor(string lightResourceKey, string darkResourceKey, Color lightFallback, Color darkFallback)
     {
-        var isDarkTheme = Application.Current?.RequestedTheme == AppTheme.Dark;
+        var isDarkTheme = global::Microsoft.Maui.Controls.Application.Current?.RequestedTheme == AppTheme.Dark;
         return isDarkTheme
             ? GetColor(darkResourceKey, darkFallback)
             : GetColor(lightResourceKey, lightFallback);

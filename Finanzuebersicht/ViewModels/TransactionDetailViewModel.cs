@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Finanzuebersicht.Application.UseCases.Transactions;
 using Finanzuebersicht.Models;
 using Finanzuebersicht.Services;
 using Finanzuebersicht.Resources.Strings;
@@ -10,8 +11,8 @@ namespace Finanzuebersicht.ViewModels;
 [QueryProperty(nameof(Transaction), "Transaction")]
 public partial class TransactionDetailViewModel : ObservableObject
 {
-    private readonly ITransactionRepository _transactionRepository;
-    private readonly ICategoryRepository _categoryRepository;
+    private readonly SaveTransactionDetailUseCase _saveTransactionDetailUseCase;
+    private readonly LoadTransactionDetailDataUseCase _loadTransactionDetailDataUseCase;
     private readonly ITransactionValidationService _validationService;
     private Transaction? _existingTransaction;
     private readonly ILocalizationService _loc;
@@ -56,15 +57,15 @@ public partial class TransactionDetailViewModel : ObservableObject
     }
 
     public TransactionDetailViewModel(
-        ITransactionRepository transactionRepository,
-        ICategoryRepository categoryRepository,
+        SaveTransactionDetailUseCase saveTransactionDetailUseCase,
+        LoadTransactionDetailDataUseCase loadTransactionDetailDataUseCase,
         ITransactionValidationService validationService,
         ILocalizationService localizationService,
         INavigationService navigationService,
         IDialogService dialogService)
     {
-        _transactionRepository = transactionRepository;
-        _categoryRepository = categoryRepository;
+        _saveTransactionDetailUseCase = saveTransactionDetailUseCase;
+        _loadTransactionDetailDataUseCase = loadTransactionDetailDataUseCase;
         _validationService = validationService;
         _loc = localizationService;
         _navigationService = navigationService;
@@ -74,8 +75,9 @@ public partial class TransactionDetailViewModel : ObservableObject
     [RelayCommand]
     private async Task LoadKategorien()
     {
-        var liste = await _categoryRepository.GetCategoriesAsync();
-        Kategorien = new ObservableCollection<Category>(liste);
+        var data = await _loadTransactionDetailDataUseCase.ExecuteAsync(_existingTransaction?.KategorieId);
+        Kategorien = new ObservableCollection<Category>(data.Kategorien);
+        SelectedKategorie = data.SelectedKategorie;
     }
 
     [RelayCommand]
@@ -113,16 +115,13 @@ public partial class TransactionDetailViewModel : ObservableObject
                 return;
             }
 
-            var selectedCategory = SelectedKategorie!;
-
-            var transaction = _existingTransaction ?? new Transaction();
-            transaction.Betrag = betrag;
-            transaction.Titel = Titel;
-            transaction.Datum = Datum;
-            transaction.KategorieId = selectedCategory.Id;
-            transaction.Typ = Typ;
-
-            await _transactionRepository.SaveTransactionAsync(transaction);
+            await _saveTransactionDetailUseCase.ExecuteAsync(
+                _existingTransaction,
+                betrag,
+                Titel,
+                Datum,
+                SelectedKategorie!.Id,
+                Typ);
             await _navigationService.GoBackAsync();
         }
         catch (Exception ex)
