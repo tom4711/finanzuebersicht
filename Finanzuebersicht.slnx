@@ -1,5 +1,7 @@
 <Solution>
+  <Project Path="Finanzuebersicht.Application/Finanzuebersicht.Application.csproj" />
   <Project Path="Finanzuebersicht.Core/Finanzuebersicht.Core.csproj" />
+  <Project Path="Finanzuebersicht.Infrastructure/Finanzuebersicht.Infrastructure.csproj" />
   <Project Path="Finanzuebersicht.Tests/Finanzuebersicht.Tests.csproj" />
   <Project Path="Finanzuebersicht/Finanzuebersicht.csproj" />
 </Solution>
