@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Finanzuebersicht.Application.UseCases.RecurringTransactions;
 using Finanzuebersicht.Models;
 using Finanzuebersicht.Services;
 
@@ -10,7 +11,7 @@ namespace Finanzuebersicht.ViewModels;
 public partial class RecurringTransactionDetailViewModel : ObservableObject
 {
     private readonly IRecurringTransactionRepository _recurringTransactionRepository;
-    private readonly ICategoryRepository _categoryRepository;
+    private readonly LoadRecurringTransactionDetailDataUseCase _loadRecurringTransactionDetailDataUseCase;
     private readonly ITransactionValidationService _validationService;
     private RecurringTransaction? _existing;
     private readonly INavigationService _navigationService;
@@ -72,12 +73,12 @@ public partial class RecurringTransactionDetailViewModel : ObservableObject
 
     public RecurringTransactionDetailViewModel(
         IRecurringTransactionRepository recurringTransactionRepository,
-        ICategoryRepository categoryRepository,
+        LoadRecurringTransactionDetailDataUseCase loadRecurringTransactionDetailDataUseCase,
         ITransactionValidationService validationService,
         INavigationService navigationService)
     {
         _recurringTransactionRepository = recurringTransactionRepository;
-        _categoryRepository = categoryRepository;
+        _loadRecurringTransactionDetailDataUseCase = loadRecurringTransactionDetailDataUseCase;
         _validationService = validationService;
         _navigationService = navigationService;
     }
@@ -85,13 +86,10 @@ public partial class RecurringTransactionDetailViewModel : ObservableObject
     [RelayCommand]
     private async Task LoadKategorien()
     {
-        var liste = await _categoryRepository.GetCategoriesAsync();
-        // Merke die aktuelle ID bevor die Collection ersetzt wird
         var currentId = SelectedKategorie?.Id ?? _existing?.KategorieId;
-        Kategorien = new ObservableCollection<Category>(liste);
-        // SelectedKategorie muss auf Objekt der neuen Collection zeigen (Referenzgleichheit Picker)
-        if (currentId != null)
-            SelectedKategorie = Kategorien.FirstOrDefault(k => k.Id == currentId);
+        var data = await _loadRecurringTransactionDetailDataUseCase.ExecuteAsync(currentId);
+        Kategorien = new ObservableCollection<Category>(data.Kategorien);
+        SelectedKategorie = data.SelectedKategorie;
     }
 
     [RelayCommand]
