@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Finanzuebersicht.Application.UseCases.RecurringTransactions;
 using Finanzuebersicht.Models;
 using Finanzuebersicht.Services;
 using Finanzuebersicht.Views;
@@ -11,6 +12,7 @@ namespace Finanzuebersicht.ViewModels;
 public partial class RecurringTransactionsViewModel : ObservableObject
 {
     private readonly IRecurringTransactionRepository _recurringTransactionRepository;
+    private readonly LoadRecurringTransactionsUseCase _loadRecurringTransactionsUseCase;
     private readonly ILocalizationService _loc;
     private readonly INavigationService _navigationService;
     private readonly IDialogService _dialogService;
@@ -23,11 +25,13 @@ public partial class RecurringTransactionsViewModel : ObservableObject
 
     public RecurringTransactionsViewModel(
         IRecurringTransactionRepository recurringTransactionRepository,
+        LoadRecurringTransactionsUseCase loadRecurringTransactionsUseCase,
         ILocalizationService localizationService,
         INavigationService navigationService,
         IDialogService dialogService)
     {
         _recurringTransactionRepository = recurringTransactionRepository;
+        _loadRecurringTransactionsUseCase = loadRecurringTransactionsUseCase;
         _loc = localizationService;
         _navigationService = navigationService;
         _dialogService = dialogService;
@@ -41,9 +45,8 @@ public partial class RecurringTransactionsViewModel : ObservableObject
 
         try
         {
-            var liste = await _recurringTransactionRepository.GetRecurringTransactionsAsync();
-            Dauerauftraege = new ObservableCollection<RecurringTransaction>(
-                liste.OrderByDescending(d => d.Aktiv).ThenBy(d => d.Titel));
+            var liste = await _loadRecurringTransactionsUseCase.ExecuteAsync();
+            Dauerauftraege = new ObservableCollection<RecurringTransaction>(liste);
         }
         finally
         {
