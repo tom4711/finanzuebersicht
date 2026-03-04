@@ -1,5 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Finanzuebersicht.Application.UseCases.Categories;
 using Finanzuebersicht.Models;
 using Finanzuebersicht.Services;
 using Finanzuebersicht.Resources.Strings;
@@ -9,7 +10,7 @@ namespace Finanzuebersicht.ViewModels;
 [QueryProperty(nameof(Category), "Category")]
 public partial class CategoryDetailViewModel : ObservableObject
 {
-    private readonly ICategoryRepository _categoryRepository;
+    private readonly SaveCategoryDetailUseCase _saveCategoryDetailUseCase;
     private readonly INavigationService _navigationService;
     private Category? _existingCategory;
 
@@ -58,9 +59,9 @@ public partial class CategoryDetailViewModel : ObservableObject
         }
     }
 
-    public CategoryDetailViewModel(ICategoryRepository categoryRepository, INavigationService navigationService)
+    public CategoryDetailViewModel(SaveCategoryDetailUseCase saveCategoryDetailUseCase, INavigationService navigationService)
     {
-        _categoryRepository = categoryRepository;
+        _saveCategoryDetailUseCase = saveCategoryDetailUseCase;
         _navigationService = navigationService;
     }
 
@@ -69,13 +70,7 @@ public partial class CategoryDetailViewModel : ObservableObject
     {
         if (string.IsNullOrWhiteSpace(Name)) return;
 
-        var category = _existingCategory ?? new Category();
-        category.Name = Name;
-        category.Icon = Icon;
-        category.Color = Color;
-        category.Typ = Typ;
-
-        await _categoryRepository.SaveCategoryAsync(category);
+        await _saveCategoryDetailUseCase.ExecuteAsync(_existingCategory, Name, Icon, Color, Typ);
         await _navigationService.GoBackAsync();
     }
 }
