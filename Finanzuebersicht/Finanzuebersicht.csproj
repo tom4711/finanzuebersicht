@@ -86,6 +86,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\Finanzuebersicht.Core\Finanzuebersicht.Core.csproj" />
+		<ProjectReference Include="..\Finanzuebersicht.Infrastructure\Finanzuebersicht.Infrastructure.csproj" />
 	</ItemGroup>
 
 	<!-- Debug/maccatalyst: App nach dem Build nach /Applications kopieren und starten -->

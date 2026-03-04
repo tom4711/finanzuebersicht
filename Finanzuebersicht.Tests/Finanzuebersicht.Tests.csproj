@@ -18,6 +18,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Finanzuebersicht.Application\Finanzuebersicht.Application.csproj" />
     <ProjectReference Include="..\Finanzuebersicht.Core\Finanzuebersicht.Core.csproj" />
+    <ProjectReference Include="..\Finanzuebersicht.Infrastructure\Finanzuebersicht.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>
