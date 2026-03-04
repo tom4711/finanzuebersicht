@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Finanzuebersicht.Application.UseCases.Transactions;
 using Finanzuebersicht.Models;
 using Finanzuebersicht.Services;
 using Finanzuebersicht.Resources.Strings;
@@ -11,7 +12,7 @@ namespace Finanzuebersicht.ViewModels;
 public partial class TransactionDetailViewModel : ObservableObject
 {
     private readonly ITransactionRepository _transactionRepository;
-    private readonly ICategoryRepository _categoryRepository;
+    private readonly LoadTransactionDetailDataUseCase _loadTransactionDetailDataUseCase;
     private readonly ITransactionValidationService _validationService;
     private Transaction? _existingTransaction;
     private readonly ILocalizationService _loc;
@@ -57,14 +58,14 @@ public partial class TransactionDetailViewModel : ObservableObject
 
     public TransactionDetailViewModel(
         ITransactionRepository transactionRepository,
-        ICategoryRepository categoryRepository,
+        LoadTransactionDetailDataUseCase loadTransactionDetailDataUseCase,
         ITransactionValidationService validationService,
         ILocalizationService localizationService,
         INavigationService navigationService,
         IDialogService dialogService)
     {
         _transactionRepository = transactionRepository;
-        _categoryRepository = categoryRepository;
+        _loadTransactionDetailDataUseCase = loadTransactionDetailDataUseCase;
         _validationService = validationService;
         _loc = localizationService;
         _navigationService = navigationService;
@@ -74,8 +75,9 @@ public partial class TransactionDetailViewModel : ObservableObject
     [RelayCommand]
     private async Task LoadKategorien()
     {
-        var liste = await _categoryRepository.GetCategoriesAsync();
-        Kategorien = new ObservableCollection<Category>(liste);
+        var data = await _loadTransactionDetailDataUseCase.ExecuteAsync(_existingTransaction?.KategorieId);
+        Kategorien = new ObservableCollection<Category>(data.Kategorien);
+        SelectedKategorie = data.SelectedKategorie;
     }
 
     [RelayCommand]
