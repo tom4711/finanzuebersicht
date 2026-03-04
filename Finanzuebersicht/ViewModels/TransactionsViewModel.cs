@@ -10,7 +10,7 @@ namespace Finanzuebersicht.ViewModels;
 
 public partial class TransactionsViewModel : MonthNavigationViewModel
 {
-    private readonly ITransactionRepository _transactionRepository;
+    private readonly DeleteTransactionUseCase _deleteTransactionUseCase;
     private readonly LoadTransactionsMonthUseCase _loadTransactionsMonthUseCase;
     private readonly INavigationService _navigationService;
 
@@ -21,11 +21,11 @@ public partial class TransactionsViewModel : MonthNavigationViewModel
     private bool isLoading;
 
     public TransactionsViewModel(
-        ITransactionRepository transactionRepository,
+        DeleteTransactionUseCase deleteTransactionUseCase,
         LoadTransactionsMonthUseCase loadTransactionsMonthUseCase,
         INavigationService navigationService)
     {
-        _transactionRepository = transactionRepository;
+        _deleteTransactionUseCase = deleteTransactionUseCase;
         _loadTransactionsMonthUseCase = loadTransactionsMonthUseCase;
         _navigationService = navigationService;
     }
@@ -53,7 +53,7 @@ public partial class TransactionsViewModel : MonthNavigationViewModel
     [RelayCommand]
     private async Task DeleteTransaktion(Transaction transaktion)
     {
-        await _transactionRepository.DeleteTransactionAsync(transaktion.Id);
+        await _deleteTransactionUseCase.ExecuteAsync(transaktion.Id);
         foreach (var gruppe in TransaktionsGruppen)
         {
             if (gruppe.Remove(transaktion))
