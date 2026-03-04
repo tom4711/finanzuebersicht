@@ -2,7 +2,7 @@
 
 namespace Finanzuebersicht;
 
-public partial class App : Application
+public partial class App : global::Microsoft.Maui.Controls.Application
 {
 	private readonly IRecurringGenerationService _recurringGenerationService;
 	private readonly InitializationService _initService;

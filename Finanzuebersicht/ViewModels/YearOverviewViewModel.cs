@@ -5,18 +5,18 @@ using System.Collections.Generic;
 using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Finanzuebersicht.Services;
+using Finanzuebersicht.Application.UseCases.Dashboard;
 using Finanzuebersicht.Models;
 
 namespace Finanzuebersicht.ViewModels
 {
     public partial class YearOverviewViewModel : ObservableObject
     {
-        private readonly IReportingService _reportingService;
+        private readonly GetYearSummaryUseCase _getYearSummaryUseCase;
 
-        public YearOverviewViewModel(IReportingService reportingService)
+        public YearOverviewViewModel(GetYearSummaryUseCase getYearSummaryUseCase)
         {
-            _reportingService = reportingService;
+            _getYearSummaryUseCase = getYearSummaryUseCase;
             Year = DateTime.Now.Year;
             Categories = new List<CategorySummary>();
         }
@@ -35,7 +35,7 @@ namespace Finanzuebersicht.ViewModels
         {
             try
             {
-                var summary = await _reportingService.GetYearSummaryAsync(Year);
+                var summary = await _getYearSummaryUseCase.ExecuteAsync(Year);
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
                     try
