@@ -11,7 +11,7 @@ namespace Finanzuebersicht.ViewModels;
 
 public partial class RecurringTransactionsViewModel : ObservableObject
 {
-    private readonly IRecurringTransactionRepository _recurringTransactionRepository;
+    private readonly DeleteRecurringTransactionUseCase _deleteRecurringTransactionUseCase;
     private readonly LoadRecurringTransactionsUseCase _loadRecurringTransactionsUseCase;
     private readonly ToggleRecurringTransactionActiveUseCase _toggleRecurringTransactionActiveUseCase;
     private readonly ILocalizationService _loc;
@@ -25,14 +25,14 @@ public partial class RecurringTransactionsViewModel : ObservableObject
     private bool isLoading;
 
     public RecurringTransactionsViewModel(
-        IRecurringTransactionRepository recurringTransactionRepository,
+        DeleteRecurringTransactionUseCase deleteRecurringTransactionUseCase,
         LoadRecurringTransactionsUseCase loadRecurringTransactionsUseCase,
         ToggleRecurringTransactionActiveUseCase toggleRecurringTransactionActiveUseCase,
         ILocalizationService localizationService,
         INavigationService navigationService,
         IDialogService dialogService)
     {
-        _recurringTransactionRepository = recurringTransactionRepository;
+        _deleteRecurringTransactionUseCase = deleteRecurringTransactionUseCase;
         _loadRecurringTransactionsUseCase = loadRecurringTransactionsUseCase;
         _toggleRecurringTransactionActiveUseCase = toggleRecurringTransactionActiveUseCase;
         _loc = localizationService;
@@ -74,7 +74,7 @@ public partial class RecurringTransactionsViewModel : ObservableObject
 
         if (!bestaetigt) return;
 
-        await _recurringTransactionRepository.DeleteRecurringTransactionAsync(dauerauftrag.Id);
+        await _deleteRecurringTransactionUseCase.ExecuteAsync(dauerauftrag.Id);
         Dauerauftraege.Remove(dauerauftrag);
     }
 

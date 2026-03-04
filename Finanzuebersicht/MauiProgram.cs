@@ -48,6 +48,7 @@ public static class MauiProgram
 		builder.Services.AddTransient<SaveCategoryDetailUseCase>();
 		builder.Services.AddTransient<LoadDashboardMonthUseCase>();
 		builder.Services.AddTransient<LoadDashboardYearUseCase>();
+		builder.Services.AddTransient<DeleteRecurringTransactionUseCase>();
 		builder.Services.AddTransient<LoadRecurringTransactionDetailDataUseCase>();
 		builder.Services.AddTransient<LoadRecurringTransactionsUseCase>();
 		builder.Services.AddTransient<ToggleRecurringTransactionActiveUseCase>();
