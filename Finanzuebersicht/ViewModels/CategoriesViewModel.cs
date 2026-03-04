@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Finanzuebersicht.Application.UseCases.Categories;
 using Finanzuebersicht.Models;
 using Finanzuebersicht.Services;
 using Finanzuebersicht.Views;
@@ -11,6 +12,7 @@ namespace Finanzuebersicht.ViewModels;
 public partial class CategoriesViewModel : ObservableObject
 {
     private readonly ICategoryRepository _categoryRepository;
+    private readonly LoadCategoriesUseCase _loadCategoriesUseCase;
     private readonly ILocalizationService _loc;
     private readonly INavigationService _navigationService;
     private readonly IDialogService _dialogService;
@@ -23,11 +25,13 @@ public partial class CategoriesViewModel : ObservableObject
 
     public CategoriesViewModel(
         ICategoryRepository categoryRepository,
+        LoadCategoriesUseCase loadCategoriesUseCase,
         ILocalizationService localizationService,
         INavigationService navigationService,
         IDialogService dialogService)
     {
         _categoryRepository = categoryRepository;
+        _loadCategoriesUseCase = loadCategoriesUseCase;
         _loc = localizationService;
         _navigationService = navigationService;
         _dialogService = dialogService;
@@ -41,7 +45,7 @@ public partial class CategoriesViewModel : ObservableObject
 
         try
         {
-            var liste = await _categoryRepository.GetCategoriesAsync();
+            var liste = await _loadCategoriesUseCase.ExecuteAsync();
             Kategorien = new ObservableCollection<Category>(liste);
         }
         finally

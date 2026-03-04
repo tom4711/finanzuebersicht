@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Maui;
+using Finanzuebersicht.Application.UseCases.Categories;
 using Finanzuebersicht.Application.UseCases.Dashboard;
 using Finanzuebersicht.Application.UseCases.Transactions;
 using Finanzuebersicht.Services;
@@ -41,6 +42,7 @@ public static class MauiProgram
 		builder.Services.AddSingleton<IReportingService, ReportingService>();
 		builder.Services.AddSingleton<IDataService, DataServiceFacade>();
 		builder.Services.AddSingleton<ITransactionValidationService, TransactionValidationService>();
+		builder.Services.AddTransient<LoadCategoriesUseCase>();
 		builder.Services.AddTransient<LoadDashboardMonthUseCase>();
 		builder.Services.AddTransient<LoadTransactionsMonthUseCase>();
 		builder.Services.AddTransient<GetYearSummaryUseCase>();
