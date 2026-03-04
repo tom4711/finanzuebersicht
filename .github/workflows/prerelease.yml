@@ -61,7 +61,7 @@ jobs:
         run: |
           cd Finanzuebersicht
           dotnet build -f net10.0-maccatalyst \
-            -c Release \
+            -c Debug \
             -p:ValidateXcodeVersion=false \
             -p:CodesignKey="" \
             -p:CodesignProvision="" \
@@ -72,7 +72,7 @@ jobs:
       - name: Pack macOS artifact
         shell: bash
         run: |
-          cd Finanzuebersicht/bin/Release
+          cd Finanzuebersicht/bin/Debug
           zip -r "../../Finanzuebersicht-${{ needs.version.outputs.tag }}-maccatalyst.zip" net10.0-maccatalyst
 
       - name: Upload macOS package

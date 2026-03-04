@@ -55,7 +55,7 @@ jobs:
         run: |
           cd Finanzuebersicht
           dotnet build -f net10.0-maccatalyst \
-            -c Release \
+            -c Debug \
             -p:ValidateXcodeVersion=false \
             -p:CodesignKey="" \
             -p:CodesignProvision="" \
@@ -67,7 +67,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Finanzuebersicht-${{ steps.version.outputs.VERSION }}-maccatalyst
-          path: Finanzuebersicht/bin/Release/net10.0-maccatalyst/**
+          path: Finanzuebersicht/bin/Debug/net10.0-maccatalyst/**
           if-no-files-found: error
           retention-days: 14
 
