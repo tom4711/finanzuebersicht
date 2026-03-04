@@ -52,7 +52,7 @@ jobs:
           dotnet-version: '10.0.100'
 
       - name: Install .NET MAUI workloads
-        run: dotnet workload install maui-maccatalyst maui-ios
+        run: dotnet workload install maui-maccatalyst maui-ios --skip-manifest-update
 
       - name: Restore dependencies
         run: dotnet restore Finanzuebersicht/Finanzuebersicht.csproj
@@ -98,7 +98,7 @@ jobs:
           dotnet-version: '10.0.100'
 
       - name: Install .NET MAUI workloads
-        run: dotnet workload install maui-windows maui-ios maui-maccatalyst
+        run: dotnet workload install maui-windows maui-ios maui-maccatalyst --skip-manifest-update
 
       - name: Restore dependencies
         run: dotnet restore Finanzuebersicht/Finanzuebersicht.csproj
