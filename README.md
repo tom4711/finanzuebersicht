@@ -55,8 +55,9 @@ dotnet restore
 # Build
 dotnet build Finanzuebersicht/Finanzuebersicht.csproj -f net10.0-maccatalyst
 
-# Anschließend die .app aus dem bin/-Ordner nach /Applications/ kopieren und dort starten
-# (macOS startet die App korrekt aus /Applications/)
+# Anschließend .app nach /Applications kopieren und starten
+cp -R "Finanzuebersicht/bin/Debug/net10.0-maccatalyst/maccatalyst-x64/Finanzübersicht.app" "/Applications/Finanzübersicht.app"
+open "/Applications/Finanzübersicht.app"
 
 # Tests
 dotnet test Finanzuebersicht.Tests
@@ -71,11 +72,21 @@ dotnet test Finanzuebersicht.Tests
 | Persistenz | JSON-Dateien (lokal, kein Cloud-Zwang) |
 | Versionierung | [Nerdbank.GitVersioning](https://github.com/dotnet/Nerdbank.GitVersioning) |
 
+## Architekturstatus
+
+- Phase 1 und Phase 2 der Architektur-Roadmap sind abgeschlossen (Stand: März 2026).
+- Die UI nutzt UseCases/Contracts; Infrastructure-Registrierung ist im Infrastructure-Layer gekapselt.
+
 ## Architektur-Roadmap
 
 Eine konkrete Zielarchitektur inkl. inkrementellem Migrationspfad findest du in:
 
 - [docs/ARCHITEKTUR-ROADMAP.md](docs/ARCHITEKTUR-ROADMAP.md)
+
+## Datenverhalten
+
+- Beim Löschen einer Kategorie bleiben bestehende Transaktionen und Daueraufträge erhalten.
+- Referenzen werden automatisch auf die Fallback-Kategorie „Sonstiges“ umgehängt.
 
 ## Contributing
 

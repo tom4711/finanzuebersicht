@@ -1,5 +1,8 @@
 # Architektur-Roadmap (Wachstumsfähig)
 
+> Status (März 2026): Phase 1 und Phase 2 sind abgeschlossen.
+> Dieses Dokument wird als Architektur-Historie und Referenz weitergeführt.
+
 ## Ziel
 
 Diese Roadmap beschreibt eine **inkrementelle Zielarchitektur** für Finanzübersicht,
@@ -234,7 +237,7 @@ Finanzuebersicht.Tests/           (Tests pro Layer)
 
 ---
 
-## Umsetzungsstand (Stand: PR #34)
+## Umsetzungsstand (Stand: März 2026)
 
 ### Bereits umgesetzt
 
@@ -248,25 +251,27 @@ Finanzuebersicht.Tests/           (Tests pro Layer)
   - Consumer auf granulare Ports migriert
   - Kompatibilitäts-Fassade (`DataServiceFacade`) eingeführt
 
-- **PR 3 (Fachlogik zentralisieren):** weitgehend abgeschlossen
+- **PR 3 (Fachlogik zentralisieren):** abgeschlossen
   - `ITransactionValidationService` + `TransactionValidationService`
   - `IRecurringGenerationService` + `RecurringGenerationService`
   - `IReportingService` + `ReportingService`
+  - UseCase-Migration der ViewModel-Orchestrierung inkl. Save/Delete/Toggle-Pfaden
 
-- **Styles/Farbkonsolidierung:** teilweise umgesetzt
-  - Converter-Farben zentralisiert (`ColorResourceHelper`, PR #34)
+- **Styles/Farbkonsolidierung:** umgesetzt (zentralisierte Farbzugriffe in relevanten Convertern/Flows)
 
-### Noch offen
+- **Phase 2 (Projektaufteilung):** abgeschlossen
+  - `Finanzuebersicht.Application` und `Finanzuebersicht.Infrastructure` eingeführt
+  - `LocalDataService` in Infrastructure verortet
+  - Infrastructure-DI in eigene Extension gekapselt
+  - UI verwendet Contracts/UseCases statt direkter Repository-Wiring
+  - Tests je Layer konsolidiert
 
-- UseCase-Ordner-/Typstruktur in Core konsequent aufbauen (`UseCases/*`)
-- Restliche hardcodierte Farbwerte (u. a. in ViewModels/Charts) auf zentrale Tokens umstellen
-- Später optional: Phase 2 mit separaten Projekten (`Application`/`Infrastructure`)
+### Offene Nacharbeiten (optional, nicht blocker)
 
----
+- Weitere UI-Integrationstests für End-to-End-Flows ergänzen
+- Restliche kosmetische Dokumentationsangleichungen (README/Guides) bei Bedarf
 
-## Vorschlag für nächste konkrete Umsetzung
+## Nächster Fokus (abseits dieser Roadmap)
 
-Start mit **PR 1 (UI-Kopplung lösen)**, weil:
-- sehr geringe Fachrisiken,
-- sofort messbarer Testbarkeitsgewinn,
-- ideale Basis für PR 2 und PR 3.
+- Neue Features auf der abgeschlossenen Zielarchitektur umsetzen (z. B. Budgets, Import/Export, Forecast-Verbesserungen).
+- Bei größeren fachlichen Erweiterungen ggf. neue, separate Feature-Roadmap anlegen.
