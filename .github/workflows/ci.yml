@@ -59,9 +59,10 @@ jobs:
             -p:ValidateXcodeVersion=false \
             -p:CodesignKey="" \
             -p:CodesignProvision="" \
-            -p:MtouchLink=None \
+            -p:MtouchLink=SdkOnly \
             -p:UseInterpreter=true \
-            -p:EnableILLink=false
+            -p:EnableILLink=false \
+            -p:PublishTrimmed=false
 
       - name: Upload Mac Catalyst artifact
         uses: actions/upload-artifact@v4

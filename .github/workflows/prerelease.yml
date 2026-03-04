@@ -65,9 +65,10 @@ jobs:
             -p:ValidateXcodeVersion=false \
             -p:CodesignKey="" \
             -p:CodesignProvision="" \
-            -p:MtouchLink=None \
+            -p:MtouchLink=SdkOnly \
             -p:UseInterpreter=true \
-            -p:EnableILLink=false
+            -p:EnableILLink=false \
+            -p:PublishTrimmed=false
 
       - name: Pack macOS artifact
         shell: bash
