@@ -64,7 +64,7 @@ jobs:
             -p:EnableILLink=false
 
       - name: Upload Mac Catalyst artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Finanzuebersicht-${{ steps.version.outputs.VERSION }}-maccatalyst
           path: Finanzuebersicht/bin/Debug/net10.0-maccatalyst/**
@@ -104,7 +104,7 @@ jobs:
           dotnet build -f net10.0-windows10.0.19041.0 -c Release
 
       - name: Upload Windows artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Finanzuebersicht-${{ steps.version.outputs.VERSION }}-windows
           path: Finanzuebersicht/bin/Release/net10.0-windows10.0.19041.0/**
