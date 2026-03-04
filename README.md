@@ -5,6 +5,7 @@
 **Persönliche Finanzverwaltung für iOS, macOS und Windows**
 
 [![CI](https://github.com/tom4711/finanzuebersicht/actions/workflows/ci.yml/badge.svg)](https://github.com/tom4711/finanzuebersicht/actions/workflows/ci.yml)
+[![Pre-Release](https://github.com/tom4711/finanzuebersicht/actions/workflows/prerelease.yml/badge.svg)](https://github.com/tom4711/finanzuebersicht/actions/workflows/prerelease.yml)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
 [![.NET 10](https://img.shields.io/badge/.NET-10-blueviolet)](https://dotnet.microsoft.com/download)
 [![Platform](https://img.shields.io/badge/platform-iOS%20%7C%20macOS%20%7C%20Windows-lightgrey)](#plattformen)
@@ -87,6 +88,20 @@ Eine konkrete Zielarchitektur inkl. inkrementellem Migrationspfad findest du in:
 
 - Beim Löschen einer Kategorie bleiben bestehende Transaktionen und Daueraufträge erhalten.
 - Referenzen werden automatisch auf die Fallback-Kategorie „Sonstiges“ umgehängt.
+
+## Builds & Downloads (GitHub)
+
+- **Pre-Releases** enthalten direkt herunterladbare ZIP-Builds für **macOS (Mac Catalyst)** und **Windows**.
+- Du findest sie unter [Releases](https://github.com/tom4711/finanzuebersicht/releases) (als `Pre-release` markiert).
+- Die Versionierung erfolgt weiterhin über Nerdbank.GitVersioning (`0.x` vor `1.0.0`).
+
+## CI/CD Workflows
+
+- `CI` ([.github/workflows/ci.yml](.github/workflows/ci.yml))
+	- Führt Tests aus und erzeugt Build-Artefakte für macOS/Windows.
+- `Pre-Release` ([.github/workflows/prerelease.yml](.github/workflows/prerelease.yml))
+	- Baut macOS/Windows in `Release`, verpackt ZIPs und veröffentlicht sie als GitHub Pre-Release.
+	- Trigger: Push auf `main` oder manuell via `workflow_dispatch`.
 
 ## Contributing
 
