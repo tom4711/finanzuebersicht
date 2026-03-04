@@ -9,9 +9,7 @@ namespace Finanzuebersicht.ViewModels;
 
 public partial class DashboardViewModel : MonthNavigationViewModel
 {
-    private readonly ICategoryRepository _categoryRepository;
-    private readonly ITransactionRepository _transactionRepository;
-    private readonly IRecurringTransactionRepository _recurringTransactionRepository;
+    private readonly LoadDashboardMonthUseCase _loadDashboardMonthUseCase;
     private readonly GetYearSummaryUseCase _getYearSummaryUseCase;
 
     // --- Monatsansicht ---
@@ -60,17 +58,12 @@ public partial class DashboardViewModel : MonthNavigationViewModel
     public bool IsYearView => !IsMonthView;
 
     private int _aktuellesJahr = DateTime.Today.Year;
-    private List<Category> _alleKategorien = [];
 
     public DashboardViewModel(
-        ICategoryRepository categoryRepository,
-        ITransactionRepository transactionRepository,
-        IRecurringTransactionRepository recurringTransactionRepository,
+        LoadDashboardMonthUseCase loadDashboardMonthUseCase,
         GetYearSummaryUseCase getYearSummaryUseCase)
     {
-        _categoryRepository = categoryRepository;
-        _transactionRepository = transactionRepository;
-        _recurringTransactionRepository = recurringTransactionRepository;
+        _loadDashboardMonthUseCase = loadDashboardMonthUseCase;
         _getYearSummaryUseCase = getYearSummaryUseCase;
         UpdateJahrAnzeige();
     }
@@ -97,82 +90,14 @@ public partial class DashboardViewModel : MonthNavigationViewModel
 
     private async Task LadeMonatAsync()
     {
-        _alleKategorien = await _categoryRepository.GetCategoriesAsync();
+        var data = await _loadDashboardMonthUseCase.ExecuteAsync(AktuellerMonat, DateTime.Today);
 
-        var von = AktuellerMonat;
-        var bis = AktuellerMonat.AddMonths(1).AddDays(-1);
-        var transaktionen = await _transactionRepository.GetTransactionsAsync(von, bis);
-
-        // Prognose: zukünftige Monate mit erwarteten Daueraufträgen ergänzen
-        IstPrognose = AktuellerMonat > new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);
-        if (IstPrognose)
-        {
-            var dauerauftraege = await _recurringTransactionRepository.GetRecurringTransactionsAsync();
-            foreach (var da in dauerauftraege.Where(d => d.Aktiv))
-            {
-                if (da.Startdatum <= bis && (!da.Enddatum.HasValue || da.Enddatum.Value >= von))
-                {
-                    if (!transaktionen.Any(t => t.DauerauftragId == da.Id))
-                    {
-                        transaktionen.Add(new Transaction
-                        {
-                            Betrag = da.Betrag,
-                            Titel = da.Titel,
-                            KategorieId = da.KategorieId,
-                            Typ = da.Typ,
-                            Datum = von,
-                            DauerauftragId = da.Id
-                        });
-                    }
-                }
-            }
-        }
-
-        GesamtEinnahmen = transaktionen
-            .Where(t => t.Typ == TransactionType.Einnahme)
-            .Sum(t => t.Betrag);
-
-        GesamtAusgaben = transaktionen
-            .Where(t => t.Typ == TransactionType.Ausgabe)
-            .Sum(t => t.Betrag);
-
-        Bilanz = GesamtEinnahmen - GesamtAusgaben;
-
-        var ausgabenGruppiert = transaktionen
-            .Where(t => t.Typ == TransactionType.Ausgabe)
-            .GroupBy(t => t.KategorieId)
-            .Select(g => new { Key = g.Key, Cat = _alleKategorien.FirstOrDefault(k => k.Id == g.Key), Total = g.Sum(t => t.Betrag) })
-            .Where(x => x.Cat != null) // Transaktionen ohne gültige Kategorie nicht im Diagramm anzeigen
-            .Select(x => new CategorySummary
-            {
-                CategoryId = x.Key,
-                CategoryName = x.Cat!.Name,
-                Total = x.Total,
-                Color = x.Cat.Color,
-                Icon = x.Cat.Icon
-            })
-            .OrderByDescending(k => k.Total)
-            .ToList();
-
-        KategorieAusgaben = new ObservableCollection<CategorySummary>(ausgabenGruppiert);
-
-        var einnahmenGruppiert = transaktionen
-            .Where(t => t.Typ == TransactionType.Einnahme)
-            .GroupBy(t => t.KategorieId)
-            .Select(g => new { Key = g.Key, Cat = _alleKategorien.FirstOrDefault(k => k.Id == g.Key), Total = g.Sum(t => t.Betrag) })
-            .Where(x => x.Cat != null)
-            .Select(x => new CategorySummary
-            {
-                CategoryId = x.Key,
-                CategoryName = x.Cat!.Name,
-                Total = x.Total,
-                Color = x.Cat.Color,
-                Icon = x.Cat.Icon
-            })
-            .OrderByDescending(k => k.Total)
-            .ToList();
-
-        KategorieEinnahmen = new ObservableCollection<CategorySummary>(einnahmenGruppiert);
+        IstPrognose = data.IstPrognose;
+        GesamtEinnahmen = data.GesamtEinnahmen;
+        GesamtAusgaben = data.GesamtAusgaben;
+        Bilanz = data.Bilanz;
+        KategorieAusgaben = new ObservableCollection<CategorySummary>(data.KategorieAusgaben);
+        KategorieEinnahmen = new ObservableCollection<CategorySummary>(data.KategorieEinnahmen);
     }
 
     private async Task LadeJahrAsync()
