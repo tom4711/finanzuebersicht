@@ -1,19 +1,20 @@
 using Finanzuebersicht.Models;
+using Finanzuebersicht.Services;
 
 namespace Finanzuebersicht.Application.UseCases.Dashboard;
 
 public class LoadDashboardYearUseCase
 {
-    private readonly GetYearSummaryUseCase _getYearSummaryUseCase;
+    private readonly IReportingService _reportingService;
 
-    public LoadDashboardYearUseCase(GetYearSummaryUseCase getYearSummaryUseCase)
+    public LoadDashboardYearUseCase(IReportingService reportingService)
     {
-        _getYearSummaryUseCase = getYearSummaryUseCase;
+        _reportingService = reportingService;
     }
 
     public async Task<DashboardYearData> ExecuteAsync(int year)
     {
-        var summary = await _getYearSummaryUseCase.ExecuteAsync(year);
+        var summary = await _reportingService.GetYearSummaryAsync(year);
         if (summary == null)
         {
             return new DashboardYearData

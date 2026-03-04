@@ -22,8 +22,7 @@ public class LoadDashboardYearUseCaseTests
             }
         });
 
-        var getYearSummaryUseCase = new GetYearSummaryUseCase(reportingService);
-        var sut = new LoadDashboardYearUseCase(getYearSummaryUseCase);
+        var sut = new LoadDashboardYearUseCase(reportingService);
 
         var result = await sut.ExecuteAsync(2026);
 
@@ -40,8 +39,7 @@ public class LoadDashboardYearUseCaseTests
         var reportingService = Substitute.For<IReportingService>();
         reportingService.GetYearSummaryAsync(2026).Returns(Task.FromResult((YearSummary)null!));
 
-        var getYearSummaryUseCase = new GetYearSummaryUseCase(reportingService);
-        var sut = new LoadDashboardYearUseCase(getYearSummaryUseCase);
+        var sut = new LoadDashboardYearUseCase(reportingService);
 
         var result = await sut.ExecuteAsync(2026);
 
