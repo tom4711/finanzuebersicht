@@ -13,6 +13,7 @@ public partial class RecurringTransactionsViewModel : ObservableObject
 {
     private readonly IRecurringTransactionRepository _recurringTransactionRepository;
     private readonly LoadRecurringTransactionsUseCase _loadRecurringTransactionsUseCase;
+    private readonly ToggleRecurringTransactionActiveUseCase _toggleRecurringTransactionActiveUseCase;
     private readonly ILocalizationService _loc;
     private readonly INavigationService _navigationService;
     private readonly IDialogService _dialogService;
@@ -26,12 +27,14 @@ public partial class RecurringTransactionsViewModel : ObservableObject
     public RecurringTransactionsViewModel(
         IRecurringTransactionRepository recurringTransactionRepository,
         LoadRecurringTransactionsUseCase loadRecurringTransactionsUseCase,
+        ToggleRecurringTransactionActiveUseCase toggleRecurringTransactionActiveUseCase,
         ILocalizationService localizationService,
         INavigationService navigationService,
         IDialogService dialogService)
     {
         _recurringTransactionRepository = recurringTransactionRepository;
         _loadRecurringTransactionsUseCase = loadRecurringTransactionsUseCase;
+        _toggleRecurringTransactionActiveUseCase = toggleRecurringTransactionActiveUseCase;
         _loc = localizationService;
         _navigationService = navigationService;
         _dialogService = dialogService;
@@ -57,8 +60,7 @@ public partial class RecurringTransactionsViewModel : ObservableObject
     [RelayCommand]
     private async Task ToggleAktiv(RecurringTransaction dauerauftrag)
     {
-        dauerauftrag.Aktiv = !dauerauftrag.Aktiv;
-        await _recurringTransactionRepository.SaveRecurringTransactionAsync(dauerauftrag);
+        await _toggleRecurringTransactionActiveUseCase.ExecuteAsync(dauerauftrag);
         await LoadDauerauftraege();
     }
 
