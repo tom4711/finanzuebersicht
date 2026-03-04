@@ -10,7 +10,7 @@ namespace Finanzuebersicht.ViewModels;
 public partial class DashboardViewModel : MonthNavigationViewModel
 {
     private readonly LoadDashboardMonthUseCase _loadDashboardMonthUseCase;
-    private readonly GetYearSummaryUseCase _getYearSummaryUseCase;
+    private readonly LoadDashboardYearUseCase _loadDashboardYearUseCase;
 
     // --- Monatsansicht ---
 
@@ -61,10 +61,10 @@ public partial class DashboardViewModel : MonthNavigationViewModel
 
     public DashboardViewModel(
         LoadDashboardMonthUseCase loadDashboardMonthUseCase,
-        GetYearSummaryUseCase getYearSummaryUseCase)
+        LoadDashboardYearUseCase loadDashboardYearUseCase)
     {
         _loadDashboardMonthUseCase = loadDashboardMonthUseCase;
-        _getYearSummaryUseCase = getYearSummaryUseCase;
+        _loadDashboardYearUseCase = loadDashboardYearUseCase;
         UpdateJahrAnzeige();
     }
 
@@ -102,28 +102,10 @@ public partial class DashboardViewModel : MonthNavigationViewModel
 
     private async Task LadeJahrAsync()
     {
-        var summary = await _getYearSummaryUseCase.ExecuteAsync(_aktuellesJahr);
-        if (summary != null)
-        {
-            JahrGesamtAusgaben = summary.Total;
-            JahrMonate = summary.Months;
-            if (summary.ByCategory != null && summary.Total > 0)
-            {
-                foreach (var cat in summary.ByCategory)
-                    cat.PercentageAmount = (cat.Total / summary.Total) * 100;
-            }
-            // Kategorien ohne gültigen Namen (fehlende/alte kategorieId) nicht im Diagramm anzeigen
-            var jahrKatGefiltert = (summary.ByCategory ?? [])
-                .Where(c => !string.IsNullOrWhiteSpace(c.CategoryName))
-                .ToList();
-            JahrKategorien = new ObservableCollection<CategorySummary>(jahrKatGefiltert);
-        }
-        else
-        {
-            JahrGesamtAusgaben = 0;
-            JahrMonate = [];
-            JahrKategorien = [];
-        }
+        var data = await _loadDashboardYearUseCase.ExecuteAsync(_aktuellesJahr);
+        JahrGesamtAusgaben = data.GesamtAusgaben;
+        JahrMonate = data.Monate;
+        JahrKategorien = new ObservableCollection<CategorySummary>(data.Kategorien);
     }
 
     [RelayCommand]
