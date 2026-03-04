@@ -3,6 +3,7 @@ using Finanzuebersicht.Application.UseCases.Categories;
 using Finanzuebersicht.Application.UseCases.Dashboard;
 using Finanzuebersicht.Application.UseCases.RecurringTransactions;
 using Finanzuebersicht.Application.UseCases.Transactions;
+using Finanzuebersicht.Infrastructure;
 using Finanzuebersicht.Services;
 using Finanzuebersicht.ViewModels;
 using Finanzuebersicht.Views;
@@ -34,11 +35,7 @@ public static class MauiProgram
 
 		// Services
 		builder.Services.AddSingleton<SettingsService>();
-		builder.Services.AddSingleton<LocalDataService>(sp =>
-			new LocalDataService(sp.GetRequiredService<SettingsService>()));
-		builder.Services.AddSingleton<ICategoryRepository>(sp => sp.GetRequiredService<LocalDataService>());
-		builder.Services.AddSingleton<ITransactionRepository>(sp => sp.GetRequiredService<LocalDataService>());
-		builder.Services.AddSingleton<IRecurringTransactionRepository>(sp => sp.GetRequiredService<LocalDataService>());
+		builder.Services.AddInfrastructureServices();
 		builder.Services.AddSingleton<IRecurringGenerationService, RecurringGenerationService>();
 		builder.Services.AddSingleton<IReportingService, ReportingService>();
 		builder.Services.AddSingleton<IDataService, DataServiceFacade>();
