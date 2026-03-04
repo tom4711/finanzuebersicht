@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Finanzuebersicht.Application.UseCases.Dashboard;
 using Finanzuebersicht.Models;
 using Finanzuebersicht.Services;
 
@@ -11,7 +12,7 @@ public partial class DashboardViewModel : MonthNavigationViewModel
     private readonly ICategoryRepository _categoryRepository;
     private readonly ITransactionRepository _transactionRepository;
     private readonly IRecurringTransactionRepository _recurringTransactionRepository;
-    private readonly IReportingService _reportingService;
+    private readonly GetYearSummaryUseCase _getYearSummaryUseCase;
 
     // --- Monatsansicht ---
 
@@ -65,12 +66,12 @@ public partial class DashboardViewModel : MonthNavigationViewModel
         ICategoryRepository categoryRepository,
         ITransactionRepository transactionRepository,
         IRecurringTransactionRepository recurringTransactionRepository,
-        IReportingService reportingService)
+        GetYearSummaryUseCase getYearSummaryUseCase)
     {
         _categoryRepository = categoryRepository;
         _transactionRepository = transactionRepository;
         _recurringTransactionRepository = recurringTransactionRepository;
-        _reportingService = reportingService;
+        _getYearSummaryUseCase = getYearSummaryUseCase;
         UpdateJahrAnzeige();
     }
 
@@ -176,7 +177,7 @@ public partial class DashboardViewModel : MonthNavigationViewModel
 
     private async Task LadeJahrAsync()
     {
-        var summary = await _reportingService.GetYearSummaryAsync(_aktuellesJahr);
+        var summary = await _getYearSummaryUseCase.ExecuteAsync(_aktuellesJahr);
         if (summary != null)
         {
             JahrGesamtAusgaben = summary.Total;
