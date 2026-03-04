@@ -11,7 +11,7 @@ namespace Finanzuebersicht.ViewModels;
 [QueryProperty(nameof(Transaction), "Transaction")]
 public partial class TransactionDetailViewModel : ObservableObject
 {
-    private readonly ITransactionRepository _transactionRepository;
+    private readonly SaveTransactionDetailUseCase _saveTransactionDetailUseCase;
     private readonly LoadTransactionDetailDataUseCase _loadTransactionDetailDataUseCase;
     private readonly ITransactionValidationService _validationService;
     private Transaction? _existingTransaction;
@@ -57,14 +57,14 @@ public partial class TransactionDetailViewModel : ObservableObject
     }
 
     public TransactionDetailViewModel(
-        ITransactionRepository transactionRepository,
+        SaveTransactionDetailUseCase saveTransactionDetailUseCase,
         LoadTransactionDetailDataUseCase loadTransactionDetailDataUseCase,
         ITransactionValidationService validationService,
         ILocalizationService localizationService,
         INavigationService navigationService,
         IDialogService dialogService)
     {
-        _transactionRepository = transactionRepository;
+        _saveTransactionDetailUseCase = saveTransactionDetailUseCase;
         _loadTransactionDetailDataUseCase = loadTransactionDetailDataUseCase;
         _validationService = validationService;
         _loc = localizationService;
@@ -115,16 +115,13 @@ public partial class TransactionDetailViewModel : ObservableObject
                 return;
             }
 
-            var selectedCategory = SelectedKategorie!;
-
-            var transaction = _existingTransaction ?? new Transaction();
-            transaction.Betrag = betrag;
-            transaction.Titel = Titel;
-            transaction.Datum = Datum;
-            transaction.KategorieId = selectedCategory.Id;
-            transaction.Typ = Typ;
-
-            await _transactionRepository.SaveTransactionAsync(transaction);
+            await _saveTransactionDetailUseCase.ExecuteAsync(
+                _existingTransaction,
+                betrag,
+                Titel,
+                Datum,
+                SelectedKategorie!.Id,
+                Typ);
             await _navigationService.GoBackAsync();
         }
         catch (Exception ex)
