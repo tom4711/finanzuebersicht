@@ -11,7 +11,8 @@ public class SaveRecurringTransactionDetailUseCaseTests
     public async Task ExecuteAsync_CreatesNewRecurring_WhenExistingIsNull()
     {
         var recurringRepository = Substitute.For<IRecurringTransactionRepository>();
-        var sut = new SaveRecurringTransactionDetailUseCase(recurringRepository);
+        var recurringGenerationService = Substitute.For<IRecurringGenerationService>();
+        var sut = new SaveRecurringTransactionDetailUseCase(recurringRepository, recurringGenerationService);
 
         await sut.ExecuteAsync(
             existing: null,
@@ -32,12 +33,14 @@ public class SaveRecurringTransactionDetailUseCaseTests
                 r.Startdatum == new DateTime(2026, 3, 1) &&
                 r.Enddatum == new DateTime(2026, 12, 31) &&
                 r.Aktiv));
+        await recurringGenerationService.Received(1).GeneratePendingRecurringTransactionsAsync();
     }
 
     [Fact]
     public async Task ExecuteAsync_UpdatesExistingRecurring_WhenProvided()
     {
         var recurringRepository = Substitute.For<IRecurringTransactionRepository>();
+        var recurringGenerationService = Substitute.For<IRecurringGenerationService>();
         var existing = new RecurringTransaction
         {
             Id = "r-1",
@@ -49,7 +52,7 @@ public class SaveRecurringTransactionDetailUseCaseTests
             Enddatum = null,
             Aktiv = false
         };
-        var sut = new SaveRecurringTransactionDetailUseCase(recurringRepository);
+        var sut = new SaveRecurringTransactionDetailUseCase(recurringRepository, recurringGenerationService);
 
         await sut.ExecuteAsync(
             existing,
@@ -70,5 +73,6 @@ public class SaveRecurringTransactionDetailUseCaseTests
         Assert.Equal(new DateTime(2026, 4, 1), existing.Startdatum);
         Assert.Null(existing.Enddatum);
         Assert.True(existing.Aktiv);
+        await recurringGenerationService.Received(1).GeneratePendingRecurringTransactionsAsync();
     }
 }

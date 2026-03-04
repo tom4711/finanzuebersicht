@@ -6,10 +6,14 @@ namespace Finanzuebersicht.Application.UseCases.RecurringTransactions;
 public class SaveRecurringTransactionDetailUseCase
 {
     private readonly IRecurringTransactionRepository _recurringTransactionRepository;
+    private readonly IRecurringGenerationService _recurringGenerationService;
 
-    public SaveRecurringTransactionDetailUseCase(IRecurringTransactionRepository recurringTransactionRepository)
+    public SaveRecurringTransactionDetailUseCase(
+        IRecurringTransactionRepository recurringTransactionRepository,
+        IRecurringGenerationService recurringGenerationService)
     {
         _recurringTransactionRepository = recurringTransactionRepository;
+        _recurringGenerationService = recurringGenerationService;
     }
 
     public async Task ExecuteAsync(
@@ -32,5 +36,6 @@ public class SaveRecurringTransactionDetailUseCase
         recurring.Aktiv = aktiv;
 
         await _recurringTransactionRepository.SaveRecurringTransactionAsync(recurring);
+        await _recurringGenerationService.GeneratePendingRecurringTransactionsAsync();
     }
 }
