@@ -23,7 +23,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '10.0.x'
+          dotnet-version: '10.0.100'
 
       - name: Resolve prerelease tag
         id: version
@@ -49,10 +49,10 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '10.0.x'
+          dotnet-version: '10.0.100'
 
       - name: Install .NET MAUI workloads
-        run: dotnet workload install maui-maccatalyst maui-ios
+        run: dotnet workload install maui-maccatalyst maui-ios --skip-manifest-update
 
       - name: Restore dependencies
         run: dotnet restore Finanzuebersicht/Finanzuebersicht.csproj
@@ -61,19 +61,18 @@ jobs:
         run: |
           cd Finanzuebersicht
           dotnet build -f net10.0-maccatalyst \
-            -c Release \
+            -c Debug \
             -p:ValidateXcodeVersion=false \
             -p:CodesignKey="" \
             -p:CodesignProvision="" \
             -p:MtouchLink=SdkOnly \
             -p:UseInterpreter=true \
-            -p:EnableILLink=false \
-            -p:PublishTrimmed=false
+            -p:EnableILLink=false
 
       - name: Pack macOS artifact
         shell: bash
         run: |
-          cd Finanzuebersicht/bin/Release
+          cd Finanzuebersicht/bin/Debug
           zip -r "../../Finanzuebersicht-${{ needs.version.outputs.tag }}-maccatalyst.zip" net10.0-maccatalyst
 
       - name: Upload macOS package
@@ -96,10 +95,10 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '10.0.x'
+          dotnet-version: '10.0.100'
 
       - name: Install .NET MAUI workloads
-        run: dotnet workload install maui-windows maui-ios maui-maccatalyst
+        run: dotnet workload install maui-windows maui-ios maui-maccatalyst --skip-manifest-update
 
       - name: Restore dependencies
         run: dotnet restore Finanzuebersicht/Finanzuebersicht.csproj

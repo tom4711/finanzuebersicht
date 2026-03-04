@@ -19,7 +19,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '10.0.x'
+          dotnet-version: '10.0.100'
 
       - name: Run tests
         run: dotnet test Finanzuebersicht.Tests --configuration Release --logger "console;verbosity=minimal"
@@ -37,10 +37,10 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '10.0.x'
+          dotnet-version: '10.0.100'
 
       - name: Install .NET MAUI workloads
-        run: dotnet workload install maui-ios maui-maccatalyst
+        run: dotnet workload install maui-ios maui-maccatalyst --skip-manifest-update
 
       - name: Restore dependencies
         run: dotnet restore Finanzuebersicht/Finanzuebersicht.csproj
@@ -55,20 +55,19 @@ jobs:
         run: |
           cd Finanzuebersicht
           dotnet build -f net10.0-maccatalyst \
-            -c Release \
+            -c Debug \
             -p:ValidateXcodeVersion=false \
             -p:CodesignKey="" \
             -p:CodesignProvision="" \
             -p:MtouchLink=SdkOnly \
             -p:UseInterpreter=true \
-            -p:EnableILLink=false \
-            -p:PublishTrimmed=false
+            -p:EnableILLink=false
 
       - name: Upload Mac Catalyst artifact
         uses: actions/upload-artifact@v4
         with:
           name: Finanzuebersicht-${{ steps.version.outputs.VERSION }}-maccatalyst
-          path: Finanzuebersicht/bin/Release/net10.0-maccatalyst/**
+          path: Finanzuebersicht/bin/Debug/net10.0-maccatalyst/**
           if-no-files-found: error
           retention-days: 14
 
@@ -85,10 +84,10 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '10.0.x'
+          dotnet-version: '10.0.100'
 
       - name: Install .NET MAUI workloads
-        run: dotnet workload install maui-windows maui-ios maui-maccatalyst
+        run: dotnet workload install maui-windows maui-ios maui-maccatalyst --skip-manifest-update
 
       - name: Restore dependencies
         run: dotnet restore Finanzuebersicht/Finanzuebersicht.csproj
