@@ -1,3 +1,4 @@
+using Finanzuebersicht.Converters;
 using Finanzuebersicht.Models;
 using Microsoft.Maui.Graphics;
 using System.Collections.Generic;
@@ -12,23 +13,29 @@ namespace Finanzuebersicht.Charts;
 public class DonutChartDrawable : IDrawable
 {
     private const int ArcSteps = 60;
-    private static readonly Color FallbackColor = Color.FromArgb("#007AFF");
+    private static readonly Color FallbackColor = ColorResourceHelper.GetColor("Primary", Color.FromArgb("#007AFF"));
 
     // Theme-abhängige Farben werden zur Laufzeit ausgelesen
     private static Color TextColor =>
-        Application.Current?.RequestedTheme == AppTheme.Dark
-            ? Color.FromArgb("#F2F2F7")
-            : Color.FromArgb("#1C1C1E");
+        ColorResourceHelper.GetThemeColor(
+            "Gray900",
+            "Gray100",
+            Color.FromArgb("#1C1C1E"),
+            Color.FromArgb("#F2F2F7"));
 
     private static Color SecondaryTextColor =>
-        Application.Current?.RequestedTheme == AppTheme.Dark
-            ? Color.FromArgb("#8E8E93")
-            : Color.FromArgb("#6C6C70");
+        ColorResourceHelper.GetThemeColor(
+            "Gray600",
+            "Gray600",
+            Color.FromArgb("#6C6C70"),
+            Color.FromArgb("#8E8E93"));
 
     private static Color HoleColor =>
-        Application.Current?.RequestedTheme == AppTheme.Dark
-            ? Color.FromArgb("#1C1C1E")
-            : Color.FromArgb("#F2F2F7");
+        ColorResourceHelper.GetThemeColor(
+            "PageBackground",
+            "PageBackgroundDark",
+            Color.FromArgb("#F2F2F7"),
+            Color.FromArgb("#1C1C1E"));
 
     public IReadOnlyList<CategorySummary> Items { get; set; } = [];
 
