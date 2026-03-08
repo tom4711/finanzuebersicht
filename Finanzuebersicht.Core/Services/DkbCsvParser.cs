@@ -29,8 +29,14 @@ namespace Finanzuebersicht.Core.Services
                     // pad to expected length
                     var p = parts.Concat(Enumerable.Repeat(string.Empty, Math.Max(0, 12 - parts.Length))).ToArray();
 
+                    // require Buchungsdatum to be a valid date in expected format; otherwise treat row as malformed
+                    if (!TryParseGermanDateExact(p[0], out var buchung))
+                    {
+                        throw new System.FormatException($"Invalid Buchungsdatum: {p[0]}");
+                    }
+
                     dto = new TransactionDto();
-                    dto.Buchungsdatum = ParseGermanDate(p[0]);
+                    dto.Buchungsdatum = buchung;
                     dto.Wertstellung = ParseGermanDate(p[1]);
                     dto.Status = p[2].Trim('"');
                     dto.Zahlungspflichtige = p[3].Trim('"');
@@ -114,6 +120,14 @@ namespace Finanzuebersicht.Core.Services
             if (DateTime.TryParseExact(str, "dd.MM.yy", CultureInfo.GetCultureInfo("de-DE"), DateTimeStyles.None, out var d)) return d;
             if (DateTime.TryParse(str, CultureInfo.GetCultureInfo("de-DE"), DateTimeStyles.None, out d)) return d;
             return DateTime.Today;
+        }
+
+        private static bool TryParseGermanDateExact(string s, out DateTime d)
+        {
+            d = default;
+            var str = s?.Trim('"', ' ');
+            if (string.IsNullOrWhiteSpace(str)) return false;
+            return DateTime.TryParseExact(str, "dd.MM.yy", CultureInfo.GetCultureInfo("de-DE"), DateTimeStyles.None, out d);
         }
 
         private static bool TryParseDecimal(string s, out decimal value)
