@@ -1,0 +1,9 @@
+"Girokonto";"DE09876543210987654321"
+
+"Kontostand vom 08.03.2026:";"2.345,67 €"
+""
+"Buchungsdatum";"Wertstellung";"Status";"Zahlungspflichtige*r";"Zahlungsempfänger*in";"Verwendungszweck";"Umsatztyp";"IBAN";"Betrag (€)";"Gläubiger-ID";"Mandatsreferenz";"Kundenreferenz"
+"02.03.26";"02.03.26";"Gebucht";"DKB AG";"Muster, Anna";"Gehaltszahlung";"Eingang";"DE00987654321000000001";"2.000,00";"";"";""
+"03.03.26";"03.03.26";"Gebucht";"Cafe GmbH";"Cafe GmbH";"Kaffee und Kuchen";"Ausgang";"DE00987654321000000002";"-12,30";"";"";""
+"04.03.26";"04.03.26";"Gebucht";"Streaming AG";"Streaming AG";"Netflix Abonnement";"Ausgang";"DE00987654321000000003";"-9,99";"";"";""
+"06.03.26";"06.03.26";"Gebucht";"Versorger AG";"Versorger AG";"Strom März 2026";"Ausgang";"DE00987654321000000004";"-78,45";"";"";""
