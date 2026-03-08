@@ -16,5 +16,7 @@ namespace Finanzuebersicht.Core.Services
         public string GlueubigerId { get; set; } = string.Empty;
         public string Mandatsreferenz { get; set; } = string.Empty;
         public string Kundenreferenz { get; set; } = string.Empty;
+        // Optional: source account identifier (from file header)
+        public string? SourceAccountId { get; set; }
     }
 }
