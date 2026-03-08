@@ -3,7 +3,6 @@ using System.IO;
 using System.Text;
 using System.Collections.Generic;
 using System.Linq;
-using Finanzuebersicht.Models;
 
 namespace Finanzuebersicht.Core.Services
 {
@@ -12,62 +11,99 @@ namespace Finanzuebersicht.Core.Services
         public IEnumerable<TransactionDto> Parse(Stream csvStream)
         {
             using var reader = new StreamReader(csvStream, Encoding.UTF8, true);
-            var lines = new List<string>();
-            while (!reader.EndOfStream)
-            {
-                var l = reader.ReadLine();
-                if (l != null) lines.Add(l);
-            }
+            var content = reader.ReadToEnd();
+            var records = ParseCsv(content, ';');
 
-            // Find header line (starts with Buchungsdatum)
-            var headerIndex = lines.FindIndex(l => l.Contains("Buchungsdatum"));
+            // find header row where first cell equals Buchungsdatum
+            var headerIndex = records.FindIndex(r => r.Length > 0 && r[0].Trim('"', ' ') == "Buchungsdatum");
             if (headerIndex < 0) yield break;
 
-            for (int i = headerIndex + 1; i < lines.Count; i++)
+            for (int i = headerIndex + 1; i < records.Count; i++)
             {
-                var line = lines[i];
-                if (string.IsNullOrWhiteSpace(line)) continue;
-                var parts = SplitCsvLine(line);
-                if (parts.Length < 9) continue;
+                var parts = records[i];
+                if (parts.Length == 0) continue;
+
+                // pad to expected length
+                var p = parts.Concat(Enumerable.Repeat(string.Empty, Math.Max(0, 12 - parts.Length))).ToArray();
 
                 var dto = new TransactionDto();
-                dto.Buchungsdatum = ParseGermanDate(parts[0]);
-                dto.Wertstellung = ParseGermanDate(parts[1]);
-                dto.Status = parts[2].Trim('"');
-                dto.Zahlungspflichtige = parts[3].Trim('"');
-                dto.Zahlungsempfaenger = parts[4].Trim('"');
-                dto.Verwendungszweck = parts[5].Trim('"');
-                dto.Umsatztyp = parts[6].Trim('"');
-                dto.IBAN = parts[7].Trim('"');
-                TryParseDecimal(parts[8].Trim('"'), out var betrag);
+                dto.Buchungsdatum = ParseGermanDate(p[0]);
+                dto.Wertstellung = ParseGermanDate(p[1]);
+                dto.Status = p[2].Trim('"');
+                dto.Zahlungspflichtige = p[3].Trim('"');
+                dto.Zahlungsempfaenger = p[4].Trim('"');
+                dto.Verwendungszweck = p[5].Trim('"');
+                dto.Umsatztyp = p[6].Trim('"');
+                dto.IBAN = p[7].Trim('"');
+                TryParseDecimal(p[8].Trim('"'), out var betrag);
                 dto.Betrag = betrag;
-                dto.GlueubigerId = parts.Length > 9 ? parts[9].Trim('"') : string.Empty;
-                dto.Mandatsreferenz = parts.Length > 10 ? parts[10].Trim('"') : string.Empty;
-                dto.Kundenreferenz = parts.Length > 11 ? parts[11].Trim('"') : string.Empty;
+                dto.GlueubigerId = p[9].Trim('"');
+                dto.Mandatsreferenz = p[10].Trim('"');
+                dto.Kundenreferenz = p[11].Trim('"');
 
                 yield return dto;
             }
         }
 
-        private static string[] SplitCsvLine(string line)
+        private static List<string[]> ParseCsv(string content, char sep)
         {
-            var parts = new List<string>();
-            var cur = new System.Text.StringBuilder();
+            var records = new List<string[]>();
+            var fields = new List<string>();
+            var cur = new StringBuilder();
             bool inQuotes = false;
-            foreach (var ch in line)
+            for (int i = 0; i < content.Length; i++)
             {
-                if (ch == '"') { inQuotes = !inQuotes; cur.Append(ch); continue; }
-                if (ch == ';' && !inQuotes) { parts.Add(cur.ToString()); cur.Clear(); continue; }
+                var ch = content[i];
+                if (ch == '"')
+                {
+                    // handle escaped double quote ""
+                    if (inQuotes && i + 1 < content.Length && content[i + 1] == '"')
+                    {
+                        cur.Append('"');
+                        i++;
+                        continue;
+                    }
+                    inQuotes = !inQuotes;
+                    continue;
+                }
+
+                if (!inQuotes && ch == sep)
+                {
+                    fields.Add(cur.ToString());
+                    cur.Clear();
+                    continue;
+                }
+
+                if (!inQuotes && (ch == '\r' || ch == '\n'))
+                {
+                    // handle CRLF
+                    if (ch == '\r' && i + 1 < content.Length && content[i + 1] == '\n') i++;
+                    fields.Add(cur.ToString());
+                    cur.Clear();
+                    records.Add(fields.ToArray());
+                    fields.Clear();
+                    continue;
+                }
+
                 cur.Append(ch);
             }
-            parts.Add(cur.ToString());
-            return parts.ToArray();
+
+            // flush remaining
+            if (cur.Length > 0 || fields.Count > 0)
+            {
+                fields.Add(cur.ToString());
+                records.Add(fields.ToArray());
+            }
+
+            return records;
         }
 
         private static DateTime ParseGermanDate(string s)
         {
-            if (DateTime.TryParseExact(s.Trim('"'), "dd.MM.yy", CultureInfo.GetCultureInfo("de-DE"), DateTimeStyles.None, out var d)) return d;
-            if (DateTime.TryParse(s.Trim('"'), CultureInfo.GetCultureInfo("de-DE"), DateTimeStyles.None, out d)) return d;
+            var str = s?.Trim('"', ' ');
+            if (string.IsNullOrWhiteSpace(str)) return DateTime.Today;
+            if (DateTime.TryParseExact(str, "dd.MM.yy", CultureInfo.GetCultureInfo("de-DE"), DateTimeStyles.None, out var d)) return d;
+            if (DateTime.TryParse(str, CultureInfo.GetCultureInfo("de-DE"), DateTimeStyles.None, out d)) return d;
             return DateTime.Today;
         }
 
@@ -75,11 +111,8 @@ namespace Finanzuebersicht.Core.Services
         {
             value = 0;
             if (string.IsNullOrWhiteSpace(s)) return false;
-            // remove non-breaking spaces and normal spaces
             s = s.Replace("\u00A0", string.Empty).Replace(" ", string.Empty);
-            // remove euro sign
             s = s.Replace("€", string.Empty).Trim();
-            // remove thousand separator '.' used in German formatting, keep comma as decimal separator
             s = s.Replace(".", string.Empty);
             return decimal.TryParse(s, NumberStyles.Number | NumberStyles.AllowLeadingSign, CultureInfo.GetCultureInfo("de-DE"), out value);
         }
