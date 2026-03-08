@@ -79,9 +79,13 @@ namespace Finanzuebersicht.Core.Services
         private static bool TryParseDecimal(string s, out decimal value)
         {
             value = 0;
+            if (string.IsNullOrWhiteSpace(s)) return false;
+            // remove non-breaking spaces and normal spaces
             s = s.Replace("\u00A0", string.Empty).Replace(" ", string.Empty);
+            // remove euro sign
             s = s.Replace("€", string.Empty).Trim();
-            s = s.Replace('.', ',');
+            // remove thousand separator '.' used in German formatting, keep comma as decimal separator
+            s = s.Replace(".", string.Empty);
             return decimal.TryParse(s, NumberStyles.Number | NumberStyles.AllowLeadingSign, CultureInfo.GetCultureInfo("de-DE"), out value);
         }
     }
