@@ -23,12 +23,13 @@ namespace Finanzuebersicht.Core.Services
                 var parts = records[i];
                 if (parts.Length == 0) continue;
 
+                TransactionDto? dto = null;
                 try
                 {
                     // pad to expected length
                     var p = parts.Concat(Enumerable.Repeat(string.Empty, Math.Max(0, 12 - parts.Length))).ToArray();
 
-                    var dto = new TransactionDto();
+                    dto = new TransactionDto();
                     dto.Buchungsdatum = ParseGermanDate(p[0]);
                     dto.Wertstellung = ParseGermanDate(p[1]);
                     dto.Status = p[2].Trim('"');
@@ -42,15 +43,14 @@ namespace Finanzuebersicht.Core.Services
                     dto.GlueubigerId = p[9].Trim('"');
                     dto.Mandatsreferenz = p[10].Trim('"');
                     dto.Kundenreferenz = p[11].Trim('"');
-
-                    yield return dto;
                 }
                 catch (System.Exception ex)
                 {
                     // skip malformed/invalid rows, but keep running
                     System.Diagnostics.Debug.WriteLine($"DkbCsvParser: skipping row {i} due to parse error: {ex.Message}");
-                    continue;
                 }
+
+                if (dto != null) yield return dto;
             }
         }
 
