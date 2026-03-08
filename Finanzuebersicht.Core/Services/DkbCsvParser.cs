@@ -23,25 +23,34 @@ namespace Finanzuebersicht.Core.Services
                 var parts = records[i];
                 if (parts.Length == 0) continue;
 
-                // pad to expected length
-                var p = parts.Concat(Enumerable.Repeat(string.Empty, Math.Max(0, 12 - parts.Length))).ToArray();
+                try
+                {
+                    // pad to expected length
+                    var p = parts.Concat(Enumerable.Repeat(string.Empty, Math.Max(0, 12 - parts.Length))).ToArray();
 
-                var dto = new TransactionDto();
-                dto.Buchungsdatum = ParseGermanDate(p[0]);
-                dto.Wertstellung = ParseGermanDate(p[1]);
-                dto.Status = p[2].Trim('"');
-                dto.Zahlungspflichtige = p[3].Trim('"');
-                dto.Zahlungsempfaenger = p[4].Trim('"');
-                dto.Verwendungszweck = p[5].Trim('"');
-                dto.Umsatztyp = p[6].Trim('"');
-                dto.IBAN = p[7].Trim('"');
-                TryParseDecimal(p[8].Trim('"'), out var betrag);
-                dto.Betrag = betrag;
-                dto.GlueubigerId = p[9].Trim('"');
-                dto.Mandatsreferenz = p[10].Trim('"');
-                dto.Kundenreferenz = p[11].Trim('"');
+                    var dto = new TransactionDto();
+                    dto.Buchungsdatum = ParseGermanDate(p[0]);
+                    dto.Wertstellung = ParseGermanDate(p[1]);
+                    dto.Status = p[2].Trim('"');
+                    dto.Zahlungspflichtige = p[3].Trim('"');
+                    dto.Zahlungsempfaenger = p[4].Trim('"');
+                    dto.Verwendungszweck = p[5].Trim('"');
+                    dto.Umsatztyp = p[6].Trim('"');
+                    dto.IBAN = p[7].Trim('"');
+                    TryParseDecimal(p[8].Trim('"'), out var betrag);
+                    dto.Betrag = betrag;
+                    dto.GlueubigerId = p[9].Trim('"');
+                    dto.Mandatsreferenz = p[10].Trim('"');
+                    dto.Kundenreferenz = p[11].Trim('"');
 
-                yield return dto;
+                    yield return dto;
+                }
+                catch (System.Exception ex)
+                {
+                    // skip malformed/invalid rows, but keep running
+                    System.Diagnostics.Debug.WriteLine($"DkbCsvParser: skipping row {i} due to parse error: {ex.Message}");
+                    continue;
+                }
             }
         }
 

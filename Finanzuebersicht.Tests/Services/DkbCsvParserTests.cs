@@ -47,5 +47,22 @@ namespace Finanzuebersicht.Tests.Services
             Assert.Contains("Abonnement Linie2", v);
             Assert.Contains("Zusatzinfo", v);
         }
+
+        [Fact]
+        public void Parse_ShouldSkipMalformedRows()
+        {
+            var repoRoot = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", ".."));
+            var relative = Path.Combine(repoRoot, "Finanzuebersicht.Tests", "Services", "test_dkb_malformed.csv");
+            Assert.True(File.Exists(relative), $"Test CSV not found: {relative}");
+
+            using var fs = File.OpenRead(relative);
+            var parser = new DkbCsvParser();
+            var txs = parser.Parse(fs).ToList();
+
+            // one malformed line should be skipped, expect 2 valid transactions
+            Assert.Equal(2, txs.Count);
+            Assert.Contains(txs, t => t.Betrag == -120.00m);
+            Assert.Contains(txs, t => t.Betrag == 300.00m);
+        }
     }
 }
