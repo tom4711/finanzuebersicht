@@ -1,0 +1,5 @@
+"Buchungstag";"Wertstellung";"Buchungstext";"Beguenstigter/Zahlungspflichtiger";"Verwendungszweck";"Umsatzart";"Glaeubiger-ID";"Betrag";"Saldo";"Spalte10";"Spalte11";"Spalte12"
+"01.03.26";"01.03.26";"Gebucht";"DKB AG";"Muster, Max";"Gehaltszahlung";"Eingang";"0,00";"1000,00";"";"";""
+"05.03.26";"05.03.26";"Gebucht";"Supermarkt GmbH";"Einkauf Lebensmittel";"Ausgang";"";"-45,20";"954,80";"";"";""
+"10.03.26";"10.03.26";"Gebucht";"Streaming AG";"Disney+ Abonnement";"Ausgang";"";"-7,99";"946,81";"";"";""
+"15.03.26";"15.03.26";"Gebucht";"Strom AG";"Stromrechnung März";"Ausgang";"";"-60,50";"886,31";"";"";""
