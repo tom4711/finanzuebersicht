@@ -10,7 +10,8 @@ namespace Finanzuebersicht.Tests.Services
         [Fact]
         public void Parse_ShouldParseSampleCsv()
         {
-            var relative = Path.Combine("Finanzuebersicht.Tests", "Services", "test_dkb_sample.csv");
+            var repoRoot = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", ".."));
+            var relative = Path.Combine(repoRoot, "Finanzuebersicht.Tests", "Services", "test_dkb_sample.csv");
             Assert.True(File.Exists(relative), $"Test CSV not found: {relative}");
 
             using var fs = File.OpenRead(relative);
