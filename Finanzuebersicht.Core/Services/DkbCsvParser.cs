@@ -9,48 +9,43 @@ namespace Finanzuebersicht.Core.Services
 {
     public class DkbCsvParser : IStatementParser
     {
-        public IEnumerable<Transaction> Parse(Stream csvStream)
+        public IEnumerable<TransactionDto> Parse(Stream csvStream)
         {
             using var reader = new StreamReader(csvStream, Encoding.UTF8, true);
             var lines = new List<string>();
             while (!reader.EndOfStream)
             {
-                lines.Add(reader.ReadLine());
+                var l = reader.ReadLine();
+                if (l != null) lines.Add(l);
             }
 
             // Find header line (starts with Buchungsdatum)
-            var headerIndex = lines.FindIndex(l => l != null && l.Contains("Buchungsdatum"));
+            var headerIndex = lines.FindIndex(l => l.Contains("Buchungsdatum"));
             if (headerIndex < 0) yield break;
 
             for (int i = headerIndex + 1; i < lines.Count; i++)
             {
                 var line = lines[i];
                 if (string.IsNullOrWhiteSpace(line)) continue;
-                // split by ; but fields are wrapped in quotes
                 var parts = SplitCsvLine(line);
                 if (parts.Length < 9) continue;
 
-                var buchungstag = parts[0].Trim('"');
-                var wertstellung = parts[1].Trim('"');
-                var status = parts[2].Trim('"');
-                var zahlungspflichtige = parts[3].Trim('"');
-                var zahlungsempfaenger = parts[4].Trim('"');
-                var verwendungszweck = parts[5].Trim('"');
-                var umsatztyp = parts[6].Trim('"');
-                var iban = parts[7].Trim('"');
-                var betragRaw = parts[8].Trim('"');
+                var dto = new TransactionDto();
+                dto.Buchungsdatum = ParseGermanDate(parts[0]);
+                dto.Wertstellung = ParseGermanDate(parts[1]);
+                dto.Status = parts[2].Trim('"');
+                dto.Zahlungspflichtige = parts[3].Trim('"');
+                dto.Zahlungsempfaenger = parts[4].Trim('"');
+                dto.Verwendungszweck = parts[5].Trim('"');
+                dto.Umsatztyp = parts[6].Trim('"');
+                dto.IBAN = parts[7].Trim('"');
+                TryParseDecimal(parts[8].Trim('"'), out var betrag);
+                dto.Betrag = betrag;
+                dto.GlueubigerId = parts.Length > 9 ? parts[9].Trim('"') : string.Empty;
+                dto.Mandatsreferenz = parts.Length > 10 ? parts[10].Trim('"') : string.Empty;
+                dto.Kundenreferenz = parts.Length > 11 ? parts[11].Trim('"') : string.Empty;
 
-                if (!TryParseDecimal(betragRaw, out var betrag)) continue;
-
-                var t = new Transaction
-                {
-                    Datum = ParseGermanDate(buchungstag),
-                    Betrag = betrag,
-                    Titel = zahlungsempfaenger ?? verwendungszweck ?? string.Empty,
-                    KategorieId = string.Empty
-                };
-
-                yield return t;
+                yield return dto;
             }
         }
 
