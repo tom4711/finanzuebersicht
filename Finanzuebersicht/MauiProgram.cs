@@ -40,6 +40,10 @@ public static class MauiProgram
 		builder.Services.AddSingleton<IReportingService, ReportingService>();
 		builder.Services.AddSingleton<IDataService, DataServiceFacade>();
 		builder.Services.AddSingleton<ITransactionValidationService, TransactionValidationService>();
+		// Import/parsers
+		builder.Services.AddSingleton<IStatementParser, DkbCsvParser>();
+		builder.Services.AddSingleton<ImportService>();
+
 		builder.Services.AddTransient<DeleteCategoryUseCase>();
 		builder.Services.AddTransient<LoadCategoriesUseCase>();
 		builder.Services.AddTransient<SaveCategoryDetailUseCase>();
