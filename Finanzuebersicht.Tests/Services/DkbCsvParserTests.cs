@@ -27,7 +27,7 @@ namespace Finanzuebersicht.Tests.Services
 
             var salary = txs.FirstOrDefault(t => t.Betrag == 2500.00m);
             Assert.NotNull(salary);
-            Assert.Equal("Muster, Max", salary!.Zahlungspflichtige);
+            Assert.Equal("Muster, Max", salary!.Zahlungsempfaenger);
         }
 
         [Fact]
