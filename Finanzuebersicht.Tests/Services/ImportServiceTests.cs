@@ -30,7 +30,7 @@ namespace Finanzuebersicht.Tests.Services
             var result = svc.ImportFromCsv(ms).ToList();
 
             Assert.Equal(2, result.Count);
-            repo.Received(2).Add(Arg.Any<Transaction>());
+            repo.Received(2).SaveTransactionAsync(Arg.Any<Transaction>());
         }
     }
 }

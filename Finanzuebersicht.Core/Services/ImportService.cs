@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Finanzuebersicht.Models;
+using Finanzuebersicht.Services;
 
 namespace Finanzuebersicht.Core.Services
 {
@@ -68,23 +69,10 @@ namespace Finanzuebersicht.Core.Services
                         {
                             txs.Add(tx);
 
-                            // persist using whatever API the repository exposes (SaveTransactionAsync or Add)
+                            // persist using repository API (SaveTransactionAsync)
                             try
                             {
-                                var saveMethod = _txRepo.GetType().GetMethod("SaveTransactionAsync");
-                                if (saveMethod != null)
-                                {
-                                    var task = (System.Threading.Tasks.Task)saveMethod.Invoke(_txRepo, new object[] { tx })!;
-                                    task.GetAwaiter().GetResult();
-                                }
-                                else
-                                {
-                                    var addMethod = _txRepo.GetType().GetMethod("Add");
-                                    if (addMethod != null)
-                                    {
-                                        addMethod.Invoke(_txRepo, new object[] { tx });
-                                    }
-                                }
+                                _txRepo.SaveTransactionAsync(tx).GetAwaiter().GetResult();
                             }
                             catch
                             {
