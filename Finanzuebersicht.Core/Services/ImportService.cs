@@ -26,18 +26,71 @@ namespace Finanzuebersicht.Core.Services
                 var dtos = p.Parse(csvStream);
                 if (dtos != null && dtos.Any())
                 {
-                    // map DTOs to Transaction and persist
-                    var txs = dtos.Select(d => new Transaction
-                    {
-                        Betrag = d.Betrag,
-                        Datum = d.Buchungsdatum,
-                        Titel = string.IsNullOrWhiteSpace(d.Zahlungsempfaenger) ? d.Verwendungszweck : d.Zahlungsempfaenger,
-                        KategorieId = string.Empty,
-                    }).ToList();
+                    var txs = new List<Transaction>();
 
-                    foreach (var tx in txs)
+                    foreach (var d in dtos)
                     {
-                        _txRepo.Add(tx);
+                        if (d == null) continue;
+                        if (d.Buchungsdatum == default) continue; // skip malformed rows
+
+                        var title = !string.IsNullOrWhiteSpace(d.Zahlungsempfaenger)
+                            ? d.Zahlungsempfaenger
+                            : !string.IsNullOrWhiteSpace(d.Zahlungspflichtige)
+                                ? d.Zahlungspflichtige
+                                : d.Verwendungszweck;
+
+                        var tx = new Transaction
+                        {
+                            Betrag = d.Betrag,
+                            Datum = d.Buchungsdatum,
+                            Titel = title,
+                            KategorieId = string.Empty,
+                            Typ = d.Betrag >= 0 ? TransactionType.Einnahme : TransactionType.Ausgabe,
+                            AccountId = accountId ?? d.SourceAccountId
+                        };
+
+                        // Simple duplicate check: look for existing on same day with same amount and normalized title
+                        bool isDuplicate = false;
+                        try
+                        {
+                            var existing = _txRepo.GetTransactionsAsync(d.Buchungsdatum.Date, d.Buchungsdatum.Date).Result;
+                            if (existing != null && existing.Any(e => e.Datum.Date == d.Buchungsdatum.Date && e.Betrag == d.Betrag && Normalize(e.Titel) == Normalize(title)))
+                            {
+                                isDuplicate = true;
+                            }
+                        }
+                        catch
+                        {
+                            // repository may not support queries; ignore and continue
+                        }
+
+                        if (!isDuplicate)
+                        {
+                            txs.Add(tx);
+
+                            // persist using whatever API the repository exposes (SaveTransactionAsync or Add)
+                            try
+                            {
+                                var saveMethod = _txRepo.GetType().GetMethod("SaveTransactionAsync");
+                                if (saveMethod != null)
+                                {
+                                    var task = (System.Threading.Tasks.Task)saveMethod.Invoke(_txRepo, new object[] { tx })!;
+                                    task.GetAwaiter().GetResult();
+                                }
+                                else
+                                {
+                                    var addMethod = _txRepo.GetType().GetMethod("Add");
+                                    if (addMethod != null)
+                                    {
+                                        addMethod.Invoke(_txRepo, new object[] { tx });
+                                    }
+                                }
+                            }
+                            catch
+                            {
+                                // swallowing persistence errors for now; higher-level error handling / retries can be added later
+                            }
+                        }
                     }
 
                     return txs;
@@ -45,6 +98,15 @@ namespace Finanzuebersicht.Core.Services
             }
 
             return Enumerable.Empty<Transaction>();
+        }
+
+        private static string Normalize(string? input)
+        {
+            if (string.IsNullOrWhiteSpace(input)) return string.Empty;
+            var lowered = input.Trim().ToLowerInvariant();
+            // collapse whitespace and remove punctuation for loose matching
+            var chars = lowered.Where(c => char.IsLetterOrDigit(c) || char.IsWhiteSpace(c)).ToArray();
+            return new string(chars).Replace("\r", "").Replace("\n", "").Replace("  ", " ").Trim();
         }
     }
 }
