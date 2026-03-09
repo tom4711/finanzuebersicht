@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Globalization;
 using System.Threading;
+using Microsoft.Extensions.Logging;
 using Finanzuebersicht.Models;
 using Finanzuebersicht.Services;
 
@@ -15,11 +16,13 @@ namespace Finanzuebersicht.Core.Services
     {
         private readonly IEnumerable<IStatementParser> _parsers;
         private readonly ITransactionRepository _txRepo;
+        private readonly ILogger<ImportService> _logger;
 
-        public ImportService(IEnumerable<IStatementParser> parsers, ITransactionRepository txRepo)
+        public ImportService(IEnumerable<IStatementParser> parsers, ITransactionRepository txRepo, ILogger<ImportService> logger)
         {
             _parsers = parsers;
             _txRepo = txRepo;
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public async System.Threading.Tasks.Task<IEnumerable<Transaction>> ImportFromCsvAsync(System.IO.Stream csvStream, string accountId = null, System.Threading.CancellationToken cancellationToken = default)
@@ -39,7 +42,7 @@ namespace Finanzuebersicht.Core.Services
                         if (d == null) continue;
                         if (d.Buchungsdatum == default)
                         {
-                            System.Diagnostics.Debug.WriteLine("ImportService: skipping malformed DTO with empty Buchungsdatum");
+                            _logger.LogWarning("ImportService: skipping malformed DTO with empty Buchungsdatum");
                             continue; // skip malformed rows
                         }
 
@@ -69,12 +72,12 @@ namespace Finanzuebersicht.Core.Services
                             if (existing != null && existing.Any(e => e.Datum.Date >= from && e.Datum.Date <= to && e.Betrag == d.Betrag && Normalize(e.Titel) == Normalize(title)))
                             {
                                 isDuplicate = true;
-                                System.Diagnostics.Debug.WriteLine($"ImportService: duplicate detected for '{title}' amount {d.Betrag} on {d.Buchungsdatum:d}");
+                                _logger.LogInformation("ImportService: duplicate detected for '{Title}' amount {Amount} on {Date}", title, d.Betrag, d.Buchungsdatum);
                             }
                         }
                         catch (System.Exception ex)
                         {
-                            System.Diagnostics.Debug.WriteLine($"ImportService: duplicate check failed: {ex.Message}");
+                            _logger.LogWarning(ex, "ImportService: duplicate check failed");
                         }
 
                         if (!isDuplicate)
@@ -85,11 +88,11 @@ namespace Finanzuebersicht.Core.Services
                             try
                             {
                                 await _txRepo.SaveTransactionAsync(tx).ConfigureAwait(false);
-                                System.Diagnostics.Debug.WriteLine($"ImportService: saved transaction '{tx.Titel}' amount {tx.Betrag} on {tx.Datum:d}");
+                                _logger.LogInformation("ImportService: saved transaction '{Title}' amount {Amount} on {Date}", tx.Titel, tx.Betrag, tx.Datum);
                             }
                             catch (System.Exception ex)
                             {
-                                System.Diagnostics.Debug.WriteLine($"ImportService: failed to save transaction: {ex.Message}");
+                                _logger.LogError(ex, "ImportService: failed to save transaction");
                             }
                         }
                     }

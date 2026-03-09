@@ -5,6 +5,7 @@ using Xunit;
 using Finanzuebersicht.Core.Services;
 using Finanzuebersicht.Models;
 using System.Collections.Generic;
+using Microsoft.Extensions.Logging;
 
 namespace Finanzuebersicht.Tests.Services
 {
@@ -24,7 +25,8 @@ namespace Finanzuebersicht.Tests.Services
 
             parser.Parse(Arg.Any<Stream>()).Returns(dtos);
 
-            var svc = new ImportService(new [] { parser }, repo);
+            var logger = Substitute.For<ILogger<ImportService>>();
+            var svc = new ImportService(new [] { parser }, repo, logger);
 
             using var ms = new MemoryStream();
             var result = svc.ImportFromCsv(ms).ToList();
