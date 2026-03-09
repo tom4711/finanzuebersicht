@@ -2,6 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Globalization;
+using System.Threading;
 using Finanzuebersicht.Models;
 using Finanzuebersicht.Services;
 
@@ -18,7 +22,7 @@ namespace Finanzuebersicht.Core.Services
             _txRepo = txRepo;
         }
 
-        public IEnumerable<Transaction> ImportFromCsv(Stream csvStream, string accountId = null)
+        public async System.Threading.Tasks.Task<IEnumerable<Transaction>> ImportFromCsvAsync(System.IO.Stream csvStream, string accountId = null, System.Threading.CancellationToken cancellationToken = default)
         {
             // Choose parser by heuristics: try each parser until one returns non-empty
             foreach (var p in _parsers)
@@ -31,8 +35,13 @@ namespace Finanzuebersicht.Core.Services
 
                     foreach (var d in dtos)
                     {
+                        cancellationToken.ThrowIfCancellationRequested();
                         if (d == null) continue;
-                        if (d.Buchungsdatum == default) continue; // skip malformed rows
+                        if (d.Buchungsdatum == default)
+                        {
+                            System.Diagnostics.Debug.WriteLine("ImportService: skipping malformed DTO with empty Buchungsdatum");
+                            continue; // skip malformed rows
+                        }
 
                         var title = !string.IsNullOrWhiteSpace(d.Zahlungsempfaenger)
                             ? d.Zahlungsempfaenger
@@ -50,19 +59,22 @@ namespace Finanzuebersicht.Core.Services
                             AccountId = accountId ?? d.SourceAccountId
                         };
 
-                        // Simple duplicate check: look for existing on same day with same amount and normalized title
+                        // Improved duplicate check: look for nearby dates (+/-1 day) with same amount and normalized title
                         bool isDuplicate = false;
                         try
                         {
-                            var existing = _txRepo.GetTransactionsAsync(d.Buchungsdatum.Date, d.Buchungsdatum.Date).Result;
-                            if (existing != null && existing.Any(e => e.Datum.Date == d.Buchungsdatum.Date && e.Betrag == d.Betrag && Normalize(e.Titel) == Normalize(title)))
+                            var from = d.Buchungsdatum.Date.AddDays(-1);
+                            var to = d.Buchungsdatum.Date.AddDays(1);
+                            var existing = await _txRepo.GetTransactionsAsync(from, to).ConfigureAwait(false);
+                            if (existing != null && existing.Any(e => e.Datum.Date >= from && e.Datum.Date <= to && e.Betrag == d.Betrag && Normalize(e.Titel) == Normalize(title)))
                             {
                                 isDuplicate = true;
+                                System.Diagnostics.Debug.WriteLine($"ImportService: duplicate detected for '{title}' amount {d.Betrag} on {d.Buchungsdatum:d}");
                             }
                         }
-                        catch
+                        catch (System.Exception ex)
                         {
-                            // repository may not support queries; ignore and continue
+                            System.Diagnostics.Debug.WriteLine($"ImportService: duplicate check failed: {ex.Message}");
                         }
 
                         if (!isDuplicate)
@@ -72,11 +84,12 @@ namespace Finanzuebersicht.Core.Services
                             // persist using repository API (SaveTransactionAsync)
                             try
                             {
-                                _txRepo.SaveTransactionAsync(tx).GetAwaiter().GetResult();
+                                await _txRepo.SaveTransactionAsync(tx).ConfigureAwait(false);
+                                System.Diagnostics.Debug.WriteLine($"ImportService: saved transaction '{tx.Titel}' amount {tx.Betrag} on {tx.Datum:d}");
                             }
-                            catch
+                            catch (System.Exception ex)
                             {
-                                // swallowing persistence errors for now; higher-level error handling / retries can be added later
+                                System.Diagnostics.Debug.WriteLine($"ImportService: failed to save transaction: {ex.Message}");
                             }
                         }
                     }
@@ -88,13 +101,27 @@ namespace Finanzuebersicht.Core.Services
             return Enumerable.Empty<Transaction>();
         }
 
+        public IEnumerable<Transaction> ImportFromCsv(Stream csvStream, string accountId = null)
+        {
+            return ImportFromCsvAsync(csvStream, accountId).GetAwaiter().GetResult();
+        }
+
         private static string Normalize(string? input)
         {
             if (string.IsNullOrWhiteSpace(input)) return string.Empty;
             var lowered = input.Trim().ToLowerInvariant();
-            // collapse whitespace and remove punctuation for loose matching
-            var chars = lowered.Where(c => char.IsLetterOrDigit(c) || char.IsWhiteSpace(c)).ToArray();
-            return new string(chars).Replace("\r", "").Replace("\n", "").Replace("  ", " ").Trim();
+            // remove diacritics
+            var normalized = lowered.Normalize(NormalizationForm.FormD);
+            var sb = new StringBuilder();
+            foreach (var c in normalized)
+            {
+                var uc = CharUnicodeInfo.GetUnicodeCategory(c);
+                if (uc != UnicodeCategory.NonSpacingMark)
+                    sb.Append(c);
+            }
+            var cleaned = new string(sb.ToString().Where(c => char.IsLetterOrDigit(c) || char.IsWhiteSpace(c)).ToArray());
+            // collapse whitespace
+            return Regex.Replace(cleaned, "\\s+", " ").Trim();
         }
     }
 }
