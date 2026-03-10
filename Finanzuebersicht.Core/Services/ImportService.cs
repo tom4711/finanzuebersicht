@@ -38,17 +38,34 @@ namespace Finanzuebersicht.Core.Services
                     return Enumerable.Empty<Transaction>();
                 }
 
+                // read incoming stream fully into memory to avoid platform-specific SecurityScopedStream issues
+                byte[] buffer;
+                try
+                {
+                    using var ms = new MemoryStream();
+                    await csvStream.CopyToAsync(ms, cancellationToken).ConfigureAwait(false);
+                    buffer = ms.ToArray();
+                    try { FileLogger.Append("ImportService", $"read input stream {buffer.Length} bytes"); } catch { }
+                }
+                catch (System.Exception ex)
+                {
+                    _logger?.LogError(ex, "ImportService: failed to read input stream");
+                    try { FileLogger.Append("ImportService", "failed to read input stream", ex); } catch { }
+                    return Enumerable.Empty<Transaction>();
+                }
+
                 var parserList = _parsers?.ToList() ?? new List<IStatementParser>();
                 _logger?.LogInformation("ImportService: available parsers={Count}", parserList.Count);
 
                 // Choose parser by heuristics: try each parser until one returns non-empty
                 foreach (var p in parserList)
                 {
-                    csvStream.Seek(0, SeekOrigin.Begin);
+                    // create a fresh MemoryStream for each parser so parser disposal won't affect other attempts
+                    var parserStream = new MemoryStream(buffer, writable: false);
                     IEnumerable<TransactionDto>? dtos = null;
                     try
                     {
-                        dtos = p.Parse(csvStream);
+                        dtos = p.Parse(parserStream);
                     }
                     catch (System.Exception ex)
                     {
