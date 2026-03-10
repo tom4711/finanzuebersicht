@@ -43,7 +43,7 @@ public partial class TransactionsPage : ContentPage
             if (BindingContext is TransactionsViewModel vm)
             {
                 // call ViewModel command directly
-                _ = vm.GoToDetailCommand.Execute(selected);
+                vm.GoToDetailCommand.Execute(selected);
             }
 
             // clear selection so same item can be tapped again
