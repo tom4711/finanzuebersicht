@@ -1,26 +1,20 @@
 using Finanzuebersicht.ViewModels;
 using Microsoft.Maui.Controls;
+using Microsoft.Extensions.Logging;
 
 namespace Finanzuebersicht.Views;
 
 public partial class TransactionsPage : ContentPage
 {
-    public TransactionsPage(TransactionsViewModel viewModel, Microsoft.Extensions.Logging.ILogger<TransactionsPage> logger)
+    public TransactionsPage(TransactionsViewModel viewModel, ILogger<TransactionsPage> logger)
     {
         InitializeComponent();
 
         if (viewModel == null)
         {
             logger?.LogError("TransactionsPage: injected TransactionsViewModel is null. DI may have failed.");
-            // still set an empty BindingContext to avoid crashes
-            BindingContext = new TransactionsViewModel(
-                new DeleteTransactionUseCase(null),
-                new LoadTransactionsMonthUseCase(null),
-                new ShellNavigationService(),
-                null,
-                null,
-                Microsoft.Extensions.Logging.Abstractions.NullLogger<TransactionsViewModel>.Instance
-            );
+            // avoid creating types from other layers here — leave BindingContext empty to prevent further NREs
+            BindingContext = new object();
         }
         else
         {
