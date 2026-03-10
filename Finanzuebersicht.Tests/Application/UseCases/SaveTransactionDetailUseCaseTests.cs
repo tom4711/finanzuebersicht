@@ -19,7 +19,8 @@ public class SaveTransactionDetailUseCaseTests
             titel: "Einkauf",
             datum: new DateTime(2026, 3, 1),
             kategorieId: "cat-1",
-            typ: TransactionType.Ausgabe);
+            typ: TransactionType.Ausgabe,
+            verwendungszweck: "Zweck A");
 
         await transactionRepository.Received(1).SaveTransactionAsync(
             Arg.Is<Transaction>(t =>
@@ -27,7 +28,8 @@ public class SaveTransactionDetailUseCaseTests
                 t.Titel == "Einkauf" &&
                 t.Datum == new DateTime(2026, 3, 1) &&
                 t.KategorieId == "cat-1" &&
-                t.Typ == TransactionType.Ausgabe));
+                t.Typ == TransactionType.Ausgabe &&
+                t.Verwendungszweck == "Zweck A"));
     }
 
     [Fact]
@@ -52,7 +54,8 @@ public class SaveTransactionDetailUseCaseTests
             titel: "Neu",
             datum: new DateTime(2026, 3, 2),
             kategorieId: "cat-2",
-            typ: TransactionType.Einnahme);
+            typ: TransactionType.Einnahme,
+            verwendungszweck: "Gehaltszahlung");
 
         await transactionRepository.Received(1).SaveTransactionAsync(existing);
         Assert.Equal("tx-1", existing.Id);
@@ -61,5 +64,6 @@ public class SaveTransactionDetailUseCaseTests
         Assert.Equal(new DateTime(2026, 3, 2), existing.Datum);
         Assert.Equal("cat-2", existing.KategorieId);
         Assert.Equal(TransactionType.Einnahme, existing.Typ);
+        Assert.Equal("Gehaltszahlung", existing.Verwendungszweck);
     }
 }

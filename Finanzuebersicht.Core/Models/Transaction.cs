@@ -12,4 +12,7 @@ public class Transaction
 
     // Optional: which account this transaction belongs to (supports multi-account scenarios)
     public string? AccountId { get; set; }
+
+    // Detaillierter Verwendungszweck / Beschreibung aus dem Kontoauszug
+    public string Verwendungszweck { get; set; } = string.Empty;
 }

@@ -112,6 +112,7 @@ namespace Finanzuebersicht.Core.Services
                                 Betrag = d.Betrag,
                                 Datum = d.Buchungsdatum,
                                 Titel = finalTitle,
+                                Verwendungszweck = d.Verwendungszweck ?? string.Empty,
                                 KategorieId = string.Empty,
                                 Typ = d.Betrag >= 0 ? TransactionType.Einnahme : TransactionType.Ausgabe,
                                 AccountId = accountId ?? d.SourceAccountId
