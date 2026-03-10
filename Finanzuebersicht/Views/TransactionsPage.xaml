@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage x:Name="RootPage" xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:Finanzuebersicht.ViewModels"
              xmlns:models="clr-namespace:Finanzuebersicht.Models"
@@ -37,10 +37,9 @@
         <RefreshView Grid.Row="1"
                      Command="{Binding LoadTransaktionenCommand}"
                      IsRefreshing="{Binding IsLoading}">
-            <CollectionView x:Name="TransactionsCollection" ItemsSource="{Binding TransaktionsGruppen}"
+            <CollectionView ItemsSource="{Binding TransaktionsGruppen}"
                             IsGrouped="True"
-                            SelectionMode="Single"
-                            SelectionChanged="OnSelectionChanged">
+                            SelectionMode="None">
 
                 <CollectionView.EmptyView>
                     <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Padding="20">
@@ -60,7 +59,6 @@
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="models:Transaction">
                         <SwipeView>
-
                             <SwipeView.RightItems>
                                 <SwipeItems>
                                     <SwipeItem Text="{loc:Translate Btn_Loeschen}"
@@ -71,6 +69,11 @@
                             </SwipeView.RightItems>
 
                             <Grid ColumnDefinitions="44, *, Auto" Padding="16,10" ColumnSpacing="12">
+                                <Grid.GestureRecognizers>
+                                    <TapGestureRecognizer
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:TransactionsViewModel}}, Path=GoToDetailCommand}"
+                                        CommandParameter="{Binding .}" />
+                                </Grid.GestureRecognizers>
 
                                 <Border Grid.Column="0"
                                         BackgroundColor="{AppThemeBinding Light=#F2F2F7, Dark=#3A3A3C}"
@@ -82,9 +85,14 @@
                                            HorizontalOptions="Center" VerticalOptions="Center" />
                                 </Border>
 
-                                <Label Grid.Column="1" Text="{Binding Titel}"
-                                       FontSize="16" VerticalTextAlignment="Center"
-                                       LineBreakMode="TailTruncation" />
+                                <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                                    <Label Text="{Binding Titel}"
+                                           FontSize="16" FontAttributes="Bold"
+                                           LineBreakMode="TailTruncation" />
+                                    <Label Text="{Binding Verwendungszweck}"
+                                           FontSize="12" TextColor="Gray"
+                                           LineBreakMode="TailTruncation" />
+                                </VerticalStackLayout>
 
                                 <Label Grid.Column="2"
                                        Text="{Binding ., Converter={StaticResource BetragDisplay}}"
@@ -99,21 +107,14 @@
         </RefreshView>
 
         <!-- FAB -->
-        <Grid Grid.Row="1">
-            <Button Text="+"
-                    FontSize="28" TextColor="White"
-                    BackgroundColor="#007AFF"
-                    CornerRadius="28"
-                    WidthRequest="56" HeightRequest="56"
-                    HorizontalOptions="End" VerticalOptions="End"
-                    Margin="0,0,20,20"
-                    Shadow="{Shadow Brush='#40000000', Offset='0,4', Radius=8}"
-                    Command="{Binding GoToDetailCommand}" />
-
-            <!-- Import CSV button (small) -->
-            <Button Text="Import" FontSize="14" TextColor="#007AFF" BackgroundColor="Transparent"
-                    HorizontalOptions="Start" VerticalOptions="End" Margin="20,0,0,20"
-                    Command="{Binding ImportCsvCommand}" />
-        </Grid>
+        <Button Grid.Row="1" Text="+"
+                FontSize="28" TextColor="White"
+                BackgroundColor="#007AFF"
+                CornerRadius="28"
+                WidthRequest="56" HeightRequest="56"
+                HorizontalOptions="End" VerticalOptions="End"
+                Margin="0,0,20,20"
+                Shadow="{Shadow Brush='#40000000', Offset='0,4', Radius=8}"
+                Command="{Binding GoToDetailCommand}" />
     </Grid>
 </ContentPage>
