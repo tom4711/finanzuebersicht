@@ -10,11 +10,22 @@ namespace Finanzuebersicht.Core.Services
     {
         public IEnumerable<TransactionDto> Parse(Stream csvStream)
         {
-            // Be defensive: ensure we don't dispose the underlying stream (leaveOpen=true)
+            // Be defensive: read full content into a string so parser isn't sensitive to stream capabilities
             if (csvStream == null) yield break;
-            try { if (csvStream.CanSeek) csvStream.Position = 0; } catch { }
-            using var reader = new StreamReader(csvStream, Encoding.UTF8, true, bufferSize: 1024, leaveOpen: true);
-            var content = reader.ReadToEnd();
+            string content;
+            try
+            {
+                try { if (csvStream.CanSeek) csvStream.Position = 0; } catch { }
+                using var ms = new MemoryStream();
+                csvStream.CopyTo(ms);
+                content = Encoding.UTF8.GetString(ms.ToArray());
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"DkbCsvParser: failed to read stream: {ex.Message}");
+                yield break;
+            }
+
             var records = ParseCsv(content, ';');
 
             // find header row where first cell equals Buchungsdatum
