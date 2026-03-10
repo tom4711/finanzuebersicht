@@ -30,6 +30,7 @@ namespace Finanzuebersicht.Core.Services
             try
             {
                 _logger?.LogInformation("ImportService: starting import (accountId={AccountId})", accountId ?? "(none)");
+                try { FileLogger.Append("ImportService", $"starting import (accountId={accountId ?? "(none)"})"); } catch { }
 
                 if (_txRepo == null)
                 {
@@ -52,11 +53,13 @@ namespace Finanzuebersicht.Core.Services
                     catch (System.Exception ex)
                     {
                         _logger?.LogWarning(ex, "ImportService: parser {Parser} threw during Parse", p.GetType().FullName);
+                        try { FileLogger.Append("ImportService", $"parser {p.GetType().FullName} threw during Parse", ex); } catch { }
                         continue;
                     }
 
                     var count = dtos?.Count() ?? 0;
                     _logger?.LogInformation("ImportService: parser {Parser} returned {Count} records", p.GetType().FullName, count);
+                    try { FileLogger.Append("ImportService", $"parser {p.GetType().FullName} returned {count} records"); } catch { }
 
                     if (dtos != null && dtos.Any())
                     {
@@ -109,6 +112,7 @@ namespace Finanzuebersicht.Core.Services
                             catch (System.Exception ex)
                             {
                                 _logger?.LogWarning(ex, "ImportService: duplicate check failed");
+                                 try { FileLogger.Append("ImportService", "duplicate check failed", ex); } catch { }
                             }
 
                             if (!isDuplicate)
@@ -124,6 +128,7 @@ namespace Finanzuebersicht.Core.Services
                                 catch (System.Exception ex)
                                 {
                                     _logger?.LogError(ex, "ImportService: failed to save transaction {Title} amount {Amount} on {Date}", tx.Titel, tx.Betrag, tx.Datum);
+                                         try { FileLogger.Append("ImportService", $"failed to save transaction {tx.Titel} amount {tx.Betrag} on {tx.Datum}", ex); } catch { }
                                 }
                             }
                         }
@@ -139,6 +144,7 @@ namespace Finanzuebersicht.Core.Services
             catch (System.Exception ex)
             {
                 _logger?.LogError(ex, "ImportService: unexpected error during import");
+                try { FileLogger.Append("ImportService", "unexpected error during import", ex); } catch { }
                 throw;
             }
         }
