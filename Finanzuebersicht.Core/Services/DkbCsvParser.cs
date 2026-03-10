@@ -10,7 +10,10 @@ namespace Finanzuebersicht.Core.Services
     {
         public IEnumerable<TransactionDto> Parse(Stream csvStream)
         {
-            using var reader = new StreamReader(csvStream, Encoding.UTF8, true);
+            // Be defensive: ensure we don't dispose the underlying stream (leaveOpen=true)
+            if (csvStream == null) yield break;
+            try { if (csvStream.CanSeek) csvStream.Position = 0; } catch { }
+            using var reader = new StreamReader(csvStream, Encoding.UTF8, true, bufferSize: 1024, leaveOpen: true);
             var content = reader.ReadToEnd();
             var records = ParseCsv(content, ';');
 
