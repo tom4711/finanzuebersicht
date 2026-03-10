@@ -60,11 +60,6 @@
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="models:Transaction">
                         <SwipeView>
-                            <SwipeView.GestureRecognizers>
-                                <TapGestureRecognizer
-                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:TransactionsViewModel}}, Path=GoToDetailCommand}"
-                                    CommandParameter="{Binding .}" />
-                            </SwipeView.GestureRecognizers>
 
                             <SwipeView.RightItems>
                                 <SwipeItems>
