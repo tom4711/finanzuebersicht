@@ -83,7 +83,7 @@ namespace Finanzuebersicht.Core.Services
                     {
                         var txs = new List<Transaction>();
 
-                        foreach (var d in dtos)
+                        foreach (var d in dtosList)
                         {
                             cancellationToken.ThrowIfCancellationRequested();
                             if (d == null)
