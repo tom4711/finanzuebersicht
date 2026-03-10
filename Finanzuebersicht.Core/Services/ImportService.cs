@@ -27,81 +27,120 @@ namespace Finanzuebersicht.Core.Services
 
         public async System.Threading.Tasks.Task<IEnumerable<Transaction>> ImportFromCsvAsync(System.IO.Stream csvStream, string accountId = null, System.Threading.CancellationToken cancellationToken = default)
         {
-            // Choose parser by heuristics: try each parser until one returns non-empty
-            foreach (var p in _parsers)
+            try
             {
-                csvStream.Seek(0, SeekOrigin.Begin);
-                var dtos = p.Parse(csvStream);
-                if (dtos != null && dtos.Any())
+                _logger?.LogInformation("ImportService: starting import (accountId={AccountId})", accountId ?? "(none)");
+
+                if (_txRepo == null)
                 {
-                    var txs = new List<Transaction>();
+                    _logger?.LogError("ImportService: ITransactionRepository is null - cannot persist transactions");
+                    return Enumerable.Empty<Transaction>();
+                }
 
-                    foreach (var d in dtos)
+                var parserList = _parsers?.ToList() ?? new List<IStatementParser>();
+                _logger?.LogInformation("ImportService: available parsers={Count}", parserList.Count);
+
+                // Choose parser by heuristics: try each parser until one returns non-empty
+                foreach (var p in parserList)
+                {
+                    csvStream.Seek(0, SeekOrigin.Begin);
+                    IEnumerable<TransactionDto>? dtos = null;
+                    try
                     {
-                        cancellationToken.ThrowIfCancellationRequested();
-                        if (d == null) continue;
-                        if (d.Buchungsdatum == default)
-                        {
-                            _logger.LogWarning("ImportService: skipping malformed DTO with empty Buchungsdatum");
-                            continue; // skip malformed rows
-                        }
+                        dtos = p.Parse(csvStream);
+                    }
+                    catch (System.Exception ex)
+                    {
+                        _logger?.LogWarning(ex, "ImportService: parser {Parser} threw during Parse", p.GetType().FullName);
+                        continue;
+                    }
 
-                        var title = !string.IsNullOrWhiteSpace(d.Zahlungsempfaenger)
-                            ? d.Zahlungsempfaenger
-                            : !string.IsNullOrWhiteSpace(d.Zahlungspflichtige)
-                                ? d.Zahlungspflichtige
-                                : d.Verwendungszweck;
+                    var count = dtos?.Count() ?? 0;
+                    _logger?.LogInformation("ImportService: parser {Parser} returned {Count} records", p.GetType().FullName, count);
 
-                        var tx = new Transaction
-                        {
-                            Betrag = d.Betrag,
-                            Datum = d.Buchungsdatum,
-                            Titel = title,
-                            KategorieId = string.Empty,
-                            Typ = d.Betrag >= 0 ? TransactionType.Einnahme : TransactionType.Ausgabe,
-                            AccountId = accountId ?? d.SourceAccountId
-                        };
+                    if (dtos != null && dtos.Any())
+                    {
+                        var txs = new List<Transaction>();
 
-                        // Improved duplicate check: look for nearby dates (+/-1 day) with same amount and normalized title
-                        bool isDuplicate = false;
-                        try
+                        foreach (var d in dtos)
                         {
-                            var from = d.Buchungsdatum.Date.AddDays(-1);
-                            var to = d.Buchungsdatum.Date.AddDays(1);
-                            var existing = await _txRepo.GetTransactionsAsync(from, to).ConfigureAwait(false);
-                            if (existing != null && existing.Any(e => e.Datum.Date >= from && e.Datum.Date <= to && e.Betrag == d.Betrag && Normalize(e.Titel) == Normalize(title)))
+                            cancellationToken.ThrowIfCancellationRequested();
+                            if (d == null)
                             {
-                                isDuplicate = true;
-                                _logger.LogInformation("ImportService: duplicate detected for '{Title}' amount {Amount} on {Date}", title, d.Betrag, d.Buchungsdatum);
+                                _logger?.LogWarning("ImportService: skipping null DTO");
+                                continue;
                             }
-                        }
-                        catch (System.Exception ex)
-                        {
-                            _logger.LogWarning(ex, "ImportService: duplicate check failed");
-                        }
 
-                        if (!isDuplicate)
-                        {
-                            txs.Add(tx);
+                            if (d.Buchungsdatum == default)
+                            {
+                                _logger?.LogWarning("ImportService: skipping malformed DTO with empty Buchungsdatum: {Dto}", d);
+                                continue; // skip malformed rows
+                            }
 
-                            // persist using repository API (SaveTransactionAsync)
+                            var title = !string.IsNullOrWhiteSpace(d.Zahlungsempfaenger)
+                                ? d.Zahlungsempfaenger
+                                : !string.IsNullOrWhiteSpace(d.Zahlungspflichtige)
+                                    ? d.Zahlungspflichtige
+                                    : d.Verwendungszweck;
+
+                            var tx = new Transaction
+                            {
+                                Betrag = d.Betrag,
+                                Datum = d.Buchungsdatum,
+                                Titel = title,
+                                KategorieId = string.Empty,
+                                Typ = d.Betrag >= 0 ? TransactionType.Einnahme : TransactionType.Ausgabe,
+                                AccountId = accountId ?? d.SourceAccountId
+                            };
+
+                            // Improved duplicate check: look for nearby dates (+/-1 day) with same amount and normalized title
+                            bool isDuplicate = false;
                             try
                             {
-                                await _txRepo.SaveTransactionAsync(tx).ConfigureAwait(false);
-                                _logger.LogInformation("ImportService: saved transaction '{Title}' amount {Amount} on {Date}", tx.Titel, tx.Betrag, tx.Datum);
+                                var from = d.Buchungsdatum.Date.AddDays(-1);
+                                var to = d.Buchungsdatum.Date.AddDays(1);
+                                var existing = await _txRepo.GetTransactionsAsync(from, to).ConfigureAwait(false);
+                                if (existing != null && existing.Any(e => e.Datum.Date >= from && e.Datum.Date <= to && e.Betrag == d.Betrag && Normalize(e.Titel) == Normalize(title)))
+                                {
+                                    isDuplicate = true;
+                                    _logger?.LogInformation("ImportService: duplicate detected for '{Title}' amount {Amount} on {Date}", title, d.Betrag, d.Buchungsdatum);
+                                }
                             }
                             catch (System.Exception ex)
                             {
-                                _logger.LogError(ex, "ImportService: failed to save transaction");
+                                _logger?.LogWarning(ex, "ImportService: duplicate check failed");
+                            }
+
+                            if (!isDuplicate)
+                            {
+                                txs.Add(tx);
+
+                                // persist using repository API (SaveTransactionAsync)
+                                try
+                                {
+                                    await _txRepo.SaveTransactionAsync(tx).ConfigureAwait(false);
+                                    _logger?.LogInformation("ImportService: saved transaction '{Title}' amount {Amount} on {Date}", tx.Titel, tx.Betrag, tx.Datum);
+                                }
+                                catch (System.Exception ex)
+                                {
+                                    _logger?.LogError(ex, "ImportService: failed to save transaction {Title} amount {Amount} on {Date}", tx.Titel, tx.Betrag, tx.Datum);
+                                }
                             }
                         }
+
+                        _logger?.LogInformation("ImportService: finished importing {Count} transactions", txs.Count);
+                        return txs;
                     }
-
-                    return txs;
                 }
-            }
 
-            return Enumerable.Empty<Transaction>();
+                _logger?.LogInformation("ImportService: no parser matched or no records found");
+                return Enumerable.Empty<Transaction>();
+            }
+            catch (System.Exception ex)
+            {
+                _logger?.LogError(ex, "ImportService: unexpected error during import");
+                throw;
+            }
         }
 
         public IEnumerable<Transaction> ImportFromCsv(Stream csvStream, string accountId = null)

@@ -6,6 +6,7 @@ using Finanzuebersicht.Core.Services;
 using Finanzuebersicht.Models;
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
+using Finanzuebersicht.Services;
 
 namespace Finanzuebersicht.Tests.Services
 {

@@ -5,6 +5,10 @@ using Finanzuebersicht.Application.UseCases.Transactions;
 using Finanzuebersicht.Models;
 using Finanzuebersicht.Services;
 using Finanzuebersicht.Views;
+using Microsoft.Maui.Storage;
+using System.Linq;
+using Microsoft.Extensions.Logging;
+using Finanzuebersicht.Core.Services;
 
 namespace Finanzuebersicht.ViewModels;
 
@@ -13,6 +17,9 @@ public partial class TransactionsViewModel : MonthNavigationViewModel
     private readonly DeleteTransactionUseCase _deleteTransactionUseCase;
     private readonly LoadTransactionsMonthUseCase _loadTransactionsMonthUseCase;
     private readonly INavigationService _navigationService;
+    private readonly ImportService _importService;
+    private readonly IDialogService _dialogService;
+    private readonly ILogger<TransactionsViewModel> _logger;
 
     [ObservableProperty]
     private ObservableCollection<TransactionGroup> transaktionsGruppen = [];
@@ -23,11 +30,17 @@ public partial class TransactionsViewModel : MonthNavigationViewModel
     public TransactionsViewModel(
         DeleteTransactionUseCase deleteTransactionUseCase,
         LoadTransactionsMonthUseCase loadTransactionsMonthUseCase,
-        INavigationService navigationService)
+        INavigationService navigationService,
+        ImportService importService,
+        IDialogService dialogService,
+        ILogger<TransactionsViewModel> logger)
     {
         _deleteTransactionUseCase = deleteTransactionUseCase;
         _loadTransactionsMonthUseCase = loadTransactionsMonthUseCase;
         _navigationService = navigationService;
+        _importService = importService;
+        _dialogService = dialogService;
+        _logger = logger;
     }
 
     protected override async Task OnMonthChangedAsync() => await LoadTransaktionen();
@@ -73,5 +86,52 @@ public partial class TransactionsViewModel : MonthNavigationViewModel
             parameter["Transaction"] = transaktion;
 
         await _navigationService.GoToAsync(nameof(TransactionDetailPage), parameter);
+    }
+
+    [RelayCommand]
+    private async Task ImportCsv()
+    {
+        // Defensive checks to avoid NullReferenceExceptions when DI failed
+        if (_importService == null)
+        {
+            if (_dialogService != null)
+                await _dialogService.ShowAlertAsync("Import fehlgeschlagen", "ImportService nicht verfügbar.", "OK");
+            else
+                await App.Current.MainPage.DisplayAlert("Import fehlgeschlagen", "ImportService nicht verfügbar.", "OK");
+            return;
+        }
+
+        try
+        {
+            var result = await FilePicker.PickAsync();
+            if (result == null) return;
+
+            using var stream = await result.OpenReadAsync();
+            var imported = await _importService.ImportFromCsvAsync(stream);
+            var count = imported?.Count() ?? 0;
+
+            if (_dialogService != null)
+                await _dialogService.ShowAlertAsync("Import abgeschlossen", $"Importiert: {count} Transaktionen", "OK");
+            else
+                await App.Current.MainPage.DisplayAlert("Import abgeschlossen", $"Importiert: {count} Transaktionen", "OK");
+
+            await LoadTransaktionen();
+        }
+        catch (System.Exception ex)
+        {
+            // Log full exception for debugging
+            try
+            {
+                _logger?.LogError(ex, "ImportCsv failed");
+            }
+            catch { /* swallow logger exceptions */ }
+
+            // Ensure we don't call a null dialog service in the catch
+            var msg = ex.Message + (ex.InnerException != null ? " - " + ex.InnerException.Message : string.Empty);
+            if (_dialogService != null)
+                await _dialogService.ShowAlertAsync("Fehler beim Import", msg, "OK");
+            else
+                await App.Current.MainPage.DisplayAlert("Fehler beim Import", msg, "OK");
+        }
     }
 }
