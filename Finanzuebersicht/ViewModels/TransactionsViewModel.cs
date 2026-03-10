@@ -81,11 +81,29 @@ public partial class TransactionsViewModel : MonthNavigationViewModel
     [RelayCommand]
     private async Task GoToDetail(Transaction? transaktion)
     {
-        var parameter = new Dictionary<string, object>();
-        if (transaktion != null)
-            parameter["Transaction"] = transaktion;
+        try
+        {
+            _logger?.LogDebug("GoToDetail called for transaction {Id}", transaktion?.Id ?? "(new)");
+            try { Finanzuebersicht.Core.Services.FileLogger.Append("TransactionsViewModel", $"GoToDetail called for {transaktion?.Id ?? "(new)"}"); } catch { }
 
-        await _navigationService.GoToAsync(nameof(TransactionDetailPage), parameter);
+            var parameter = new Dictionary<string, object>();
+            if (transaktion != null)
+                parameter["Transaction"] = transaktion;
+
+            if (_navigationService == null)
+            {
+                _logger?.LogError("GoToDetail: navigation service is null");
+                try { Finanzuebersicht.Core.Services.FileLogger.Append("TransactionsViewModel", "navigation service is null"); } catch { }
+                return;
+            }
+
+            await _navigationService.GoToAsync(nameof(TransactionDetailPage), parameter);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "GoToDetail failed");
+            try { Finanzuebersicht.Core.Services.FileLogger.Append("TransactionsViewModel", "GoToDetail failed", ex); } catch { }
+        }
     }
 
     [RelayCommand]
