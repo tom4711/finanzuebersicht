@@ -118,7 +118,7 @@ public partial class TransactionsViewModel : MonthNavigationViewModel
             await LoadTransaktionen();
 
             // notify other parts of the app (dashboard/year views) that data changed
-            try { App.DataChanged?.Invoke(); } catch { }
+            try { App.NotifyDataChanged(); } catch { }
         }
         catch (System.Exception ex)
         {
