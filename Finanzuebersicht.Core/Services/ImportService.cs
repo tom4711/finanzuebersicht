@@ -61,11 +61,12 @@ namespace Finanzuebersicht.Core.Services
                 foreach (var p in parserList)
                 {
                     // create a fresh MemoryStream for each parser so parser disposal won't affect other attempts
-                    var parserStream = new MemoryStream(buffer, writable: false);
-                    IEnumerable<TransactionDto>? dtos = null;
+                    using var parserStream = new MemoryStream(buffer, writable: false);
+                    List<TransactionDto>? dtosList = null;
                     try
                     {
-                        dtos = p.Parse(parserStream);
+                        // materialize results within the using block so parser can dispose the reader/stream safely
+                        dtosList = p.Parse(parserStream)?.ToList();
                     }
                     catch (System.Exception ex)
                     {
@@ -74,11 +75,11 @@ namespace Finanzuebersicht.Core.Services
                         continue;
                     }
 
-                    var count = dtos?.Count() ?? 0;
+                    var count = dtosList?.Count() ?? 0;
                     _logger?.LogInformation("ImportService: parser {Parser} returned {Count} records", p.GetType().FullName, count);
                     try { FileLogger.Append("ImportService", $"parser {p.GetType().FullName} returned {count} records"); } catch { }
 
-                    if (dtos != null && dtos.Any())
+                    if (dtosList != null && dtosList.Any())
                     {
                         var txs = new List<Transaction>();
 
