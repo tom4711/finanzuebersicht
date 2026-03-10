@@ -37,9 +37,10 @@
         <RefreshView Grid.Row="1"
                      Command="{Binding LoadTransaktionenCommand}"
                      IsRefreshing="{Binding IsLoading}">
-            <CollectionView ItemsSource="{Binding TransaktionsGruppen}"
+            <CollectionView x:Name="TransactionsCollection" ItemsSource="{Binding TransaktionsGruppen}"
                             IsGrouped="True"
-                            SelectionMode="None">
+                            SelectionMode="Single"
+                            SelectionChanged="OnSelectionChanged">
 
                 <CollectionView.EmptyView>
                     <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Padding="20">

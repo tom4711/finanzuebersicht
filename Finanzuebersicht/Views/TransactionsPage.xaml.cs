@@ -32,4 +32,27 @@ public partial class TransactionsPage : ContentPage
         if (BindingContext is TransactionsViewModel vm)
             vm.LoadTransaktionenCommand.Execute(null);
     }
+
+    private void OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        try
+        {
+            var selected = e.CurrentSelection?.FirstOrDefault() as Finanzuebersicht.Models.Transaction;
+            try { Finanzuebersicht.Core.Services.FileLogger.Append("TransactionsPage", $"OnSelectionChanged selected={(selected?.Id ?? "(null)")}"); } catch { }
+
+            if (BindingContext is TransactionsViewModel vm)
+            {
+                // call ViewModel command directly
+                _ = vm.GoToDetailCommand.Execute(selected);
+            }
+
+            // clear selection so same item can be tapped again
+            if (sender is CollectionView cv)
+                cv.SelectedItem = null;
+        }
+        catch (Exception ex)
+        {
+            try { Finanzuebersicht.Core.Services.FileLogger.Append("TransactionsPage", "OnSelectionChanged failed", ex); } catch { }
+        }
+    }
 }
