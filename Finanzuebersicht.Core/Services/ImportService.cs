@@ -17,12 +17,14 @@ namespace Finanzuebersicht.Core.Services
         private readonly IEnumerable<IStatementParser> _parsers;
         private readonly ITransactionRepository _txRepo;
         private readonly ILogger<ImportService> _logger;
+        private readonly ICategoryRepository? _categoryRepo;
 
-        public ImportService(IEnumerable<IStatementParser> parsers, ITransactionRepository txRepo, ILogger<ImportService> logger)
+        public ImportService(IEnumerable<IStatementParser> parsers, ITransactionRepository txRepo, ILogger<ImportService> logger, ICategoryRepository? categoryRepo = null)
         {
             _parsers = parsers;
             _txRepo = txRepo;
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _categoryRepo = categoryRepo;
         }
 
         public async System.Threading.Tasks.Task<IEnumerable<Transaction>> ImportFromCsvAsync(System.IO.Stream csvStream, string accountId = null, System.Threading.CancellationToken cancellationToken = default)
@@ -136,6 +138,36 @@ namespace Finanzuebersicht.Core.Services
 
                             if (!isDuplicate)
                             {
+                                // ensure an "Unkategorisiert" category exists and assign it when no category is present
+                                if (_categoryRepo != null && string.IsNullOrWhiteSpace(tx.KategorieId))
+                                {
+                                    try
+                                    {
+                                        var categories = await _categoryRepo.GetCategoriesAsync().ConfigureAwait(false);
+                                        var sys = categories?.FirstOrDefault(c => c.SystemKey == "SysCat_Unkategorisiert" || c.Name == "Unkategorisiert");
+                                        if (sys == null)
+                                        {
+                                            sys = new Finanzuebersicht.Models.Category
+                                            {
+                                                Name = "Unkategorisiert",
+                                                Icon = "❓",
+                                                Color = "#A2845E",
+                                                Typ = Finanzuebersicht.Models.TransactionType.Ausgabe,
+                                                SystemKey = "SysCat_Unkategorisiert"
+                                            };
+                                            await _categoryRepo.SaveCategoryAsync(sys).ConfigureAwait(false);
+                                            try { FileLogger.Append("ImportService", "created default 'Unkategorisiert' category"); } catch { }
+                                        }
+
+                                        if (sys != null)
+                                            tx.KategorieId = sys.Id;
+                                    }
+                                    catch (System.Exception ex)
+                                    {
+                                        _logger?.LogWarning(ex, "ImportService: failed to ensure default category");
+                                    }
+                                }
+
                                 txs.Add(tx);
 
                                 // persist using repository API (SaveTransactionAsync)
