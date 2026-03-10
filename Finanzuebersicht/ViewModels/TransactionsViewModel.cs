@@ -116,6 +116,9 @@ public partial class TransactionsViewModel : MonthNavigationViewModel
                 await App.Current.MainPage.DisplayAlert("Import abgeschlossen", $"Importiert: {count} Transaktionen", "OK");
 
             await LoadTransaktionen();
+
+            // notify other parts of the app (dashboard/year views) that data changed
+            try { App.DataChanged?.Invoke(); } catch { }
         }
         catch (System.Exception ex)
         {

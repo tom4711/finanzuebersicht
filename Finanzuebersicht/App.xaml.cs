@@ -4,6 +4,9 @@ namespace Finanzuebersicht;
 
 public partial class App : global::Microsoft.Maui.Controls.Application
 {
+	// App-wide event to notify UI of data changes (e.g., after import)
+	public static event Action? DataChanged;
+
 	private readonly IRecurringGenerationService _recurringGenerationService;
 	private readonly InitializationService _initService;
 	private readonly ThemeService _themeService;

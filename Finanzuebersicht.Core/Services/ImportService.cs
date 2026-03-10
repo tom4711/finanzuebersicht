@@ -104,11 +104,12 @@ namespace Finanzuebersicht.Core.Services
                                     ? d.Zahlungspflichtige
                                     : d.Verwendungszweck;
 
+                            var finalTitle = string.IsNullOrWhiteSpace(title) ? (string.IsNullOrWhiteSpace(d.Verwendungszweck) ? $"Buchung {d.Buchungsdatum:dd.MM.yyyy} {d.Betrag:0.00}€" : d.Verwendungszweck) : title;
                             var tx = new Transaction
                             {
                                 Betrag = d.Betrag,
                                 Datum = d.Buchungsdatum,
-                                Titel = title,
+                                Titel = finalTitle,
                                 KategorieId = string.Empty,
                                 Typ = d.Betrag >= 0 ? TransactionType.Einnahme : TransactionType.Ausgabe,
                                 AccountId = accountId ?? d.SourceAccountId
