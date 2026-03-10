@@ -8,6 +8,7 @@ using Finanzuebersicht.Services;
 using Finanzuebersicht.ViewModels;
 using Finanzuebersicht.Views;
 using Microsoft.Extensions.Logging;
+using Finanzuebersicht.Core.Services;
 
 namespace Finanzuebersicht;
 
@@ -41,7 +42,8 @@ public static class MauiProgram
 		builder.Services.AddSingleton<IDataService, DataServiceFacade>();
 		builder.Services.AddSingleton<ITransactionValidationService, TransactionValidationService>();
 		// Import/parsers
-		builder.Services.AddSingleton<IStatementParser, DkbCsvParser>();
+		// register parser explicitly using DI extension to avoid ambiguous CommunityToolkit overloads
+			Microsoft.Extensions.DependencyInjection.ServiceCollectionServiceExtensions.AddSingleton<IStatementParser, DkbCsvParser>(builder.Services);
 		builder.Services.AddSingleton<ImportService>();
 
 		builder.Services.AddTransient<DeleteCategoryUseCase>();
