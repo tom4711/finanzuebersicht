@@ -29,6 +29,21 @@ public partial class DashboardPage : ContentPage
         base.OnAppearing();
         if (BindingContext is DashboardViewModel vm)
             vm.LoadDashboardCommand.Execute(null);
+
+        // subscribe to app-wide data change notifications
+        App.DataChanged += OnAppDataChanged;
+    }
+
+    protected override void OnDisappearing()
+    {
+        base.OnDisappearing();
+        App.DataChanged -= OnAppDataChanged;
+    }
+
+    private void OnAppDataChanged()
+    {
+        if (BindingContext is DashboardViewModel vm)
+            _ = vm.LoadDashboardCommand.ExecuteAsync(null);
     }
 
     private void OnViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)

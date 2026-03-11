@@ -26,6 +26,9 @@ public partial class TransactionDetailViewModel : ObservableObject
     private string titel = string.Empty;
 
     [ObservableProperty]
+    private string verwendungszweck = string.Empty;
+
+    [ObservableProperty]
     private DateTime datum = DateTime.Today;
 
     [ObservableProperty]
@@ -47,6 +50,7 @@ public partial class TransactionDetailViewModel : ObservableObject
                 BetragText = value.Betrag.ToString("F2",
                     System.Globalization.CultureInfo.CurrentCulture);
                 Titel = value.Titel;
+                Verwendungszweck = value.Verwendungszweck ?? string.Empty;
                 Datum = value.Datum;
                 Typ = value.Typ;
 
@@ -121,7 +125,8 @@ public partial class TransactionDetailViewModel : ObservableObject
                 Titel,
                 Datum,
                 SelectedKategorie!.Id,
-                Typ);
+                Typ,
+                Verwendungszweck);
             await _navigationService.GoBackAsync();
         }
         catch (Exception ex)

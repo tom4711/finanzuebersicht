@@ -85,9 +85,14 @@
                                            HorizontalOptions="Center" VerticalOptions="Center" />
                                 </Border>
 
-                                <Label Grid.Column="1" Text="{Binding Titel}"
-                                       FontSize="16" VerticalTextAlignment="Center"
-                                       LineBreakMode="TailTruncation" />
+                                <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                                    <Label Text="{Binding Titel}"
+                                           FontSize="16" FontAttributes="Bold"
+                                           LineBreakMode="TailTruncation" />
+                                    <Label Text="{Binding Verwendungszweck}"
+                                           FontSize="12" TextColor="Gray"
+                                           LineBreakMode="TailTruncation" />
+                                </VerticalStackLayout>
 
                                 <Label Grid.Column="2"
                                        Text="{Binding ., Converter={StaticResource BetragDisplay}}"
@@ -101,15 +106,23 @@
             </CollectionView>
         </RefreshView>
 
-        <!-- FAB -->
-        <Button Grid.Row="1" Text="+"
-                FontSize="28" TextColor="White"
-                BackgroundColor="#007AFF"
-                CornerRadius="28"
-                WidthRequest="56" HeightRequest="56"
-                HorizontalOptions="End" VerticalOptions="End"
-                Margin="0,0,20,20"
-                Shadow="{Shadow Brush='#40000000', Offset='0,4', Radius=8}"
-                Command="{Binding GoToDetailCommand}" />
+        <!-- Buttons: FAB + Import -->
+        <Grid Grid.Row="1" HorizontalOptions="Fill" VerticalOptions="End" Padding="20,0,20,20">
+            <!-- Import Button -->
+            <Button Text="Import" FontSize="14" TextColor="#007AFF"
+                    BackgroundColor="Transparent"
+                    HorizontalOptions="Start" VerticalOptions="End"
+                    Command="{Binding ImportCsvCommand}" />
+            
+            <!-- FAB -->
+            <Button Text="+"
+                    FontSize="28" TextColor="White"
+                    BackgroundColor="#007AFF"
+                    CornerRadius="28"
+                    WidthRequest="56" HeightRequest="56"
+                    HorizontalOptions="End" VerticalOptions="End"
+                    Shadow="{Shadow Brush='#40000000', Offset='0,4', Radius=8}"
+                    Command="{Binding GoToDetailCommand}" />
+        </Grid>
     </Grid>
 </ContentPage>
