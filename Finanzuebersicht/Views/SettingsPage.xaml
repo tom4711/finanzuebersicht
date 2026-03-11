@@ -122,6 +122,53 @@
                 </VerticalStackLayout>
             </Border>
 
+            <!-- Backup & Restore -->
+            <Border StrokeShape="RoundRectangle 12"
+                    Stroke="{AppThemeBinding Light={StaticResource Separator}, Dark={StaticResource SeparatorDark}}"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource CardBackground}, Dark={StaticResource CardBackgroundDark}}"
+                    Padding="16">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Sicherung &amp; Wiederherstellung"
+                           FontSize="18"
+                           FontAttributes="Bold"
+                           TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
+
+                    <Label Text="Erstelle Sicherungen deiner Daten und stelle sie bei Bedarf wieder her."
+                           FontSize="14"
+                           TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}" />
+
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+                        <Button Text="💾 Sicherung erstellen"
+                                Command="{Binding CreateBackupCommand}"
+                                FontSize="14"
+                                Padding="12,8" />
+                        <Button Text="📂 Sicherungen verwalten"
+                                Grid.Column="1"
+                                Command="{Binding BrowseBackupsCommand}"
+                                FontSize="14"
+                                Padding="12,8" />
+                    </Grid>
+
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+                        <Button Text="📥 Wiederherstellen"
+                                Command="{Binding RestoreBackupCommand}"
+                                FontSize="14"
+                                Padding="12,8"
+                                BackgroundColor="{AppThemeBinding Light={StaticResource Warning}, Dark={StaticResource WarningDark}}" />
+                        <Button Text="📊 CSV exportieren"
+                                Grid.Column="1"
+                                Command="{Binding ExportAsCSVCommand}"
+                                FontSize="14"
+                                Padding="12,8" />
+                    </Grid>
+
+                    <Label Text="{Binding LastBackupInfo}"
+                           FontSize="12"
+                           TextColor="{AppThemeBinding Light={StaticResource TextTertiary}, Dark={StaticResource Gray400}}"
+                           Margin="0,4,0,0" />
+                </VerticalStackLayout>
+            </Border>
+
             <!-- Über -->
             <Border StrokeShape="RoundRectangle 12"
                     Stroke="{AppThemeBinding Light={StaticResource Separator}, Dark={StaticResource SeparatorDark}}"
