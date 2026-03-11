@@ -201,6 +201,71 @@ public class LocalDataService : ICategoryRepository, ITransactionRepository, IRe
         }
     }
 
+    /// <summary>
+    /// Finds the most common category for a given payee name (case-insensitive).
+    /// Only considers non-Unkategorisiert categories.
+    /// </summary>
+    public async Task<Category?> GetMostCommonCategoryForPayeeAsync(
+        string payee,
+        double confidenceThreshold = 0.5,
+        CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(payee))
+            return null;
+
+        await _transactionsLock.WaitAsync(cancellationToken);
+        try
+        {
+            var transactions = await LoadAsync<Transaction>(TransactionsFile);
+            var categories = await LoadAsync<Category>(CategoriesFile);
+
+            // Normalize payee for case-insensitive matching
+            var normalizedPayee = payee.Trim();
+
+            // Find transactions with matching payee (case-insensitive)
+            var matchingTransactions = transactions
+                .Where(t => !string.IsNullOrEmpty(t.Titel) &&
+                           (t.Titel.Equals(normalizedPayee, StringComparison.OrdinalIgnoreCase) ||
+                            t.Titel.Contains(normalizedPayee, StringComparison.OrdinalIgnoreCase)))
+                .ToList();
+
+            if (matchingTransactions.Count == 0)
+                return null;
+
+            // Count categories, excluding Unkategorisiert
+            var categoryCounts = matchingTransactions
+                .GroupBy(t => t.KategorieId)
+                .Select(g => new { CategoryId = g.Key, Count = g.Count() })
+                .OrderByDescending(x => x.Count)
+                .ToList();
+
+            if (categoryCounts.Count == 0)
+                return null;
+
+            var topCount = categoryCounts.First().Count;
+            var totalCount = matchingTransactions.Count;
+            var confidence = (double)topCount / totalCount;
+
+            // Check confidence threshold
+            if (confidence < confidenceThreshold)
+                return null;
+
+            var topCategoryId = categoryCounts.First().CategoryId;
+            var topCategory = categories.FirstOrDefault(c => c.Id == topCategoryId);
+
+            // Don't use Unkategorisiert category
+            if (topCategory != null && 
+                topCategory.SystemKey != "SysCat_Unkategorisiert" && 
+                topCategory.Name != "Unkategorisiert")
+            {
+                return topCategory;
+            }
+
+            return null;
+        }
+        finally { _transactionsLock.Release(); }
+    }
+
     private static async Task SaveAsync<T>(string path, List<T> items)
     {
         var json = JsonSerializer.Serialize(items, JsonOptions);

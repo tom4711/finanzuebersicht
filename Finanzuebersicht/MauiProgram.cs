@@ -45,6 +45,10 @@ public static class MauiProgram
 		// register parser explicitly using DI extension to avoid ambiguous CommunityToolkit overloads
 			Microsoft.Extensions.DependencyInjection.ServiceCollectionServiceExtensions.AddSingleton<IStatementParser, DkbCsvParser>(builder.Services);
 		builder.Services.AddSingleton<ImportService>();
+		// Categorization strategies
+		Microsoft.Extensions.DependencyInjection.ServiceCollectionServiceExtensions.AddSingleton<ICategorizationStrategy, KeywordCategorizationStrategy>(builder.Services);
+		Microsoft.Extensions.DependencyInjection.ServiceCollectionServiceExtensions.AddSingleton<ICategorizationStrategy, HistoricalCategorizationStrategy>(builder.Services);
+		builder.Services.AddSingleton<CategorizationService>();
 
 		builder.Services.AddTransient<DeleteCategoryUseCase>();
 		builder.Services.AddTransient<LoadCategoriesUseCase>();

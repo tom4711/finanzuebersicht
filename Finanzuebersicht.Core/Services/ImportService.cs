@@ -18,13 +18,20 @@ namespace Finanzuebersicht.Core.Services
         private readonly ITransactionRepository _txRepo;
         private readonly ILogger<ImportService> _logger;
         private readonly ICategoryRepository? _categoryRepo;
+        private readonly CategorizationService? _categorizationService;
 
-        public ImportService(IEnumerable<IStatementParser> parsers, ITransactionRepository txRepo, ILogger<ImportService> logger, ICategoryRepository? categoryRepo = null)
+        public ImportService(
+            IEnumerable<IStatementParser> parsers,
+            ITransactionRepository txRepo,
+            ILogger<ImportService> logger,
+            ICategoryRepository? categoryRepo = null,
+            CategorizationService? categorizationService = null)
         {
             _parsers = parsers;
             _txRepo = txRepo;
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _categoryRepo = categoryRepo;
+            _categorizationService = categorizationService;
         }
 
         public async System.Threading.Tasks.Task<IEnumerable<Transaction>> ImportFromCsvAsync(System.IO.Stream csvStream, string accountId = null, System.Threading.CancellationToken cancellationToken = default)
@@ -139,7 +146,30 @@ namespace Finanzuebersicht.Core.Services
 
                             if (!isDuplicate)
                             {
-                                // ensure an "Unkategorisiert" category exists and assign it when no category is present
+                                // Auto-categorize using CategorizationService if available
+                                if (_categorizationService != null && _categoryRepo != null && string.IsNullOrWhiteSpace(tx.KategorieId))
+                                {
+                                    try
+                                    {
+                                        var categories = await _categoryRepo.GetCategoriesAsync().ConfigureAwait(false);
+                                        if (categories != null && categories.Count > 0)
+                                        {
+                                            var category = await _categorizationService.CategorizAsync(d, categories, cancellationToken).ConfigureAwait(false);
+                                            if (category != null)
+                                            {
+                                                tx.KategorieId = category.Id;
+                                                _logger?.LogInformation("ImportService: auto-categorized '{Title}' → {Category}", tx.Titel, category.Name);
+                                            }
+                                        }
+                                    }
+                                    catch (System.Exception ex)
+                                    {
+                                        _logger?.LogWarning(ex, "ImportService: categorization failed, falling back to Unkategorisiert");
+                                        try { FileLogger.Append("ImportService", "categorization failed, using fallback", ex); } catch { }
+                                    }
+                                }
+
+                                // Fallback: ensure an "Unkategorisiert" category exists if still no category assigned
                                 if (_categoryRepo != null && string.IsNullOrWhiteSpace(tx.KategorieId))
                                 {
                                     try

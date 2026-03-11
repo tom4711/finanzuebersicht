@@ -1,0 +1,95 @@
+{
+  "rules": [
+    {
+      "categoryName": "Lebensmittel",
+      "patterns": [
+        "REWE",
+        "EDEKA",
+        "KAUFLAND",
+        "ALDI",
+        "LIDL",
+        "PENNY",
+        "NETTO",
+        "REAL",
+        "BIOMARKT",
+        "WOCHENMARKT"
+      ],
+      "description": "Grocery stores and supermarkets"
+    },
+    {
+      "categoryName": "Transport",
+      "patterns": [
+        "DB BAHN",
+        "DEUTSCHE BAHN",
+        "OEPNV",
+        "MVGO",
+        "BVG",
+        "MVG",
+        "SHELL",
+        "ARAL",
+        "ESSO",
+        "TOTAL",
+        "TANKSTELLE",
+        "FUEL",
+        "BENZIN"
+      ],
+      "description": "Public transport, fuel, car-related"
+    },
+    {
+      "categoryName": "Sonstiges",
+      "patterns": [
+        "AMAZON",
+        "EBAY",
+        "PAYPAL",
+        "ETSY"
+      ],
+      "description": "Online marketplaces and payment processors"
+    },
+    {
+      "categoryName": "Wohnen",
+      "patterns": [
+        "NEBENKOSTEN",
+        "MAKLER",
+        "HANDWERKER",
+        "KLEMPNER",
+        "ELEKTRO",
+        "MAURER",
+        "IMMOBILIEN"
+      ],
+      "description": "Housing, rent, maintenance, utilities"
+    },
+    {
+      "categoryName": "Gesundheit",
+      "patterns": [
+        "APOTHEKE",
+        "PHARMACY",
+        "ARZT",
+        "ZAHNARZT",
+        "OPTIKER",
+        "KRANKENHAUS",
+        "KLINIK",
+        "FITNESSSTUDIO",
+        "GYM"
+      ],
+      "description": "Medical, pharmacy, fitness"
+    },
+    {
+      "categoryName": "Freizeit",
+      "patterns": [
+        "KINO",
+        "THEATER",
+        "SPOTIFY",
+        "NETFLIX",
+        "DISNEY",
+        "STEAM",
+        "PLAYSTATION",
+        "XBOX",
+        "RESTAURANT",
+        "CAFE",
+        "BAR",
+        "GASTSTATTE"
+      ],
+      "description": "Entertainment, streaming, dining"
+    }
+  ]
+}
