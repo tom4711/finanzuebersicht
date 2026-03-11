@@ -1,6 +1,7 @@
 using System.Reflection;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Finanzuebersicht.Core.Services;
 using Finanzuebersicht.Services;
 using Finanzuebersicht.Resources.Strings;
 
@@ -12,6 +13,7 @@ public partial class SettingsViewModel : ObservableObject
     private readonly ThemeService _themeService;
     private readonly ILocalizationService _loc;
     private readonly IDialogService _dialogService;
+    private readonly IBackupService? _backupService;
 
     [ObservableProperty]
     private int selectedThemeIndex;
@@ -21,6 +23,9 @@ public partial class SettingsViewModel : ObservableObject
 
     [ObservableProperty]
     private string dataPath = string.Empty;
+
+    [ObservableProperty]
+    private string lastBackupInfo = string.Empty;
 
     public string AppVersion { get; }
     public string BuildInfo { get; }
@@ -37,12 +42,14 @@ public partial class SettingsViewModel : ObservableObject
         SettingsService settings,
         ThemeService themeService,
         ILocalizationService localizationService,
-        IDialogService dialogService)
+        IDialogService dialogService,
+        IBackupService? backupService = null)
     {
         _settings = settings;
         _themeService = themeService;
         _loc = localizationService;
         _dialogService = dialogService;
+        _backupService = backupService;
 
         // Version aus Assembly-Metadaten lesen (von Nerdbank.GitVersioning gesetzt)
         var asm = Assembly.GetExecutingAssembly();
@@ -74,6 +81,9 @@ public partial class SettingsViewModel : ObservableObject
         DataPath = _settings.Get("DataPath", "");
         if (string.IsNullOrWhiteSpace(DataPath))
             DataPath = GetDefaultDataDir();
+
+        // Letztes Backup anzeigen
+        UpdateLastBackupInfo();
     }
 
     partial void OnSelectedThemeIndexChanged(int value)
@@ -168,6 +178,232 @@ public partial class SettingsViewModel : ObservableObject
     }
 
     private static string GetDefaultDataDir() => AppPaths.GetDefaultDataDir();
+
+    private void UpdateLastBackupInfo()
+    {
+        var lastBackupStr = _settings.Get("LastBackupTime", "");
+        if (string.IsNullOrEmpty(lastBackupStr))
+        {
+            LastBackupInfo = "Noch keine Sicherung erstellt";
+        }
+        else if (DateTime.TryParse(lastBackupStr, out var lastBackup))
+        {
+            var diff = DateTime.UtcNow - lastBackup;
+            if (diff.TotalSeconds < 60)
+                LastBackupInfo = $"Letzte Sicherung vor wenigen Sekunden";
+            else if (diff.TotalMinutes < 60)
+                LastBackupInfo = $"Letzte Sicherung vor {(int)diff.TotalMinutes} Minuten";
+            else if (diff.TotalHours < 24)
+                LastBackupInfo = $"Letzte Sicherung vor {(int)diff.TotalHours} Stunden";
+            else
+                LastBackupInfo = $"Letzte Sicherung vor {(int)diff.TotalDays} Tagen";
+        }
+        else
+        {
+            LastBackupInfo = "Sicherungsstatus unbekannt";
+        }
+    }
+
+    [RelayCommand]
+    private async Task CreateBackup()
+    {
+        if (_backupService == null)
+        {
+            await _dialogService.ShowAlertAsync(
+                _loc.GetString(ResourceKeys.Err_Titel),
+                "Backup-Service nicht verfügbar",
+                _loc.GetString(ResourceKeys.Btn_OK));
+            return;
+        }
+
+        try
+        {
+            var backupPath = _settings.Get("BackupPath", "");
+            if (string.IsNullOrEmpty(backupPath))
+            {
+                var dataPath = _settings.Get("DataPath", "");
+                if (string.IsNullOrEmpty(dataPath))
+                    dataPath = AppPaths.GetDefaultDataDir();
+                backupPath = Path.Combine(dataPath, "backups");
+            }
+
+            var metadata = await _backupService.CreateBackupAsync(backupPath);
+
+            UpdateLastBackupInfo();
+
+            await _dialogService.ShowAlertAsync(
+                "Sicherung erfolgreich",
+                $"Sicherung erstellt mit {metadata.EntityCounts["categories"]} Kategorien, {metadata.EntityCounts["transactions"]} Transaktionen und {metadata.EntityCounts["recurring"]} Daueraufträgen",
+                _loc.GetString(ResourceKeys.Btn_OK));
+        }
+        catch (Exception ex)
+        {
+            await _dialogService.ShowAlertAsync(
+                _loc.GetString(ResourceKeys.Err_Titel),
+                $"Fehler beim Erstellen der Sicherung: {ex.Message}",
+                _loc.GetString(ResourceKeys.Btn_OK));
+        }
+    }
+
+    [RelayCommand]
+    private async Task BrowseBackups()
+    {
+        if (_backupService == null)
+        {
+            await _dialogService.ShowAlertAsync(
+                _loc.GetString(ResourceKeys.Err_Titel),
+                "Backup-Service nicht verfügbar",
+                _loc.GetString(ResourceKeys.Btn_OK));
+            return;
+        }
+
+        try
+        {
+            var backupPath = _settings.Get("BackupPath", "");
+            if (string.IsNullOrEmpty(backupPath))
+            {
+                var dataPath = _settings.Get("DataPath", "");
+                if (string.IsNullOrEmpty(dataPath))
+                    dataPath = AppPaths.GetDefaultDataDir();
+                backupPath = Path.Combine(dataPath, "backups");
+            }
+
+            var backups = (await _backupService.ListBackupsAsync(backupPath)).ToList();
+            if (!backups.Any())
+            {
+                await _dialogService.ShowAlertAsync(
+                    "Keine Sicherungen",
+                    "Es wurden noch keine Sicherungen erstellt.",
+                    _loc.GetString(ResourceKeys.Btn_OK));
+                return;
+            }
+
+            // Hier könnten wir zu einer separaten Backup-Verwaltungs-Page navigieren
+            var backupList = string.Join("\n", backups.Take(5).Select(b => $"{b.CreatedAt:g} - {Path.GetFileNameWithoutExtension(b.FileName)}"));
+            if (backups.Count > 5)
+                backupList += $"\n... und {backups.Count - 5} weitere";
+
+            await _dialogService.ShowAlertAsync(
+                "Verfügbare Sicherungen",
+                backupList,
+                _loc.GetString(ResourceKeys.Btn_OK));
+        }
+        catch (Exception ex)
+        {
+            await _dialogService.ShowAlertAsync(
+                _loc.GetString(ResourceKeys.Err_Titel),
+                $"Fehler beim Laden der Sicherungen: {ex.Message}",
+                _loc.GetString(ResourceKeys.Btn_OK));
+        }
+    }
+
+    [RelayCommand]
+    private async Task RestoreBackup()
+    {
+        if (_backupService == null)
+        {
+            await _dialogService.ShowAlertAsync(
+                _loc.GetString(ResourceKeys.Err_Titel),
+                "Backup-Service nicht verfügbar",
+                _loc.GetString(ResourceKeys.Btn_OK));
+            return;
+        }
+
+        try
+        {
+            var backupPath = _settings.Get("BackupPath", "");
+            if (string.IsNullOrEmpty(backupPath))
+            {
+                var dataPath = _settings.Get("DataPath", "");
+                if (string.IsNullOrEmpty(dataPath))
+                    dataPath = AppPaths.GetDefaultDataDir();
+                backupPath = Path.Combine(dataPath, "backups");
+            }
+
+            var backups = (await _backupService.ListBackupsAsync(backupPath)).ToList();
+            if (!backups.Any())
+            {
+                await _dialogService.ShowAlertAsync(
+                    "Keine Sicherungen",
+                    "Es wurden noch keine Sicherungen erstellt.",
+                    _loc.GetString(ResourceKeys.Btn_OK));
+                return;
+            }
+
+            // Hier könnten wir zu einer separaten Restore-Dialog-Page navigieren
+            // Für nun: Informationen anzeigen
+            var newestBackup = backups.First();
+            var confirmed = await Shell.Current.DisplayAlert(
+                "Sicherung wiederherstellen",
+                $"Möchtest du die Sicherung vom {newestBackup.CreatedAt:g} mit {newestBackup.EntityCounts["transactions"]} Transaktionen wiederherstellen?\n\nWarnung: Dies überschreibt alle aktuellen Daten.",
+                "Ja, wiederherstellen",
+                "Abbrechen");
+
+            if (confirmed)
+            {
+                var result = await _backupService.RestoreBackupAsync(backupPath, newestBackup.Id);
+                if (result.Success)
+                {
+                    await _dialogService.ShowAlertAsync(
+                        "Wiederherstellung erfolgreich",
+                        "Die Sicherung wurde erfolgreich wiederhergestellt.",
+                        _loc.GetString(ResourceKeys.Btn_OK));
+                }
+                else
+                {
+                    await _dialogService.ShowAlertAsync(
+                        _loc.GetString(ResourceKeys.Err_Titel),
+                        $"Wiederherstellung fehlgeschlagen: {result.ErrorMessage}",
+                        _loc.GetString(ResourceKeys.Btn_OK));
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            await _dialogService.ShowAlertAsync(
+                _loc.GetString(ResourceKeys.Err_Titel),
+                $"Fehler beim Wiederherstellen: {ex.Message}",
+                _loc.GetString(ResourceKeys.Btn_OK));
+        }
+    }
+
+    [RelayCommand]
+    private async Task ExportAsCSV()
+    {
+        if (_backupService == null)
+        {
+            await _dialogService.ShowAlertAsync(
+                _loc.GetString(ResourceKeys.Err_Titel),
+                "Backup-Service nicht verfügbar",
+                _loc.GetString(ResourceKeys.Btn_OK));
+            return;
+        }
+
+        try
+        {
+            var csvStream = await _backupService.ExportAsCSVAsync();
+            var csvData = new byte[csvStream.Length];
+            csvStream.Seek(0, System.IO.SeekOrigin.Begin);
+            csvStream.Read(csvData, 0, csvData.Length);
+
+            var fileName = $"Finanzuebersicht_{DateTime.Now:yyyyMMdd_HHmmss}.csv";
+            var filePath = Path.Combine(Path.GetTempPath(), fileName);
+
+            File.WriteAllBytes(filePath, csvData);
+
+            await _dialogService.ShowAlertAsync(
+                "CSV exportiert",
+                $"Die Daten wurden zu:\n{filePath}",
+                _loc.GetString(ResourceKeys.Btn_OK));
+        }
+        catch (Exception ex)
+        {
+            await _dialogService.ShowAlertAsync(
+                _loc.GetString(ResourceKeys.Err_Titel),
+                $"Fehler beim CSV-Export: {ex.Message}",
+                _loc.GetString(ResourceKeys.Btn_OK));
+        }
+    }
 }
 
 public record LibraryInfo(string Name, string Description);

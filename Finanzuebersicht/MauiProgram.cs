@@ -41,6 +41,7 @@ public static class MauiProgram
 		builder.Services.AddSingleton<IReportingService, ReportingService>();
 		builder.Services.AddSingleton<IDataService, DataServiceFacade>();
 		builder.Services.AddSingleton<ITransactionValidationService, TransactionValidationService>();
+		builder.Services.AddSingleton<IBackupService, BackupService>();
 		// Import/parsers
 		// register parser explicitly using DI extension to avoid ambiguous CommunityToolkit overloads
 			Microsoft.Extensions.DependencyInjection.ServiceCollectionServiceExtensions.AddSingleton<IStatementParser, DkbCsvParser>(builder.Services);
