@@ -163,10 +163,10 @@ namespace Finanzuebersicht.Core.Services
 
                 using (var zipArchive = ZipFile.OpenRead(filePath))
                 {
-                    categories = ReadJsonFromZip<object>(zipArchive, "categories.json");
-                    transactions = ReadJsonFromZip<object>(zipArchive, "transactions.json");
-                    recurring = ReadJsonFromZip<object>(zipArchive, "recurring.json");
-                    metadata = ReadJsonFromZip<BackupMetadata>(zipArchive, BackupMetadataFileName)?.FirstOrDefault();
+                    categories = ReadJsonFromZip<List<object>>(zipArchive, "categories.json");
+                    transactions = ReadJsonFromZip<List<object>>(zipArchive, "transactions.json");
+                    recurring = ReadJsonFromZip<List<object>>(zipArchive, "recurring.json");
+                    metadata = ReadJsonFromZip<BackupMetadata>(zipArchive, BackupMetadataFileName);
                 }
 
                 if (categories == null || transactions == null || recurring == null || metadata == null)
@@ -335,7 +335,7 @@ namespace Finanzuebersicht.Core.Services
             }
         }
 
-        private List<T>? ReadJsonFromZip<T>(ZipArchive archive, string entryName)
+        private T? ReadJsonFromZip<T>(ZipArchive archive, string entryName) where T : class
         {
             var entry = archive.GetEntry(entryName);
             if (entry == null)
@@ -345,7 +345,7 @@ namespace Finanzuebersicht.Core.Services
             using (var reader = new StreamReader(stream))
             {
                 var json = reader.ReadToEnd();
-                return JsonSerializer.Deserialize<List<T>>(json, BackupJsonOptions);
+                return JsonSerializer.Deserialize<T>(json, BackupJsonOptions);
             }
         }
 
@@ -353,7 +353,7 @@ namespace Finanzuebersicht.Core.Services
         {
             using (var zipArchive = ZipFile.OpenRead(zipPath))
             {
-                return ReadJsonFromZip<BackupMetadata>(zipArchive, BackupMetadataFileName)?.FirstOrDefault();
+                return ReadJsonFromZip<BackupMetadata>(zipArchive, BackupMetadataFileName);
             }
         }
 
@@ -376,7 +376,7 @@ namespace Finanzuebersicht.Core.Services
                     }
 
                     // Validiere Metadaten-Schema
-                    var metadata = ReadJsonFromZip<BackupMetadata>(zipArchive, BackupMetadataFileName)?.FirstOrDefault();
+                    var metadata = ReadJsonFromZip<BackupMetadata>(zipArchive, BackupMetadataFileName);
                     if (metadata?.SchemaVersion != CurrentSchemaVersion)
                     {
                         return new RestoreResult
