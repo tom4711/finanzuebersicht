@@ -45,15 +45,15 @@ namespace Finanzuebersicht.Core.Services
                 var backupPath = customPath ?? GetDefaultBackupPath();
                 Directory.CreateDirectory(backupPath);
 
-                // Backup ID = ISO-Timestamp format (z.B. 2026-03-11T21-46-19)
-                var backupId = DateTime.UtcNow.ToString("yyyy-MM-ddTHH-mm-ss");
+                // Backup ID = ISO-Timestamp format (z.B. 2026-03-11T21-46-19-123)
+                var backupId = DateTime.UtcNow.ToString("yyyy-MM-ddTHH-mm-ss-fff");
                 var fileName = $"backup_{backupId}.zip";
                 var filePath = Path.Combine(backupPath, fileName);
 
                 // Lade alle Daten
-                var categories = await _dataService.GetAllCategoriesAsync();
-                var transactions = await _dataService.GetAllTransactionsAsync();
-                var recurring = await _dataService.GetAllRecurringTransactionsAsync();
+                var categories = await _dataService.GetCategoriesAsync();
+                var transactions = await _dataService.GetTransactionsAsync(DateTime.MinValue, DateTime.MaxValue);
+                var recurring = await _dataService.GetRecurringTransactionsAsync();
 
                 // Erstelle Metadaten
                 var metadata = new BackupMetadata
@@ -277,8 +277,8 @@ namespace Finanzuebersicht.Core.Services
         {
             try
             {
-                var transactions = await _dataService.GetAllTransactionsAsync();
-                var categories = await _dataService.GetAllCategoriesAsync();
+                var transactions = await _dataService.GetTransactionsAsync(DateTime.MinValue, DateTime.MaxValue);
+                var categories = await _dataService.GetCategoriesAsync();
                 var categoryMap = categories.ToDictionary(c => c.Id, c => c.Name);
 
                 var memoryStream = new MemoryStream();
@@ -299,7 +299,7 @@ namespace Finanzuebersicht.Core.Services
                     }
                 }
 
-                memoryStream.Seek(0);
+                memoryStream.Seek(0, SeekOrigin.Begin);
                 return memoryStream;
             }
             catch (Exception ex)
