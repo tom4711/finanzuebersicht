@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Finanzuebersicht.Services;
 
 namespace Finanzuebersicht.Core.Services
 {
