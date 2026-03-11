@@ -61,7 +61,7 @@ public class HistoricalCategorizationStrategy : ICategorizationStrategy
         }
     }
 
-    private string GetPayee(TransactionDto dto)
+    private string? GetPayee(TransactionDto dto)
     {
         // Prefer payee (recipient), fall back to payer
         return !string.IsNullOrEmpty(dto.Zahlungsempfaenger)

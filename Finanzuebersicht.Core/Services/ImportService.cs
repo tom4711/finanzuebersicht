@@ -34,7 +34,7 @@ namespace Finanzuebersicht.Core.Services
             _categorizationService = categorizationService;
         }
 
-        public async System.Threading.Tasks.Task<IEnumerable<Transaction>> ImportFromCsvAsync(System.IO.Stream csvStream, string accountId = null, System.Threading.CancellationToken cancellationToken = default)
+        public async System.Threading.Tasks.Task<IEnumerable<Transaction>> ImportFromCsvAsync(System.IO.Stream csvStream, string? accountId = null, System.Threading.CancellationToken cancellationToken = default)
         {
             try
             {
@@ -231,7 +231,8 @@ namespace Finanzuebersicht.Core.Services
             }
         }
 
-        public IEnumerable<Transaction> ImportFromCsv(Stream csvStream, string accountId = null)
+        [Obsolete("Use ImportFromCsvAsync instead. Sync-over-async pattern can cause deadlocks in UI contexts.")]
+        public IEnumerable<Transaction> ImportFromCsv(Stream csvStream, string? accountId = null)
         {
             return ImportFromCsvAsync(csvStream, accountId).GetAwaiter().GetResult();
         }
