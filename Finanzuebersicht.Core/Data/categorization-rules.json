@@ -41,7 +41,10 @@
         "AMAZON",
         "EBAY",
         "PAYPAL",
-        "ETSY"
+        "ETSY",
+        "APPLE.COM",
+        "APPLE",
+        "POSTCODE LOTTERIE"
       ],
       "description": "Online marketplaces and payment processors"
     },
@@ -69,7 +72,8 @@
         "KRANKENHAUS",
         "KLINIK",
         "FITNESSSTUDIO",
-        "GYM"
+        "GYM",
+        "OPTIK"
       ],
       "description": "Medical, pharmacy, fitness"
     },
@@ -87,7 +91,8 @@
         "RESTAURANT",
         "CAFE",
         "BAR",
-        "GASTSTATTE"
+        "GASTSTATTE",
+        "GASTHOF"
       ],
       "description": "Entertainment, streaming, dining"
     }

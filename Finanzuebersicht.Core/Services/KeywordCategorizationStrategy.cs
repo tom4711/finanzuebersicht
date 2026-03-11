@@ -95,7 +95,7 @@ public class KeywordCategorizationStrategy : ICategorizationStrategy
     private string? FindRulesFile()
     {
         // Try multiple locations
-        var candidates = new[]
+        var candidates = new List<string>
         {
             // Path 1: In AppContext base directory (production)
             Path.Combine(AppContext.BaseDirectory, "Data", "categorization-rules.json"),
@@ -105,14 +105,22 @@ public class KeywordCategorizationStrategy : ICategorizationStrategy
 
             // Path 3: In parent directories (for tests)
             Path.Combine(Directory.GetCurrentDirectory(), "Services", "Data", "categorization-rules.json"),
+            
+            // Path 4: macOS/Mac Catalyst - Resources directory (Contents/Resources/Data)
+            Path.Combine(AppContext.BaseDirectory, "..", "Resources", "Data", "categorization-rules.json"),
         };
 
         foreach (var path in candidates)
         {
-            if (File.Exists(path))
-                return path;
+            var fullPath = Path.GetFullPath(path);
+            if (File.Exists(fullPath))
+            {
+                _logger?.LogInformation("Found categorization rules at: {Path}", fullPath);
+                return fullPath;
+            }
         }
 
+        _logger?.LogWarning("Categorization rules file not found in any of the expected locations");
         return null;
     }
 
