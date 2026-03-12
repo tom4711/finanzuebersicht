@@ -2,43 +2,42 @@ using Xunit;
 using Finanzuebersicht.Core.Services;
 using Finanzuebersicht.Models;
 using Finanzuebersicht.Services;
+using Finanzuebersicht.Application.UseCases.Categories;
 
 namespace Finanzuebersicht.Tests.Services
 {
     /// <summary>
     /// Integration tests for critical data consistency flows.
-    /// Ensures that complex cascading operations maintain data integrity.
+    /// Tests exercise production code paths through actual UseCases and Services.
     /// </summary>
     public class DataConsistencyFlowIntegrationTests
     {
-        private const string FallbackCategoryId = "fallback-cat";
-        private const string FallbackCategorySystemKey = "SysCat_Sonstiges";
-
         [Fact]
-        public async Task DeleteCategory_UpdatesTransactionsToFallback()
+        public async Task DeleteCategoryUseCase_WithTransactions_ReassignsToFallback()
         {
             // Arrange
             var dataService = new InMemoryDataService();
-            var fallbackCat = new Category
+            
+            var groceriesCategory = new Category
             {
-                Id = FallbackCategoryId,
-                Name = "Sonstiges",
-                Icon = "📦",
-                Color = "#A2845E",
-                Typ = TransactionType.Ausgabe,
-                SystemKey = FallbackCategorySystemKey
-            };
-            var targetCat = new Category
-            {
-                Id = "cat-to-delete",
+                Id = "cat-groceries",
                 Name = "Groceries",
                 Icon = "🛒",
                 Color = "#34C759",
                 Typ = TransactionType.Ausgabe
             };
+            var sonstiges = new Category
+            {
+                Id = "cat-sonstiges",
+                Name = "Sonstiges",
+                Icon = "📦",
+                Color = "#A2845E",
+                Typ = TransactionType.Ausgabe,
+                SystemKey = "SysCat_Sonstiges"
+            };
 
-            await dataService.SaveCategoryAsync(fallbackCat);
-            await dataService.SaveCategoryAsync(targetCat);
+            await dataService.SaveCategoryAsync(groceriesCategory);
+            await dataService.SaveCategoryAsync(sonstiges);
 
             var txn1 = new Transaction
             {
@@ -46,7 +45,7 @@ namespace Finanzuebersicht.Tests.Services
                 Titel = "Supermarket",
                 Betrag = 50m,
                 Datum = DateTime.Today,
-                KategorieId = "cat-to-delete",
+                KategorieId = "cat-groceries",
                 Typ = TransactionType.Ausgabe
             };
             var txn2 = new Transaction
@@ -55,30 +54,19 @@ namespace Finanzuebersicht.Tests.Services
                 Titel = "Farm Market",
                 Betrag = 30m,
                 Datum = DateTime.Today,
-                KategorieId = "cat-to-delete",
+                KategorieId = "cat-groceries",
                 Typ = TransactionType.Ausgabe
             };
 
             await dataService.SaveTransactionAsync(txn1);
             await dataService.SaveTransactionAsync(txn2);
 
+            var useCase = new DeleteCategoryUseCase(dataService, dataService, dataService);
+
             // Act
-            // Simulate the delete flow: reassign affected transactions to fallback
-            var affectedTransactions = (await dataService.GetTransactionsAsync(
-                DateTime.Today.AddMonths(-12),
-                DateTime.Today.AddDays(1)))
-                .Where(t => t.KategorieId == "cat-to-delete")
-                .ToList();
+            await useCase.ExecuteAsync("cat-groceries");
 
-            foreach (var txn in affectedTransactions)
-            {
-                txn.KategorieId = FallbackCategoryId;
-                await dataService.SaveTransactionAsync(txn);
-            }
-
-            await dataService.DeleteCategoryAsync("cat-to-delete");
-
-            // Assert
+            // Assert - verify transactions were reassigned to fallback
             var allTransactions = await dataService.GetTransactionsAsync(
                 DateTime.Today.AddMonths(-12),
                 DateTime.Today.AddDays(1));
@@ -88,46 +76,48 @@ namespace Finanzuebersicht.Tests.Services
 
             Assert.NotNull(txn1After);
             Assert.NotNull(txn2After);
-            Assert.Equal(FallbackCategoryId, txn1After.KategorieId);
-            Assert.Equal(FallbackCategoryId, txn2After.KategorieId);
+            Assert.Equal("cat-sonstiges", txn1After.KategorieId);
+            Assert.Equal("cat-sonstiges", txn2After.KategorieId);
 
+            // Verify category was deleted
             var categories = await dataService.GetCategoriesAsync();
-            var deletedCat = categories.FirstOrDefault(c => c.Id == "cat-to-delete");
+            var deletedCat = categories.FirstOrDefault(c => c.Id == "cat-groceries");
             Assert.Null(deletedCat);
         }
 
         [Fact]
-        public async Task DeleteCategory_UpdatesRecurringTransactionsToFallback()
+        public async Task DeleteCategoryUseCase_WithRecurringTransactions_ReassignsToFallback()
         {
             // Arrange
             var dataService = new InMemoryDataService();
-            var fallbackCat = new Category
+            
+            var utilitiesCategory = new Category
             {
-                Id = FallbackCategoryId,
-                Name = "Sonstiges",
-                Icon = "📦",
-                Color = "#A2845E",
-                Typ = TransactionType.Ausgabe,
-                SystemKey = FallbackCategorySystemKey
-            };
-            var targetCat = new Category
-            {
-                Id = "cat-recurring",
+                Id = "cat-utilities",
                 Name = "Utilities",
                 Icon = "⚡",
                 Color = "#FF9500",
                 Typ = TransactionType.Ausgabe
             };
+            var sonstiges = new Category
+            {
+                Id = "cat-sonstiges",
+                Name = "Sonstiges",
+                Icon = "📦",
+                Color = "#A2845E",
+                Typ = TransactionType.Ausgabe,
+                SystemKey = "SysCat_Sonstiges"
+            };
 
-            await dataService.SaveCategoryAsync(fallbackCat);
-            await dataService.SaveCategoryAsync(targetCat);
+            await dataService.SaveCategoryAsync(utilitiesCategory);
+            await dataService.SaveCategoryAsync(sonstiges);
 
             var recurring = new RecurringTransaction
             {
                 Id = "recurring1",
                 Titel = "Monthly Bill",
                 Betrag = 100m,
-                KategorieId = "cat-recurring",
+                KategorieId = "cat-utilities",
                 Typ = TransactionType.Ausgabe,
                 Startdatum = DateTime.Today.AddMonths(-3),
                 Aktiv = true
@@ -135,174 +125,147 @@ namespace Finanzuebersicht.Tests.Services
 
             await dataService.SaveRecurringTransactionAsync(recurring);
 
+            var useCase = new DeleteCategoryUseCase(dataService, dataService, dataService);
+
             // Act
-            var affectedRecurring = (await dataService.GetRecurringTransactionsAsync())
-                .Where(r => r.KategorieId == "cat-recurring")
-                .ToList();
+            await useCase.ExecuteAsync("cat-utilities");
 
-            foreach (var rec in affectedRecurring)
-            {
-                rec.KategorieId = FallbackCategoryId;
-                await dataService.SaveRecurringTransactionAsync(rec);
-            }
-
-            await dataService.DeleteCategoryAsync("cat-recurring");
-
-            // Assert
+            // Assert - verify recurring was reassigned to fallback
             var recurringAfter = await dataService.GetRecurringTransactionsAsync();
             var recurringAfterDelete = recurringAfter.FirstOrDefault(r => r.Id == "recurring1");
 
             Assert.NotNull(recurringAfterDelete);
-            Assert.Equal(FallbackCategoryId, recurringAfterDelete.KategorieId);
+            Assert.Equal("cat-sonstiges", recurringAfterDelete.KategorieId);
 
             var categories = await dataService.GetCategoriesAsync();
-            var deletedCat = categories.FirstOrDefault(c => c.Id == "cat-recurring");
+            var deletedCat = categories.FirstOrDefault(c => c.Id == "cat-utilities");
             Assert.Null(deletedCat);
         }
 
         [Fact]
-        public async Task SaveRecurringWithPastStartDate_GeneratesInstancesImmediately()
+        public async Task DeleteCategoryUseCase_WithoutFallback_CreatesSystemFallback()
         {
-            // Arrange
+            // Arrange - only have the category to delete, no fallback exists
             var dataService = new InMemoryDataService();
-            var category = new Category
+            
+            var onlyCategory = new Category
             {
-                Id = "cat-monthly",
-                Name = "Salary",
-                Icon = "💼",
-                Color = "#34C759",
-                Typ = TransactionType.Einnahme
+                Id = "cat-only",
+                Name = "OnlyOne",
+                Icon = "🏠",
+                Color = "#000000",
+                Typ = TransactionType.Ausgabe
             };
 
-            await dataService.SaveCategoryAsync(category);
+            await dataService.SaveCategoryAsync(onlyCategory);
 
-            var pastStartDate = DateTime.Today.AddMonths(-2);
-            var recurring = new RecurringTransaction
+            var txn = new Transaction
             {
-                Id = "recurring-past",
-                Titel = "Monthly Salary",
-                Betrag = 3000m,
-                KategorieId = "cat-monthly",
-                Typ = TransactionType.Einnahme,
-                Startdatum = pastStartDate,
-                Aktiv = true
+                Id = "txn-orphan",
+                Titel = "Test",
+                Betrag = 100m,
+                Datum = DateTime.Today,
+                KategorieId = "cat-only",
+                Typ = TransactionType.Ausgabe
             };
 
-            // Act
-            await dataService.SaveRecurringTransactionAsync(recurring);
+            await dataService.SaveTransactionAsync(txn);
 
-            // Simulate the generation that happens on App startup
-            var generatedTransactions = new List<Transaction>();
-            var recurringTransactions = await dataService.GetRecurringTransactionsAsync();
+            var useCase = new DeleteCategoryUseCase(dataService, dataService, dataService);
 
-            foreach (var rec in recurringTransactions.Where(r => r.Aktiv))
-            {
-                var startDate = rec.Startdatum;
-                var endDate = rec.Enddatum ?? DateTime.Today.AddMonths(1);
+            // Act - UseCase should create fallback if needed
+            await useCase.ExecuteAsync("cat-only");
 
-                // Generate monthly instances from start to today
-                var current = startDate;
-                while (current <= DateTime.Today && current <= endDate)
-                {
-                    generatedTransactions.Add(new Transaction
-                    {
-                        Id = Guid.NewGuid().ToString(),
-                        Titel = rec.Titel,
-                        Betrag = rec.Betrag,
-                        Datum = current,
-                        KategorieId = rec.KategorieId,
-                        Typ = rec.Typ
-                    });
-
-                    current = current.AddMonths(1);
-                }
-            }
-
-            foreach (var txn in generatedTransactions)
-            {
-                await dataService.SaveTransactionAsync(txn);
-            }
-
-            // Assert
-            var allTransactions = await dataService.GetTransactionsAsync(
-                pastStartDate.AddMonths(-1),
-                DateTime.Today.AddMonths(1));
-
-            var generatedByRecurring = allTransactions
-                .Where(t => t.Titel == "Monthly Salary")
-                .OrderBy(t => t.Datum)
-                .ToList();
-
-            Assert.NotEmpty(generatedByRecurring);
-            Assert.True(generatedByRecurring.Count >= 2, "Should have generated at least 2 instances");
-            Assert.Equal(pastStartDate.Year, generatedByRecurring.First().Datum.Year);
-            Assert.Equal(pastStartDate.Month, generatedByRecurring.First().Datum.Month);
+            // Assert - fallback was created
+            var categories = await dataService.GetCategoriesAsync();
+            var fallback = categories.FirstOrDefault(c => c.SystemKey == "SysCat_Sonstiges");
+            
+            Assert.NotNull(fallback);
+            
+            var txnAfter = (await dataService.GetTransactionsAsync(
+                DateTime.Today.AddMonths(-12),
+                DateTime.Today.AddDays(1)))
+                .FirstOrDefault(t => t.Id == "txn-orphan");
+            
+            Assert.NotNull(txnAfter);
+            Assert.Equal(fallback.Id, txnAfter.KategorieId);
         }
 
         [Fact]
-        public async Task TransactionDetailWithDeletedCategory_ShowsFallbackCategory()
+        public async Task DeleteCategoryUseCase_MixedData_HandlesBothTransactionsAndRecurring()
         {
-            // Arrange
+            // Arrange - category used by both transactions and recurring
             var dataService = new InMemoryDataService();
-            var fallbackCat = new Category
+            
+            var entertainmentCategory = new Category
             {
-                Id = FallbackCategoryId,
-                Name = "Sonstiges",
-                Icon = "📦",
-                Color = "#A2845E",
-                Typ = TransactionType.Ausgabe,
-                SystemKey = FallbackCategorySystemKey
-            };
-            var originalCat = new Category
-            {
-                Id = "cat-original",
+                Id = "cat-entertainment",
                 Name = "Entertainment",
                 Icon = "🎬",
                 Color = "#AF52DE",
                 Typ = TransactionType.Ausgabe
             };
-
-            await dataService.SaveCategoryAsync(fallbackCat);
-            await dataService.SaveCategoryAsync(originalCat);
-
-            var transaction = new Transaction
+            var sonstiges = new Category
             {
-                Id = "txn-detail-test",
-                Titel = "Movie Tickets",
-                Betrag = 25m,
-                Datum = DateTime.Today,
-                KategorieId = "cat-original",
-                Typ = TransactionType.Ausgabe
+                Id = "cat-sonstiges",
+                Name = "Sonstiges",
+                Icon = "📦",
+                Color = "#A2845E",
+                Typ = TransactionType.Ausgabe,
+                SystemKey = "SysCat_Sonstiges"
             };
 
-            await dataService.SaveTransactionAsync(transaction);
+            await dataService.SaveCategoryAsync(entertainmentCategory);
+            await dataService.SaveCategoryAsync(sonstiges);
 
-            // Act - Delete the original category
-            await dataService.DeleteCategoryAsync("cat-original");
-
-            // Load the transaction detail
-            var allTransactions = await dataService.GetTransactionsAsync(
-                DateTime.Today.AddMonths(-12),
-                DateTime.Today.AddDays(1));
-            var txnDetail = allTransactions.FirstOrDefault(t => t.Id == "txn-detail-test");
-            var allCategories = await dataService.GetCategoriesAsync();
-
-            // Simulate finding the fallback category for display
-            var categoryForDisplay = allCategories.FirstOrDefault(c => c.Id == txnDetail?.KategorieId);
-            if (categoryForDisplay == null)
+            // Add transaction
+            var txn = new Transaction
             {
-                categoryForDisplay = allCategories.FirstOrDefault(c => c.SystemKey == FallbackCategorySystemKey);
-            }
+                Id = "txn-movie",
+                Titel = "Movie",
+                Betrag = 25m,
+                Datum = DateTime.Today,
+                KategorieId = "cat-entertainment",
+                Typ = TransactionType.Ausgabe
+            };
+            await dataService.SaveTransactionAsync(txn);
 
-            // Assert
-            Assert.NotNull(txnDetail);
-            Assert.NotNull(categoryForDisplay);
-            Assert.Equal(FallbackCategorySystemKey, categoryForDisplay.SystemKey);
-            Assert.Equal("Sonstiges", categoryForDisplay.Name);
+            // Add recurring
+            var recurring = new RecurringTransaction
+            {
+                Id = "rec-cinema",
+                Titel = "Monthly Cinema",
+                Betrag = 40m,
+                KategorieId = "cat-entertainment",
+                Typ = TransactionType.Ausgabe,
+                Startdatum = DateTime.Today.AddMonths(-1),
+                Aktiv = true
+            };
+            await dataService.SaveRecurringTransactionAsync(recurring);
+
+            var useCase = new DeleteCategoryUseCase(dataService, dataService, dataService);
+
+            // Act
+            await useCase.ExecuteAsync("cat-entertainment");
+
+            // Assert - both should be reassigned
+            var txnAfter = (await dataService.GetTransactionsAsync(
+                DateTime.Today.AddMonths(-12),
+                DateTime.Today.AddDays(1)))
+                .FirstOrDefault(t => t.Id == "txn-movie");
+            
+            var recAfter = (await dataService.GetRecurringTransactionsAsync())
+                .FirstOrDefault(r => r.Id == "rec-cinema");
+
+            Assert.NotNull(txnAfter);
+            Assert.NotNull(recAfter);
+            Assert.Equal("cat-sonstiges", txnAfter.KategorieId);
+            Assert.Equal("cat-sonstiges", recAfter.KategorieId);
         }
 
         /// <summary>
         /// In-memory implementation of IDataService for testing.
+        /// Provides isolated test environment without file I/O.
         /// </summary>
         private class InMemoryDataService : IDataService
         {
@@ -318,9 +281,7 @@ namespace Finanzuebersicht.Tests.Services
             {
                 var existing = _categories.FirstOrDefault(c => c.Id == category.Id);
                 if (existing != null)
-                {
                     _categories.Remove(existing);
-                }
 
                 _categories.Add(category);
                 return Task.CompletedTask;
@@ -342,9 +303,7 @@ namespace Finanzuebersicht.Tests.Services
             {
                 var existing = _transactions.FirstOrDefault(t => t.Id == transaction.Id);
                 if (existing != null)
-                {
                     _transactions.Remove(existing);
-                }
 
                 _transactions.Add(transaction);
                 return Task.CompletedTask;
@@ -370,9 +329,7 @@ namespace Finanzuebersicht.Tests.Services
             {
                 var existing = _recurring.FirstOrDefault(r => r.Id == recurring.Id);
                 if (existing != null)
-                {
                     _recurring.Remove(existing);
-                }
 
                 _recurring.Add(recurring);
                 return Task.CompletedTask;
