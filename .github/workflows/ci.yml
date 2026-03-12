@@ -43,6 +43,7 @@ jobs:
         run: |
           export PATH="$PATH:$HOME/.dotnet/tools"
           cd Finanzuebersicht.Core
+          dotnet build -c Debug
           dotnet-stryker --test-project ../Finanzuebersicht.Tests/Finanzuebersicht.Tests.csproj --log-to-file
 
   build:
