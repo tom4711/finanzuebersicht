@@ -12,12 +12,12 @@ jobs:
     name: Tests (.NET)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0  # Required for Nerdbank.GitVersioning
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5
         with:
           dotnet-version: '10.0.100'
 
@@ -30,12 +30,12 @@ jobs:
     needs: test
     if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/release/')
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0  # Required for Nerdbank.GitVersioning
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5
         with:
           dotnet-version: '10.0.100'
 
@@ -64,7 +64,7 @@ jobs:
             -p:EnableILLink=false
 
       - name: Upload Mac Catalyst artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Finanzuebersicht-${{ steps.version.outputs.VERSION }}-maccatalyst
           path: Finanzuebersicht/bin/Debug/net10.0-maccatalyst/**
@@ -77,12 +77,12 @@ jobs:
     needs: test
     if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/release/')
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5
         with:
           dotnet-version: '10.0.100'
 
@@ -104,7 +104,7 @@ jobs:
           dotnet build -f net10.0-windows10.0.19041.0 -c Release
 
       - name: Upload Windows artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Finanzuebersicht-${{ steps.version.outputs.VERSION }}-windows
           path: Finanzuebersicht/bin/Release/net10.0-windows10.0.19041.0/**
