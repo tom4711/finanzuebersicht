@@ -76,7 +76,7 @@ jobs:
           zip -r "../../Finanzuebersicht-${{ needs.version.outputs.tag }}-maccatalyst.zip" net10.0-maccatalyst
 
       - name: Upload macOS package
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: prerelease-maccatalyst
           path: Finanzuebersicht/Finanzuebersicht-${{ needs.version.outputs.tag }}-maccatalyst.zip
@@ -114,7 +114,7 @@ jobs:
           Compress-Archive -Path "Finanzuebersicht/bin/Release/net10.0-windows10.0.19041.0/*" -DestinationPath "Finanzuebersicht/Finanzuebersicht-${{ needs.version.outputs.tag }}-windows.zip" -Force
 
       - name: Upload Windows package
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: prerelease-windows
           path: Finanzuebersicht/Finanzuebersicht-${{ needs.version.outputs.tag }}-windows.zip
