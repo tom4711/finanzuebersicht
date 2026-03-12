@@ -38,6 +38,12 @@
                        FontSize="16" />
             </VerticalStackLayout>
 
+            <!-- Verwendungszweck -->
+            <VerticalStackLayout Spacing="4">
+                <Label Text="{loc:Translate Lbl_Verwendungszweck}" FontSize="13" TextColor="Gray" />
+                <Editor Text="{Binding Verwendungszweck}" HeightRequest="100" AutoSize="TextChanges" />
+            </VerticalStackLayout>
+
             <!-- Datum -->
             <VerticalStackLayout Spacing="4">
                 <Label Text="{loc:Translate Lbl_Datum}" FontSize="13" TextColor="Gray" />

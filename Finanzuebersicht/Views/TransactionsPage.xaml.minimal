@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage x:Name="RootPage" xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Finanzuebersicht.ViewModels"
+             xmlns:models="clr-namespace:Finanzuebersicht.Models"
+             xmlns:conv="clr-namespace:Finanzuebersicht.Converters"
+             x:Class="Finanzuebersicht.Views.TransactionsPage"
+             x:DataType="vm:TransactionsViewModel"
+             Title="Transaktionen">
+
+    <Grid RowDefinitions="Auto, *">
+        <!-- Month nav -->
+        <Grid Grid.Row="0" ColumnDefinitions="Auto, *, Auto" Padding="16,12">
+            <Button Grid.Column="0" Text="‹" FontSize="28" BackgroundColor="Transparent" TextColor="#007AFF"
+                    Command="{Binding PreviousMonthCommand}" WidthRequest="44" />
+            <Label Grid.Column="1" Text="{Binding MonatAnzeige}" FontSize="18" FontAttributes="Bold"
+                   HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
+            <Button Grid.Column="2" Text="›" FontSize="28" BackgroundColor="Transparent" TextColor="#007AFF"
+                    Command="{Binding NextMonthCommand}" WidthRequest="44" />
+        </Grid>
+
+        <!-- MINIMAL: Plain CollectionView, no RefreshView, no Grouping -->
+        <CollectionView Grid.Row="1" ItemsSource="{Binding AlleTransaktionen}">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:Transaction">
+                    <Label Text="{Binding Titel}" Padding="16,10" FontSize="16" BackgroundColor="#F0F0F0">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnItemTapped" CommandParameter="{Binding .}" />
+                        </Label.GestureRecognizers>
+                    </Label>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <!-- FAB -->
+        <Grid Grid.Row="1">
+            <Button Text="+" FontSize="28" TextColor="White" BackgroundColor="#007AFF"
+                    CornerRadius="28" WidthRequest="56" HeightRequest="56"
+                    HorizontalOptions="End" VerticalOptions="End" Margin="0,0,20,20"
+                    Command="{Binding GoToDetailCommand}" />
+            <Button Text="Import" FontSize="14" TextColor="#007AFF" BackgroundColor="Transparent"
+                    HorizontalOptions="Start" VerticalOptions="End" Margin="20,0,0,20"
+                    Command="{Binding ImportCsvCommand}" />
+        </Grid>
+    </Grid>
+</ContentPage>

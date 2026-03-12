@@ -9,4 +9,10 @@ public class Transaction
     public string KategorieId { get; set; } = string.Empty;
     public TransactionType Typ { get; set; } = TransactionType.Ausgabe;
     public string? DauerauftragId { get; set; }
+
+    // Optional: which account this transaction belongs to (supports multi-account scenarios)
+    public string? AccountId { get; set; }
+
+    // Detaillierter Verwendungszweck / Beschreibung aus dem Kontoauszug
+    public string Verwendungszweck { get; set; } = string.Empty;
 }

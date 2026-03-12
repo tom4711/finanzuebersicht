@@ -26,4 +26,13 @@
     <Using Include="NSubstitute" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="Services\test_dkb_sample.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Services\test_bank_statment.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

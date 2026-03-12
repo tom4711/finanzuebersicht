@@ -59,4 +59,10 @@ public class DataServiceFacade : IDataService
 
     public Task<MonthSummary> GetMonthSummaryAsync(int year, int month)
         => _reportingService.GetMonthSummaryAsync(year, month);
+
+    public Task<Category?> GetMostCommonCategoryForPayeeAsync(
+        string payee,
+        double confidenceThreshold = 0.5,
+        CancellationToken cancellationToken = default)
+        => _transactionRepository.GetMostCommonCategoryForPayeeAsync(payee, confidenceThreshold, cancellationToken);
 }

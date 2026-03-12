@@ -1,0 +1,8 @@
+"Girokonto";"DE33333333333333333333"
+
+"Kontostand vom 08.03.2026:";"500,00 €"
+""
+"Buchungsdatum";"Wertstellung";"Status";"Zahlungspflichtige*r";"Zahlungsempfänger*in";"Verwendungszweck";"Umsatztyp";"IBAN";"Betrag (€)";"Gläubiger-ID";"Mandatsreferenz";"Kundenreferenz"
+"01.03.26";"01.03.26";"Gebucht";"Firma A";"Firma A";"Dienstleistung";"Ausgang";"DE33333333330000000001";"-120,00";"";"";""
+"MALFORMED LINE WITHOUT PROPER COLUMNS"
+"03.03.26";"03.03.26";"Gebucht";"Firma B";"Firma B";"Produktverkauf";"Eingang";"DE33333333330000000003";"300,00";"";"";""

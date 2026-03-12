@@ -71,6 +71,9 @@
 		<!-- Raw Assets (also remove the "Resources\Raw" prefix) -->
 		<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
 
+		<!-- Categorization Rules Data -->
+		<MauiAsset Include="..\Finanzuebersicht.Core\Data\categorization-rules.json" LogicalName="Data/categorization-rules.json" />
+
 		<!-- Localization Resources (SDK includes .resx automatically; set DependentUpon for IDE) -->
 		<EmbeddedResource Update="Resources\Strings\AppResources.de.resx">
 			<DependentUpon>AppResources.resx</DependentUpon>

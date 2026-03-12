@@ -68,4 +68,109 @@ public class SettingsService
             System.Diagnostics.Debug.WriteLine($"Fehler beim Speichern der Einstellungen: {ex.Message}");
         }
     }
+
+    // ========== Backup-Einstellungen Hilfs-Methoden ==========
+
+    /// <summary>
+    /// Gibt den Backup-Pfad zurück. Falls nicht konfiguriert, nutzt {DataPath}/backups.
+    /// </summary>
+    public string GetBackupPath()
+    {
+        var backupPath = Get(SettingsKeys.BackupPath);
+        if (!string.IsNullOrEmpty(backupPath))
+            return backupPath;
+
+        var dataPath = Get(SettingsKeys.DataPath);
+        if (string.IsNullOrEmpty(dataPath))
+            dataPath = AppPaths.GetDefaultDataDir();
+
+        return Path.Combine(dataPath, "backups");
+    }
+
+    /// <summary>
+    /// Setzt den Backup-Pfad.
+    /// </summary>
+    public void SetBackupPath(string path)
+    {
+        Set(SettingsKeys.BackupPath, path);
+    }
+
+    /// <summary>
+    /// Gibt den Zeitstempel des letzten Backups zurück (ISO 8601) oder null.
+    /// </summary>
+    public DateTime? GetLastBackupTime()
+    {
+        var timeStr = Get(SettingsKeys.LastBackupTime);
+        if (string.IsNullOrEmpty(timeStr))
+            return null;
+
+        if (DateTime.TryParse(timeStr, null, System.Globalization.DateTimeStyles.RoundtripKind, out var dt))
+            return dt;
+
+        return null;
+    }
+
+    /// <summary>
+    /// Setzt den Zeitstempel des letzten Backups.
+    /// </summary>
+    public void SetLastBackupTime(DateTime time)
+    {
+        Set(SettingsKeys.LastBackupTime, time.ToString("O"));
+    }
+
+    /// <summary>
+    /// Gibt an, ob automatische Backups aktiviert sind.
+    /// </summary>
+    public bool IsAutoBackupEnabled()
+    {
+        var enabled = Get(SettingsKeys.AutoBackupEnabled, "false");
+        return bool.TryParse(enabled, out var result) && result;
+    }
+
+    /// <summary>
+    /// Setzt, ob automatische Backups aktiviert sind.
+    /// </summary>
+    public void SetAutoBackupEnabled(bool enabled)
+    {
+        Set(SettingsKeys.AutoBackupEnabled, enabled.ToString().ToLowerInvariant());
+    }
+
+    /// <summary>
+    /// Gibt die Häufigkeit automatischer Backups zurück ("daily", "weekly", "monthly").
+    /// </summary>
+    public string GetBackupFrequency()
+    {
+        return Get(SettingsKeys.BackupFrequency, "weekly");
+    }
+
+    /// <summary>
+    /// Setzt die Häufigkeit automatischer Backups.
+    /// </summary>
+    public void SetBackupFrequency(string frequency)
+    {
+        if (!new[] { "daily", "weekly", "monthly" }.Contains(frequency))
+            throw new ArgumentException($"Ungültige Backup-Häufigkeit: {frequency}");
+
+        Set(SettingsKeys.BackupFrequency, frequency);
+    }
+
+    /// <summary>
+    /// Gibt die maximale Anzahl aufzubewahrende Backups zurück.
+    /// </summary>
+    public int GetMaxBackupsToKeep()
+    {
+        var maxStr = Get(SettingsKeys.MaxBackupsToKeep, "10");
+        return int.TryParse(maxStr, out var max) ? max : 10;
+    }
+
+    /// <summary>
+    /// Setzt die maximale Anzahl aufzubewahrende Backups.
+    /// </summary>
+    public void SetMaxBackupsToKeep(int max)
+    {
+        if (max < 1)
+            throw new ArgumentException("MaxBackupsToKeep muss >= 1 sein");
+
+        Set(SettingsKeys.MaxBackupsToKeep, max.ToString());
+    }
 }

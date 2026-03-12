@@ -18,7 +18,8 @@ public class SaveTransactionDetailUseCase
         string titel,
         DateTime datum,
         string kategorieId,
-        TransactionType typ)
+        TransactionType typ,
+        string verwendungszweck)
     {
         var transaction = existingTransaction ?? new Transaction();
         transaction.Betrag = betrag;
@@ -26,6 +27,7 @@ public class SaveTransactionDetailUseCase
         transaction.Datum = datum;
         transaction.KategorieId = kategorieId;
         transaction.Typ = typ;
+        transaction.Verwendungszweck = verwendungszweck ?? string.Empty;
 
         await _transactionRepository.SaveTransactionAsync(transaction);
     }
