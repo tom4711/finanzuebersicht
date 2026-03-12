@@ -35,13 +35,15 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.100'
+      - name: Restore dependencies
+        run: dotnet restore Finanzuebersicht.Core/Finanzuebersicht.Core.csproj
       - name: Install Stryker
         run: dotnet tool install -g dotnet-stryker
       - name: Run Stryker mutation tests
         run: |
+          export PATH="$PATH:$HOME/.dotnet/tools"
           cd Finanzuebersicht.Core
-          dotnet tool install -g dotnet-stryker --no-cache
-          ~/.dotnet/tools/dotnet-stryker --test-project ../Finanzuebersicht.Tests/Finanzuebersicht.Tests.csproj
+          dotnet-stryker --test-project ../Finanzuebersicht.Tests/Finanzuebersicht.Tests.csproj --log-to-file
 
   build:
     name: Build (Mac Catalyst)
