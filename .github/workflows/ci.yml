@@ -38,7 +38,10 @@ jobs:
       - name: Install Stryker
         run: dotnet tool install -g dotnet-stryker
       - name: Run Stryker mutation tests
-        run: dotnet stryker --test-project Finanzuebersicht.Tests
+        run: |
+          cd Finanzuebersicht.Core
+          dotnet tool install -g dotnet-stryker --no-cache
+          ~/.dotnet/tools/dotnet-stryker --test-project ../Finanzuebersicht.Tests/Finanzuebersicht.Tests.csproj
 
   build:
     name: Build (Mac Catalyst)
