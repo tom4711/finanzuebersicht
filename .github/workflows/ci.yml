@@ -35,6 +35,8 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.100'
+      - name: Install Stryker
+        run: dotnet tool install -g dotnet-stryker
       - name: Run Stryker mutation tests
         run: dotnet stryker --project-files Finanzuebersicht.Tests/Finanzuebersicht.Tests.csproj
 
