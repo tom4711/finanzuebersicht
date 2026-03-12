@@ -24,6 +24,30 @@ jobs:
       - name: Run tests
         run: dotnet test Finanzuebersicht.Tests --configuration Release --logger "console;verbosity=minimal"
 
+  mutation-test:
+    name: Mutation Tests (Stryker)
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.100'
+      - name: Restore dependencies
+        run: dotnet restore Finanzuebersicht.Core/Finanzuebersicht.Core.csproj
+      - name: Install Stryker
+        run: dotnet tool install -g dotnet-stryker
+      - name: Run Stryker mutation tests
+        run: |
+          export PATH="$PATH:$HOME/.dotnet/tools"
+          cd Finanzuebersicht.Core
+          dotnet build -c Debug
+          dotnet-stryker --test-project ../Finanzuebersicht.Tests/Finanzuebersicht.Tests.csproj --log-to-file
+
   build:
     name: Build (Mac Catalyst)
     runs-on: macos-15
