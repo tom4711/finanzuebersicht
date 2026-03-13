@@ -231,12 +231,6 @@ namespace Finanzuebersicht.Core.Services
             }
         }
 
-        [Obsolete("Use ImportFromCsvAsync instead. Sync-over-async pattern can cause deadlocks in UI contexts.")]
-        public IEnumerable<Transaction> ImportFromCsv(Stream csvStream, string? accountId = null)
-        {
-            return ImportFromCsvAsync(csvStream, accountId).GetAwaiter().GetResult();
-        }
-
         private static string Normalize(string? input)
         {
             if (string.IsNullOrWhiteSpace(input)) return string.Empty;
