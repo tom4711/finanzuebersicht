@@ -8,17 +8,12 @@ namespace Finanzuebersicht.Services;
 /// Verwaltet die App-Sprache. Liest gespeicherte Sprachpräferenz aus SettingsService,
 /// fällt auf Gerätesprache zurück und aktualisiert LocalizationResourceManager live.
 /// </summary>
-public class LocalizationService : ILocalizationService
+public class LocalizationService(SettingsService settings) : ILocalizationService
 {
     private const string LanguageKey = "LanguageCode";
 
-    private readonly SettingsService _settings;
+    private readonly SettingsService _settings = settings;
     private string _currentLanguageCode = string.Empty;
-
-    public LocalizationService(SettingsService settings)
-    {
-        _settings = settings;
-    }
 
     public string CurrentLanguageCode => _currentLanguageCode;
 
