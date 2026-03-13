@@ -85,10 +85,9 @@ public class LocalDataService : ICategoryRepository, ITransactionRepository, IRe
         try
         {
             var items = await LoadAsync<Transaction>(TransactionsFile);
-            return items
+            return [.. items
                 .Where(t => t.Datum >= vonDatum && t.Datum <= bisDatum)
-                .OrderByDescending(t => t.Datum)
-                .ToList();
+                .OrderByDescending(t => t.Datum)];
         }
         finally { _transactionsLock.Release(); }
     }
