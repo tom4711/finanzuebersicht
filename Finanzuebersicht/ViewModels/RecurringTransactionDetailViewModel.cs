@@ -8,13 +8,17 @@ using Finanzuebersicht.Services;
 namespace Finanzuebersicht.ViewModels;
 
 [QueryProperty(nameof(RecurringTransaction), "RecurringTransaction")]
-public partial class RecurringTransactionDetailViewModel : ObservableObject
+public partial class RecurringTransactionDetailViewModel(
+    SaveRecurringTransactionDetailUseCase saveRecurringTransactionDetailUseCase,
+    LoadRecurringTransactionDetailDataUseCase loadRecurringTransactionDetailDataUseCase,
+    ITransactionValidationService validationService,
+    INavigationService navigationService) : ObservableObject
 {
-    private readonly SaveRecurringTransactionDetailUseCase _saveRecurringTransactionDetailUseCase;
-    private readonly LoadRecurringTransactionDetailDataUseCase _loadRecurringTransactionDetailDataUseCase;
-    private readonly ITransactionValidationService _validationService;
+    private readonly SaveRecurringTransactionDetailUseCase _saveRecurringTransactionDetailUseCase = saveRecurringTransactionDetailUseCase;
+    private readonly LoadRecurringTransactionDetailDataUseCase _loadRecurringTransactionDetailDataUseCase = loadRecurringTransactionDetailDataUseCase;
+    private readonly ITransactionValidationService _validationService = validationService;
     private RecurringTransaction? _existing;
-    private readonly INavigationService _navigationService;
+    private readonly INavigationService _navigationService = navigationService;
 
     [ObservableProperty]
     private string betragText = string.Empty;
@@ -35,13 +39,13 @@ public partial class RecurringTransactionDetailViewModel : ObservableObject
     private DateTime? enddatum;
 
     [ObservableProperty]
-    private bool hatEnddatum;
+    private readonly bool hatEnddatum;
 
     [ObservableProperty]
     private DateTime enddatumWert = DateTime.Today.AddYears(1);
 
     [ObservableProperty]
-    private bool aktiv = true;
+    private readonly bool aktiv = true;
 
     [ObservableProperty]
     private ObservableCollection<Category> kategorien = [];
@@ -53,8 +57,7 @@ public partial class RecurringTransactionDetailViewModel : ObservableObject
             if (value != null)
             {
                 _existing = value;
-                BetragText = value.Betrag.ToString("F2",
-                    System.Globalization.CultureInfo.CurrentCulture);
+                BetragText = value.Betrag.ToString("F2", System.Globalization.CultureInfo.CurrentCulture);
                 Titel = value.Titel;
                 Typ = value.Typ;
                 Startdatum = value.Startdatum;
@@ -69,18 +72,6 @@ public partial class RecurringTransactionDetailViewModel : ObservableObject
                 _ = SetKategorieAsync(value.KategorieId);
             }
         }
-    }
-
-    public RecurringTransactionDetailViewModel(
-        SaveRecurringTransactionDetailUseCase saveRecurringTransactionDetailUseCase,
-        LoadRecurringTransactionDetailDataUseCase loadRecurringTransactionDetailDataUseCase,
-        ITransactionValidationService validationService,
-        INavigationService navigationService)
-    {
-        _saveRecurringTransactionDetailUseCase = saveRecurringTransactionDetailUseCase;
-        _loadRecurringTransactionDetailDataUseCase = loadRecurringTransactionDetailDataUseCase;
-        _validationService = validationService;
-        _navigationService = navigationService;
     }
 
     [RelayCommand]
