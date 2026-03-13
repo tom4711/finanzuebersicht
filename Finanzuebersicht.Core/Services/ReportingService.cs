@@ -2,18 +2,12 @@ using Finanzuebersicht.Models;
 
 namespace Finanzuebersicht.Services;
 
-public class ReportingService : IReportingService
+public class ReportingService(
+    ITransactionRepository transactionRepository,
+    ICategoryRepository categoryRepository) : IReportingService
 {
-    private readonly ITransactionRepository _transactionRepository;
-    private readonly ICategoryRepository _categoryRepository;
-
-    public ReportingService(
-        ITransactionRepository transactionRepository,
-        ICategoryRepository categoryRepository)
-    {
-        _transactionRepository = transactionRepository;
-        _categoryRepository = categoryRepository;
-    }
+    private readonly ITransactionRepository _transactionRepository = transactionRepository;
+    private readonly ICategoryRepository _categoryRepository = categoryRepository;
 
     public async Task<MonthSummary> GetMonthSummaryAsync(int year, int month)
     {
@@ -30,7 +24,7 @@ public class ReportingService : IReportingService
             Year = year,
             Month = month,
             Total = expenditure.Sum(t => t.Betrag),
-            ByCategory = expenditure
+            ByCategory = [.. expenditure
                 .GroupBy(t => t.KategorieId)
                 .Select(g =>
                 {
@@ -43,8 +37,7 @@ public class ReportingService : IReportingService
                         Color = cat?.Color ?? "#007AFF",
                         Icon = cat?.Icon ?? "📁"
                     };
-                })
-                .ToList()
+                })]
         };
     }
 
@@ -72,7 +65,7 @@ public class ReportingService : IReportingService
                 Year = year,
                 Month = m,
                 Total = monthItems.Sum(t => t.Betrag),
-                ByCategory = monthItems
+                ByCategory = [.. monthItems
                     .GroupBy(t => t.KategorieId)
                     .Select(g =>
                     {
@@ -85,14 +78,13 @@ public class ReportingService : IReportingService
                             Color = cat?.Color ?? "#007AFF",
                             Icon = cat?.Icon ?? "📁"
                         };
-                    })
-                    .ToList()
+                    })]
             };
 
             yearSummary.Months.Add(monthSummary);
         }
 
-        yearSummary.ByCategory = expenditure
+        yearSummary.ByCategory = [.. expenditure
             .GroupBy(t => t.KategorieId)
             .Select(g =>
             {
@@ -105,8 +97,7 @@ public class ReportingService : IReportingService
                     Color = cat?.Color ?? "#007AFF",
                     Icon = cat?.Icon ?? "📁"
                 };
-            })
-            .ToList();
+            })];
 
         return yearSummary;
     }
