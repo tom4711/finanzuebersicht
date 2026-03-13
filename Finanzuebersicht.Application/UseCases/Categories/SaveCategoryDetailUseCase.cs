@@ -3,14 +3,9 @@ using Finanzuebersicht.Services;
 
 namespace Finanzuebersicht.Application.UseCases.Categories;
 
-public class SaveCategoryDetailUseCase
+public class SaveCategoryDetailUseCase(ICategoryRepository categoryRepository)
 {
-    private readonly ICategoryRepository _categoryRepository;
-
-    public SaveCategoryDetailUseCase(ICategoryRepository categoryRepository)
-    {
-        _categoryRepository = categoryRepository;
-    }
+    private readonly ICategoryRepository _categoryRepository = categoryRepository;
 
     public async Task ExecuteAsync(
         Category? existingCategory,
