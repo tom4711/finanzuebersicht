@@ -3,18 +3,12 @@ using Finanzuebersicht.Services;
 
 namespace Finanzuebersicht.Application.UseCases.RecurringTransactions;
 
-public class SaveRecurringTransactionDetailUseCase
+public class SaveRecurringTransactionDetailUseCase(
+    IRecurringTransactionRepository recurringTransactionRepository,
+    IRecurringGenerationService recurringGenerationService)
 {
-    private readonly IRecurringTransactionRepository _recurringTransactionRepository;
-    private readonly IRecurringGenerationService _recurringGenerationService;
-
-    public SaveRecurringTransactionDetailUseCase(
-        IRecurringTransactionRepository recurringTransactionRepository,
-        IRecurringGenerationService recurringGenerationService)
-    {
-        _recurringTransactionRepository = recurringTransactionRepository;
-        _recurringGenerationService = recurringGenerationService;
-    }
+    private readonly IRecurringTransactionRepository _recurringTransactionRepository = recurringTransactionRepository;
+    private readonly IRecurringGenerationService _recurringGenerationService = recurringGenerationService;
 
     public async Task ExecuteAsync(
         RecurringTransaction? existing,
