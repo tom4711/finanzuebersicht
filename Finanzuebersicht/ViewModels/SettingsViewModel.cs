@@ -16,10 +16,10 @@ public partial class SettingsViewModel : ObservableObject
     private readonly IBackupService? _backupService;
 
     [ObservableProperty]
-    private int selectedThemeIndex;
+    private readonly int selectedThemeIndex;
 
     [ObservableProperty]
-    private int selectedLanguageIndex;
+    private readonly int selectedLanguageIndex;
 
     [ObservableProperty]
     private string dataPath = string.Empty;
@@ -80,7 +80,9 @@ public partial class SettingsViewModel : ObservableObject
         // Datenpfad laden
         DataPath = _settings.Get("DataPath", "");
         if (string.IsNullOrWhiteSpace(DataPath))
+        {
             DataPath = GetDefaultDataDir();
+        }
 
         // Letztes Backup anzeigen
         UpdateLastBackupInfo();
@@ -190,13 +192,19 @@ public partial class SettingsViewModel : ObservableObject
         {
             var diff = DateTime.UtcNow - lastBackup;
             if (diff.TotalSeconds < 60)
+            {
                 LastBackupInfo = $"Letzte Sicherung vor wenigen Sekunden";
+            }
             else if (diff.TotalMinutes < 60)
+            {
                 LastBackupInfo = $"Letzte Sicherung vor {(int)diff.TotalMinutes} Minuten";
-            else if (diff.TotalHours < 24)
-                LastBackupInfo = $"Letzte Sicherung vor {(int)diff.TotalHours} Stunden";
+            }
             else
-                LastBackupInfo = $"Letzte Sicherung vor {(int)diff.TotalDays} Tagen";
+            {
+                LastBackupInfo = diff.TotalHours < 24
+                ? $"Letzte Sicherung vor {(int)diff.TotalHours} Stunden"
+                : $"Letzte Sicherung vor {(int)diff.TotalDays} Tagen";
+            }
         }
         else
         {
@@ -223,7 +231,10 @@ public partial class SettingsViewModel : ObservableObject
             {
                 var dataPath = _settings.Get("DataPath", "");
                 if (string.IsNullOrEmpty(dataPath))
+                {
                     dataPath = AppPaths.GetDefaultDataDir();
+                }
+
                 backupPath = Path.Combine(dataPath, "backups");
             }
 
@@ -264,7 +275,10 @@ public partial class SettingsViewModel : ObservableObject
             {
                 var dataPath = _settings.Get("DataPath", "");
                 if (string.IsNullOrEmpty(dataPath))
+                {
                     dataPath = AppPaths.GetDefaultDataDir();
+                }
+
                 backupPath = Path.Combine(dataPath, "backups");
             }
 
@@ -281,7 +295,9 @@ public partial class SettingsViewModel : ObservableObject
             // Hier könnten wir zu einer separaten Backup-Verwaltungs-Page navigieren
             var backupList = string.Join("\n", backups.Take(5).Select(b => $"{b.CreatedAt:g} - {Path.GetFileNameWithoutExtension(b.FileName)}"));
             if (backups.Count > 5)
+            {
                 backupList += $"\n... und {backups.Count - 5} weitere";
+            }
 
             await _dialogService.ShowAlertAsync(
                 "Verfügbare Sicherungen",
@@ -316,7 +332,10 @@ public partial class SettingsViewModel : ObservableObject
             {
                 var dataPath = _settings.Get("DataPath", "");
                 if (string.IsNullOrEmpty(dataPath))
+                {
                     dataPath = AppPaths.GetDefaultDataDir();
+                }
+
                 backupPath = Path.Combine(dataPath, "backups");
             }
 
