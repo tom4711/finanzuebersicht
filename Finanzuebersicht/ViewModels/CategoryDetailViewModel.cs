@@ -8,10 +8,10 @@ using Finanzuebersicht.Resources.Strings;
 namespace Finanzuebersicht.ViewModels;
 
 [QueryProperty(nameof(Category), "Category")]
-public partial class CategoryDetailViewModel : ObservableObject
+public partial class CategoryDetailViewModel(SaveCategoryDetailUseCase saveCategoryDetailUseCase, INavigationService navigationService) : ObservableObject
 {
-    private readonly SaveCategoryDetailUseCase _saveCategoryDetailUseCase;
-    private readonly INavigationService _navigationService;
+    private readonly SaveCategoryDetailUseCase _saveCategoryDetailUseCase = saveCategoryDetailUseCase;
+    private readonly INavigationService _navigationService = navigationService;
     private Category? _existingCategory;
 
     [ObservableProperty]
@@ -57,12 +57,6 @@ public partial class CategoryDetailViewModel : ObservableObject
                 Typ = value.Typ;
             }
         }
-    }
-
-    public CategoryDetailViewModel(SaveCategoryDetailUseCase saveCategoryDetailUseCase, INavigationService navigationService)
-    {
-        _saveCategoryDetailUseCase = saveCategoryDetailUseCase;
-        _navigationService = navigationService;
     }
 
     [RelayCommand]
