@@ -3,18 +3,12 @@ using Finanzuebersicht.Services;
 
 namespace Finanzuebersicht.Application.UseCases.Transactions;
 
-public class LoadTransactionsMonthUseCase
+public class LoadTransactionsMonthUseCase(
+    ITransactionRepository transactionRepository,
+    ICategoryRepository categoryRepository)
 {
-    private readonly ITransactionRepository _transactionRepository;
-    private readonly ICategoryRepository _categoryRepository;
-
-    public LoadTransactionsMonthUseCase(
-        ITransactionRepository transactionRepository,
-        ICategoryRepository categoryRepository)
-    {
-        _transactionRepository = transactionRepository;
-        _categoryRepository = categoryRepository;
-    }
+    private readonly ITransactionRepository _transactionRepository = transactionRepository;
+    private readonly ICategoryRepository _categoryRepository = categoryRepository;
 
     public async Task<TransactionsMonthData> ExecuteAsync(DateTime aktuellerMonat)
     {
