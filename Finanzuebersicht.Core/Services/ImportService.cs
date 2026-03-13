@@ -51,7 +51,7 @@ namespace Finanzuebersicht.Core.Services
                 {
                     _logger?.LogError(ex, "ImportService: failed to read input stream");
                     try { FileLogger.Append("ImportService", "failed to read input stream", ex); } catch { }
-                    return Enumerable.Empty<Transaction>();
+                    return [];
                 }
 
                 var parserList = _parsers?.ToList() ?? [];
