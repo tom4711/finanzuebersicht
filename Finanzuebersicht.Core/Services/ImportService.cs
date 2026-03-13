@@ -12,27 +12,18 @@ using Finanzuebersicht.Services;
 
 namespace Finanzuebersicht.Core.Services
 {
-    public class ImportService
+    public class ImportService(
+        IEnumerable<IStatementParser> parsers,
+        ITransactionRepository transactionRepository,
+        ILogger<ImportService> logger,
+        ICategoryRepository? categoryRepository = null,
+        CategorizationService? categorizationService = null)
     {
-        private readonly IEnumerable<IStatementParser> _parsers;
-        private readonly ITransactionRepository _txRepo;
-        private readonly ILogger<ImportService> _logger;
-        private readonly ICategoryRepository? _categoryRepo;
-        private readonly CategorizationService? _categorizationService;
-
-        public ImportService(
-            IEnumerable<IStatementParser> parsers,
-            ITransactionRepository txRepo,
-            ILogger<ImportService> logger,
-            ICategoryRepository? categoryRepo = null,
-            CategorizationService? categorizationService = null)
-        {
-            _parsers = parsers;
-            _txRepo = txRepo;
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _categoryRepo = categoryRepo;
-            _categorizationService = categorizationService;
-        }
+        private readonly IEnumerable<IStatementParser> _parsers = parsers;
+        private readonly ITransactionRepository _transactionRepository = transactionRepository;
+        private readonly ILogger<ImportService> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        private readonly ICategoryRepository? _categoryRepository = categoryRepository;
+        private readonly CategorizationService? _categorizationService = categorizationService;
 
         public async System.Threading.Tasks.Task<IEnumerable<Transaction>> ImportFromCsvAsync(System.IO.Stream csvStream, string? accountId = null, System.Threading.CancellationToken cancellationToken = default)
         {
@@ -41,10 +32,10 @@ namespace Finanzuebersicht.Core.Services
                 _logger?.LogInformation("ImportService: starting import (accountId={AccountId})", accountId ?? "(none)");
                 try { FileLogger.Append("ImportService", $"starting import (accountId={accountId ?? "(none)"})"); } catch { }
 
-                if (_txRepo == null)
+                if (_transactionRepository == null)
                 {
                     _logger?.LogError("ImportService: ITransactionRepository is null - cannot persist transactions");
-                    return Enumerable.Empty<Transaction>();
+                    return [];
                 }
 
                 // read incoming stream fully into memory to avoid platform-specific SecurityScopedStream issues
@@ -63,7 +54,7 @@ namespace Finanzuebersicht.Core.Services
                     return Enumerable.Empty<Transaction>();
                 }
 
-                var parserList = _parsers?.ToList() ?? new List<IStatementParser>();
+                var parserList = _parsers?.ToList() ?? [];
                 _logger?.LogInformation("ImportService: available parsers={Count}", parserList.Count);
 
                 // Choose parser by heuristics: try each parser until one returns non-empty
@@ -84,58 +75,58 @@ namespace Finanzuebersicht.Core.Services
                         continue;
                     }
 
-                    var count = dtosList?.Count() ?? 0;
+                    var count = dtosList?.Count ?? 0;
                     _logger?.LogInformation("ImportService: parser {Parser} returned {Count} records", p.GetType().FullName, count);
                     try { FileLogger.Append("ImportService", $"parser {p.GetType().FullName} returned {count} records"); } catch { }
 
-                    if (dtosList != null && dtosList.Any())
+                    if (dtosList != null && dtosList.Count != 0)
                     {
-                        var txs = new List<Transaction>();
+                        var importedTransactions = new List<Transaction>();
 
-                        foreach (var d in dtosList)
+                        foreach (var importedRecord in dtosList)
                         {
                             cancellationToken.ThrowIfCancellationRequested();
-                            if (d == null)
+                            if (importedRecord == null)
                             {
                                 _logger?.LogWarning("ImportService: skipping null DTO");
                                 continue;
                             }
 
-                            if (d.Buchungsdatum == default)
+                            if (importedRecord.Buchungsdatum == default)
                             {
-                                _logger?.LogWarning("ImportService: skipping malformed DTO with empty Buchungsdatum: {Dto}", d);
+                                _logger?.LogWarning("ImportService: skipping malformed DTO with empty Buchungsdatum: {Dto}", importedRecord);
                                 continue; // skip malformed rows
                             }
 
-                            var title = !string.IsNullOrWhiteSpace(d.Zahlungsempfaenger)
-                                ? d.Zahlungsempfaenger
-                                : !string.IsNullOrWhiteSpace(d.Zahlungspflichtige)
-                                    ? d.Zahlungspflichtige
-                                    : d.Verwendungszweck;
+                            var title = !string.IsNullOrWhiteSpace(importedRecord.Zahlungsempfaenger)
+                                ? importedRecord.Zahlungsempfaenger
+                                : !string.IsNullOrWhiteSpace(importedRecord.Zahlungspflichtige)
+                                    ? importedRecord.Zahlungspflichtige
+                                    : importedRecord.Verwendungszweck;
 
-                            var finalTitle = string.IsNullOrWhiteSpace(title) ? (string.IsNullOrWhiteSpace(d.Verwendungszweck) ? $"Buchung {d.Buchungsdatum:dd.MM.yyyy} {d.Betrag:0.00}€" : d.Verwendungszweck) : title;
-                            var tx = new Transaction
+                            var finalTitle = string.IsNullOrWhiteSpace(title) ? (string.IsNullOrWhiteSpace(importedRecord.Verwendungszweck) ? $"Buchung {importedRecord.Buchungsdatum:dd.MM.yyyy} {importedRecord.Betrag:0.00}€" : importedRecord.Verwendungszweck) : title;
+                            var transaction = new Transaction
                             {
-                                Betrag = d.Betrag,
-                                Datum = d.Buchungsdatum,
+                                Betrag = importedRecord.Betrag,
+                                Datum = importedRecord.Buchungsdatum,
                                 Titel = finalTitle,
-                                Verwendungszweck = d.Verwendungszweck ?? string.Empty,
+                                Verwendungszweck = importedRecord.Verwendungszweck ?? string.Empty,
                                 KategorieId = string.Empty,
-                                Typ = d.Betrag >= 0 ? TransactionType.Einnahme : TransactionType.Ausgabe,
-                                AccountId = accountId ?? d.SourceAccountId
+                                Typ = importedRecord.Betrag >= 0 ? TransactionType.Einnahme : TransactionType.Ausgabe,
+                                AccountId = accountId ?? importedRecord.SourceAccountId
                             };
 
                             // Improved duplicate check: look for nearby dates (+/-1 day) with same amount and normalized title
                             bool isDuplicate = false;
                             try
                             {
-                                var from = d.Buchungsdatum.Date.AddDays(-1);
-                                var to = d.Buchungsdatum.Date.AddDays(1);
-                                var existing = await _txRepo.GetTransactionsAsync(from, to).ConfigureAwait(false);
-                                if (existing != null && existing.Any(e => e.Datum.Date >= from && e.Datum.Date <= to && e.Betrag == d.Betrag && Normalize(e.Titel) == Normalize(title)))
+                                var from = importedRecord.Buchungsdatum.Date.AddDays(-1);
+                                var to = importedRecord.Buchungsdatum.Date.AddDays(1);
+                                var existing = await _transactionRepository.GetTransactionsAsync(from, to).ConfigureAwait(false);
+                                if (existing != null && existing.Any(e => e.Datum.Date >= from && e.Datum.Date <= to && e.Betrag == importedRecord.Betrag && Normalize(e.Titel) == Normalize(title)))
                                 {
                                     isDuplicate = true;
-                                    _logger?.LogInformation("ImportService: duplicate detected for '{Title}' amount {Amount} on {Date}", title, d.Betrag, d.Buchungsdatum);
+                                    _logger?.LogInformation("ImportService: duplicate detected for '{Title}' amount {Amount} on {Date}", title, importedRecord.Betrag, importedRecord.Buchungsdatum);
                                 }
                             }
                             catch (System.Exception ex)
@@ -147,18 +138,18 @@ namespace Finanzuebersicht.Core.Services
                             if (!isDuplicate)
                             {
                                 // Auto-categorize using CategorizationService if available
-                                if (_categorizationService != null && _categoryRepo != null && string.IsNullOrWhiteSpace(tx.KategorieId))
+                                if (_categorizationService != null && _categoryRepository != null && string.IsNullOrWhiteSpace(transaction.KategorieId))
                                 {
                                     try
                                     {
-                                        var categories = await _categoryRepo.GetCategoriesAsync().ConfigureAwait(false);
+                                        var categories = await _categoryRepository.GetCategoriesAsync().ConfigureAwait(false);
                                         if (categories != null && categories.Count > 0)
                                         {
-                                            var category = await _categorizationService.CategorizAsync(d, categories, cancellationToken).ConfigureAwait(false);
+                                            var category = await _categorizationService.CategorizAsync(importedRecord, categories, cancellationToken).ConfigureAwait(false);
                                             if (category != null)
                                             {
-                                                tx.KategorieId = category.Id;
-                                                _logger?.LogInformation("ImportService: auto-categorized '{Title}' → {Category}", tx.Titel, category.Name);
+                                                transaction.KategorieId = category.Id;
+                                                _logger?.LogInformation("ImportService: auto-categorized '{Title}' → {Category}", transaction.Titel, category.Name);
                                             }
                                         }
                                     }
@@ -170,15 +161,15 @@ namespace Finanzuebersicht.Core.Services
                                 }
 
                                 // Fallback: ensure an "Unkategorisiert" category exists if still no category assigned
-                                if (_categoryRepo != null && string.IsNullOrWhiteSpace(tx.KategorieId))
+                                if (_categoryRepository != null && string.IsNullOrWhiteSpace(transaction.KategorieId))
                                 {
                                     try
                                     {
-                                        var categories = await _categoryRepo.GetCategoriesAsync().ConfigureAwait(false);
-                                        var sys = categories?.FirstOrDefault(c => c.SystemKey == "SysCat_Unkategorisiert" || c.Name == "Unkategorisiert");
-                                        if (sys == null)
+                                        var categories = await _categoryRepository.GetCategoriesAsync().ConfigureAwait(false);
+                                        var unclassifiedCategory = categories?.FirstOrDefault(c => c.SystemKey == "SysCat_Unkategorisiert" || c.Name == "Unkategorisiert");
+                                        if (unclassifiedCategory == null)
                                         {
-                                            sys = new Finanzuebersicht.Models.Category
+                                            unclassifiedCategory = new Finanzuebersicht.Models.Category
                                             {
                                                 Name = "Unkategorisiert",
                                                 Icon = "❓",
@@ -186,12 +177,12 @@ namespace Finanzuebersicht.Core.Services
                                                 Typ = Finanzuebersicht.Models.TransactionType.Ausgabe,
                                                 SystemKey = "SysCat_Unkategorisiert"
                                             };
-                                            await _categoryRepo.SaveCategoryAsync(sys).ConfigureAwait(false);
+                                            await _categoryRepository.SaveCategoryAsync(unclassifiedCategory).ConfigureAwait(false);
                                             try { FileLogger.Append("ImportService", "created default 'Unkategorisiert' category"); } catch { }
                                         }
 
-                                        if (sys != null)
-                                            tx.KategorieId = sys.Id;
+                                        if (unclassifiedCategory != null)
+                                            transaction.KategorieId = unclassifiedCategory.Id;
                                     }
                                     catch (System.Exception ex)
                                     {
@@ -199,29 +190,29 @@ namespace Finanzuebersicht.Core.Services
                                     }
                                 }
 
-                                txs.Add(tx);
+                                importedTransactions.Add(transaction);
 
                                 // persist using repository API (SaveTransactionAsync)
                                 try
                                 {
-                                    await _txRepo.SaveTransactionAsync(tx).ConfigureAwait(false);
-                                    _logger?.LogInformation("ImportService: saved transaction '{Title}' amount {Amount} on {Date}", tx.Titel, tx.Betrag, tx.Datum);
+                                    await _transactionRepository.SaveTransactionAsync(transaction).ConfigureAwait(false);
+                                    _logger?.LogInformation("ImportService: saved transaction '{Title}' amount {Amount} on {Date}", transaction.Titel, transaction.Betrag, transaction.Datum);
                                 }
                                 catch (System.Exception ex)
                                 {
-                                    _logger?.LogError(ex, "ImportService: failed to save transaction {Title} amount {Amount} on {Date}", tx.Titel, tx.Betrag, tx.Datum);
-                                         try { FileLogger.Append("ImportService", $"failed to save transaction {tx.Titel} amount {tx.Betrag} on {tx.Datum}", ex); } catch { }
+                                    _logger?.LogError(ex, "ImportService: failed to save transaction {Title} amount {Amount} on {Date}", transaction.Titel, transaction.Betrag, transaction.Datum);
+                                         try { FileLogger.Append("ImportService", $"failed to save transaction {transaction.Titel} amount {transaction.Betrag} on {transaction.Datum}", ex); } catch { }
                                 }
                             }
                         }
 
-                        _logger?.LogInformation("ImportService: finished importing {Count} transactions", txs.Count);
-                        return txs;
+                        _logger?.LogInformation("ImportService: finished importing {Count} transactions", importedTransactions.Count);
+                        return importedTransactions;
                     }
                 }
 
                 _logger?.LogInformation("ImportService: no parser matched or no records found");
-                return Enumerable.Empty<Transaction>();
+                return [];
             }
             catch (System.Exception ex)
             {
@@ -244,7 +235,7 @@ namespace Finanzuebersicht.Core.Services
                 if (uc != UnicodeCategory.NonSpacingMark)
                     sb.Append(c);
             }
-            var cleaned = new string(sb.ToString().Where(c => char.IsLetterOrDigit(c) || char.IsWhiteSpace(c)).ToArray());
+            var cleaned = new string([.. sb.ToString().Where(c => char.IsLetterOrDigit(c) || char.IsWhiteSpace(c))]);
             // collapse whitespace
             return Regex.Replace(cleaned, "\\s+", " ").Trim();
         }
