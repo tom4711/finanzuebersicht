@@ -3,14 +3,9 @@ using Finanzuebersicht.Services;
 
 namespace Finanzuebersicht.Application.UseCases.RecurringTransactions;
 
-public class ToggleRecurringTransactionActiveUseCase
+public class ToggleRecurringTransactionActiveUseCase(IRecurringTransactionRepository recurringTransactionRepository)
 {
-    private readonly IRecurringTransactionRepository _recurringTransactionRepository;
-
-    public ToggleRecurringTransactionActiveUseCase(IRecurringTransactionRepository recurringTransactionRepository)
-    {
-        _recurringTransactionRepository = recurringTransactionRepository;
-    }
+    private readonly IRecurringTransactionRepository _recurringTransactionRepository = recurringTransactionRepository;
 
     public async Task ExecuteAsync(RecurringTransaction recurringTransaction)
     {
