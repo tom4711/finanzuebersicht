@@ -9,33 +9,24 @@ using Finanzuebersicht.Resources.Strings;
 
 namespace Finanzuebersicht.ViewModels;
 
-public partial class CategoriesViewModel : ObservableObject
+public partial class CategoriesViewModel(
+    DeleteCategoryUseCase deleteCategoryUseCase,
+    LoadCategoriesUseCase loadCategoriesUseCase,
+    ILocalizationService localizationService,
+    INavigationService navigationService,
+    IDialogService dialogService) : ObservableObject
 {
-    private readonly DeleteCategoryUseCase _deleteCategoryUseCase;
-    private readonly LoadCategoriesUseCase _loadCategoriesUseCase;
-    private readonly ILocalizationService _loc;
-    private readonly INavigationService _navigationService;
-    private readonly IDialogService _dialogService;
+    private readonly DeleteCategoryUseCase _deleteCategoryUseCase = deleteCategoryUseCase;
+    private readonly LoadCategoriesUseCase _loadCategoriesUseCase = loadCategoriesUseCase;
+    private readonly ILocalizationService _loc = localizationService;
+    private readonly INavigationService _navigationService = navigationService;
+    private readonly IDialogService _dialogService = dialogService;
 
     [ObservableProperty]
     private ObservableCollection<Category> kategorien = [];
 
     [ObservableProperty]
-    private bool isLoading;
-
-    public CategoriesViewModel(
-        DeleteCategoryUseCase deleteCategoryUseCase,
-        LoadCategoriesUseCase loadCategoriesUseCase,
-        ILocalizationService localizationService,
-        INavigationService navigationService,
-        IDialogService dialogService)
-    {
-        _deleteCategoryUseCase = deleteCategoryUseCase;
-        _loadCategoriesUseCase = loadCategoriesUseCase;
-        _loc = localizationService;
-        _navigationService = navigationService;
-        _dialogService = dialogService;
-    }
+    private readonly bool isLoading;
 
     [RelayCommand]
     private async Task LoadKategorien()
