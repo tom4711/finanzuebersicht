@@ -5,7 +5,7 @@ namespace Finanzuebersicht.Core.Services
 {
     public static class FileLogger
     {
-        private static readonly object _lock = new();
+        private static readonly Lock _lock = new();
         private static readonly string LogDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Library", "Logs", "Finanzuebersicht");
         private static readonly string LogFile = Path.Combine(LogDir, "finanzuebersicht.log");
 
