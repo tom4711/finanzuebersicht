@@ -2,18 +2,12 @@ using Finanzuebersicht.Models;
 
 namespace Finanzuebersicht.Services;
 
-public class RecurringGenerationService : IRecurringGenerationService
+public class RecurringGenerationService(
+    IRecurringTransactionRepository recurringRepository,
+    ITransactionRepository transactionRepository) : IRecurringGenerationService
 {
-    private readonly IRecurringTransactionRepository _recurringRepository;
-    private readonly ITransactionRepository _transactionRepository;
-
-    public RecurringGenerationService(
-        IRecurringTransactionRepository recurringRepository,
-        ITransactionRepository transactionRepository)
-    {
-        _recurringRepository = recurringRepository;
-        _transactionRepository = transactionRepository;
-    }
+    private readonly IRecurringTransactionRepository _recurringRepository = recurringRepository;
+    private readonly ITransactionRepository _transactionRepository = transactionRepository;
 
     public async Task GeneratePendingRecurringTransactionsAsync()
     {
