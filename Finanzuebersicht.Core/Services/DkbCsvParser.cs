@@ -41,28 +41,30 @@ namespace Finanzuebersicht.Core.Services
                 try
                 {
                     // pad to expected length
-                    var p = parts.Concat(Enumerable.Repeat(string.Empty, Math.Max(0, 12 - parts.Length))).ToArray();
+                    var paddedParts = parts.Concat(Enumerable.Repeat(string.Empty, Math.Max(0, 12 - parts.Length))).ToArray();
 
                     // require Buchungsdatum to be a valid date in expected format; otherwise treat row as malformed
-                    if (!TryParseGermanDateExact(p[0], out var buchung))
+                    if (!TryParseGermanDateExact(paddedParts[0], out var buchung))
                     {
-                        throw new System.FormatException($"Invalid Buchungsdatum: {p[0]}");
+                        throw new System.FormatException($"Invalid Buchungsdatum: {paddedParts[0]}");
                     }
 
-                    dto = new TransactionDto();
-                    dto.Buchungsdatum = buchung;
-                    dto.Wertstellung = ParseGermanDate(p[1]);
-                    dto.Status = p[2].Trim('"');
-                    dto.Zahlungspflichtige = p[3].Trim('"');
-                    dto.Zahlungsempfaenger = p[4].Trim('"');
-                    dto.Verwendungszweck = p[5].Trim('"');
-                    dto.Umsatztyp = p[6].Trim('"');
-                    dto.IBAN = p[7].Trim('"');
-                    TryParseDecimal(p[8].Trim('"'), out var betrag);
+                    dto = new TransactionDto
+                    {
+                        Buchungsdatum = buchung,
+                        Wertstellung = ParseGermanDate(paddedParts[1]),
+                        Status = paddedParts[2].Trim('"'),
+                        Zahlungspflichtige = paddedParts[3].Trim('"'),
+                        Zahlungsempfaenger = paddedParts[4].Trim('"'),
+                        Verwendungszweck = paddedParts[5].Trim('"'),
+                        Umsatztyp = paddedParts[6].Trim('"'),
+                        IBAN = paddedParts[7].Trim('"')
+                    };
+                    _ = TryParseDecimal(paddedParts[8].Trim('"'), out var betrag);
                     dto.Betrag = betrag;
-                    dto.GlueubigerId = p[9].Trim('"');
-                    dto.Mandatsreferenz = p[10].Trim('"');
-                    dto.Kundenreferenz = p[11].Trim('"');
+                    dto.GlueubigerId = paddedParts[9].Trim('"');
+                    dto.Mandatsreferenz = paddedParts[10].Trim('"');
+                    dto.Kundenreferenz = paddedParts[11].Trim('"');
                 }
                 catch (System.Exception ex)
                 {
@@ -121,7 +123,7 @@ namespace Finanzuebersicht.Core.Services
             if (cur.Length > 0 || fields.Count > 0)
             {
                 fields.Add(cur.ToString());
-                records.Add(fields.ToArray());
+                records.Add([.. fields]);
             }
 
             return records;

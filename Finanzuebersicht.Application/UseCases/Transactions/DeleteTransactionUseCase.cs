@@ -2,14 +2,9 @@ using Finanzuebersicht.Services;
 
 namespace Finanzuebersicht.Application.UseCases.Transactions;
 
-public class DeleteTransactionUseCase
+public class DeleteTransactionUseCase(ITransactionRepository transactionRepository)
 {
-    private readonly ITransactionRepository _transactionRepository;
-
-    public DeleteTransactionUseCase(ITransactionRepository transactionRepository)
-    {
-        _transactionRepository = transactionRepository;
-    }
+    private readonly ITransactionRepository _transactionRepository = transactionRepository;
 
     public async Task ExecuteAsync(string transactionId)
     {

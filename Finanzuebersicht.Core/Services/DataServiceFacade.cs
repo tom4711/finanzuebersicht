@@ -2,27 +2,18 @@ using Finanzuebersicht.Models;
 
 namespace Finanzuebersicht.Services;
 
-public class DataServiceFacade : IDataService
+public class DataServiceFacade(
+    ICategoryRepository categoryRepository,
+    ITransactionRepository transactionRepository,
+    IRecurringTransactionRepository recurringRepository,
+    IRecurringGenerationService recurringGenerationService,
+    IReportingService reportingService) : IDataService
 {
-    private readonly ICategoryRepository _categoryRepository;
-    private readonly ITransactionRepository _transactionRepository;
-    private readonly IRecurringTransactionRepository _recurringRepository;
-    private readonly IRecurringGenerationService _recurringGenerationService;
-    private readonly IReportingService _reportingService;
-
-    public DataServiceFacade(
-        ICategoryRepository categoryRepository,
-        ITransactionRepository transactionRepository,
-        IRecurringTransactionRepository recurringRepository,
-        IRecurringGenerationService recurringGenerationService,
-        IReportingService reportingService)
-    {
-        _categoryRepository = categoryRepository;
-        _transactionRepository = transactionRepository;
-        _recurringRepository = recurringRepository;
-        _recurringGenerationService = recurringGenerationService;
-        _reportingService = reportingService;
-    }
+    private readonly ICategoryRepository _categoryRepository = categoryRepository;
+    private readonly ITransactionRepository _transactionRepository = transactionRepository;
+    private readonly IRecurringTransactionRepository _recurringRepository = recurringRepository;
+    private readonly IRecurringGenerationService _recurringGenerationService = recurringGenerationService;
+    private readonly IReportingService _reportingService = reportingService;
 
     public Task<List<Category>> GetCategoriesAsync()
         => _categoryRepository.GetCategoriesAsync();

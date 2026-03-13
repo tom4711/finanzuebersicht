@@ -12,7 +12,6 @@ public class TransactionValidationService : ITransactionValidationService
         out decimal amount,
         out TransactionInputError? error)
     {
-        amount = 0;
         error = null;
 
         if (!decimal.TryParse(amountText, NumberStyles.Any, culture, out amount))

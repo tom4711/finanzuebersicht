@@ -12,43 +12,37 @@ using Finanzuebersicht.Core.Services;
 
 namespace Finanzuebersicht.ViewModels;
 
-public partial class TransactionsViewModel : MonthNavigationViewModel
+public partial class TransactionsViewModel(
+    DeleteTransactionUseCase deleteTransactionUseCase,
+    LoadTransactionsMonthUseCase loadTransactionsMonthUseCase,
+    INavigationService navigationService,
+    ImportService importService,
+    IDialogService dialogService,
+    ILogger<TransactionsViewModel> logger) : MonthNavigationViewModel
 {
-    private readonly DeleteTransactionUseCase _deleteTransactionUseCase;
-    private readonly LoadTransactionsMonthUseCase _loadTransactionsMonthUseCase;
-    private readonly INavigationService _navigationService;
-    private readonly ImportService _importService;
-    private readonly IDialogService _dialogService;
-    private readonly ILogger<TransactionsViewModel> _logger;
+    private readonly DeleteTransactionUseCase _deleteTransactionUseCase = deleteTransactionUseCase;
+    private readonly LoadTransactionsMonthUseCase _loadTransactionsMonthUseCase = loadTransactionsMonthUseCase;
+    private readonly INavigationService _navigationService = navigationService;
+    private readonly ImportService _importService = importService;
+    private readonly IDialogService _dialogService = dialogService;
+    private readonly ILogger<TransactionsViewModel> _logger = logger;
 
     [ObservableProperty]
     private ObservableCollection<TransactionGroup> transaktionsGruppen = [];
 
     [ObservableProperty]
-    private bool isLoading;
-
-    public TransactionsViewModel(
-        DeleteTransactionUseCase deleteTransactionUseCase,
-        LoadTransactionsMonthUseCase loadTransactionsMonthUseCase,
-        INavigationService navigationService,
-        ImportService importService,
-        IDialogService dialogService,
-        ILogger<TransactionsViewModel> logger)
-    {
-        _deleteTransactionUseCase = deleteTransactionUseCase;
-        _loadTransactionsMonthUseCase = loadTransactionsMonthUseCase;
-        _navigationService = navigationService;
-        _importService = importService;
-        _dialogService = dialogService;
-        _logger = logger;
-    }
+    private readonly bool isLoading;
 
     protected override async Task OnMonthChangedAsync() => await LoadTransaktionen();
 
     [RelayCommand]
     private async Task LoadTransaktionen()
     {
-        if (IsLoading) return;
+        if (IsLoading)
+        {
+            return;
+        }
+
         IsLoading = true;
 
         try
@@ -72,7 +66,10 @@ public partial class TransactionsViewModel : MonthNavigationViewModel
             if (gruppe.Remove(transaktion))
             {
                 if (gruppe.Count == 0)
+                {
                     TransaktionsGruppen.Remove(gruppe);
+                }
+
                 break;
             }
         }
@@ -88,7 +85,9 @@ public partial class TransactionsViewModel : MonthNavigationViewModel
 
             var parameter = new Dictionary<string, object>();
             if (transaktion != null)
+            {
                 parameter["Transaction"] = transaktion;
+            }
 
             if (_navigationService == null)
             {
@@ -113,9 +112,14 @@ public partial class TransactionsViewModel : MonthNavigationViewModel
         if (_importService == null)
         {
             if (_dialogService != null)
+            {
                 await _dialogService.ShowAlertAsync("Import fehlgeschlagen", "ImportService nicht verfügbar.", "OK");
+            }
             else
+            {
                 await App.Current.MainPage.DisplayAlert("Import fehlgeschlagen", "ImportService nicht verfügbar.", "OK");
+            }
+
             return;
         }
 
@@ -129,9 +133,13 @@ public partial class TransactionsViewModel : MonthNavigationViewModel
             var count = imported?.Count() ?? 0;
 
             if (_dialogService != null)
+            {
                 await _dialogService.ShowAlertAsync("Import abgeschlossen", $"Importiert: {count} Transaktionen", "OK");
+            }
             else
+            {
                 await App.Current.MainPage.DisplayAlert("Import abgeschlossen", $"Importiert: {count} Transaktionen", "OK");
+            }
 
             await LoadTransaktionen();
 
@@ -150,9 +158,13 @@ public partial class TransactionsViewModel : MonthNavigationViewModel
             // Ensure we don't call a null dialog service in the catch
             var msg = ex.Message + (ex.InnerException != null ? " - " + ex.InnerException.Message : string.Empty);
             if (_dialogService != null)
+            {
                 await _dialogService.ShowAlertAsync("Fehler beim Import", msg, "OK");
+            }
             else
+            {
                 await App.Current.MainPage.DisplayAlert("Fehler beim Import", msg, "OK");
+            }
         }
     }
 }

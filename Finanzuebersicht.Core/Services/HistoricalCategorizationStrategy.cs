@@ -14,24 +14,17 @@ namespace Finanzuebersicht.Core.Services;
 /// Finds transactions with similar payees and uses the most common (non-Unkategorisiert) category
 /// if confidence threshold is met.
 /// </summary>
-public class HistoricalCategorizationStrategy : ICategorizationStrategy
+public class HistoricalCategorizationStrategy(
+    ITransactionRepository txRepo,
+    ILogger<HistoricalCategorizationStrategy>? logger = null,
+    double confidenceThreshold = 0.5) : ICategorizationStrategy
 {
-    private readonly ITransactionRepository _txRepo;
-    private readonly ILogger<HistoricalCategorizationStrategy>? _logger;
-    private readonly double _confidenceThreshold;
+    private readonly ITransactionRepository _txRepo = txRepo ?? throw new ArgumentNullException(nameof(txRepo));
+    private readonly ILogger<HistoricalCategorizationStrategy>? _logger = logger;
+    private readonly double _confidenceThreshold = Math.Max(0.0, Math.Min(1.0, confidenceThreshold));
 
     public int Priority => 20;  // Run after keyword matching
     public string Name => "Historical Category Matching";
-
-    public HistoricalCategorizationStrategy(
-        ITransactionRepository txRepo,
-        ILogger<HistoricalCategorizationStrategy>? logger = null,
-        double confidenceThreshold = 0.5)
-    {
-        _txRepo = txRepo ?? throw new ArgumentNullException(nameof(txRepo));
-        _logger = logger;
-        _confidenceThreshold = Math.Max(0.0, Math.Min(1.0, confidenceThreshold));
-    }
 
     public async Task<Category?> TryCategorizAsync(
         TransactionDto dto,
@@ -61,7 +54,7 @@ public class HistoricalCategorizationStrategy : ICategorizationStrategy
         }
     }
 
-    private string? GetPayee(TransactionDto dto)
+    private static string? GetPayee(TransactionDto dto)
     {
         // Prefer payee (recipient), fall back to payer
         return !string.IsNullOrEmpty(dto.Zahlungsempfaenger)

@@ -3,14 +3,9 @@ using Finanzuebersicht.Services;
 
 namespace Finanzuebersicht.Application.UseCases.Transactions;
 
-public class SaveTransactionDetailUseCase
+public class SaveTransactionDetailUseCase(ITransactionRepository transactionRepository)
 {
-    private readonly ITransactionRepository _transactionRepository;
-
-    public SaveTransactionDetailUseCase(ITransactionRepository transactionRepository)
-    {
-        _transactionRepository = transactionRepository;
-    }
+    private readonly ITransactionRepository _transactionRepository = transactionRepository;
 
     public async Task ExecuteAsync(
         Transaction? existingTransaction,

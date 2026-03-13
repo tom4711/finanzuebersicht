@@ -13,18 +13,12 @@ namespace Finanzuebersicht.Core.Services;
 /// Strategies are executed in priority order (ascending); the first to return a Category wins.
 /// Falls back to "Unkategorisiert" (Uncategorized) category if no strategy matches.
 /// </summary>
-public class CategorizationService
+public class CategorizationService(
+    IEnumerable<ICategorizationStrategy> strategies,
+    ILogger<CategorizationService>? logger = null)
 {
-    private readonly IEnumerable<ICategorizationStrategy> _strategies;
-    private readonly ILogger<CategorizationService>? _logger;
-
-    public CategorizationService(
-        IEnumerable<ICategorizationStrategy> strategies,
-        ILogger<CategorizationService>? logger = null)
-    {
-        _strategies = strategies ?? throw new ArgumentNullException(nameof(strategies));
-        _logger = logger;
-    }
+    private readonly IEnumerable<ICategorizationStrategy> _strategies = strategies ?? throw new ArgumentNullException(nameof(strategies));
+    private readonly ILogger<CategorizationService>? _logger = logger;
 
     /// <summary>
     /// Categorize a transaction using available strategies.
@@ -35,10 +29,9 @@ public class CategorizationService
         IEnumerable<Category> availableCategories,
         CancellationToken cancellationToken = default)
     {
-        if (dto == null)
-            throw new ArgumentNullException(nameof(dto));
-        if (availableCategories == null)
-            throw new ArgumentNullException(nameof(availableCategories));
+        ArgumentNullException.ThrowIfNull(dto);
+
+        ArgumentNullException.ThrowIfNull(availableCategories);
 
         var categories = availableCategories.ToList();
         var uncategorizedCategory = categories.FirstOrDefault(c => c.SystemKey == "SysCat_Unkategorisiert")

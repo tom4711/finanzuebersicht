@@ -9,36 +9,26 @@ using Finanzuebersicht.Resources.Strings;
 
 namespace Finanzuebersicht.ViewModels;
 
-public partial class RecurringTransactionsViewModel : ObservableObject
+public partial class RecurringTransactionsViewModel(
+    DeleteRecurringTransactionUseCase deleteRecurringTransactionUseCase,
+    LoadRecurringTransactionsUseCase loadRecurringTransactionsUseCase,
+    ToggleRecurringTransactionActiveUseCase toggleRecurringTransactionActiveUseCase,
+    ILocalizationService localizationService,
+    INavigationService navigationService,
+    IDialogService dialogService) : ObservableObject
 {
-    private readonly DeleteRecurringTransactionUseCase _deleteRecurringTransactionUseCase;
-    private readonly LoadRecurringTransactionsUseCase _loadRecurringTransactionsUseCase;
-    private readonly ToggleRecurringTransactionActiveUseCase _toggleRecurringTransactionActiveUseCase;
-    private readonly ILocalizationService _loc;
-    private readonly INavigationService _navigationService;
-    private readonly IDialogService _dialogService;
+    private readonly DeleteRecurringTransactionUseCase _deleteRecurringTransactionUseCase = deleteRecurringTransactionUseCase;
+    private readonly LoadRecurringTransactionsUseCase _loadRecurringTransactionsUseCase = loadRecurringTransactionsUseCase;
+    private readonly ToggleRecurringTransactionActiveUseCase _toggleRecurringTransactionActiveUseCase = toggleRecurringTransactionActiveUseCase;
+    private readonly ILocalizationService _loc = localizationService;
+    private readonly INavigationService _navigationService = navigationService;
+    private readonly IDialogService _dialogService = dialogService;
 
     [ObservableProperty]
     private ObservableCollection<RecurringTransaction> dauerauftraege = [];
 
     [ObservableProperty]
-    private bool isLoading;
-
-    public RecurringTransactionsViewModel(
-        DeleteRecurringTransactionUseCase deleteRecurringTransactionUseCase,
-        LoadRecurringTransactionsUseCase loadRecurringTransactionsUseCase,
-        ToggleRecurringTransactionActiveUseCase toggleRecurringTransactionActiveUseCase,
-        ILocalizationService localizationService,
-        INavigationService navigationService,
-        IDialogService dialogService)
-    {
-        _deleteRecurringTransactionUseCase = deleteRecurringTransactionUseCase;
-        _loadRecurringTransactionsUseCase = loadRecurringTransactionsUseCase;
-        _toggleRecurringTransactionActiveUseCase = toggleRecurringTransactionActiveUseCase;
-        _loc = localizationService;
-        _navigationService = navigationService;
-        _dialogService = dialogService;
-    }
+    private readonly bool isLoading;
 
     [RelayCommand]
     private async Task LoadDauerauftraege()
@@ -83,7 +73,9 @@ public partial class RecurringTransactionsViewModel : ObservableObject
     {
         var parameter = new Dictionary<string, object>();
         if (dauerauftrag != null)
+        {
             parameter["RecurringTransaction"] = dauerauftrag;
+        }
 
         await _navigationService.GoToAsync(nameof(RecurringTransactionDetailPage), parameter);
     }

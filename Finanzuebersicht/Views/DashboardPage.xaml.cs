@@ -28,7 +28,9 @@ public partial class DashboardPage : ContentPage
     {
         base.OnAppearing();
         if (BindingContext is DashboardViewModel vm)
+        {
             vm.LoadDashboardCommand.Execute(null);
+        }
 
         // subscribe to app-wide data change notifications
         App.DataChanged += OnAppDataChanged;

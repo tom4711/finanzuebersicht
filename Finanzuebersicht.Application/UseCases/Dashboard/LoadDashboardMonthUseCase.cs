@@ -3,21 +3,14 @@ using Finanzuebersicht.Services;
 
 namespace Finanzuebersicht.Application.UseCases.Dashboard;
 
-public class LoadDashboardMonthUseCase
+public class LoadDashboardMonthUseCase(
+    ICategoryRepository categoryRepository,
+    ITransactionRepository transactionRepository,
+    IRecurringTransactionRepository recurringTransactionRepository)
 {
-    private readonly ICategoryRepository _categoryRepository;
-    private readonly ITransactionRepository _transactionRepository;
-    private readonly IRecurringTransactionRepository _recurringTransactionRepository;
-
-    public LoadDashboardMonthUseCase(
-        ICategoryRepository categoryRepository,
-        ITransactionRepository transactionRepository,
-        IRecurringTransactionRepository recurringTransactionRepository)
-    {
-        _categoryRepository = categoryRepository;
-        _transactionRepository = transactionRepository;
-        _recurringTransactionRepository = recurringTransactionRepository;
-    }
+    private readonly ICategoryRepository _categoryRepository = categoryRepository;
+    private readonly ITransactionRepository _transactionRepository = transactionRepository;
+    private readonly IRecurringTransactionRepository _recurringTransactionRepository = recurringTransactionRepository;
 
     public async Task<DashboardMonthData> ExecuteAsync(DateTime aktuellerMonat, DateTime today)
     {

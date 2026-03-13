@@ -2,14 +2,9 @@ using Finanzuebersicht.Models;
 
 namespace Finanzuebersicht.Services;
 
-public class InitializationService
+public class InitializationService(ICategoryRepository categoryRepository)
 {
-    private readonly ICategoryRepository _categoryRepository;
-
-    public InitializationService(ICategoryRepository categoryRepository)
-    {
-        _categoryRepository = categoryRepository;
-    }
+    private readonly ICategoryRepository _categoryRepository = categoryRepository;
 
     public async Task InitializeAsync()
     {

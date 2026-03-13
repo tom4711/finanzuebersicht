@@ -3,14 +3,9 @@ using Finanzuebersicht.Services;
 
 namespace Finanzuebersicht.Application.UseCases.Dashboard;
 
-public class LoadDashboardYearUseCase
+public class LoadDashboardYearUseCase(IReportingService reportingService)
 {
-    private readonly IReportingService _reportingService;
-
-    public LoadDashboardYearUseCase(IReportingService reportingService)
-    {
-        _reportingService = reportingService;
-    }
+    private readonly IReportingService _reportingService = reportingService;
 
     public async Task<DashboardYearData> ExecuteAsync(int year)
     {
@@ -28,7 +23,9 @@ public class LoadDashboardYearUseCase
         if (summary.ByCategory != null && summary.Total > 0)
         {
             foreach (var cat in summary.ByCategory)
-                cat.PercentageAmount = (cat.Total / summary.Total) * 100;
+            {
+                cat.PercentageAmount = cat.Total / summary.Total * 100;
+            }
         }
 
         var jahrKatGefiltert = (summary.ByCategory ?? [])

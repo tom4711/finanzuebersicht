@@ -3,14 +3,9 @@ using Finanzuebersicht.Services;
 
 namespace Finanzuebersicht.Application.UseCases.RecurringTransactions;
 
-public class LoadRecurringTransactionDetailDataUseCase
+public class LoadRecurringTransactionDetailDataUseCase(ICategoryRepository categoryRepository)
 {
-    private readonly ICategoryRepository _categoryRepository;
-
-    public LoadRecurringTransactionDetailDataUseCase(ICategoryRepository categoryRepository)
-    {
-        _categoryRepository = categoryRepository;
-    }
+    private readonly ICategoryRepository _categoryRepository = categoryRepository;
 
     public async Task<RecurringTransactionDetailData> ExecuteAsync(string? selectedCategoryId)
     {

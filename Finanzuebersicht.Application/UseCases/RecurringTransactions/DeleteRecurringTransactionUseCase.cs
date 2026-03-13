@@ -2,14 +2,9 @@ using Finanzuebersicht.Services;
 
 namespace Finanzuebersicht.Application.UseCases.RecurringTransactions;
 
-public class DeleteRecurringTransactionUseCase
+public class DeleteRecurringTransactionUseCase(IRecurringTransactionRepository recurringTransactionRepository)
 {
-    private readonly IRecurringTransactionRepository _recurringTransactionRepository;
-
-    public DeleteRecurringTransactionUseCase(IRecurringTransactionRepository recurringTransactionRepository)
-    {
-        _recurringTransactionRepository = recurringTransactionRepository;
-    }
+    private readonly IRecurringTransactionRepository _recurringTransactionRepository = recurringTransactionRepository;
 
     public async Task ExecuteAsync(string recurringTransactionId)
     {

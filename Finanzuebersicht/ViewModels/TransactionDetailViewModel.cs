@@ -9,15 +9,21 @@ using Finanzuebersicht.Resources.Strings;
 namespace Finanzuebersicht.ViewModels;
 
 [QueryProperty(nameof(Transaction), "Transaction")]
-public partial class TransactionDetailViewModel : ObservableObject
+public partial class TransactionDetailViewModel(
+    SaveTransactionDetailUseCase saveTransactionDetailUseCase,
+    LoadTransactionDetailDataUseCase loadTransactionDetailDataUseCase,
+    ITransactionValidationService validationService,
+    ILocalizationService localizationService,
+    INavigationService navigationService,
+    IDialogService dialogService) : ObservableObject
 {
-    private readonly SaveTransactionDetailUseCase _saveTransactionDetailUseCase;
-    private readonly LoadTransactionDetailDataUseCase _loadTransactionDetailDataUseCase;
-    private readonly ITransactionValidationService _validationService;
+    private readonly SaveTransactionDetailUseCase _saveTransactionDetailUseCase = saveTransactionDetailUseCase;
+    private readonly LoadTransactionDetailDataUseCase _loadTransactionDetailDataUseCase = loadTransactionDetailDataUseCase;
+    private readonly ITransactionValidationService _validationService = validationService;
     private Transaction? _existingTransaction;
-    private readonly ILocalizationService _loc;
-    private readonly INavigationService _navigationService;
-    private readonly IDialogService _dialogService;
+    private readonly ILocalizationService _loc = localizationService;
+    private readonly INavigationService _navigationService = navigationService;
+    private readonly IDialogService _dialogService = dialogService;
 
     [ObservableProperty]
     private string betragText = string.Empty;
@@ -47,8 +53,7 @@ public partial class TransactionDetailViewModel : ObservableObject
             if (value != null)
             {
                 _existingTransaction = value;
-                BetragText = value.Betrag.ToString("F2",
-                    System.Globalization.CultureInfo.CurrentCulture);
+                BetragText = value.Betrag.ToString("F2", System.Globalization.CultureInfo.CurrentCulture);
                 Titel = value.Titel;
                 Verwendungszweck = value.Verwendungszweck ?? string.Empty;
                 Datum = value.Datum;
@@ -58,22 +63,6 @@ public partial class TransactionDetailViewModel : ObservableObject
                 _ = SetKategorieAsync(value.KategorieId);
             }
         }
-    }
-
-    public TransactionDetailViewModel(
-        SaveTransactionDetailUseCase saveTransactionDetailUseCase,
-        LoadTransactionDetailDataUseCase loadTransactionDetailDataUseCase,
-        ITransactionValidationService validationService,
-        ILocalizationService localizationService,
-        INavigationService navigationService,
-        IDialogService dialogService)
-    {
-        _saveTransactionDetailUseCase = saveTransactionDetailUseCase;
-        _loadTransactionDetailDataUseCase = loadTransactionDetailDataUseCase;
-        _validationService = validationService;
-        _loc = localizationService;
-        _navigationService = navigationService;
-        _dialogService = dialogService;
     }
 
     [RelayCommand]
@@ -144,7 +133,9 @@ public partial class TransactionDetailViewModel : ObservableObject
         try
         {
             if (Kategorien.Count == 0)
+            {
                 await LoadKategorien();
+            }
 
             SelectedKategorie = Kategorien.FirstOrDefault(k => k.Id == kategorieId);
         }

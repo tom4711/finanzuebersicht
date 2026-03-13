@@ -17,7 +17,7 @@ namespace Finanzuebersicht.Core.Services;
 public class KeywordCategorizationStrategy : ICategorizationStrategy
 {
     private readonly ILogger<KeywordCategorizationStrategy>? _logger;
-    private readonly Dictionary<string, List<Regex>> _rules = new();
+    private readonly Dictionary<string, List<Regex>> _rules = [];
 
     public int Priority => 10;  // Run early, before historical matching
     public string Name => "Keyword Pattern Matching";
@@ -39,10 +39,10 @@ public class KeywordCategorizationStrategy : ICategorizationStrategy
                 return;
             }
 
-            var json = File.ReadAllText(rulesPath);
-            var doc = JsonDocument.Parse(json);
+            var rulesJson = File.ReadAllText(rulesPath);
+            var parsedJsonDocument = JsonDocument.Parse(rulesJson);
 
-            if (doc.RootElement.TryGetProperty("rules", out var rulesElement) && rulesElement.ValueKind == JsonValueKind.Array)
+            if (parsedJsonDocument.RootElement.TryGetProperty("rules", out var rulesElement) && rulesElement.ValueKind == JsonValueKind.Array)
             {
                 foreach (var rule in rulesElement.EnumerateArray())
                 {
@@ -163,7 +163,7 @@ public class KeywordCategorizationStrategy : ICategorizationStrategy
         return Task.FromResult<Category?>(null);
     }
 
-    private string GetSearchText(TransactionDto dto)
+    private static string GetSearchText(TransactionDto dto)
     {
         var parts = new List<string>();
 
