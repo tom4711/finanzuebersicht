@@ -324,40 +324,34 @@ namespace Finanzuebersicht.Core.Services
             return Path.Combine(dataPath, "backups");
         }
 
-        private void WriteJsonToZip<T>(ZipArchive archive, string entryName, T data)
+        private static void WriteJsonToZip<T>(ZipArchive archive, string entryName, T data)
         {
             var entry = archive.CreateEntry(entryName, CompressionLevel.Optimal);
-            using (var stream = entry.Open())
-            using (var writer = new StreamWriter(stream))
-            {
-                var json = JsonSerializer.Serialize(data, BackupJsonOptions);
-                writer.Write(json);
-            }
+            using var stream = entry.Open();
+            using var writer = new StreamWriter(stream);
+            var json = JsonSerializer.Serialize(data, BackupJsonOptions);
+            writer.Write(json);
         }
 
-        private T? ReadJsonFromZip<T>(ZipArchive archive, string entryName) where T : class
+        private static T? ReadJsonFromZip<T>(ZipArchive archive, string entryName) where T : class
         {
             var entry = archive.GetEntry(entryName);
             if (entry == null)
                 return null;
 
-            using (var stream = entry.Open())
-            using (var reader = new StreamReader(stream))
-            {
-                var json = reader.ReadToEnd();
-                return JsonSerializer.Deserialize<T>(json, BackupJsonOptions);
-            }
+            using var stream = entry.Open();
+            using var reader = new StreamReader(stream);
+            var json = reader.ReadToEnd();
+            return JsonSerializer.Deserialize<T>(json, BackupJsonOptions);
         }
 
         private BackupMetadata? ExtractMetadataFromZip(string zipPath)
         {
-            using (var zipArchive = ZipFile.OpenRead(zipPath))
-            {
-                return ReadJsonFromZip<BackupMetadata>(zipArchive, BackupMetadataFileName);
-            }
+            using var zipArchive = ZipFile.OpenRead(zipPath);
+            return ReadJsonFromZip<BackupMetadata>(zipArchive, BackupMetadataFileName);
         }
 
-        private RestoreResult ValidateBackup(string zipPath)
+        private static RestoreResult ValidateBackup(string zipPath)
         {
             try
             {
@@ -366,7 +360,7 @@ namespace Finanzuebersicht.Core.Services
                     var requiredFiles = new[] { "categories.json", "transactions.json", "recurring.json", BackupMetadataFileName };
                     var missingFiles = requiredFiles.Where(f => zipArchive.GetEntry(f) == null).ToList();
 
-                    if (missingFiles.Any())
+                    if (missingFiles.Count != 0)
                     {
                         return new RestoreResult
                         {
