@@ -7,9 +7,13 @@ public class ShellNavigationService : INavigationService
         if (Shell.Current is null) return;
 
         if (parameters is null)
+        {
             await Shell.Current.GoToAsync(route);
+        }
         else
+        {
             await Shell.Current.GoToAsync(route, parameters);
+        }
     }
 
     public async Task GoBackAsync()
