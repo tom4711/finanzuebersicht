@@ -31,7 +31,7 @@ public partial class TransactionsViewModel(
     private ObservableCollection<TransactionGroup> transaktionsGruppen = [];
 
     [ObservableProperty]
-    private readonly bool isLoading;
+    private bool isLoading;
 
     protected override async Task OnMonthChangedAsync() => await LoadTransaktionen();
 
