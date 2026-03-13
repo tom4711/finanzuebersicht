@@ -33,3 +33,8 @@ bld/
 *.ipa
 *.dSYM.zip
 *.dSYM
+
+# Stryker.NET
+.tools/
+Finanzuebersicht.Tests/TestResults/test-results.trx
+Finanzuebersicht.Tests/dotnet-tools.json
