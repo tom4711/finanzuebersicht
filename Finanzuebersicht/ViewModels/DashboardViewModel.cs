@@ -15,13 +15,13 @@ public partial class DashboardViewModel : MonthNavigationViewModel
     // --- Monatsansicht ---
 
     [ObservableProperty]
-    private decimal gesamtEinnahmen;
+    private readonly decimal gesamtEinnahmen;
 
     [ObservableProperty]
-    private decimal gesamtAusgaben;
+    private readonly decimal gesamtAusgaben;
 
     [ObservableProperty]
-    private decimal bilanz;
+    private readonly decimal bilanz;
 
     [ObservableProperty]
     private ObservableCollection<CategorySummary> kategorieAusgaben = [];
@@ -30,7 +30,7 @@ public partial class DashboardViewModel : MonthNavigationViewModel
     private ObservableCollection<CategorySummary> kategorieEinnahmen = [];
 
     [ObservableProperty]
-    private bool istPrognose;
+    private readonly bool istPrognose;
 
     // --- Jahresansicht ---
 
@@ -38,7 +38,7 @@ public partial class DashboardViewModel : MonthNavigationViewModel
     private string jahrAnzeige = string.Empty;
 
     [ObservableProperty]
-    private decimal jahrGesamtAusgaben;
+    private readonly decimal jahrGesamtAusgaben;
 
     [ObservableProperty]
     private ObservableCollection<CategorySummary> jahrKategorien = [];
@@ -49,11 +49,11 @@ public partial class DashboardViewModel : MonthNavigationViewModel
     // --- Allgemein ---
 
     [ObservableProperty]
-    private bool isLoading;
+    private readonly bool isLoading;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsYearView))]
-    private bool isMonthView = true;
+    private readonly bool isMonthView = true;
 
     public bool IsYearView => !IsMonthView;
 
@@ -78,9 +78,13 @@ public partial class DashboardViewModel : MonthNavigationViewModel
         try
         {
             if (IsMonthView)
+            {
                 await LadeMonatAsync();
+            }
             else
+            {
                 await LadeJahrAsync();
+            }
         }
         finally
         {
