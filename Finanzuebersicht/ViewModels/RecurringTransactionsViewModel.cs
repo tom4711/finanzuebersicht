@@ -28,7 +28,7 @@ public partial class RecurringTransactionsViewModel(
     private ObservableCollection<RecurringTransaction> dauerauftraege = [];
 
     [ObservableProperty]
-    private readonly bool isLoading;
+    private bool isLoading;
 
     [RelayCommand]
     private async Task LoadDauerauftraege()

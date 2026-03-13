@@ -39,13 +39,13 @@ public partial class RecurringTransactionDetailViewModel(
     private DateTime? enddatum;
 
     [ObservableProperty]
-    private readonly bool hatEnddatum;
+    private bool hatEnddatum;
 
     [ObservableProperty]
     private DateTime enddatumWert = DateTime.Today.AddYears(1);
 
     [ObservableProperty]
-    private readonly bool aktiv = true;
+    private bool aktiv = true;
 
     [ObservableProperty]
     private ObservableCollection<Category> kategorien = [];

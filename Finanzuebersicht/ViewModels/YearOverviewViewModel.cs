@@ -20,10 +20,10 @@ namespace Finanzuebersicht.ViewModels
         }
 
         [ObservableProperty]
-        private readonly int year;
+        private int year;
 
         [ObservableProperty]
-        private readonly decimal yearTotal;
+        private decimal yearTotal;
 
         [ObservableProperty]
         private List<CategorySummary> categories;

@@ -26,7 +26,7 @@ public partial class CategoriesViewModel(
     private ObservableCollection<Category> kategorien = [];
 
     [ObservableProperty]
-    private readonly bool isLoading;
+    private bool isLoading;
 
     [RelayCommand]
     private async Task LoadKategorien()

@@ -16,10 +16,10 @@ public partial class SettingsViewModel : ObservableObject
     private readonly IBackupService? _backupService;
 
     [ObservableProperty]
-    private readonly int selectedThemeIndex;
+    private int selectedThemeIndex;
 
     [ObservableProperty]
-    private readonly int selectedLanguageIndex;
+    private int selectedLanguageIndex;
 
     [ObservableProperty]
     private string dataPath = string.Empty;
