@@ -64,9 +64,6 @@ public static class MauiProgram
 		builder.Services.AddTransient<RemoveRecurringExceptionUseCase>();
 		builder.Services.AddTransient<ShiftRecurringInstanceUseCase>();
 		builder.Services.AddTransient<GetDueRecurringWithHintsUseCase>();
-		builder.Services.AddTransient<AddRecurringExceptionUseCase>();
-		builder.Services.AddTransient<RemoveRecurringExceptionUseCase>();
-		builder.Services.AddTransient<GetDueRecurringWithHintsUseCase>();
 		builder.Services.AddTransient<LoadTransactionDetailDataUseCase>();
 		builder.Services.AddTransient<DeleteTransactionUseCase>();
 		builder.Services.AddTransient<LoadTransactionsMonthUseCase>();

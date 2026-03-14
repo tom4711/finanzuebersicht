@@ -18,15 +18,24 @@ public class ShiftRecurringInstanceUseCase
         if (recurring == null) return;
 
         recurring.Exceptions ??= new List<RecurringException>();
-        var ex = new RecurringException
+        var existing = recurring.Exceptions.FirstOrDefault(e => e.InstanceDate.Date == instanceDate.Date);
+        if (existing != null)
         {
-            InstanceDate = instanceDate.Date,
-            Type = RecurringExceptionType.Shift,
-            ShiftToDate = newDate.Date,
-            Note = note
-        };
-
-        recurring.Exceptions.Add(ex);
+            existing.Type = RecurringExceptionType.Shift;
+            existing.ShiftToDate = newDate.Date;
+            existing.Note = note;
+        }
+        else
+        {
+            var ex = new RecurringException
+            {
+                InstanceDate = instanceDate.Date,
+                Type = RecurringExceptionType.Shift,
+                ShiftToDate = newDate.Date,
+                Note = note
+            };
+            recurring.Exceptions.Add(ex);
+        }
         await _recurringTransactionRepository.SaveRecurringTransactionAsync(recurring);
     }
 }

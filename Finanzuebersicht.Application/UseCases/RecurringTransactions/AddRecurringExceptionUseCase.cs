@@ -19,7 +19,19 @@ public class AddRecurringExceptionUseCase
         if (recurring == null) return;
 
         recurring.Exceptions ??= new List<RecurringException>();
-        recurring.Exceptions.Add(exception);
+        var existing = recurring.Exceptions.FirstOrDefault(e => e.InstanceDate.Date == exception.InstanceDate.Date);
+        if (existing != null)
+        {
+            // replace/merge existing exception for the same instance date
+            existing.Type = exception.Type;
+            existing.ShiftToDate = exception.ShiftToDate;
+            existing.Note = exception.Note;
+            existing.Id = exception.Id;
+        }
+        else
+        {
+            recurring.Exceptions.Add(exception);
+        }
         await _recurringTransactionRepository.SaveRecurringTransactionAsync(recurring);
     }
 }

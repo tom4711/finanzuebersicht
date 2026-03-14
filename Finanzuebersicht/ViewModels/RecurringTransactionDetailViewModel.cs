@@ -128,8 +128,7 @@ public partial class RecurringTransactionDetailViewModel(
                 out _))
             return;
 
-        System.Diagnostics.Debug.WriteLine($"RecurringTransactionDetailViewModel.Save: Interval={Interval}, IntervalName='{Interval.ToString()}', IntervalFactor={IntervalFactor}");
-
+        // logging removed: use centralized logging if needed
         await _saveRecurringTransactionDetailUseCase.ExecuteAsync(
             _existing,
             betrag,
@@ -151,26 +150,15 @@ public partial class RecurringTransactionDetailViewModel(
     {
         if (_existing == null) return;
 
-        // naive next instance calculation
-        var last = _existing.LetzteAusfuehrung ?? _existing.Startdatum;
-        DateTime next = last;
-        switch (Interval)
+        DateTime next;
+        if (_existing.LetzteAusfuehrung.HasValue)
         {
-            case RecurrenceInterval.Daily:
-                next = last.AddDays(IntervalFactor);
-                break;
-            case RecurrenceInterval.Weekly:
-                next = last.AddDays(7 * IntervalFactor);
-                break;
-            case RecurrenceInterval.Monthly:
-                next = last.AddMonths(IntervalFactor);
-                break;
-            case RecurrenceInterval.Quarterly:
-                next = last.AddMonths(3 * IntervalFactor);
-                break;
-            case RecurrenceInterval.Yearly:
-                next = last.AddYears(IntervalFactor);
-                break;
+            next = GetNextInstanceLocal(_existing, _existing.LetzteAusfuehrung.Value, IntervalFactor);
+        }
+        else
+        {
+            // if no last execution, the next instance is the start date itself
+            next = _existing.Startdatum.Date;
         }
 
         var ex = new RecurringException { Id = Guid.NewGuid().ToString(), InstanceDate = next.Date, Type = RecurringExceptionType.Skip };
@@ -183,25 +171,14 @@ public partial class RecurringTransactionDetailViewModel(
     {
         if (_existing == null) return;
 
-        var last = _existing.LetzteAusfuehrung ?? _existing.Startdatum;
-        DateTime next = last;
-        switch (Interval)
+        DateTime next;
+        if (_existing.LetzteAusfuehrung.HasValue)
         {
-            case RecurrenceInterval.Daily:
-                next = last.AddDays(IntervalFactor);
-                break;
-            case RecurrenceInterval.Weekly:
-                next = last.AddDays(7 * IntervalFactor);
-                break;
-            case RecurrenceInterval.Monthly:
-                next = last.AddMonths(IntervalFactor);
-                break;
-            case RecurrenceInterval.Quarterly:
-                next = last.AddMonths(3 * IntervalFactor);
-                break;
-            case RecurrenceInterval.Yearly:
-                next = last.AddYears(IntervalFactor);
-                break;
+            next = GetNextInstanceLocal(_existing, _existing.LetzteAusfuehrung.Value, IntervalFactor);
+        }
+        else
+        {
+            next = _existing.Startdatum.Date;
         }
 
         var parameters = new Dictionary<string, object>
@@ -211,6 +188,30 @@ public partial class RecurringTransactionDetailViewModel(
         };
 
         await _navigationService.GoToAsync("RecurringInstanceShiftPage", parameters);
+    }
+
+    private static DateTime GetNextInstanceLocal(RecurringTransaction recurring, DateTime fromDate, int intervalFactor)
+    {
+        var factor = Math.Max(1, intervalFactor);
+        return recurring.Interval switch
+        {
+            RecurrenceInterval.Weekly => fromDate.Date.AddDays(7L * factor),
+            RecurrenceInterval.Monthly => AddMonthsPreserveDay(fromDate.Date, 1 * factor),
+            RecurrenceInterval.Quarterly => AddMonthsPreserveDay(fromDate.Date, 3 * factor),
+            RecurrenceInterval.Yearly => AddMonthsPreserveDay(fromDate.Date, 12 * factor),
+            RecurrenceInterval.Daily => fromDate.Date.AddDays(1 * factor),
+            _ => AddMonthsPreserveDay(fromDate.Date, 1 * factor),
+        };
+    }
+
+    private static DateTime AddMonthsPreserveDay(DateTime date, int months)
+    {
+        var target = date.AddMonths(months);
+        var day = date.Day;
+        var daysInTarget = DateTime.DaysInMonth(target.Year, target.Month);
+        if (day > daysInTarget)
+            day = daysInTarget;
+        return new DateTime(target.Year, target.Month, day);
     }
 
     [RelayCommand]

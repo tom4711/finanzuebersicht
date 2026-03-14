@@ -24,7 +24,7 @@ public class SaveRecurringTransactionDetailUseCase(
         int reminderDaysBefore = 0,
         List<RecurringException>? exceptions = null)
     {
-        System.Diagnostics.Debug.WriteLine($"SaveRecurringTransactionDetailUseCase.ExecuteAsync: incoming interval={interval}, intervalFactor={intervalFactor}, titel={titel}, existingId={existing?.Id}");
+        // logging removed: prefer centralized ILogger or conditional debug logging
 
         var recurring = existing ?? new RecurringTransaction();
         recurring.Betrag = betrag;

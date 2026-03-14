@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Collections.Generic;
 using Finanzuebersicht.Models;
@@ -25,21 +26,61 @@ public class GetDueRecurringWithHintsUseCase
         var result = new List<DueRecurringItem>();
         foreach (var r in list.Where(x => x.Aktiv))
         {
-            // approximate next occurrence: if LetzteAusfuehrung unset use Startdatum
-            var start = r.LetzteAusfuehrung ?? r.Startdatum;
-            var approxNext = start;
-            // naive stepping: advance until >= referenceDate
-            while (approxNext.Date < referenceDate.Date)
+            // determine the next candidate instance using same rules as generator
+            DateTime candidate;
+            if (r.LetzteAusfuehrung.HasValue)
             {
-                approxNext = approxNext.AddMonths(1);
+                candidate = GetNextInstance(r, r.LetzteAusfuehrung.Value, r.IntervalFactor);
+            }
+            else
+            {
+                candidate = r.Startdatum.Date;
             }
 
-            var daysUntil = (approxNext.Date - referenceDate.Date).Days;
+            while (candidate.Date < referenceDate.Date)
+            {
+                candidate = GetNextInstance(r, candidate, r.IntervalFactor);
+            }
+
+            var daysUntil = (candidate.Date - referenceDate.Date).Days;
             var isDue = daysUntil <= 0;
-            var hint = r.ReminderDaysBefore > 0 && daysUntil <= r.ReminderDaysBefore ? $"Fällig in {daysUntil} Tagen" : null;
+            string? hint = null;
+            if (daysUntil == 0)
+                hint = "Heute fällig";
+            else if (daysUntil < 0)
+                hint = $"Seit {-daysUntil} Tagen überfällig";
+            else if (r.ReminderDaysBefore > 0 && daysUntil <= r.ReminderDaysBefore)
+                hint = $"Fällig in {daysUntil} Tagen";
+
             result.Add(new DueRecurringItem { Recurring = r, IsDue = isDue, Hint = hint });
         }
 
         return result;
+
     }
+
+    private static DateTime GetNextInstance(RecurringTransaction recurring, DateTime fromDate, int intervalFactor)
+    {
+        var factor = Math.Max(1, intervalFactor);
+        return recurring.Interval switch
+        {
+            RecurrenceInterval.Weekly => fromDate.Date.AddDays(7L * factor),
+            RecurrenceInterval.Monthly => AddMonthsPreserveDay(fromDate.Date, 1 * factor),
+            RecurrenceInterval.Quarterly => AddMonthsPreserveDay(fromDate.Date, 3 * factor),
+            RecurrenceInterval.Yearly => AddMonthsPreserveDay(fromDate.Date, 12 * factor),
+            RecurrenceInterval.Daily => fromDate.Date.AddDays(1 * factor),
+            _ => AddMonthsPreserveDay(fromDate.Date, 1 * factor),
+        };
+    }
+
+    private static DateTime AddMonthsPreserveDay(DateTime date, int months)
+    {
+        var target = date.AddMonths(months);
+        var day = date.Day;
+        var daysInTarget = DateTime.DaysInMonth(target.Year, target.Month);
+        if (day > daysInTarget)
+            day = daysInTarget;
+        return new DateTime(target.Year, target.Month, day);
+    }
+
 }
