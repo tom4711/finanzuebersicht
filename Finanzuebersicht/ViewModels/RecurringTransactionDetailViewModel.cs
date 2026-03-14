@@ -59,8 +59,15 @@ public partial class RecurringTransactionDetailViewModel(
     [ObservableProperty]
     private RecurrenceInterval interval = RecurrenceInterval.Monthly;
 
+    // string-backed entries to avoid binding conversion errors; numeric backing kept for logic
+    [ObservableProperty]
+    private string intervalFactorText = "1";
+
     [ObservableProperty]
     private int intervalFactor = 1;
+
+    [ObservableProperty]
+    private string reminderDaysBeforeText = "0";
 
     [ObservableProperty]
     private int reminderDaysBefore = 0;
@@ -95,7 +102,9 @@ public partial class RecurringTransactionDetailViewModel(
                 _ = SetKategorieAsync(value.KategorieId);
                 Interval = value.Interval;
                 IntervalFactor = value.IntervalFactor;
+                IntervalFactorText = value.IntervalFactor.ToString();
                 ReminderDaysBefore = value.ReminderDaysBefore;
+                ReminderDaysBeforeText = value.ReminderDaysBefore.ToString();
                 Exceptions = new ObservableCollection<RecurringException>(value.Exceptions ?? new List<RecurringException>());
             }
         }
@@ -128,7 +137,16 @@ public partial class RecurringTransactionDetailViewModel(
                 out _))
             return;
 
-        // logging removed: use centralized logging if needed
+        // parse numeric text fields (Entry bindings)
+        if (!int.TryParse(IntervalFactorText, out var parsedFactor) || parsedFactor <= 0)
+            return; // invalid interval factor
+
+        if (!int.TryParse(ReminderDaysBeforeText, out var parsedReminder) || parsedReminder < 0)
+            parsedReminder = 0;
+
+        IntervalFactor = parsedFactor;
+        ReminderDaysBefore = parsedReminder;
+
         await _saveRecurringTransactionDetailUseCase.ExecuteAsync(
             _existing,
             betrag,

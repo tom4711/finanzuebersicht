@@ -93,11 +93,11 @@
             <Grid ColumnDefinitions="*, Auto" ColumnSpacing="8" Margin="0,8,0,0">
                 <VerticalStackLayout Grid.Column="0" Spacing="4">
                     <Label Text="Intervall-Faktor" FontSize="13" TextColor="Gray" />
-                    <Entry Text="{Binding IntervalFactor}" Keyboard="Numeric" />
+                    <Entry Text="{Binding IntervalFactorText}" Keyboard="Numeric" />
                 </VerticalStackLayout>
                 <VerticalStackLayout Grid.Column="1" Spacing="4" HorizontalOptions="End">
                     <Label Text="Erinnerung (Tage vorher)" FontSize="13" TextColor="Gray" />
-                    <Entry Text="{Binding ReminderDaysBefore}" Keyboard="Numeric" WidthRequest="80" />
+                    <Entry Text="{Binding ReminderDaysBeforeText}" Keyboard="Numeric" WidthRequest="80" />
                 </VerticalStackLayout>
             </Grid>
 
