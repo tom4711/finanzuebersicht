@@ -47,9 +47,4 @@ public partial class RecurringInstanceShiftViewModel(
         await _navigationService.GoBackAsync();
     }
 
-    // ensure NewDate defaults to the instance being shifted when InstanceDate is set
-    partial void OnInstanceDateChanged(DateTime value)
-    {
-        NewDate = value;
-    }
 }
