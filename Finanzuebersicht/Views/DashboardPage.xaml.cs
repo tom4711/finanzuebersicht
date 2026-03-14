@@ -32,6 +32,14 @@ public partial class DashboardPage : ContentPage
             vm.LoadDashboardCommand.Execute(null);
         }
 
+        // Ensure charts are invalidated after loading so drawables render current data
+        MainThread.BeginInvokeOnMainThread(() =>
+        {
+            MonthDonutChart.Invalidate();
+            YearDonutChart.Invalidate();
+            YearBarChart.Invalidate();
+        });
+
         // subscribe to app-wide data change notifications
         App.DataChanged += OnAppDataChanged;
     }
