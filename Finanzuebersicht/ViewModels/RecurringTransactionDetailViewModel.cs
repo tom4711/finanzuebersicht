@@ -6,6 +6,7 @@ using CommunityToolkit.Mvvm.Input;
 using Finanzuebersicht.Application.UseCases.RecurringTransactions;
 using Finanzuebersicht.Models;
 using Finanzuebersicht.Services;
+using Finanzuebersicht.Views;
 
 namespace Finanzuebersicht.ViewModels;
 
@@ -75,8 +76,6 @@ public partial class RecurringTransactionDetailViewModel(
     [ObservableProperty]
     private ObservableCollection<RecurringException> exceptions = [];
 
-    public List<string> IntervalOptions { get; } = new List<string> { "Daily", "Weekly", "Monthly", "Quarterly", "Yearly" };
-
     // Prefer binding the Picker directly to enum values to avoid string localization issues
     public List<RecurrenceInterval> IntervalValues { get; } = Enum.GetValues<RecurrenceInterval>().Cast<RecurrenceInterval>().ToList();
 
@@ -128,7 +127,7 @@ public partial class RecurringTransactionDetailViewModel(
     [RelayCommand]
     private async Task Save()
     {
-        if (!_validationService.TryValidate(
+        if (!_validation_service.TryValidate(
                 BetragText,
                 Titel,
                 SelectedKategorie != null,
@@ -139,10 +138,18 @@ public partial class RecurringTransactionDetailViewModel(
 
         // parse numeric text fields (Entry bindings)
         if (!int.TryParse(IntervalFactorText, out var parsedFactor) || parsedFactor <= 0)
-            return; // invalid interval factor
+        {
+            // Ungültige oder zu kleine Werte auf 1 clampen und im UI anzeigen
+            parsedFactor = 1;
+            IntervalFactorText = "1";
+        }
 
         if (!int.TryParse(ReminderDaysBeforeText, out var parsedReminder) || parsedReminder < 0)
+        {
+            // Ungültige oder negative Werte auf 0 clampen und im UI anzeigen
             parsedReminder = 0;
+            ReminderDaysBeforeText = "0";
+        }
 
         IntervalFactor = parsedFactor;
         ReminderDaysBefore = parsedReminder;
@@ -160,7 +167,7 @@ public partial class RecurringTransactionDetailViewModel(
             IntervalFactor,
             ReminderDaysBefore,
             Exceptions.ToList());
-        await _navigationService.GoBackAsync();
+        await _navigation_service.GoBackAsync();
     }
 
     [RelayCommand]
@@ -205,7 +212,7 @@ public partial class RecurringTransactionDetailViewModel(
             ["InstanceDate"] = next.Date
         };
 
-        await _navigationService.GoToAsync("RecurringInstanceShiftPage", parameters);
+        await _navigationService.GoToAsync(nameof(RecurringInstanceShiftPage), parameters);
     }
 
     private static DateTime GetNextInstanceLocal(RecurringTransaction recurring, DateTime fromDate, int intervalFactor)

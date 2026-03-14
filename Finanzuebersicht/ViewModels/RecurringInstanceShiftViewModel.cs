@@ -28,6 +28,11 @@ public partial class RecurringInstanceShiftViewModel(
     [ObservableProperty]
     private string? note;
 
+    partial void OnInstanceDateChanged(DateTime value)
+    {
+        NewDate = value;
+    }
+
     [RelayCommand]
     private async Task Save()
     {

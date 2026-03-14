@@ -29,6 +29,6 @@ open /Applications/Finanzuebersicht.app
 Anmerkungen für Entwickler
 - Navigation: die Seite wird über DI-registrierte Route `RecurringInstanceShiftPage` geöffnet. Die Übergabeparameter sind `RecurringId` und `InstanceDate`.
 - Die Detailseite bietet außerdem Buttons zum Überspringen der nächsten Instanz (`Skip`) und zum direkten Anlegen einer Ausnahme.
-- Unit-Tests: bestehende Unit-Tests wurden nicht verändert; alle Tests laufen lokal (siehe `Finanzuebersicht.Tests`).
+- Unit-Tests: bestehende Tests wurden ergänzt und neue Tests hinzugefügt (z. B. `RecurringGenerationServiceTests`); alle Tests laufen lokal (siehe `Finanzuebersicht.Tests`).
 
 Weiteres: Wenn ihr UI-Tests (z. B. Appium / WinAppDriver) hinzufügen wollt, empfehle ich einen separaten kleinen Test-Plan für macCatalyst oder iOS-Simulator, da MAUI UI-Tests plattformabhängig sind.

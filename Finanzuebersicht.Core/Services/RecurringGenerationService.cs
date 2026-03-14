@@ -8,6 +8,7 @@ public class RecurringGenerationService(
 {
     private readonly IRecurringTransactionRepository _recurringRepository = recurringRepository;
     private readonly ITransactionRepository _transactionRepository = transactionRepository;
+    private const int MaxInstancesPerRun = 500;
 
     public async Task GeneratePendingRecurringTransactionsAsync()
     {
@@ -19,12 +20,14 @@ public class RecurringGenerationService(
             if (recurring.Enddatum.HasValue && recurring.Enddatum.Value < today)
                 continue;
 
+            var generatedCount = 0;
+
             // determine the first instance to consider
             var candidate = !recurring.LetzteAusfuehrung.HasValue
                 ? recurring.Startdatum
                 : GetNextInstance(recurring, recurring.LetzteAusfuehrung.Value);
 
-            while (candidate <= today)
+            while (candidate <= today && generatedCount < MaxInstancesPerRun)
             {
                 // check for exceptions for this instance date
                 var exception = recurring.Exceptions?.FirstOrDefault(e => e.InstanceDate.Date == candidate.Date);
@@ -42,6 +45,14 @@ public class RecurringGenerationService(
                     transactionDate = exception.ShiftToDate.Value.Date;
                 }
 
+                // Nur Transaktionen erzeugen, deren effektives Datum nicht in der Zukunft liegt.
+                // Bei einem Shift in die Zukunft bleibt die Instanz pending und LetzteAusfuehrung
+                // wird nicht fortgeschrieben.
+                if (transactionDate > today)
+                {
+                    break;
+                }
+
                 var transaction = new Transaction
                 {
                     Betrag = recurring.Betrag,
@@ -53,6 +64,7 @@ public class RecurringGenerationService(
                 };
 
                 await _transactionRepository.SaveTransactionAsync(transaction);
+                generatedCount++;
 
                 // mark this instance as last executed (use the template instance date)
                 recurring.LetzteAusfuehrung = candidate;

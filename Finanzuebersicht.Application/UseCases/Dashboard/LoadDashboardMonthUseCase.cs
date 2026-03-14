@@ -100,19 +100,81 @@ public class LoadDashboardMonthUseCase(
 
     private static bool OccursInRange(RecurringTransaction da, DateTime rangeStart, DateTime rangeEnd)
     {
+        // Grundlegende Plausibilitätsprüfung: Zeitraum vollständig vor/nach dem Dauerauftrag
         if (da.Startdatum > rangeEnd) return false;
         if (da.Enddatum.HasValue && da.Enddatum.Value < rangeStart) return false;
 
+        // Starte bei der letzten Ausführung oder dem Startdatum
         var candidate = da.LetzteAusfuehrung ?? da.Startdatum;
         if (candidate < da.Startdatum) candidate = da.Startdatum;
 
         var safety = 0;
-        while (candidate < rangeStart && safety++ < 1000)
+
+        // Iteriere über Basis-Vorkommen bis zum Ende des betrachteten Zeitraums
+        while (candidate <= rangeEnd && safety++ < 1000)
         {
+            // Nur innerhalb der generellen Lebensdauer des Dauerauftrags berücksichtigen
+            if (candidate >= da.Startdatum && (!da.Enddatum.HasValue || candidate <= da.Enddatum.Value))
+            {
+                if (TryGetEffectiveDateWithExceptions(da, candidate, out var effectiveDate))
+                {
+                    if (effectiveDate >= rangeStart && effectiveDate <= rangeEnd)
+                    {
+                        return true;
+                    }
+                }
+            }
+
             candidate = GetNextInstance(da, candidate);
         }
 
-        return candidate >= rangeStart && candidate <= rangeEnd;
+        return false;
+    }
+
+    private static bool TryGetEffectiveDateWithExceptions(RecurringTransaction recurring, DateTime baseDate, out DateTime effectiveDate)
+    {
+        // Standardfall: kein Eintrag in den Ausnahmen → Basisdatum ist das effektive Datum
+        effectiveDate = baseDate.Date;
+
+        // Wenn keine Ausnahmen definiert sind, direkt zurück
+        if (recurring.Exceptions == null)
+        {
+            return true;
+        }
+
+        RecurringException? matchingException = null;
+
+        foreach (var ex in recurring.Exceptions)
+        {
+            // Vergleich nur auf Datumsebene
+            if (ex.Datum.Date == baseDate.Date)
+            {
+                matchingException = ex;
+                break;
+            }
+        }
+
+        if (matchingException == null)
+        {
+            // Keine Ausnahme für dieses Vorkommen → Basisdatum bleibt gültig
+            return true;
+        }
+
+        // Skip → dieses Vorkommen existiert nicht
+        if (matchingException.Typ == RecurringExceptionType.Skip)
+        {
+            return false;
+        }
+
+        // Shift → effektives Datum ist das hinterlegte Shift-Datum, falls vorhanden
+        if (matchingException.Typ == RecurringExceptionType.Shift && matchingException.ShiftToDate.HasValue)
+        {
+            effectiveDate = matchingException.ShiftToDate.Value.Date;
+            return true;
+        }
+
+        // Fallback: falls Ausnahme-Typ unbekannt oder Shift ohne Ziel-Datum, Basisdatum verwenden
+        return true;
     }
 
     private static DateTime GetNextInstance(RecurringTransaction recurring, DateTime fromDate)

@@ -54,7 +54,7 @@ public class ReportingService(
         var yearSummary = new YearSummary
         {
             Year = year,
-            Total = expenditure.Sum(t => t.Betrag)
+            Total = expenditure.Sum(t => Math.Abs(t.Betrag))
         };
 
         for (int m = 1; m <= 12; m++)

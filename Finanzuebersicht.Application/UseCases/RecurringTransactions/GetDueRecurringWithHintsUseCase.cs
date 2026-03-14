@@ -24,7 +24,7 @@ public class GetDueRecurringWithHintsUseCase
     {
         var list = await _recurringTransactionRepository.GetRecurringTransactionsAsync();
         var result = new List<DueRecurringItem>();
-        foreach (var r in list.Where(x => x.Aktiv))
+        foreach (var r in list.Where(x => x.Aktiv).Where(x => IsWithinActiveRange(x, referenceDate)))
         {
             // determine the next candidate instance using same rules as generator
             DateTime candidate;
@@ -42,6 +42,9 @@ public class GetDueRecurringWithHintsUseCase
                 candidate = GetNextInstance(r, candidate, r.IntervalFactor);
             }
 
+            // apply any defined exceptions (Skip/Shift) to the calculated candidate
+            candidate = ApplyExceptionsIfAny(r, candidate, r.IntervalFactor);
+
             var daysUntil = (candidate.Date - referenceDate.Date).Days;
             var isDue = daysUntil <= 0;
             string? hint = null;
@@ -57,6 +60,111 @@ public class GetDueRecurringWithHintsUseCase
 
         return result;
 
+    }
+
+    private static bool IsWithinActiveRange(RecurringTransaction recurring, DateTime referenceDate)
+    {
+        var reference = referenceDate.Date;
+        var start = recurring.Startdatum.Date;
+
+        if (reference < start)
+        {
+            return false;
+        }
+
+        // Enddatum is optional – access via reflection to avoid hard dependency
+        var endProperty = recurring.GetType().GetProperty("Enddatum");
+        if (endProperty != null)
+        {
+            var value = endProperty.GetValue(recurring);
+            if (value is DateTime endDate && reference > endDate.Date)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private static DateTime ApplyExceptionsIfAny(RecurringTransaction recurring, DateTime candidate, int intervalFactor)
+    {
+        var exceptionsProperty = recurring.GetType().GetProperty("Exceptions");
+        if (exceptionsProperty == null)
+        {
+            return candidate;
+        }
+
+        var exceptionsValue = exceptionsProperty.GetValue(recurring) as System.Collections.IEnumerable;
+        if (exceptionsValue == null)
+        {
+            return candidate;
+        }
+
+        var adjustedCandidate = candidate.Date;
+
+        foreach (var exception in exceptionsValue)
+        {
+            if (exception == null)
+            {
+                continue;
+            }
+
+            var exceptionType = exception.GetType();
+
+            // try to get the exception date (commonly "Date" or "Datum")
+            var dateProperty =
+                exceptionType.GetProperty("Date") ??
+                exceptionType.GetProperty("Datum");
+
+            if (dateProperty == null)
+            {
+                continue;
+            }
+
+            var dateValue = dateProperty.GetValue(exception);
+            if (dateValue is not DateTime exceptionDate || exceptionDate.Date != adjustedCandidate)
+            {
+                continue;
+            }
+
+            // try to get the exception type (commonly "Type", "Typ" or "Art")
+            var typeProperty =
+                exceptionType.GetProperty("Type") ??
+                exceptionType.GetProperty("Typ") ??
+                exceptionType.GetProperty("Art");
+
+            var typeName = typeProperty?.GetValue(exception)?.ToString() ?? string.Empty;
+
+            if (string.IsNullOrWhiteSpace(typeName))
+            {
+                continue;
+            }
+
+            var normalizedType = typeName.Trim();
+
+            // Skip: move to the next instance
+            if (string.Equals(normalizedType, "Skip", StringComparison.OrdinalIgnoreCase))
+            {
+                adjustedCandidate = GetNextInstance(recurring, adjustedCandidate, intervalFactor).Date;
+                continue;
+            }
+
+            // Shift: move by configured number of days if available
+            if (string.Equals(normalizedType, "Shift", StringComparison.OrdinalIgnoreCase))
+            {
+                var shiftDaysProperty =
+                    exceptionType.GetProperty("ShiftDays") ??
+                    exceptionType.GetProperty("VerschiebungTage");
+
+                var shiftValue = shiftDaysProperty?.GetValue(exception);
+                if (shiftValue is int shiftDays && shiftDays != 0)
+                {
+                    adjustedCandidate = adjustedCandidate.AddDays(shiftDays);
+                }
+            }
+        }
+
+        return adjustedCandidate;
     }
 
     private static DateTime GetNextInstance(RecurringTransaction recurring, DateTime fromDate, int intervalFactor)
