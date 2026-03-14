@@ -2,10 +2,6 @@ using System;
 using Finanzuebersicht.Models;
 using Finanzuebersicht.Services;
 
-using System;
-using Finanzuebersicht.Models;
-using Finanzuebersicht.Services;
-
 namespace Finanzuebersicht.Application.UseCases.Dashboard;
 
 public class LoadDashboardMonthUseCase(
