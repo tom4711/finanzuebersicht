@@ -81,7 +81,7 @@
             <!-- Intervall (Täglich/Wöchentlich/Monatlich/Quartal/Jährlich) -->
             <VerticalStackLayout Spacing="4">
                 <Label Text="Intervall" FontSize="13" TextColor="Gray" />
-                <Picker ItemsSource="{Binding IntervalOptions}" SelectedItem="{Binding SelectedIntervalName}" FontSize="16" Margin="0,0,0,8" />
+                <Picker ItemsSource="{Binding IntervalOptions}" SelectedItem="{Binding SelectedIntervalName, Mode=TwoWay}" FontSize="16" Margin="0,0,0,8" />
             </VerticalStackLayout>
 
             <!-- Interval-Factor -->

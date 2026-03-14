@@ -75,7 +75,7 @@ public partial class RecurringTransactionDetailViewModel(
         get => Interval.ToString();
         set
         {
-            if (Enum.TryParse<RecurrenceInterval>(value, out var parsed))
+            if (Enum.TryParse<RecurrenceInterval>(value, true, out var parsed))
             {
                 Interval = parsed;
             }
