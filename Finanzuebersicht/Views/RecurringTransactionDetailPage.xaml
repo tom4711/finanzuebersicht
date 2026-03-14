@@ -98,9 +98,9 @@
             <!-- Exceptions -->
             <VerticalStackLayout Spacing="4">
                 <Label Text="Ausnahmen" FontSize="13" TextColor="Gray" />
-                <CollectionView ItemsSource="{Binding Exceptions}" SelectionMode="None" HeightRequest="140">
+                <CollectionView ItemsSource="{Binding Exceptions}" SelectionMode="None" HeightRequest="180" VerticalOptions="Start" Margin="0,6,0,0">
                     <CollectionView.ItemTemplate>
-                        <DataTemplate>
+                        <DataTemplate x:DataType="models:RecurringException">
                             <Grid ColumnDefinitions="*, Auto" Padding="8">
                                 <Label Text="{Binding InstanceDate, StringFormat='{}{0:dd.MM.yyyy}'}" VerticalTextAlignment="Center" />
                                 <Button Grid.Column="1" Text="Entfernen" BackgroundColor="#FF3B30" TextColor="White" Command="{Binding Source={RelativeSource AncestorType={x:Type vm:RecurringTransactionDetailViewModel}}, Path=RemoveExceptionCommand}" CommandParameter="{Binding .}" />
