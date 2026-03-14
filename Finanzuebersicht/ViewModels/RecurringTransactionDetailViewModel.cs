@@ -127,7 +127,7 @@ public partial class RecurringTransactionDetailViewModel(
     [RelayCommand]
     private async Task Save()
     {
-        if (!_validation_service.TryValidate(
+        if (!_validationService.TryValidate(
                 BetragText,
                 Titel,
                 SelectedKategorie != null,
@@ -167,7 +167,7 @@ public partial class RecurringTransactionDetailViewModel(
             IntervalFactor,
             ReminderDaysBefore,
             Exceptions.ToList());
-        await _navigation_service.GoBackAsync();
+        await _navigationService.GoBackAsync();
     }
 
     [RelayCommand]
