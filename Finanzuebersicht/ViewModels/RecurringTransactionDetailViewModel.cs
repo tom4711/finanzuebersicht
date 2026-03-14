@@ -70,32 +70,8 @@ public partial class RecurringTransactionDetailViewModel(
 
     public List<string> IntervalOptions { get; } = new List<string> { "Daily", "Weekly", "Monthly", "Quarterly", "Yearly" };
 
-    public string SelectedIntervalName
-    {
-        get => Interval.ToString();
-        set
-        {
-            if (Enum.TryParse<RecurrenceInterval>(value, true, out var parsed))
-            {
-                Interval = parsed;
-            }
-            else if (!string.IsNullOrWhiteSpace(value))
-            {
-                // Fallback mapping for localized strings (e.g. German)
-                var key = value.Trim().ToLowerInvariant();
-                if (key.Contains("täg") || key.Contains("daily"))
-                    Interval = RecurrenceInterval.Daily;
-                else if (key.Contains("wöch") || key.Contains("weekly"))
-                    Interval = RecurrenceInterval.Weekly;
-                else if (key.Contains("monat") || key.Contains("monthly"))
-                    Interval = RecurrenceInterval.Monthly;
-                else if (key.Contains("quart") || key.Contains("quarter"))
-                    Interval = RecurrenceInterval.Quarterly;
-                else if (key.Contains("jahr") || key.Contains("year"))
-                    Interval = RecurrenceInterval.Yearly;
-            }
-        }
-    }
+    // Prefer binding the Picker directly to enum values to avoid string localization issues
+    public List<RecurrenceInterval> IntervalValues { get; } = Enum.GetValues<RecurrenceInterval>().Cast<RecurrenceInterval>().ToList();
 
     public RecurringTransaction? RecurringTransaction
     {

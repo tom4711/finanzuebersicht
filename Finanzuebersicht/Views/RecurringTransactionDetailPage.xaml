@@ -11,6 +11,7 @@
 
     <ContentPage.Resources>
         <conv:TypButtonColorConverter x:Key="TypButtonColor" />
+        <conv:EnumToLocalizedStringConverter x:Key="EnumToLocalizedStringConverter" />
     </ContentPage.Resources>
 
     <ScrollView Padding="16">
@@ -81,7 +82,11 @@
             <!-- Intervall (Täglich/Wöchentlich/Monatlich/Quartal/Jährlich) -->
             <VerticalStackLayout Spacing="4">
                 <Label Text="Intervall" FontSize="13" TextColor="Gray" />
-                <Picker ItemsSource="{Binding IntervalOptions}" SelectedItem="{Binding SelectedIntervalName, Mode=TwoWay}" FontSize="16" Margin="0,0,0,8" />
+                <Picker ItemsSource="{Binding IntervalValues}" SelectedItem="{Binding Interval, Mode=TwoWay}" FontSize="16" Margin="0,0,0,8">
+                    <Picker.ItemDisplayBinding>
+                        <Binding Path="." Converter="{StaticResource EnumToLocalizedStringConverter}" />
+                    </Picker.ItemDisplayBinding>
+                </Picker>
             </VerticalStackLayout>
 
             <!-- Interval-Factor -->
