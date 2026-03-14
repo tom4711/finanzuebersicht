@@ -1,3 +1,4 @@
+using System;
 using Finanzuebersicht.Models;
 using Finanzuebersicht.Services;
 
@@ -46,22 +47,24 @@ public class LoadDashboardMonthUseCase(
 
         var gesamtEinnahmen = transaktionen
             .Where(t => t.Typ == TransactionType.Einnahme)
-            .Sum(t => t.Betrag);
+            .Sum(t => Math.Abs(t.Betrag));
 
         var gesamtAusgaben = transaktionen
             .Where(t => t.Typ == TransactionType.Ausgabe)
-            .Sum(t => t.Betrag);
+            .Sum(t => Math.Abs(t.Betrag));
+
+        // Fallback-Kategorie für nicht zugeordnete Transaktionen
+        var unkategorisiert = new Category { Id = string.Empty, Name = "Unkategorisiert", Color = "#8E8E93", Icon = "📁" };
 
         var kategorieAusgaben = transaktionen
             .Where(t => t.Typ == TransactionType.Ausgabe)
             .GroupBy(t => t.KategorieId)
-            .Select(g => new { Key = g.Key, Cat = kategorien.FirstOrDefault(k => k.Id == g.Key), Total = g.Sum(t => t.Betrag) })
-            .Where(x => x.Cat != null)
-            .Select(x => new CategorySummary
+            .Select(g => new { Key = g.Key, Cat = kategorien.FirstOrDefault(k => k.Id == g.Key) ?? unkategorisiert, Total = g.Sum(t => Math.Abs(t.Betrag)) })
+                .Select(x => new CategorySummary
             {
                 CategoryId = x.Key,
                 CategoryName = x.Cat!.Name,
-                Total = x.Total,
+                Total = (decimal)x.Total,
                 Color = x.Cat.Color,
                 Icon = x.Cat.Icon
             })
@@ -71,13 +74,12 @@ public class LoadDashboardMonthUseCase(
         var kategorieEinnahmen = transaktionen
             .Where(t => t.Typ == TransactionType.Einnahme)
             .GroupBy(t => t.KategorieId)
-            .Select(g => new { Key = g.Key, Cat = kategorien.FirstOrDefault(k => k.Id == g.Key), Total = g.Sum(t => t.Betrag) })
-            .Where(x => x.Cat != null)
-            .Select(x => new CategorySummary
+            .Select(g => new { Key = g.Key, Cat = kategorien.FirstOrDefault(k => k.Id == g.Key) ?? unkategorisiert, Total = g.Sum(t => Math.Abs(t.Betrag)) })
+                .Select(x => new CategorySummary
             {
                 CategoryId = x.Key,
                 CategoryName = x.Cat!.Name,
-                Total = x.Total,
+                Total = (decimal)x.Total,
                 Color = x.Cat.Color,
                 Icon = x.Cat.Icon
             })
