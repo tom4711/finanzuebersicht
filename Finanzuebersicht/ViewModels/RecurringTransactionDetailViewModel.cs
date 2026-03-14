@@ -152,6 +152,8 @@ public partial class RecurringTransactionDetailViewModel(
                 out _))
             return;
 
+        System.Diagnostics.Debug.WriteLine($"RecurringTransactionDetailViewModel.Save: Interval={Interval}, SelectedIntervalName='{SelectedIntervalName}', IntervalFactor={IntervalFactor}");
+
         await _saveRecurringTransactionDetailUseCase.ExecuteAsync(
             _existing,
             betrag,
