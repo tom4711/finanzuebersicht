@@ -2,6 +2,10 @@ using System;
 using Finanzuebersicht.Models;
 using Finanzuebersicht.Services;
 
+using System;
+using Finanzuebersicht.Models;
+using Finanzuebersicht.Services;
+
 namespace Finanzuebersicht.Application.UseCases.Dashboard;
 
 public class LoadDashboardMonthUseCase(
@@ -29,7 +33,8 @@ public class LoadDashboardMonthUseCase(
             {
                 if (da.Startdatum <= bis && (!da.Enddatum.HasValue || da.Enddatum.Value >= von))
                 {
-                    if (!transaktionen.Any(t => t.DauerauftragId == da.Id))
+                    // Only add a forecast transaction for this month if the recurrence actually occurs in the month
+                    if (!transaktionen.Any(t => t.DauerauftragId == da.Id) && OccursInRange(da, von, bis))
                     {
                         transaktionen.Add(new Transaction
                         {
@@ -60,7 +65,7 @@ public class LoadDashboardMonthUseCase(
             .Where(t => t.Typ == TransactionType.Ausgabe)
             .GroupBy(t => t.KategorieId)
             .Select(g => new { Key = g.Key, Cat = kategorien.FirstOrDefault(k => k.Id == g.Key) ?? unkategorisiert, Total = g.Sum(t => Math.Abs(t.Betrag)) })
-                .Select(x => new CategorySummary
+            .Select(x => new CategorySummary
             {
                 CategoryId = x.Key,
                 CategoryName = x.Cat!.Name,
@@ -75,7 +80,7 @@ public class LoadDashboardMonthUseCase(
             .Where(t => t.Typ == TransactionType.Einnahme)
             .GroupBy(t => t.KategorieId)
             .Select(g => new { Key = g.Key, Cat = kategorien.FirstOrDefault(k => k.Id == g.Key) ?? unkategorisiert, Total = g.Sum(t => Math.Abs(t.Betrag)) })
-                .Select(x => new CategorySummary
+            .Select(x => new CategorySummary
             {
                 CategoryId = x.Key,
                 CategoryName = x.Cat!.Name,
@@ -96,6 +101,47 @@ public class LoadDashboardMonthUseCase(
             KategorieEinnahmen = kategorieEinnahmen
         };
     }
+
+    private static bool OccursInRange(RecurringTransaction da, DateTime rangeStart, DateTime rangeEnd)
+    {
+        if (da.Startdatum > rangeEnd) return false;
+        if (da.Enddatum.HasValue && da.Enddatum.Value < rangeStart) return false;
+
+        var candidate = da.LetzteAusfuehrung ?? da.Startdatum;
+        if (candidate < da.Startdatum) candidate = da.Startdatum;
+
+        var safety = 0;
+        while (candidate < rangeStart && safety++ < 1000)
+        {
+            candidate = GetNextInstance(da, candidate);
+        }
+
+        return candidate >= rangeStart && candidate <= rangeEnd;
+    }
+
+    private static DateTime GetNextInstance(RecurringTransaction recurring, DateTime fromDate)
+    {
+        var factor = Math.Max(1, recurring.IntervalFactor);
+        return recurring.Interval switch
+        {
+            RecurrenceInterval.Weekly => fromDate.Date.AddDays(7L * factor),
+            RecurrenceInterval.Monthly => AddMonthsPreserveDay(fromDate.Date, 1 * factor),
+            RecurrenceInterval.Quarterly => AddMonthsPreserveDay(fromDate.Date, 3 * factor),
+            RecurrenceInterval.Yearly => AddMonthsPreserveDay(fromDate.Date, 12 * factor),
+            RecurrenceInterval.Daily => fromDate.Date.AddDays(1 * factor),
+            _ => AddMonthsPreserveDay(fromDate.Date, 1 * factor),
+        };
+    }
+
+    private static DateTime AddMonthsPreserveDay(DateTime date, int months)
+    {
+        var target = date.AddMonths(months);
+        var day = date.Day;
+        var daysInTarget = DateTime.DaysInMonth(target.Year, target.Month);
+        if (day > daysInTarget)
+            day = daysInTarget;
+        return new DateTime(target.Year, target.Month, day);
+    }
 }
 
 public class DashboardMonthData
@@ -104,6 +150,6 @@ public class DashboardMonthData
     public decimal GesamtEinnahmen { get; set; }
     public decimal GesamtAusgaben { get; set; }
     public decimal Bilanz { get; set; }
-    public List<CategorySummary> KategorieAusgaben { get; set; } = [];
-    public List<CategorySummary> KategorieEinnahmen { get; set; } = [];
+    public List<CategorySummary> KategorieAusgaben { get; set; } = new List<CategorySummary>();
+    public List<CategorySummary> KategorieEinnahmen { get; set; } = new List<CategorySummary>();
 }
