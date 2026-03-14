@@ -17,8 +17,8 @@
             <Label Text="Notiz (optional)" FontSize="13" TextColor="Gray" />
             <Entry Text="{Binding Note}" Placeholder="z. B. verschoben wegen Feiertag" />
 
-            <Button Text="Speichern" Command="{Binding SaveCommand}" BackgroundColor="#007AFF" TextColor="White" />
-            <Button Text="Abbrechen" Command="{Binding CancelCommand}" BackgroundColor="#8E8E93" TextColor="White" />
+            <Button Text="Speichern" Command="{Binding SaveCommand}" BackgroundColor="{DynamicResource Primary}" TextColor="White" />
+            <Button Text="Abbrechen" Command="{Binding CancelCommand}" BackgroundColor="{DynamicResource Gray600}" TextColor="White" />
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>
