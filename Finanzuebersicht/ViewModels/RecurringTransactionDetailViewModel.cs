@@ -79,6 +79,21 @@ public partial class RecurringTransactionDetailViewModel(
             {
                 Interval = parsed;
             }
+            else if (!string.IsNullOrWhiteSpace(value))
+            {
+                // Fallback mapping for localized strings (e.g. German)
+                var key = value.Trim().ToLowerInvariant();
+                if (key.Contains("täg") || key.Contains("daily"))
+                    Interval = RecurrenceInterval.Daily;
+                else if (key.Contains("wöch") || key.Contains("weekly"))
+                    Interval = RecurrenceInterval.Weekly;
+                else if (key.Contains("monat") || key.Contains("monthly"))
+                    Interval = RecurrenceInterval.Monthly;
+                else if (key.Contains("quart") || key.Contains("quarter"))
+                    Interval = RecurrenceInterval.Quarterly;
+                else if (key.Contains("jahr") || key.Contains("year"))
+                    Interval = RecurrenceInterval.Yearly;
+            }
         }
     }
 
