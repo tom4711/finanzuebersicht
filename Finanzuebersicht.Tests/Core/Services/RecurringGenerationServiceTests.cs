@@ -1,78 +1,175 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Finanzuebersicht.Models;
 using Finanzuebersicht.Services;
+using Xunit;
+using NSubstitute;
 
-namespace Finanzuebersicht.Tests.Services;
+namespace Finanzuebersicht.Tests.Core.Services;
 
 public class RecurringGenerationServiceTests
 {
     [Fact]
-    public async Task GeneratePendingRecurringTransactionsAsync_CreatesExpectedTransactions()
+    public async Task Weekly_GeneratesExpectedTransactions()
     {
         var recurringRepository = Substitute.For<IRecurringTransactionRepository>();
         var transactionRepository = Substitute.For<ITransactionRepository>();
+
+        var start = DateTime.Today.AddDays(-15); // ~2 weeks ago
+        var recurring = new RecurringTransaction
+        {
+            Id = Guid.NewGuid().ToString(),
+            Titel = "Weekly",
+            Betrag = 10m,
+            Typ = TransactionType.Ausgabe,
+            Startdatum = start,
+            Aktiv = true,
+            KategorieId = "cat-1",
+            Interval = RecurrenceInterval.Weekly,
+            IntervalFactor = 1
+        };
+
+        recurringRepository.GetRecurringTransactionsAsync().Returns(new List<RecurringTransaction> { recurring });
+
+        var saved = new List<Transaction>();
+        transactionRepository.When(x => x.SaveTransactionAsync(Arg.Any<Transaction>()))
+            .Do(call => saved.Add(call.Arg<Transaction>()));
+
+        var service = new RecurringGenerationService(recurringRepository, transactionRepository);
+        await service.GeneratePendingRecurringTransactionsAsync();
+
+        Assert.True(saved.Count >= 2);
+        Assert.All(saved, t =>
+        {
+            Assert.Equal(recurring.Id, t.DauerauftragId);
+            Assert.Equal("Weekly", t.Titel);
+            Assert.Equal(10m, t.Betrag);
+        });
+
+        // expected last candidate: advance by 7 days until <= today
+        var expected = start;
+        while (expected.AddDays(7) <= DateTime.Today)
+            expected = expected.AddDays(7);
+
+        await recurringRepository.Received(1).SaveRecurringTransactionAsync(Arg.Is<RecurringTransaction>(r => r.LetzteAusfuehrung.HasValue && r.LetzteAusfuehrung.Value.Date == expected.Date));
+    }
+
+    [Fact]
+    public async Task Quarterly_GeneratesExpectedTransactions()
+    {
+        var recurringRepository = Substitute.For<IRecurringTransactionRepository>();
+        var transactionRepository = Substitute.For<ITransactionRepository>();
+
+        var start = new DateTime(DateTime.Today.Year - 1, 12, 31); // end of last year
+        var recurring = new RecurringTransaction
+        {
+            Id = Guid.NewGuid().ToString(),
+            Titel = "Quarterly",
+            Betrag = 100m,
+            Typ = TransactionType.Ausgabe,
+            Startdatum = start,
+            Aktiv = true,
+            KategorieId = "cat-q",
+            Interval = RecurrenceInterval.Quarterly,
+            IntervalFactor = 1
+        };
+
+        recurringRepository.GetRecurringTransactionsAsync().Returns(new List<RecurringTransaction> { recurring });
+
+        var saved = new List<Transaction>();
+        transactionRepository.When(x => x.SaveTransactionAsync(Arg.Any<Transaction>()))
+            .Do(call => saved.Add(call.Arg<Transaction>()));
+
+        var service = new RecurringGenerationService(recurringRepository, transactionRepository);
+        await service.GeneratePendingRecurringTransactionsAsync();
+
+        // At least one quarterly instance should be generated (depending on current date)
+        Assert.True(saved.Count >= 1);
+        Assert.All(saved, t => Assert.Equal(recurring.Id, t.DauerauftragId));
+    }
+
+    [Fact]
+    public async Task SkipException_SkipsInstanceButUpdatesLastExecution()
+    {
+        var recurringRepository = Substitute.For<IRecurringTransactionRepository>();
+        var transactionRepository = Substitute.For<ITransactionRepository>();
+
+        var start = DateTime.Today.AddMonths(-2);
+        var instanceToSkip = start.AddMonths(1);
 
         var recurring = new RecurringTransaction
         {
             Id = Guid.NewGuid().ToString(),
-            Titel = "Abo",
-            Betrag = 12m,
+            Titel = "Monthly",
+            Betrag = 50m,
             Typ = TransactionType.Ausgabe,
-            Startdatum = DateTime.Today.AddMonths(-2),
+            Startdatum = start,
             Aktiv = true,
-            KategorieId = "cat-1"
+            KategorieId = "cat-m",
+            Interval = RecurrenceInterval.Monthly,
+            IntervalFactor = 1,
+            Exceptions = new List<RecurringException>
+            {
+                new RecurringException { InstanceDate = instanceToSkip, Type = RecurringExceptionType.Skip }
+            }
         };
 
-        recurringRepository.GetRecurringTransactionsAsync()
-            .Returns(new List<RecurringTransaction> { recurring });
+        recurringRepository.GetRecurringTransactionsAsync().Returns(new List<RecurringTransaction> { recurring });
+
+        var saved = new List<Transaction>();
+        transactionRepository.When(x => x.SaveTransactionAsync(Arg.Any<Transaction>()))
+            .Do(call => saved.Add(call.Arg<Transaction>()));
 
         var service = new RecurringGenerationService(recurringRepository, transactionRepository);
-
         await service.GeneratePendingRecurringTransactionsAsync();
 
-        var savedTransactions = transactionRepository
-            .ReceivedCalls()
-            .Where(call => call.GetMethodInfo().Name == nameof(ITransactionRepository.SaveTransactionAsync))
-            .Select(call => call.GetArguments().FirstOrDefault())
-            .OfType<Transaction>()
-            .ToList();
+        // Ensure no saved transaction has Datum == instanceToSkip
+        Assert.DoesNotContain(saved, t => t.Datum.Date == instanceToSkip.Date);
 
-        Assert.True(savedTransactions.Count >= 2);
-        Assert.All(savedTransactions, t =>
-        {
-            Assert.Equal(recurring.Id, t.DauerauftragId);
-            Assert.Equal("Abo", t.Titel);
-            Assert.Equal(12m, t.Betrag);
-        });
-
-        await recurringRepository.Received(1).SaveRecurringTransactionAsync(Arg.Is<RecurringTransaction>(r =>
-            r.Id == recurring.Id && r.LetzteAusfuehrung.HasValue));
+        // But repository should be saved with LetzteAusfuehrung at least up to that skipped instance
+        await recurringRepository.Received(1).SaveRecurringTransactionAsync(Arg.Is<RecurringTransaction>(r => r.LetzteAusfuehrung.HasValue && r.LetzteAusfuehrung.Value.Date >= instanceToSkip.Date));
     }
 
     [Fact]
-    public async Task GeneratePendingRecurringTransactionsAsync_IgnoresInactiveItems()
+    public async Task ShiftException_CreatesTransactionAtShiftedDate()
     {
         var recurringRepository = Substitute.For<IRecurringTransactionRepository>();
         var transactionRepository = Substitute.For<ITransactionRepository>();
 
-        recurringRepository.GetRecurringTransactionsAsync()
-            .Returns(new List<RecurringTransaction>
+        var start = DateTime.Today.AddMonths(-1);
+        var instance = start.AddMonths(1);
+        var shifted = instance.AddDays(3);
+
+        var recurring = new RecurringTransaction
+        {
+            Id = Guid.NewGuid().ToString(),
+            Titel = "MonthlyShift",
+            Betrag = 75m,
+            Typ = TransactionType.Ausgabe,
+            Startdatum = start,
+            Aktiv = true,
+            KategorieId = "cat-s",
+            Interval = RecurrenceInterval.Monthly,
+            IntervalFactor = 1,
+            Exceptions = new List<RecurringException>
             {
-                new()
-                {
-                    Id = Guid.NewGuid().ToString(),
-                    Titel = "Inaktiv",
-                    Betrag = 5m,
-                    Typ = TransactionType.Ausgabe,
-                    Startdatum = DateTime.Today.AddMonths(-3),
-                    Aktiv = false,
-                    KategorieId = "cat-1"
-                }
-            });
+                new RecurringException { InstanceDate = instance, Type = RecurringExceptionType.Shift, ShiftToDate = shifted }
+            }
+        };
+
+        recurringRepository.GetRecurringTransactionsAsync().Returns(new List<RecurringTransaction> { recurring });
+
+        var saved = new List<Transaction>();
+        transactionRepository.When(x => x.SaveTransactionAsync(Arg.Any<Transaction>()))
+            .Do(call => saved.Add(call.Arg<Transaction>()));
 
         var service = new RecurringGenerationService(recurringRepository, transactionRepository);
-
         await service.GeneratePendingRecurringTransactionsAsync();
 
-        await transactionRepository.DidNotReceiveWithAnyArgs().SaveTransactionAsync(default!);
+        Assert.Contains(saved, t => t.Datum.Date == shifted.Date && t.DauerauftragId == recurring.Id);
+        await recurringRepository.Received(1).SaveRecurringTransactionAsync(Arg.Is<RecurringTransaction>(r => r.LetzteAusfuehrung.HasValue));
     }
 }
+

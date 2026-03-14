@@ -18,7 +18,11 @@ public class SaveRecurringTransactionDetailUseCase(
         TransactionType typ,
         DateTime startdatum,
         DateTime? enddatum,
-        bool aktiv)
+        bool aktiv,
+        RecurrenceInterval interval = RecurrenceInterval.Monthly,
+        int intervalFactor = 1,
+        int reminderDaysBefore = 0,
+        List<RecurringException>? exceptions = null)
     {
         var recurring = existing ?? new RecurringTransaction();
         recurring.Betrag = betrag;
@@ -28,6 +32,11 @@ public class SaveRecurringTransactionDetailUseCase(
         recurring.Startdatum = startdatum;
         recurring.Enddatum = enddatum;
         recurring.Aktiv = aktiv;
+        recurring.Interval = interval;
+        recurring.IntervalFactor = intervalFactor;
+        recurring.ReminderDaysBefore = reminderDaysBefore;
+        if (exceptions != null)
+            recurring.Exceptions = exceptions;
 
         await _recurringTransactionRepository.SaveRecurringTransactionAsync(recurring);
         await _recurringGenerationService.GeneratePendingRecurringTransactionsAsync();
