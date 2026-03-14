@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -11,11 +13,15 @@ namespace Finanzuebersicht.ViewModels;
 public partial class RecurringTransactionDetailViewModel(
     SaveRecurringTransactionDetailUseCase saveRecurringTransactionDetailUseCase,
     LoadRecurringTransactionDetailDataUseCase loadRecurringTransactionDetailDataUseCase,
+    AddRecurringExceptionUseCase addRecurringExceptionUseCase,
+    RemoveRecurringExceptionUseCase removeRecurringExceptionUseCase,
     ITransactionValidationService validationService,
     INavigationService navigationService) : ObservableObject
 {
     private readonly SaveRecurringTransactionDetailUseCase _saveRecurringTransactionDetailUseCase = saveRecurringTransactionDetailUseCase;
     private readonly LoadRecurringTransactionDetailDataUseCase _loadRecurringTransactionDetailDataUseCase = loadRecurringTransactionDetailDataUseCase;
+    private readonly AddRecurringExceptionUseCase _addRecurringExceptionUseCase = addRecurringExceptionUseCase;
+    private readonly RemoveRecurringExceptionUseCase _removeRecurringExceptionUseCase = removeRecurringExceptionUseCase;
     private readonly ITransactionValidationService _validationService = validationService;
     private RecurringTransaction? _existing;
     private readonly INavigationService _navigationService = navigationService;
@@ -50,6 +56,32 @@ public partial class RecurringTransactionDetailViewModel(
     [ObservableProperty]
     private ObservableCollection<Category> kategorien = [];
 
+    [ObservableProperty]
+    private RecurrenceInterval interval = RecurrenceInterval.Monthly;
+
+    [ObservableProperty]
+    private int intervalFactor = 1;
+
+    [ObservableProperty]
+    private int reminderDaysBefore = 0;
+
+    [ObservableProperty]
+    private ObservableCollection<RecurringException> exceptions = [];
+
+    public List<string> IntervalOptions { get; } = new List<string> { "Daily", "Weekly", "Monthly", "Quarterly", "Yearly" };
+
+    public string SelectedIntervalName
+    {
+        get => Interval.ToString();
+        set
+        {
+            if (Enum.TryParse<RecurrenceInterval>(value, out var parsed))
+            {
+                Interval = parsed;
+            }
+        }
+    }
+
     public RecurringTransaction? RecurringTransaction
     {
         set
@@ -70,6 +102,10 @@ public partial class RecurringTransactionDetailViewModel(
                 }
 
                 _ = SetKategorieAsync(value.KategorieId);
+                Interval = value.Interval;
+                IntervalFactor = value.IntervalFactor;
+                ReminderDaysBefore = value.ReminderDaysBefore;
+                Exceptions = new ObservableCollection<RecurringException>(value.Exceptions ?? new List<RecurringException>());
             }
         }
     }
@@ -109,8 +145,87 @@ public partial class RecurringTransactionDetailViewModel(
             Typ,
             Startdatum,
             HatEnddatum ? EnddatumWert : null,
-            Aktiv);
+            Aktiv,
+            Interval,
+            IntervalFactor,
+            ReminderDaysBefore,
+            Exceptions.ToList());
         await _navigationService.GoBackAsync();
+    }
+
+    [RelayCommand]
+    private async Task AddSkipNextInstance()
+    {
+        if (_existing == null) return;
+
+        // naive next instance calculation
+        var last = _existing.LetzteAusfuehrung ?? _existing.Startdatum;
+        DateTime next = last;
+        switch (Interval)
+        {
+            case RecurrenceInterval.Daily:
+                next = last.AddDays(IntervalFactor);
+                break;
+            case RecurrenceInterval.Weekly:
+                next = last.AddDays(7 * IntervalFactor);
+                break;
+            case RecurrenceInterval.Monthly:
+                next = last.AddMonths(IntervalFactor);
+                break;
+            case RecurrenceInterval.Quarterly:
+                next = last.AddMonths(3 * IntervalFactor);
+                break;
+            case RecurrenceInterval.Yearly:
+                next = last.AddYears(IntervalFactor);
+                break;
+        }
+
+        var ex = new RecurringException { Id = Guid.NewGuid().ToString(), InstanceDate = next.Date, Type = RecurringExceptionType.Skip };
+        await _addRecurringExceptionUseCase.ExecuteAsync(_existing.Id, ex);
+        Exceptions.Add(ex);
+    }
+
+    [RelayCommand]
+    private async Task GoToShift()
+    {
+        if (_existing == null) return;
+
+        var last = _existing.LetzteAusfuehrung ?? _existing.Startdatum;
+        DateTime next = last;
+        switch (Interval)
+        {
+            case RecurrenceInterval.Daily:
+                next = last.AddDays(IntervalFactor);
+                break;
+            case RecurrenceInterval.Weekly:
+                next = last.AddDays(7 * IntervalFactor);
+                break;
+            case RecurrenceInterval.Monthly:
+                next = last.AddMonths(IntervalFactor);
+                break;
+            case RecurrenceInterval.Quarterly:
+                next = last.AddMonths(3 * IntervalFactor);
+                break;
+            case RecurrenceInterval.Yearly:
+                next = last.AddYears(IntervalFactor);
+                break;
+        }
+
+        var parameters = new Dictionary<string, object>
+        {
+            ["RecurringId"] = _existing.Id,
+            ["InstanceDate"] = next.Date
+        };
+
+        await _navigationService.GoToAsync("RecurringInstanceShiftPage", parameters);
+    }
+
+    [RelayCommand]
+    private async Task RemoveException(RecurringException ex)
+    {
+        if (_existing == null || ex == null) return;
+        await _removeRecurringExceptionUseCase.ExecuteAsync(_existing.Id, ex.Id);
+        Exceptions.Remove(ex);
     }
 
     private async Task SetKategorieAsync(string kategorieId)

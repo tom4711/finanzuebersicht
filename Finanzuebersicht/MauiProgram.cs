@@ -60,6 +60,13 @@ public static class MauiProgram
 		builder.Services.AddTransient<LoadRecurringTransactionDetailDataUseCase>();
 		builder.Services.AddTransient<LoadRecurringTransactionsUseCase>();
 		builder.Services.AddTransient<ToggleRecurringTransactionActiveUseCase>();
+		builder.Services.AddTransient<AddRecurringExceptionUseCase>();
+		builder.Services.AddTransient<RemoveRecurringExceptionUseCase>();
+		builder.Services.AddTransient<ShiftRecurringInstanceUseCase>();
+		builder.Services.AddTransient<GetDueRecurringWithHintsUseCase>();
+		builder.Services.AddTransient<AddRecurringExceptionUseCase>();
+		builder.Services.AddTransient<RemoveRecurringExceptionUseCase>();
+		builder.Services.AddTransient<GetDueRecurringWithHintsUseCase>();
 		builder.Services.AddTransient<LoadTransactionDetailDataUseCase>();
 		builder.Services.AddTransient<DeleteTransactionUseCase>();
 		builder.Services.AddTransient<LoadTransactionsMonthUseCase>();
@@ -79,6 +86,7 @@ public static class MauiProgram
 		builder.Services.AddTransient<TransactionDetailViewModel>();
 		builder.Services.AddTransient<RecurringTransactionsViewModel>();
 		builder.Services.AddTransient<RecurringTransactionDetailViewModel>();
+        builder.Services.AddTransient<RecurringInstanceShiftViewModel>();
 		builder.Services.AddTransient<SettingsViewModel>();
 		builder.Services.AddTransient<YearOverviewViewModel>();
 
@@ -88,6 +96,7 @@ public static class MauiProgram
 		builder.Services.AddTransient<TransactionDetailPage>();
 		builder.Services.AddTransient<RecurringTransactionsPage>();
 		builder.Services.AddTransient<RecurringTransactionDetailPage>();
+        builder.Services.AddTransient<RecurringInstanceShiftPage>();
 		builder.Services.AddTransient<CategoriesPage>();
 		builder.Services.AddTransient<CategoryDetailPage>();
 		builder.Services.AddTransient<SettingsPage>();

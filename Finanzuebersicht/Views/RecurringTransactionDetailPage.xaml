@@ -77,12 +77,52 @@
                 <Switch Grid.Column="1" IsToggled="{Binding Aktiv}" />
             </Grid>
 
-            <!-- Speichern -->
-            <Button Text="{loc:Translate Btn_Speichern}" Command="{Binding SaveCommand}"
+            <!-- Intervall (Täglich/Wöchentlich/Monatlich/Quartal/Jährlich) -->
+            <VerticalStackLayout Spacing="4">
+                <Label Text="Intervall" FontSize="13" TextColor="Gray" />
+                <Picker ItemsSource="{Binding IntervalOptions}" SelectedItem="{Binding SelectedIntervalName}" FontSize="16" />
+            </VerticalStackLayout>
+
+            <!-- Interval-Factor -->
+            <Grid ColumnDefinitions="*, Auto" ColumnSpacing="8">
+                <VerticalStackLayout Spacing="4">
+                    <Label Text="Intervall-Faktor" FontSize="13" TextColor="Gray" />
+                    <Entry Text="{Binding IntervalFactor}" Keyboard="Numeric" />
+                </VerticalStackLayout>
+                <VerticalStackLayout Spacing="4">
+                    <Label Text="Erinnerung (Tage vorher)" FontSize="13" TextColor="Gray" />
+                    <Entry Text="{Binding ReminderDaysBefore}" Keyboard="Numeric" />
+                </VerticalStackLayout>
+            </Grid>
+
+            <!-- Exceptions -->
+            <VerticalStackLayout Spacing="4">
+                <Label Text="Ausnahmen" FontSize="13" TextColor="Gray" />
+                <CollectionView ItemsSource="{Binding Exceptions}" SelectionMode="None" HeightRequest="140">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid ColumnDefinitions="*, Auto" Padding="8">
+                                <Label Text="{Binding InstanceDate, StringFormat='{}{0:dd.MM.yyyy}'}" VerticalTextAlignment="Center" />
+                                <Button Grid.Column="1" Text="Entfernen" BackgroundColor="#FF3B30" TextColor="White" Command="{Binding Source={RelativeSource AncestorType={x:Type vm:RecurringTransactionDetailViewModel}}, Path=RemoveExceptionCommand}" CommandParameter="{Binding .}" />
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+                <Button Text="Nächste Instanz überspringen" Command="{Binding AddSkipNextInstanceCommand}" BackgroundColor="#FF9500" TextColor="White" />
+            </VerticalStackLayout>
+
+                <!-- Speichern -->
+                <Button Text="{loc:Translate Btn_Speichern}" Command="{Binding SaveCommand}"
                     BackgroundColor="#007AFF" TextColor="White"
                     CornerRadius="12" HeightRequest="50"
                     FontSize="16" FontAttributes="Bold"
                     Margin="0,20,0,0" />
+
+                <HorizontalStackLayout Spacing="8" Margin="0,8,0,0">
+                <Button Text="Instanz verschieben" Command="{Binding GoToShiftCommand}" BackgroundColor="#34C759" TextColor="White" />
+                <Button Text="Nächste Instanz überspringen" Command="{Binding AddSkipNextInstanceCommand}" BackgroundColor="#FF9500" TextColor="White" />
+                </HorizontalStackLayout>
 
         </VerticalStackLayout>
     </ScrollView>
