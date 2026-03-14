@@ -21,6 +21,12 @@ public partial class DashboardPage : ContentPage
         YearBarChart.Drawable = _yearBar;
         YearDonutChart.Drawable = _yearDonut;
 
+        // Initialize drawables with current VM data so charts render immediately
+        _monthDonut.Items = _vm.KategorieAusgaben;
+        _yearBar.Months = _vm.JahrMonate;
+        _yearBar.CurrentMonth = _vm.IsYearView ? 0 : DateTime.Today.Month;
+        _yearDonut.Items = _vm.JahrKategorien;
+
         _vm.PropertyChanged += OnViewModelPropertyChanged;
     }
 
@@ -31,6 +37,14 @@ public partial class DashboardPage : ContentPage
         {
             vm.LoadDashboardCommand.Execute(null);
         }
+
+        // Ensure charts are invalidated after loading so drawables render current data
+        MainThread.BeginInvokeOnMainThread(() =>
+        {
+            MonthDonutChart.Invalidate();
+            YearDonutChart.Invalidate();
+            YearBarChart.Invalidate();
+        });
 
         // subscribe to app-wide data change notifications
         App.DataChanged += OnAppDataChanged;

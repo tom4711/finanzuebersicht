@@ -110,14 +110,14 @@
                 </Grid>
 
                 <!-- Ausgaben nach Kategorie -->
-                <Label Text="{loc:Translate Lbl_AusgabenNachKategorie}" FontSize="18" FontAttributes="Bold"
-                       Margin="0,8,0,0"
-                       IsVisible="{Binding KategorieAusgaben.Count, Converter={StaticResource CountToBool}}" />
+                  <Label Text="{loc:Translate Lbl_AusgabenNachKategorie}" FontSize="18" FontAttributes="Bold"
+                      Margin="0,8,0,0"
+                      IsVisible="{Binding KategorieAusgaben, Converter={StaticResource CountToBool}}" />
 
                 <!-- Donut-Diagramm Monatsausgaben -->
                 <GraphicsView x:Name="MonthDonutChart"
                               HeightRequest="200"
-                              IsVisible="{Binding KategorieAusgaben.Count, Converter={StaticResource CountToBool}}"
+                              IsVisible="{Binding KategorieAusgaben, Converter={StaticResource CountToBool}}"
                               Margin="0,4,0,0" />
 
                 <CollectionView ItemsSource="{Binding KategorieAusgaben}"
@@ -143,9 +143,9 @@
                 </CollectionView>
 
                 <!-- Einnahmen nach Kategorie -->
-                <Label Text="{loc:Translate Lbl_EinnahmenNachKategorie}" FontSize="18" FontAttributes="Bold"
-                       Margin="0,8,0,0"
-                       IsVisible="{Binding KategorieEinnahmen.Count, Converter={StaticResource CountToBool}}" />
+                  <Label Text="{loc:Translate Lbl_EinnahmenNachKategorie}" FontSize="18" FontAttributes="Bold"
+                      Margin="0,8,0,0"
+                      IsVisible="{Binding KategorieEinnahmen, Converter={StaticResource CountToBool}}" />
 
                 <CollectionView ItemsSource="{Binding KategorieEinnahmen}"
                                 SelectionMode="None">
@@ -200,24 +200,24 @@
                 </Border>
 
                 <!-- Balkendiagramm Monatsvergleich -->
-                <Label Text="{loc:Translate Lbl_AusgabenProMonat}" FontSize="18" FontAttributes="Bold"
-                       Margin="0,8,0,0"
-                       IsVisible="{Binding JahrMonate.Count, Converter={StaticResource CountToBool}}" />
+                  <Label Text="{loc:Translate Lbl_AusgabenProMonat}" FontSize="18" FontAttributes="Bold"
+                      Margin="0,8,0,0"
+                      IsVisible="{Binding JahrMonate, Converter={StaticResource CountToBool}}" />
 
                 <GraphicsView x:Name="YearBarChart"
                               HeightRequest="150"
-                              IsVisible="{Binding JahrMonate.Count, Converter={StaticResource CountToBool}}"
+                              IsVisible="{Binding JahrMonate, Converter={StaticResource CountToBool}}"
                               Margin="0,4,0,8" />
 
                 <!-- Kategorien im Jahr -->
-                <Label Text="{loc:Translate Lbl_AusgabenNachKategorie}" FontSize="18" FontAttributes="Bold"
-                       Margin="0,8,0,0"
-                       IsVisible="{Binding JahrKategorien.Count, Converter={StaticResource CountToBool}}" />
+                  <Label Text="{loc:Translate Lbl_AusgabenNachKategorie}" FontSize="18" FontAttributes="Bold"
+                      Margin="0,8,0,0"
+                      IsVisible="{Binding JahrKategorien, Converter={StaticResource CountToBool}}" />
 
                 <!-- Donut-Diagramm Jahreskategorien -->
                 <GraphicsView x:Name="YearDonutChart"
                               HeightRequest="200"
-                              IsVisible="{Binding JahrKategorien.Count, Converter={StaticResource CountToBool}}"
+                              IsVisible="{Binding JahrKategorien, Converter={StaticResource CountToBool}}"
                               Margin="0,4,0,0" />
 
                 <VerticalStackLayout BindableLayout.ItemsSource="{Binding JahrKategorien}"

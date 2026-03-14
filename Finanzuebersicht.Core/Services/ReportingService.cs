@@ -23,7 +23,7 @@ public class ReportingService(
         {
             Year = year,
             Month = month,
-            Total = expenditure.Sum(t => t.Betrag),
+            Total = expenditure.Sum(t => Math.Abs(t.Betrag)),
             ByCategory = [.. expenditure
                 .GroupBy(t => t.KategorieId)
                 .Select(g =>
@@ -33,7 +33,7 @@ public class ReportingService(
                     {
                         CategoryId = g.Key,
                         CategoryName = cat?.Name ?? string.Empty,
-                        Total = g.Sum(t => t.Betrag),
+                        Total = g.Sum(t => Math.Abs(t.Betrag)),
                         Color = cat?.Color ?? "#007AFF",
                         Icon = cat?.Icon ?? "📁"
                     };
@@ -54,7 +54,7 @@ public class ReportingService(
         var yearSummary = new YearSummary
         {
             Year = year,
-            Total = expenditure.Sum(t => t.Betrag)
+            Total = expenditure.Sum(t => Math.Abs(t.Betrag))
         };
 
         for (int m = 1; m <= 12; m++)
@@ -64,7 +64,7 @@ public class ReportingService(
             {
                 Year = year,
                 Month = m,
-                Total = monthItems.Sum(t => t.Betrag),
+                Total = monthItems.Sum(t => Math.Abs(t.Betrag)),
                 ByCategory = [.. monthItems
                     .GroupBy(t => t.KategorieId)
                     .Select(g =>
@@ -74,7 +74,7 @@ public class ReportingService(
                         {
                             CategoryId = g.Key,
                             CategoryName = cat?.Name ?? string.Empty,
-                            Total = g.Sum(t => t.Betrag),
+                            Total = g.Sum(t => Math.Abs(t.Betrag)),
                             Color = cat?.Color ?? "#007AFF",
                             Icon = cat?.Icon ?? "📁"
                         };
@@ -93,7 +93,7 @@ public class ReportingService(
                 {
                     CategoryId = g.Key,
                     CategoryName = cat?.Name ?? string.Empty,
-                    Total = g.Sum(t => t.Betrag),
+                    Total = g.Sum(t => Math.Abs(t.Betrag)),
                     Color = cat?.Color ?? "#007AFF",
                     Icon = cat?.Icon ?? "📁"
                 };

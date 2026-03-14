@@ -11,4 +11,13 @@ public class RecurringTransaction
     public DateTime? Enddatum { get; set; }
     public bool Aktiv { get; set; } = true;
     public DateTime? LetzteAusfuehrung { get; set; }
+
+    // Issue #48: Erweiterte Felder für wiederkehrende Zahlungen
+    public RecurrenceInterval Interval { get; set; } = RecurrenceInterval.Monthly;
+    // Intervall-Faktor: z.B. 1 = every month/week/quarter, 2 = every 2 months/weeks
+    public int IntervalFactor { get; set; } = 1;
+    // Reminder / Hinweis: Tage vor Fälligkeit
+    public int ReminderDaysBefore { get; set; } = 0;
+    // Ausnahmeregeln (Skip / Shift) für einzelne Instanzen
+    public List<RecurringException> Exceptions { get; set; } = new();
 }

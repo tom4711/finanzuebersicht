@@ -2,6 +2,7 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:Finanzuebersicht.ViewModels"
+             xmlns:models="clr-namespace:Finanzuebersicht.Models"
              xmlns:conv="clr-namespace:Finanzuebersicht.Converters"
              xmlns:loc="clr-namespace:Finanzuebersicht.Extensions"
              x:Class="Finanzuebersicht.Views.RecurringTransactionDetailPage"
@@ -10,6 +11,7 @@
 
     <ContentPage.Resources>
         <conv:TypButtonColorConverter x:Key="TypButtonColor" />
+        <conv:EnumToLocalizedStringConverter x:Key="EnumToLocalizedStringConverter" />
     </ContentPage.Resources>
 
     <ScrollView Padding="16">
@@ -77,12 +79,55 @@
                 <Switch Grid.Column="1" IsToggled="{Binding Aktiv}" />
             </Grid>
 
-            <!-- Speichern -->
-            <Button Text="{loc:Translate Btn_Speichern}" Command="{Binding SaveCommand}"
-                    BackgroundColor="#007AFF" TextColor="White"
+            <!-- Intervall (Täglich/Wöchentlich/Monatlich/Quartal/Jährlich) -->
+            <VerticalStackLayout Spacing="4">
+                <Label Text="Intervall" FontSize="13" TextColor="Gray" />
+                <Picker ItemsSource="{Binding IntervalValues}" SelectedItem="{Binding Interval, Mode=TwoWay}" FontSize="16" Margin="0,0,0,8">
+                    <Picker.ItemDisplayBinding>
+                        <Binding Path="." Converter="{StaticResource EnumToLocalizedStringConverter}" />
+                    </Picker.ItemDisplayBinding>
+                </Picker>
+            </VerticalStackLayout>
+
+            <!-- Interval-Factor -->
+            <Grid ColumnDefinitions="*, Auto" ColumnSpacing="8" Margin="0,8,0,0">
+                <VerticalStackLayout Grid.Column="0" Spacing="4">
+                    <Label Text="Intervall-Faktor" FontSize="13" TextColor="Gray" />
+                    <Entry Text="{Binding IntervalFactorText}" Keyboard="Numeric" />
+                </VerticalStackLayout>
+                <VerticalStackLayout Grid.Column="1" Spacing="4" HorizontalOptions="End">
+                    <Label Text="Erinnerung (Tage vorher)" FontSize="13" TextColor="Gray" />
+                    <Entry Text="{Binding ReminderDaysBeforeText}" Keyboard="Numeric" WidthRequest="80" />
+                </VerticalStackLayout>
+            </Grid>
+
+            <!-- Exceptions -->
+            <VerticalStackLayout Spacing="4">
+                <Label Text="Ausnahmen" FontSize="13" TextColor="Gray" />
+                <CollectionView ItemsSource="{Binding Exceptions}" SelectionMode="None" HeightRequest="180" VerticalOptions="Start" Margin="0,6,0,0">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="models:RecurringException">
+                            <Grid ColumnDefinitions="*, Auto" Padding="8">
+                                <Label Text="{Binding InstanceDate, StringFormat='{}{0:dd.MM.yyyy}'}" VerticalTextAlignment="Center" />
+                                <Button Grid.Column="1" Text="Entfernen" BackgroundColor="{StaticResource Ausgabe}" TextColor="White" Command="{Binding Source={RelativeSource AncestorType={x:Type vm:RecurringTransactionDetailViewModel}}, Path=RemoveExceptionCommand}" CommandParameter="{Binding .}" />
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+                <Button Text="Nächste Instanz überspringen" Command="{Binding AddSkipNextInstanceCommand}" BackgroundColor="{StaticResource Warning}" TextColor="White" />
+            </VerticalStackLayout>
+
+                <!-- Speichern -->
+                <Button Text="{loc:Translate Btn_Speichern}" Command="{Binding SaveCommand}"
+                    BackgroundColor="{StaticResource Primary}" TextColor="White"
                     CornerRadius="12" HeightRequest="50"
                     FontSize="16" FontAttributes="Bold"
                     Margin="0,20,0,0" />
+
+                <HorizontalStackLayout Spacing="8" Margin="0,8,0,0">
+                    <Button Text="Instanz verschieben" Command="{Binding GoToShiftCommand}" BackgroundColor="{StaticResource Einnahme}" TextColor="White" />
+                </HorizontalStackLayout>
 
         </VerticalStackLayout>
     </ScrollView>
