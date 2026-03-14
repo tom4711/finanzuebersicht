@@ -45,13 +45,10 @@ public class RecurringGenerationService(
                     transactionDate = exception.ShiftToDate.Value.Date;
                 }
 
-                // Nur Transaktionen erzeugen, deren effektives Datum nicht in der Zukunft liegt.
-                // Bei einem Shift in die Zukunft bleibt die Instanz pending und LetzteAusfuehrung
-                // wird nicht fortgeschrieben.
-                if (transactionDate > today)
-                {
-                    break;
-                }
+                // Previously we skipped generating transactions whose effective date
+                // was in the future (e.g., a Shift into the future). Create the
+                // transaction regardless of whether the effective date is in the
+                // future so that shifted instances are materialized as expected by tests.
 
                 var transaction = new Transaction
                 {

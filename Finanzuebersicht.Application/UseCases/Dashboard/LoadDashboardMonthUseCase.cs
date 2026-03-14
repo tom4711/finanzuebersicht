@@ -147,7 +147,7 @@ public class LoadDashboardMonthUseCase(
         foreach (var ex in recurring.Exceptions)
         {
             // Vergleich nur auf Datumsebene
-            if (ex.Datum.Date == baseDate.Date)
+            if (ex.InstanceDate.Date == baseDate.Date)
             {
                 matchingException = ex;
                 break;
@@ -161,13 +161,13 @@ public class LoadDashboardMonthUseCase(
         }
 
         // Skip → dieses Vorkommen existiert nicht
-        if (matchingException.Typ == RecurringExceptionType.Skip)
+        if (matchingException.Type == RecurringExceptionType.Skip)
         {
             return false;
         }
 
         // Shift → effektives Datum ist das hinterlegte Shift-Datum, falls vorhanden
-        if (matchingException.Typ == RecurringExceptionType.Shift && matchingException.ShiftToDate.HasValue)
+        if (matchingException.Type == RecurringExceptionType.Shift && matchingException.ShiftToDate.HasValue)
         {
             effectiveDate = matchingException.ShiftToDate.Value.Date;
             return true;
