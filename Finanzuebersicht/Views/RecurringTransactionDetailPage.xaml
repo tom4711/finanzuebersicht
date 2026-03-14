@@ -85,13 +85,13 @@
 
             <!-- Interval-Factor -->
             <Grid ColumnDefinitions="*, Auto" ColumnSpacing="8" Margin="0,8,0,0">
-                <VerticalStackLayout Spacing="4">
+                <VerticalStackLayout Grid.Column="0" Spacing="4">
                     <Label Text="Intervall-Faktor" FontSize="13" TextColor="Gray" />
                     <Entry Text="{Binding IntervalFactor}" Keyboard="Numeric" />
                 </VerticalStackLayout>
-                <VerticalStackLayout Spacing="4">
+                <VerticalStackLayout Grid.Column="1" Spacing="4" HorizontalOptions="End">
                     <Label Text="Erinnerung (Tage vorher)" FontSize="13" TextColor="Gray" />
-                    <Entry Text="{Binding ReminderDaysBefore}" Keyboard="Numeric" />
+                    <Entry Text="{Binding ReminderDaysBefore}" Keyboard="Numeric" WidthRequest="80" />
                 </VerticalStackLayout>
             </Grid>
 
@@ -120,8 +120,7 @@
                     Margin="0,20,0,0" />
 
                 <HorizontalStackLayout Spacing="8" Margin="0,8,0,0">
-                <Button Text="Instanz verschieben" Command="{Binding GoToShiftCommand}" BackgroundColor="#34C759" TextColor="White" />
-                <Button Text="Nächste Instanz überspringen" Command="{Binding AddSkipNextInstanceCommand}" BackgroundColor="#FF9500" TextColor="White" />
+                    <Button Text="Instanz verschieben" Command="{Binding GoToShiftCommand}" BackgroundColor="#34C759" TextColor="White" />
                 </HorizontalStackLayout>
 
         </VerticalStackLayout>
