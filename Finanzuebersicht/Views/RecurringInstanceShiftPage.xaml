@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Finanzuebersicht.ViewModels"
+             x:Class="Finanzuebersicht.Views.RecurringInstanceShiftPage"
+             x:DataType="vm:RecurringInstanceShiftViewModel"
+             Title="Instanz verschieben">
+
+    <ScrollView Padding="16">
+        <VerticalStackLayout Spacing="16">
+            <Label Text="Originaldatum" FontSize="13" TextColor="Gray" />
+            <Label Text="{Binding InstanceDate, StringFormat='{0:dd.MM.yyyy}'}" FontSize="18" />
+
+            <Label Text="Neues Datum" FontSize="13" TextColor="Gray" />
+            <DatePicker Date="{Binding NewDate}" Format="dd. MMMM yyyy" />
+
+            <Label Text="Notiz (optional)" FontSize="13" TextColor="Gray" />
+            <Entry Text="{Binding Note}" Placeholder="z. B. verschoben wegen Feiertag" />
+
+            <Button Text="Speichern" Command="{Binding SaveCommand}" BackgroundColor="#007AFF" TextColor="White" />
+            <Button Text="Abbrechen" Command="{Binding CancelCommand}" BackgroundColor="#8E8E93" TextColor="White" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
