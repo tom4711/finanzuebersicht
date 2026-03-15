@@ -28,6 +28,7 @@ public partial class RecurringTransactionDetailViewModel(
     private readonly ITransactionValidationService _validationService = validationService;
     private RecurringTransaction? _existing;
     private readonly INavigationService _navigationService = navigationService;
+    private readonly ILogger<RecurringTransactionDetailViewModel>? _logger = logger;
 
     [ObservableProperty]
     private string betragText = string.Empty;
