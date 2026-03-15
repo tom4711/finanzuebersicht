@@ -352,7 +352,7 @@ public partial class SettingsViewModel : ObservableObject
             // Hier könnten wir zu einer separaten Restore-Dialog-Page navigieren
             // Für nun: Informationen anzeigen
             var newestBackup = backups.First();
-            var confirmed = await Shell.Current.DisplayAlert(
+            var confirmed = await _dialogService.ShowConfirmationAsync(
                 _loc.GetString(ResourceKeys.Msg_RestoreConfirmTitle),
                 string.Format(_loc.GetString(ResourceKeys.Msg_RestoreConfirmBody), newestBackup.CreatedAt.ToString("g"), newestBackup.EntityCounts["transactions"]),
                 _loc.GetString(ResourceKeys.Btn_Ja),
@@ -393,7 +393,7 @@ public partial class SettingsViewModel : ObservableObject
         {
             await _dialogService.ShowAlertAsync(
                 _loc.GetString(ResourceKeys.Err_Titel),
-                "Backup-Service nicht verfügbar",
+                _loc.GetString(ResourceKeys.Msg_BackupServiceNotAvailable),
                 _loc.GetString(ResourceKeys.Btn_OK));
             return;
         }
