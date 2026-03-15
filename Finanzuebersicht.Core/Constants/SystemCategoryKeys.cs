@@ -1,5 +1,3 @@
-using System;
-
 namespace Finanzuebersicht.Core.Constants
 {
     /// <summary>
