@@ -38,7 +38,7 @@ public partial class TransactionDetailViewModel(
     private string verwendungszweck = string.Empty;
 
     [ObservableProperty]
-    private DateTime datum = DateTime.Today;
+    private DateTime datum = Finanzuebersicht.Core.Services.SystemClock.Instance.Today;
 
     [ObservableProperty]
     private Category? selectedKategorie;

@@ -20,10 +20,10 @@ public partial class RecurringInstanceShiftViewModel(
     private string recurringId = string.Empty;
 
     [ObservableProperty]
-    private DateTime instanceDate = DateTime.Today;
+    private DateTime instanceDate = Finanzuebersicht.Core.Services.SystemClock.Instance.Today;
 
     [ObservableProperty]
-    private DateTime newDate = DateTime.Today;
+    private DateTime newDate = Finanzuebersicht.Core.Services.SystemClock.Instance.Today;
 
     [ObservableProperty]
     private string? note;

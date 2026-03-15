@@ -18,7 +18,7 @@ namespace Finanzuebersicht.ViewModels
         {
             _loadDashboardYearUseCase = loadDashboardYearUseCase;
             _logger = logger;
-            Year = DateTime.Now.Year;
+            Year = Finanzuebersicht.Core.Services.SystemClock.Instance.Now.Year;
             Categories = new List<CategorySummary>();
         }
 

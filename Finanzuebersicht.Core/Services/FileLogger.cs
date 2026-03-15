@@ -16,7 +16,7 @@ namespace Finanzuebersicht.Core.Services
                 lock (_lock)
                 {
                     Directory.CreateDirectory(LogDir);
-                    var ts = DateTime.UtcNow.ToString("o");
+                    var ts = Finanzuebersicht.Core.Services.SystemClock.Instance.UtcNow.ToString("o");
                     var line = $"[{ts}] {tag}: {message}";
                     if (ex != null)
                         line += Environment.NewLine + ex.ToString();

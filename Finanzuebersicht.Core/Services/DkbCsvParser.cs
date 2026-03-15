@@ -140,10 +140,10 @@ namespace Finanzuebersicht.Core.Services
         private static DateTime ParseGermanDate(string s)
         {
             var str = s?.Trim('"', ' ');
-            if (string.IsNullOrWhiteSpace(str)) return DateTime.Today;
+            if (string.IsNullOrWhiteSpace(str)) return Finanzuebersicht.Core.Services.SystemClock.Instance.Today;
             if (DateTime.TryParseExact(str, "dd.MM.yy", CultureInfo.GetCultureInfo("de-DE"), DateTimeStyles.None, out var d)) return d;
             if (DateTime.TryParse(str, CultureInfo.GetCultureInfo("de-DE"), DateTimeStyles.None, out d)) return d;
-            return DateTime.Today;
+            return Finanzuebersicht.Core.Services.SystemClock.Instance.Today;
         }
 
         private static bool TryParseGermanDateExact(string s, out DateTime d)

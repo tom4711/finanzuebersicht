@@ -46,7 +46,7 @@ namespace Finanzuebersicht.Core.Services
                 Directory.CreateDirectory(backupPath);
 
                 // Backup ID = ISO-Timestamp format (z.B. 2026-03-11T21-46-19-123)
-                var backupId = DateTime.UtcNow.ToString("yyyy-MM-ddTHH-mm-ss-fff");
+                var backupId = Finanzuebersicht.Core.Services.SystemClock.Instance.UtcNow.ToString("yyyy-MM-ddTHH-mm-ss-fff");
                 var fileName = $"backup_{backupId}.zip";
                 var filePath = Path.Combine(backupPath, fileName);
 
@@ -59,7 +59,7 @@ namespace Finanzuebersicht.Core.Services
                 var metadata = new BackupMetadata
                 {
                     Id = backupId,
-                    CreatedAt = DateTime.UtcNow,
+                    CreatedAt = Finanzuebersicht.Core.Services.SystemClock.Instance.UtcNow,
                     SchemaVersion = CurrentSchemaVersion,
                     FileName = fileName,
                     EntityCounts = new Dictionary<string, int>
@@ -84,7 +84,7 @@ namespace Finanzuebersicht.Core.Services
                     fileName, metadata.EntityCounts["categories"], metadata.EntityCounts["transactions"], metadata.EntityCounts["recurring"]);
 
                 // Speichere Zeitstempel in Settings
-                _settingsService.Set("LastBackupTime", DateTime.UtcNow.ToString("O"));
+                _settingsService.Set("LastBackupTime", Finanzuebersicht.Core.Services.SystemClock.Instance.UtcNow.ToString("O"));
 
                 return metadata;
             }

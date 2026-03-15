@@ -235,7 +235,7 @@ public partial class SettingsViewModel : ObservableObject
         }
         else if (DateTime.TryParse(lastBackupStr, out var lastBackup))
         {
-            var diff = DateTime.UtcNow - lastBackup;
+            var diff = Finanzuebersicht.Core.Services.SystemClock.Instance.UtcNow - lastBackup;
             if (diff.TotalSeconds < 60)
             {
                 LastBackupInfo = _loc.GetString(ResourceKeys.Stn_LastBackupSeconds);
@@ -450,7 +450,7 @@ public partial class SettingsViewModel : ObservableObject
             csvStream.Seek(0, System.IO.SeekOrigin.Begin);
             csvStream.Read(csvData, 0, csvData.Length);
 
-            var fileName = $"Finanzuebersicht_{DateTime.Now:yyyyMMdd_HHmmss}.csv";
+            var fileName = $"Finanzuebersicht_{Finanzuebersicht.Core.Services.SystemClock.Instance.Now:yyyyMMdd_HHmmss}.csv";
             var filePath = Path.Combine(Path.GetTempPath(), fileName);
 
             File.WriteAllBytes(filePath, csvData);

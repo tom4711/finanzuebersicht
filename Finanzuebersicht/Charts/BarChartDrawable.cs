@@ -21,7 +21,7 @@ public class BarChartDrawable : IDrawable
         ["J", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"];
 
     public IReadOnlyList<MonthSummary> Months { get; set; } = [];
-    public int CurrentMonth { get; set; } = DateTime.Today.Month;
+    public int CurrentMonth { get; set; } = Finanzuebersicht.Core.Services.SystemClock.Instance.Today.Month;
 
     public void Draw(ICanvas canvas, RectF dirtyRect)
     {
