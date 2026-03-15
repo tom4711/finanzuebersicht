@@ -17,6 +17,8 @@ public partial class SettingsViewModel : ObservableObject
     private readonly ILocalizationService _loc;
     private readonly IDialogService _dialogService;
     private readonly IBackupService? _backupService;
+    private readonly Finanzuebersicht.Core.Services.IClock _clock;
+
 
     [ObservableProperty]
     private int selectedThemeIndex;
@@ -41,7 +43,8 @@ public partial class SettingsViewModel : ObservableObject
         ILocalizationService localizationService,
         IDialogService dialogService,
         IBackupService? backupService = null,
-        ILogger<SettingsViewModel>? logger = null)
+        ILogger<SettingsViewModel>? logger = null,
+        Finanzuebersicht.Core.Services.IClock? clock = null)
     {
         _settings = settings;
         _themeService = themeService;
@@ -49,6 +52,7 @@ public partial class SettingsViewModel : ObservableObject
         _loc = localizationService;
         _dialogService = dialogService;
         _backupService = backupService;
+        _clock = clock ?? Finanzuebersicht.Core.Services.SystemClock.Instance;
 
         // Version aus Assembly-Metadaten lesen (von Nerdbank.GitVersioning gesetzt)
         var asm = Assembly.GetExecutingAssembly();
@@ -235,7 +239,7 @@ public partial class SettingsViewModel : ObservableObject
         }
         else if (DateTime.TryParse(lastBackupStr, out var lastBackup))
         {
-            var diff = DateTime.UtcNow - lastBackup;
+            var diff = _clock.UtcNow - lastBackup;
             if (diff.TotalSeconds < 60)
             {
                 LastBackupInfo = _loc.GetString(ResourceKeys.Stn_LastBackupSeconds);
@@ -450,7 +454,7 @@ public partial class SettingsViewModel : ObservableObject
             csvStream.Seek(0, System.IO.SeekOrigin.Begin);
             csvStream.Read(csvData, 0, csvData.Length);
 
-            var fileName = $"Finanzuebersicht_{DateTime.Now:yyyyMMdd_HHmmss}.csv";
+            var fileName = $"Finanzuebersicht_{_clock.Now:yyyyMMdd_HHmmss}.csv";
             var filePath = Path.Combine(Path.GetTempPath(), fileName);
 
             File.WriteAllBytes(filePath, csvData);

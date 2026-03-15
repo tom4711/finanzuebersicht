@@ -4,16 +4,18 @@ namespace Finanzuebersicht.Services;
 
 public class RecurringGenerationService(
     IRecurringTransactionRepository recurringRepository,
-    ITransactionRepository transactionRepository) : IRecurringGenerationService
+    ITransactionRepository transactionRepository,
+    Finanzuebersicht.Core.Services.IClock? clock = null) : IRecurringGenerationService
 {
     private readonly IRecurringTransactionRepository _recurringRepository = recurringRepository;
     private readonly ITransactionRepository _transactionRepository = transactionRepository;
+    private readonly Finanzuebersicht.Core.Services.IClock _clock = clock ?? Finanzuebersicht.Core.Services.SystemClock.Instance;
     private const int MaxInstancesPerRun = 500;
 
     public async Task GeneratePendingRecurringTransactionsAsync()
     {
         var recurringItems = await _recurringRepository.GetRecurringTransactionsAsync();
-        var today = DateTime.Today;
+        var today = _clock.Today;
 
         foreach (var recurring in recurringItems.Where(item => item.Aktiv))
         {

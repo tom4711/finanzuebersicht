@@ -14,11 +14,12 @@ namespace Finanzuebersicht.ViewModels
         private readonly LoadDashboardYearUseCase _loadDashboardYearUseCase;
         private readonly ILogger<YearOverviewViewModel>? _logger;
 
-        public YearOverviewViewModel(LoadDashboardYearUseCase loadDashboardYearUseCase, ILogger<YearOverviewViewModel>? logger = null)
+        public YearOverviewViewModel(LoadDashboardYearUseCase loadDashboardYearUseCase, Microsoft.Extensions.Logging.ILogger<YearOverviewViewModel>? logger = null, Finanzuebersicht.Core.Services.IClock? clock = null)
         {
             _loadDashboardYearUseCase = loadDashboardYearUseCase;
             _logger = logger;
-            Year = DateTime.Now.Year;
+            var c = clock ?? Finanzuebersicht.Core.Services.SystemClock.Instance;
+            Year = c.Now.Year;
             Categories = new List<CategorySummary>();
         }
 

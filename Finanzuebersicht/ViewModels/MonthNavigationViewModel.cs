@@ -12,11 +12,12 @@ public abstract partial class MonthNavigationViewModel : ObservableObject
     [ObservableProperty]
     private string monatAnzeige = string.Empty;
 
-    protected DateTime AktuellerMonat { get; private set; } =
-        new(DateTime.Today.Year, DateTime.Today.Month, 1);
+    public DateTime AktuellerMonat { get; private set; }
 
-    protected MonthNavigationViewModel()
+    protected MonthNavigationViewModel(Finanzuebersicht.Core.Services.IClock? clock = null)
     {
+        var c = clock ?? Finanzuebersicht.Core.Services.SystemClock.Instance;
+        AktuellerMonat = new(c.Today.Year, c.Today.Month, 1);
         UpdateMonatAnzeige();
     }
 

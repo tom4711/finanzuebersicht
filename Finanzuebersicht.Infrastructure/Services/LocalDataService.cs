@@ -31,11 +31,14 @@ public class LocalDataService : ICategoryRepository, ITransactionRepository, IRe
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase
     };
 
-    public LocalDataService() : this(null, null) { }
+    public LocalDataService() : this(null, new Finanzuebersicht.Core.Services.SystemClock(), null) { }
 
-    public LocalDataService(SettingsService? settings, ILogger<LocalDataService>? logger = null)
+    private readonly Finanzuebersicht.Core.Services.IClock _clock;
+
+    public LocalDataService(SettingsService? settings, Finanzuebersicht.Core.Services.IClock clock, ILogger<LocalDataService>? logger = null)
     {
         _logger = logger;
+        _clock = clock;
         var customPath = settings?.Get("DataPath", "");
         _dataDir = string.IsNullOrWhiteSpace(customPath) ? DefaultDataDir : customPath;
         Directory.CreateDirectory(_dataDir);
@@ -180,7 +183,7 @@ public class LocalDataService : ICategoryRepository, ITransactionRepository, IRe
 
     public async Task GeneratePendingRecurringTransactionsAsync()
     {
-        var service = new RecurringGenerationService(this, this);
+        var service = new RecurringGenerationService(this, this, _clock);
         await service.GeneratePendingRecurringTransactionsAsync();
     }
 

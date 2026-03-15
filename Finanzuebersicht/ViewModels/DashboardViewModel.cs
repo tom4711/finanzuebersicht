@@ -61,7 +61,8 @@ public partial class DashboardViewModel : MonthNavigationViewModel
 
     public DashboardViewModel(
         LoadDashboardMonthUseCase loadDashboardMonthUseCase,
-        LoadDashboardYearUseCase loadDashboardYearUseCase)
+        LoadDashboardYearUseCase loadDashboardYearUseCase,
+        Finanzuebersicht.Core.Services.IClock? clock = null) : base(clock)
     {
         _loadDashboardMonthUseCase = loadDashboardMonthUseCase;
         _loadDashboardYearUseCase = loadDashboardYearUseCase;

@@ -11,19 +11,21 @@ namespace Finanzuebersicht.ViewModels;
 [QueryProperty(nameof(InstanceDate), "InstanceDate")]
 public partial class RecurringInstanceShiftViewModel(
     ShiftRecurringInstanceUseCase shiftRecurringInstanceUseCase,
-    INavigationService navigationService) : ObservableObject
+    INavigationService navigationService,
+    Finanzuebersicht.Core.Services.IClock? clock = null) : ObservableObject
 {
     private readonly ShiftRecurringInstanceUseCase _shiftRecurringInstanceUseCase = shiftRecurringInstanceUseCase;
     private readonly INavigationService _navigationService = navigationService;
+    private readonly Finanzuebersicht.Core.Services.IClock _clock = clock ?? Finanzuebersicht.Core.Services.SystemClock.Instance;
 
     [ObservableProperty]
     private string recurringId = string.Empty;
 
     [ObservableProperty]
-    private DateTime instanceDate = DateTime.Today;
+    private DateTime instanceDate = _clock.Today;
 
     [ObservableProperty]
-    private DateTime newDate = DateTime.Today;
+    private DateTime newDate = _clock.Today;
 
     [ObservableProperty]
     private string? note;
