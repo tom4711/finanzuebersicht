@@ -8,7 +8,7 @@ public static class InfrastructureServiceCollectionExtensions
     public static IServiceCollection AddInfrastructureServices(this IServiceCollection services)
     {
         services.AddSingleton<LocalDataService>(sp =>
-            new LocalDataService(sp.GetRequiredService<SettingsService>()));
+            new LocalDataService(sp.GetRequiredService<SettingsService>(), sp.GetRequiredService<Finanzuebersicht.Core.Services.IClock>(), sp.GetService<Microsoft.Extensions.Logging.ILogger<LocalDataService>>()));
 
         services.AddSingleton<ICategoryRepository>(sp => sp.GetRequiredService<LocalDataService>());
         services.AddSingleton<ITransactionRepository>(sp => sp.GetRequiredService<LocalDataService>());
