@@ -57,8 +57,8 @@ Build & Start (Mac Catalyst):
 
 ```bash
 dotnet build Finanzuebersicht/Finanzuebersicht.csproj -f net10.0-maccatalyst
-cp -R "Finanzuebersicht/bin/Debug/net10.0-maccatalyst/maccatalyst-x64/Finanzuebersicht.app" "/Applications/Finanzuebersicht.app"
-open "/Applications/Finanzuebersicht.app"
+cp -R "Finanzuebersicht/bin/Debug/net10.0-maccatalyst/maccatalyst-x64/Finanzübersicht.app" "/Applications/Finanzübersicht.app"
+open "/Applications/Finanzübersicht.app"
 
 # Tests
 dotnet test Finanzuebersicht.Tests
