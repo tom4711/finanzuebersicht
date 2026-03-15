@@ -168,7 +168,7 @@ Please restart the app.</value></data>
   <data name="Btn_BackupManage" xml:space="preserve"><value>📂 Manage backups</value></data>
   <data name="Btn_BackupRestore" xml:space="preserve"><value>📥 Restore</value></data>
   <data name="Btn_ExportCSV" xml:space="preserve"><value>📊 Export CSV</value></data>
-  <data name="Msg_BackupRestoreTitle" xml:space="preserve"><value>Backup & Restore</value></data>
+  <data name="Msg_BackupRestoreTitle" xml:space="preserve"><value>Backup &amp; Restore</value></data>
   <data name="Msg_BackupRestoreDesc" xml:space="preserve"><value>Create backups of your data and restore when needed.</value></data>
   <data name="Btn_Import" xml:space="preserve"><value>Import</value></data>
   <data name="Title_ShiftInstance" xml:space="preserve"><value>Shift instance</value></data>
