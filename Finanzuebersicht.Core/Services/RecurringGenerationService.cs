@@ -9,7 +9,7 @@ public class RecurringGenerationService(
 {
     private readonly IRecurringTransactionRepository _recurringRepository = recurringRepository;
     private readonly ITransactionRepository _transactionRepository = transactionRepository;
-    private readonly Finanzuebersicht.Core.Services.IClock _clock = clock ?? new Finanzuebersicht.Core.Services.SystemClock();
+    private readonly Finanzuebersicht.Core.Services.IClock _clock = clock ?? Finanzuebersicht.Core.Services.SystemClock.Instance;
     private const int MaxInstancesPerRun = 500;
 
     public async Task GeneratePendingRecurringTransactionsAsync()
