@@ -10,10 +10,12 @@ namespace Finanzuebersicht.Core.Services
     public class DkbCsvParser : IStatementParser
     {
         private readonly ILogger<DkbCsvParser>? _logger;
+        private readonly Finanzuebersicht.Core.Services.IClock _clock;
 
-        public DkbCsvParser(ILogger<DkbCsvParser>? logger = null)
+        public DkbCsvParser(ILogger<DkbCsvParser>? logger = null, Finanzuebersicht.Core.Services.IClock? clock = null)
         {
             _logger = logger;
+            _clock = clock ?? Finanzuebersicht.Core.Services.SystemClock.Instance;
         }
 
         public IEnumerable<TransactionDto> Parse(Stream csvStream)
@@ -137,16 +139,16 @@ namespace Finanzuebersicht.Core.Services
             return records;
         }
 
-        private static DateTime ParseGermanDate(string s)
+        private DateTime ParseGermanDate(string s)
         {
             var str = s?.Trim('"', ' ');
-            if (string.IsNullOrWhiteSpace(str)) return Finanzuebersicht.Core.Services.SystemClock.Instance.Today;
+            if (string.IsNullOrWhiteSpace(str)) return _clock.Today;
             if (DateTime.TryParseExact(str, "dd.MM.yy", CultureInfo.GetCultureInfo("de-DE"), DateTimeStyles.None, out var d)) return d;
             if (DateTime.TryParse(str, CultureInfo.GetCultureInfo("de-DE"), DateTimeStyles.None, out d)) return d;
-            return Finanzuebersicht.Core.Services.SystemClock.Instance.Today;
+            return _clock.Today;
         }
 
-        private static bool TryParseGermanDateExact(string s, out DateTime d)
+        private bool TryParseGermanDateExact(string s, out DateTime d)
         {
             d = default;
             var str = s?.Trim('"', ' ');

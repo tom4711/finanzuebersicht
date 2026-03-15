@@ -18,6 +18,7 @@ namespace Finanzuebersicht.Core.Services
         private readonly IDataService _dataService;
         private readonly SettingsService _settingsService;
         private readonly ILogger<BackupService>? _logger;
+        private readonly Finanzuebersicht.Core.Services.IClock _clock;
 
         private static readonly JsonSerializerOptions BackupJsonOptions = new()
         {
@@ -28,11 +29,12 @@ namespace Finanzuebersicht.Core.Services
         private const string BackupMetadataFileName = "backup.metadata.json";
         private const int CurrentSchemaVersion = 1;
 
-        public BackupService(IDataService dataService, SettingsService settingsService, ILogger<BackupService>? logger = null)
+        public BackupService(IDataService dataService, SettingsService settingsService, ILogger<BackupService>? logger = null, Finanzuebersicht.Core.Services.IClock? clock = null)
         {
             _dataService = dataService ?? throw new ArgumentNullException(nameof(dataService));
             _settingsService = settingsService ?? throw new ArgumentNullException(nameof(settingsService));
             _logger = logger;
+            _clock = clock ?? Finanzuebersicht.Core.Services.SystemClock.Instance;
         }
 
         /// <summary>
@@ -46,7 +48,7 @@ namespace Finanzuebersicht.Core.Services
                 Directory.CreateDirectory(backupPath);
 
                 // Backup ID = ISO-Timestamp format (z.B. 2026-03-11T21-46-19-123)
-                var backupId = Finanzuebersicht.Core.Services.SystemClock.Instance.UtcNow.ToString("yyyy-MM-ddTHH-mm-ss-fff");
+                var backupId = _clock.UtcNow.ToString("yyyy-MM-ddTHH-mm-ss-fff");
                 var fileName = $"backup_{backupId}.zip";
                 var filePath = Path.Combine(backupPath, fileName);
 
@@ -59,7 +61,7 @@ namespace Finanzuebersicht.Core.Services
                 var metadata = new BackupMetadata
                 {
                     Id = backupId,
-                    CreatedAt = Finanzuebersicht.Core.Services.SystemClock.Instance.UtcNow,
+                    CreatedAt = _clock.UtcNow,
                     SchemaVersion = CurrentSchemaVersion,
                     FileName = fileName,
                     EntityCounts = new Dictionary<string, int>
@@ -84,7 +86,7 @@ namespace Finanzuebersicht.Core.Services
                     fileName, metadata.EntityCounts["categories"], metadata.EntityCounts["transactions"], metadata.EntityCounts["recurring"]);
 
                 // Speichere Zeitstempel in Settings
-                _settingsService.Set("LastBackupTime", Finanzuebersicht.Core.Services.SystemClock.Instance.UtcNow.ToString("O"));
+                _settingsService.Set("LastBackupTime", _clock.UtcNow.ToString("O"));
 
                 return metadata;
             }
