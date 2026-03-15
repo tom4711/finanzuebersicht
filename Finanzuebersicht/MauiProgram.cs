@@ -36,6 +36,8 @@ public static class MauiProgram
 
 		// Services
 		builder.Services.AddSingleton<SettingsService>();
+		// Clock for testable current time
+		builder.Services.AddSingleton<Finanzuebersicht.Core.Services.IClock, Finanzuebersicht.Core.Services.SystemClock>();
 		builder.Services.AddInfrastructureServices();
 		builder.Services.AddSingleton<IRecurringGenerationService, RecurringGenerationService>();
 		builder.Services.AddSingleton<IReportingService, ReportingService>();
