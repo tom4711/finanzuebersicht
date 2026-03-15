@@ -30,13 +30,7 @@ public partial class SettingsViewModel : ObservableObject
     public string AppVersion { get; }
     public string BuildInfo { get; }
 
-    public List<LibraryInfo> Libraries { get; } =
-    [
-        new("CommunityToolkit.Mvvm", "MVVM-Toolkit mit Source Generators"),
-        new("CommunityToolkit.Maui", "UI-Erweiterungen für .NET MAUI"),
-        new("Nerdbank.GitVersioning", "Automatische SemVer-Versionierung"),
-        new("xUnit", "Unit-Test-Framework (nur Tests)"),
-    ];
+    public List<LibraryInfo> Libraries { get; } = new();
 
     public SettingsViewModel(
         SettingsService settings,
@@ -86,6 +80,46 @@ public partial class SettingsViewModel : ObservableObject
 
         // Letztes Backup anzeigen
         UpdateLastBackupInfo();
+
+        // Libraries dynamisch aus Referenzen befüllen
+        PopulateLibraries();
+    }
+
+    private void PopulateLibraries()
+    {
+        try
+        {
+            var entry = Assembly.GetEntryAssembly() ?? Assembly.GetExecutingAssembly();
+            var refs = entry.GetReferencedAssemblies();
+
+            foreach (var ra in refs.OrderBy(r => r.Name))
+            {
+                if (ra.Name.StartsWith("System", StringComparison.OrdinalIgnoreCase) ||
+                    ra.Name.StartsWith("Microsoft", StringComparison.OrdinalIgnoreCase) ||
+                    ra.Name.StartsWith("netstandard", StringComparison.OrdinalIgnoreCase) ||
+                    ra.Name.Contains("Windows", StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+
+                Libraries.Add(new LibraryInfo(ra.Name, $"Version {ra.Version}"));
+            }
+
+            // Ergänzend: lade bekannte Assemblies, falls vorhanden
+            var known = new[] { "CommunityToolkit.Mvvm", "CommunityToolkit.Maui", "Nerdbank.GitVersioning" };
+            foreach (var name in known)
+            {
+                try
+                {
+                    var asm = Assembly.Load(new AssemblyName(name));
+                    var n = asm.GetName();
+                    if (!Libraries.Any(l => l.Name == n.Name))
+                        Libraries.Add(new LibraryInfo(n.Name, $"Version {n.Version}"));
+                }
+                catch { }
+            }
+        }
+        catch { }
     }
 
     partial void OnSelectedThemeIndexChanged(int value)
