@@ -22,7 +22,7 @@ jobs:
           dotnet-version: '10.0.100'
 
       - name: Run tests
-        run: dotnet test Finanzuebersicht.Tests --configuration Release --logger "console;verbosity=minimal"
+        run: dotnet test Finanzuebersicht.Tests --configuration Release --no-restore --logger "console;verbosity=minimal"
 
   build:
     name: Build (Mac Catalyst)
