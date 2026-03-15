@@ -172,4 +172,5 @@ public static class ResourceKeys
     public const string Btn_Next = nameof(Btn_Next);
     public const string Title_AppName = nameof(Title_AppName);
     public const string Lbl_FrameworkInfo = nameof(Lbl_FrameworkInfo);
+    public const string Icn_Recurring = nameof(Icn_Recurring);
 }

@@ -177,4 +177,5 @@ Please restart the app.</value></data>
   <data name="Btn_Next" xml:space="preserve"><value>›</value></data>
   <data name="Title_AppName" xml:space="preserve"><value>Finanzuebersicht</value></data>
   <data name="Lbl_FrameworkInfo" xml:space="preserve"><value>.NET 10 · MAUI · MVVM</value></data>
+  <data name="Icn_Recurring" xml:space="preserve"><value>🔄</value></data>
 </root>

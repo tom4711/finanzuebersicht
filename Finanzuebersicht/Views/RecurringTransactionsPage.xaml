@@ -62,7 +62,7 @@
                                     Stroke="Transparent"
                                     WidthRequest="40" HeightRequest="40"
                                     HorizontalOptions="Center" VerticalOptions="Center">
-                                <Label Text="🔄" FontSize="18"
+                                <Label Text="{loc:Translate Icn_Recurring}" FontSize="18"
                                        HorizontalOptions="Center" VerticalOptions="Center" />
                             </Border>
 
