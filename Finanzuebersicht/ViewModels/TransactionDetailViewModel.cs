@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using Microsoft.Extensions.Logging;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Finanzuebersicht.Application.UseCases.Transactions;
@@ -15,15 +16,17 @@ public partial class TransactionDetailViewModel(
     ITransactionValidationService validationService,
     ILocalizationService localizationService,
     INavigationService navigationService,
-    IDialogService dialogService) : ObservableObject
+    IDialogService dialogService,
+    ILogger<TransactionDetailViewModel>? logger = null) : ObservableObject
 {
     private readonly SaveTransactionDetailUseCase _saveTransactionDetailUseCase = saveTransactionDetailUseCase;
     private readonly LoadTransactionDetailDataUseCase _loadTransactionDetailDataUseCase = loadTransactionDetailDataUseCase;
     private readonly ITransactionValidationService _validationService = validationService;
     private Transaction? _existingTransaction;
     private readonly ILocalizationService _loc = localizationService;
-    private readonly INavigationService _navigationService = navigationService;
-    private readonly IDialogService _dialogService = dialogService;
+    private readonly INavigationService _navigation_service = navigationService;
+    private readonly IDialogService _dialog_service = dialogService;
+    private readonly ILogger<TransactionDetailViewModel>? _logger = logger;
 
     [ObservableProperty]
     private string betragText = string.Empty;
@@ -120,7 +123,7 @@ public partial class TransactionDetailViewModel(
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"Error saving transaction: {ex.Message}");
+            _logger?.LogError(ex, "Error saving transaction");
             await _dialogService.ShowAlertAsync(
                 _loc.GetString(ResourceKeys.Err_Titel),
                 _loc.GetString(ResourceKeys.Err_SpeichernFehlgeschlagen, ex.Message),
@@ -141,7 +144,7 @@ public partial class TransactionDetailViewModel(
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"Fehler beim Laden der Kategorie: {ex.Message}");
+            _logger?.LogWarning(ex, "Fehler beim Laden der Kategorie");
         }
     }
 }

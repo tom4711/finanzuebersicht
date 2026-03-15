@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using Microsoft.Extensions.Logging;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Finanzuebersicht.Application.UseCases.RecurringTransactions;
@@ -17,7 +18,8 @@ public partial class RecurringTransactionDetailViewModel(
     AddRecurringExceptionUseCase addRecurringExceptionUseCase,
     RemoveRecurringExceptionUseCase removeRecurringExceptionUseCase,
     ITransactionValidationService validationService,
-    INavigationService navigationService) : ObservableObject
+    INavigationService navigationService,
+    ILogger<RecurringTransactionDetailViewModel>? logger = null) : ObservableObject
 {
     private readonly SaveRecurringTransactionDetailUseCase _saveRecurringTransactionDetailUseCase = saveRecurringTransactionDetailUseCase;
     private readonly LoadRecurringTransactionDetailDataUseCase _loadRecurringTransactionDetailDataUseCase = loadRecurringTransactionDetailDataUseCase;
@@ -258,7 +260,7 @@ public partial class RecurringTransactionDetailViewModel(
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"Fehler beim Laden der Kategorie: {ex.Message}");
+            _logger?.LogWarning(ex, "Fehler beim Laden der Kategorie");
         }
     }
 }

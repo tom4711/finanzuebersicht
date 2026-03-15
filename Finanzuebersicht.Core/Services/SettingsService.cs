@@ -1,3 +1,8 @@
+using System.IO;
+using System;
+using System.Linq;
+using Microsoft.Extensions.Logging;
+
 namespace Finanzuebersicht.Services;
 
 /// <summary>
@@ -6,16 +11,18 @@ namespace Finanzuebersicht.Services;
 public class SettingsService
 {
     private readonly string _settingsFile;
+    private readonly ILogger<SettingsService>? _logger;
 
     private Dictionary<string, string> _settings = [];
     private readonly object _lock = new();
 
-    public SettingsService()
-        : this(Path.Combine(AppPaths.GetDefaultDataDir(), "settings.json")) { }
+    public SettingsService(ILogger<SettingsService>? logger = null)
+        : this(Path.Combine(AppPaths.GetDefaultDataDir(), "settings.json"), logger) { }
 
-    internal SettingsService(string settingsFilePath)
+    internal SettingsService(string settingsFilePath, ILogger<SettingsService>? logger = null)
     {
         _settingsFile = settingsFilePath;
+        _logger = logger;
         Load();
     }
 
@@ -48,7 +55,7 @@ public class SettingsService
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"Fehler beim Laden der Einstellungen: {ex.Message}");
+            _logger?.LogWarning(ex, "Fehler beim Laden der Einstellungen");
             _settings = [];
         }
     }
@@ -65,7 +72,7 @@ public class SettingsService
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"Fehler beim Speichern der Einstellungen: {ex.Message}");
+            _logger?.LogWarning(ex, "Fehler beim Speichern der Einstellungen");
         }
     }
 

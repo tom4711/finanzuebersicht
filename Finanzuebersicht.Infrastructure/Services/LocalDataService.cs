@@ -1,5 +1,7 @@
 using System.Text.Json;
 using System.Linq;
+using System;
+using Microsoft.Extensions.Logging;
 using Finanzuebersicht.Models;
 
 namespace Finanzuebersicht.Services;
@@ -13,6 +15,8 @@ public class LocalDataService : ICategoryRepository, ITransactionRepository, IRe
     private static readonly string DefaultDataDir = AppPaths.GetDefaultDataDir();
 
     private readonly string _dataDir;
+    private readonly ILogger<LocalDataService>? _logger;
+
     private string CategoriesFile => Path.Combine(_dataDir, "categories.json");
     private string TransactionsFile => Path.Combine(_dataDir, "transactions.json");
     private string RecurringFile => Path.Combine(_dataDir, "recurring.json");
@@ -27,10 +31,11 @@ public class LocalDataService : ICategoryRepository, ITransactionRepository, IRe
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase
     };
 
-    public LocalDataService() : this(null) { }
+    public LocalDataService() : this(null, null) { }
 
-    public LocalDataService(SettingsService? settings)
+    public LocalDataService(SettingsService? settings, ILogger<LocalDataService>? logger = null)
     {
+        _logger = logger;
         var customPath = settings?.Get("DataPath", "");
         _dataDir = string.IsNullOrWhiteSpace(customPath) ? DefaultDataDir : customPath;
         Directory.CreateDirectory(_dataDir);
@@ -183,7 +188,7 @@ public class LocalDataService : ICategoryRepository, ITransactionRepository, IRe
 
     #region JSON Helpers
 
-    private static async Task<List<T>> LoadAsync<T>(string path)
+    private async Task<List<T>> LoadAsync<T>(string path)
     {
         if (!File.Exists(path))
             return [];
@@ -195,7 +200,7 @@ public class LocalDataService : ICategoryRepository, ITransactionRepository, IRe
         }
         catch (JsonException ex)
         {
-            System.Diagnostics.Debug.WriteLine($"Fehler beim Deserialisieren von {path}: {ex.Message}");
+            _logger?.LogWarning(ex, "Fehler beim Deserialisieren von {Path}", path);
             return [];
         }
     }
