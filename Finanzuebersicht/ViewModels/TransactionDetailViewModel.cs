@@ -24,8 +24,8 @@ public partial class TransactionDetailViewModel(
     private readonly ITransactionValidationService _validationService = validationService;
     private Transaction? _existingTransaction;
     private readonly ILocalizationService _loc = localizationService;
-    private readonly INavigationService _navigation_service = navigationService;
-    private readonly IDialogService _dialog_service = dialogService;
+    private readonly INavigationService _navigationService = navigationService;
+    private readonly IDialogService _dialogService = dialogService;
     private readonly ILogger<TransactionDetailViewModel>? _logger = logger;
 
     [ObservableProperty]

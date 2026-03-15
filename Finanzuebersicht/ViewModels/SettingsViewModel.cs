@@ -13,6 +13,7 @@ public partial class SettingsViewModel : ObservableObject
 {
     private readonly SettingsService _settings;
     private readonly ThemeService _themeService;
+    private readonly ILogger<SettingsViewModel>? _logger;
     private readonly ILocalizationService _loc;
     private readonly IDialogService _dialogService;
     private readonly IBackupService? _backupService;
@@ -39,10 +40,12 @@ public partial class SettingsViewModel : ObservableObject
         ThemeService themeService,
         ILocalizationService localizationService,
         IDialogService dialogService,
-        IBackupService? backupService = null)
+        IBackupService? backupService = null,
+        ILogger<SettingsViewModel>? logger = null)
     {
         _settings = settings;
         _themeService = themeService;
+        _logger = logger;
         _loc = localizationService;
         _dialogService = dialogService;
         _backupService = backupService;
@@ -120,13 +123,13 @@ public partial class SettingsViewModel : ObservableObject
                 }
                 catch (Exception ex)
                 {
-                    Debug.WriteLine($"[SettingsViewModel] Konnte bekannte Assembly '{name}' nicht laden: {ex}");
+                    _logger?.LogWarning(ex, "Konnte bekannte Assembly '{Name}' nicht laden", name);
                 }
             }
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"[SettingsViewModel] Fehler beim Ermitteln der verwendeten Bibliotheken: {ex}");
+            _logger?.LogWarning(ex, "Fehler beim Ermitteln der verwendeten Bibliotheken");
         }
     }
 

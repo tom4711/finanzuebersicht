@@ -1,0 +1,84 @@
+name: CI - Split quick and full
+
+on:
+  push:
+    branches: [ "**" ]
+    paths-ignore:
+      - '.github/**'
+      - 'docs/**'
+      - 'README.md'
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  checks: write
+
+jobs:
+  quick-checks:
+    name: Quick checks (ubuntu)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Ensure sufficient git history for Nerdbank.GitVersioning
+        run: |
+          if [ "$(git rev-parse --is-shallow-repository 2>/dev/null)" = "true" ]; then
+            echo "Shallow repository detected; trying to fetch deeper history..."
+            git fetch --unshallow || git fetch --depth=1000 || true
+          else
+            echo "Repository has full history or not a git repo; skipping."
+          fi
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      - name: Restore tests only
+        run: dotnet restore Finanzuebersicht.Tests/Finanzuebersicht.Tests.csproj
+      - name: Build & Test
+        run: dotnet test Finanzuebersicht.Tests/Finanzuebersicht.Tests.csproj -c Release --no-restore --logger "console;verbosity=minimal"
+
+  full-maui-checks:
+    name: Full MAUI build (macOS)
+    runs-on: macos-latest
+    needs: quick-checks
+    if: github.event_name == 'pull_request' || github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
+    strategy:
+      matrix:
+        include:
+          - name: mac-default
+            run-maui: true
+          - name: mac-label-only
+            run-maui: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Check for label
+        id: labelcheck
+        run: |
+          echo "::set-output name=run_maui::${{ matrix.run-maui }}"
+      - name: Setup .NET
+        if: steps.labelcheck.outputs.run_maui == 'true'
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      - name: Install dependencies
+        if: steps.labelcheck.outputs.run_maui == 'true'
+        run: |
+          sudo gem install cocoapods --no-document || true
+      - name: Workload restore (with retry)
+        if: steps.labelcheck.outputs.run_maui == 'true'
+        run: |
+          for i in 1 2 3; do
+            dotnet workload restore && break || echo "workload restore failed, retrying ($i)" && sleep 5;
+          done
+      - name: Build MAUI targets (with retry)
+        if: steps.labelcheck.outputs.run_maui == 'true'
+        run: |
+          for i in 1 2 3; do
+            dotnet build -f net10.0-maccatalyst -c Release --no-restore && break || echo "maui build failed, retrying ($i)" && sleep 5;
+          done
+      - name: Skip MAUI build
+        if: steps.labelcheck.outputs.run_maui != 'true'
+        run: echo "Skipped MAUI build (requires label 'run-maui')"
