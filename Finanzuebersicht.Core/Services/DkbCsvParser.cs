@@ -3,11 +3,19 @@ using System.IO;
 using System.Text;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Extensions.Logging;
 
 namespace Finanzuebersicht.Core.Services
 {
     public class DkbCsvParser : IStatementParser
     {
+        private readonly ILogger<DkbCsvParser>? _logger;
+
+        public DkbCsvParser(ILogger<DkbCsvParser>? logger = null)
+        {
+            _logger = logger;
+        }
+
         public IEnumerable<TransactionDto> Parse(Stream csvStream)
         {
             // Be defensive: read full content into a string so parser isn't sensitive to stream capabilities
@@ -22,7 +30,7 @@ namespace Finanzuebersicht.Core.Services
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"DkbCsvParser: failed to read stream: {ex.Message}");
+                _logger?.LogWarning(ex, "DkbCsvParser: failed to read stream");
                 yield break;
             }
 
@@ -69,7 +77,7 @@ namespace Finanzuebersicht.Core.Services
                 catch (System.Exception ex)
                 {
                     // skip malformed/invalid rows, but keep running
-                    System.Diagnostics.Debug.WriteLine($"DkbCsvParser: skipping row {i} due to parse error: {ex.Message}");
+                    _logger?.LogWarning(ex, "DkbCsvParser: skipping row {RowIndex} due to parse error", i);
                 }
 
                 if (dto != null) yield return dto;
