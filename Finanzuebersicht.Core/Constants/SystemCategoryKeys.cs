@@ -1,12 +1,12 @@
 namespace Finanzuebersicht.Core.Constants
 {
     /// <summary>
-    /// Centralized keys for system and fallback categories to avoid magic strings.
-    /// Add new keys here as public constants.
+    /// Zentrale Schlüssel für System- und Fallback-Kategorien zur Vermeidung von Magic Strings.
+    /// Neue Schlüssel hier als öffentliche Konstanten hinzufügen.
     /// </summary>
     public static class SystemCategoryKeys
     {
-        // System / fallback category keys
+        // System- / Fallback-Kategorie-Schlüssel
         public const string Unkategorisiert = "SysCat_Unkategorisiert";
         public const string Sonstiges = "SysCat_Sonstiges";
         public const string Lebensmittel = "SysCat_Lebensmittel";
@@ -16,7 +16,7 @@ namespace Finanzuebersicht.Core.Constants
         public const string Gesundheit = "SysCat_Gesundheit";
         public const string Gehalt = "SysCat_Gehalt";
 
-        // Add additional keys as needed, e.g.:
+        // Weitere Schlüssel bei Bedarf hinzufügen, z.B.:
         // public const string Unassigned = "SysCat_Unassigned";
     }
 }
