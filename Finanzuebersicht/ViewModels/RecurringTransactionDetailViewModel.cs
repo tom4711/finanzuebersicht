@@ -45,7 +45,7 @@ public partial class RecurringTransactionDetailViewModel(
     private TransactionType typ = TransactionType.Ausgabe;
 
     [ObservableProperty]
-    private DateTime startdatum = _clock.Today;
+    private DateTime startdatum = Finanzuebersicht.Core.Services.SystemClock.Instance.Today;
 
     [ObservableProperty]
     private DateTime? enddatum;
@@ -54,7 +54,7 @@ public partial class RecurringTransactionDetailViewModel(
     private bool hatEnddatum;
 
     [ObservableProperty]
-    private DateTime enddatumWert = _clock.Today.AddYears(1);
+    private DateTime enddatumWert = Finanzuebersicht.Core.Services.SystemClock.Instance.Today.AddYears(1);
 
     [ObservableProperty]
     private bool aktiv = true;
