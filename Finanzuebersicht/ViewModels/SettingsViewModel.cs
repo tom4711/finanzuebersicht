@@ -1,5 +1,6 @@
 using System.Reflection;
 using System.Diagnostics;
+using Microsoft.Extensions.Logging;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Finanzuebersicht.Core.Services;
