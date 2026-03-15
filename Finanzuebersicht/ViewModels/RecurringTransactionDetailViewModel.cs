@@ -19,7 +19,8 @@ public partial class RecurringTransactionDetailViewModel(
     RemoveRecurringExceptionUseCase removeRecurringExceptionUseCase,
     ITransactionValidationService validationService,
     INavigationService navigationService,
-    ILogger<RecurringTransactionDetailViewModel>? logger = null) : ObservableObject
+    ILogger<RecurringTransactionDetailViewModel>? logger = null,
+    Finanzuebersicht.Core.Services.IClock? clock = null) : ObservableObject
 {
     private readonly SaveRecurringTransactionDetailUseCase _saveRecurringTransactionDetailUseCase = saveRecurringTransactionDetailUseCase;
     private readonly LoadRecurringTransactionDetailDataUseCase _loadRecurringTransactionDetailDataUseCase = loadRecurringTransactionDetailDataUseCase;
@@ -29,6 +30,7 @@ public partial class RecurringTransactionDetailViewModel(
     private RecurringTransaction? _existing;
     private readonly INavigationService _navigationService = navigationService;
     private readonly ILogger<RecurringTransactionDetailViewModel>? _logger = logger;
+    private readonly Finanzuebersicht.Core.Services.IClock _clock = clock ?? Finanzuebersicht.Core.Services.SystemClock.Instance;
 
     [ObservableProperty]
     private string betragText = string.Empty;
