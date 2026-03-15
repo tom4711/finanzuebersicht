@@ -18,7 +18,7 @@ public partial class SettingsViewModel : ObservableObject
     private readonly IDialogService _dialogService;
     private readonly IBackupService? _backupService;
     private readonly Finanzuebersicht.Core.Services.IClock _clock;
-    private readonly Finanzuebersicht.Core.Services.IClock _clock;
+
 
     [ObservableProperty]
     private int selectedThemeIndex;
