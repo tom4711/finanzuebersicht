@@ -117,7 +117,15 @@ public partial class TransactionsViewModel(
             var msg = _loc?.GetString(Finanzuebersicht.Resources.Strings.ResourceKeys.Msg_ImportServiceNichtVerfuegbar) ?? "ImportService nicht verfügbar.";
             var ok = _loc?.GetString(Finanzuebersicht.Resources.Strings.ResourceKeys.Btn_OK) ?? "OK";
 
-            await _dialogService.ShowAlertAsync(title, msg, ok);
+            if (_dialogService != null)
+            {
+                await _dialogService.ShowAlertAsync(title, msg, ok);
+            }
+            else
+            {
+                _logger?.LogError("ImportCsv: DialogService is null while handling missing ImportService");
+                try { Finanzuebersicht.Core.Services.FileLogger.Append("TransactionsViewModel", "ImportCsv: DialogService is null while handling missing ImportService"); } catch { }
+            }
 
             return;
         }
@@ -135,7 +143,15 @@ public partial class TransactionsViewModel(
             var importedMsg = string.Format(_loc?.GetString(Finanzuebersicht.Resources.Strings.ResourceKeys.Msg_ImportiertCount) ?? "Importiert: {0} Transaktionen", count);
             var okBtn = _loc?.GetString(Finanzuebersicht.Resources.Strings.ResourceKeys.Btn_OK) ?? "OK";
 
-            await _dialogService.ShowAlertAsync(titleDone, importedMsg, okBtn);
+            if (_dialogService != null)
+            {
+                await _dialogService.ShowAlertAsync(titleDone, importedMsg, okBtn);
+            }
+            else
+            {
+                _logger?.LogError("ImportCsv: DialogService is null after successful import");
+                try { Finanzuebersicht.Core.Services.FileLogger.Append("TransactionsViewModel", "ImportCsv: DialogService is null after successful import"); } catch { }
+            }
 
             await LoadTransaktionen();
 
