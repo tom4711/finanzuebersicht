@@ -37,9 +37,12 @@ public class DecimalCurrencyConverter : IValueConverter
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
         if (value is decimal betrag)
-            return $"{betrag:N2} €";
+        {
+            var ci = culture ?? CultureInfo.CurrentCulture;
+            return betrag.ToString("C", ci);
+        }
 
-        return "0,00 €";
+        return 0m.ToString("C", culture ?? CultureInfo.CurrentCulture);
     }
 
     public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
@@ -52,11 +55,13 @@ public class BilanzDisplayConverter : IValueConverter
     {
         if (value is decimal bilanz)
         {
-            var vorzeichen = bilanz >= 0 ? "+" : "";
-            return $"{vorzeichen}{bilanz:N2} €";
+            var ci = culture ?? CultureInfo.CurrentCulture;
+            var abs = Math.Abs(bilanz);
+            var sign = bilanz >= 0 ? "+" : "-";
+            return $"{sign}{abs.ToString("C", ci)}";
         }
 
-        return "0,00 €";
+        return 0m.ToString("C", culture ?? CultureInfo.CurrentCulture);
     }
 
     public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)

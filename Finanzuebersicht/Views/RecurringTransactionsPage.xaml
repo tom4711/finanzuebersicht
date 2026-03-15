@@ -85,7 +85,7 @@
                                    FontSize="16" FontAttributes="Bold"
                                    VerticalTextAlignment="Center">
                                 <Label.Text>
-                                    <MultiBinding StringFormat="{}{0}{1:N2} €">
+                                    <MultiBinding StringFormat="{}{0}{1:C}">
                                         <Binding Path="Typ" Converter="{StaticResource VorzeichenConv}" />
                                         <Binding Path="Betrag" />
                                     </MultiBinding>

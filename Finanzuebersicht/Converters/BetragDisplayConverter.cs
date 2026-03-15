@@ -9,8 +9,11 @@ public class BetragDisplayConverter : IValueConverter
     {
         if (value is not Transaction t) return string.Empty;
 
-        var vorzeichen = t.Typ == TransactionType.Einnahme ? "+" : "-";
-        return $"{vorzeichen}{t.Betrag:N2} €";
+        var ci = culture ?? CultureInfo.CurrentCulture;
+        var abs = Math.Abs(t.Betrag);
+        var formatted = abs.ToString("C", ci);
+        var sign = t.Typ == TransactionType.Einnahme ? "+" : "-";
+        return $"{sign}{formatted}";
     }
 
     public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
