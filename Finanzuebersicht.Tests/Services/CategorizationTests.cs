@@ -23,8 +23,8 @@ namespace Finanzuebersicht.Tests.Services
             var categories = new List<Category>
             {
                 new Category { Id = "1", Name = "Groceries" },
-                new Category { Id = "2", Name = "Transport", SystemKey = "SysCat_Transport" },
-                new Category { Id = "3", Name = "Unkategorisiert", SystemKey = "SysCat_Unkategorisiert" }
+                new Category { Id = "2", Name = "Transport", SystemKey = Finanzuebersicht.Core.Constants.SystemCategoryKeys.Transport },
+                new Category { Id = "3", Name = "Unkategorisiert", SystemKey = Finanzuebersicht.Core.Constants.SystemCategoryKeys.Unkategorisiert }
             };
 
             var dto = new TransactionDto { Zahlungsempfaenger = "REWE Supermarket" };
@@ -59,7 +59,7 @@ namespace Finanzuebersicht.Tests.Services
             var categories = new List<Category>
             {
                 new Category { Id = "1", Name = "Groceries" },
-                new Category { Id = "2", Name = "Unkategorisiert", SystemKey = "SysCat_Unkategorisiert" }
+                new Category { Id = "2", Name = "Unkategorisiert", SystemKey = Finanzuebersicht.Core.Constants.SystemCategoryKeys.Unkategorisiert }
             };
 
             var dto = new TransactionDto { Zahlungsempfaenger = "Unknown Store" };
@@ -88,7 +88,7 @@ namespace Finanzuebersicht.Tests.Services
             var categories = new List<Category>
             {
                 new Category { Id = "1", Name = "Transport" },
-                new Category { Id = "2", Name = "Unkategorisiert", SystemKey = "SysCat_Unkategorisiert" }
+                new Category { Id = "2", Name = "Unkategorisiert", SystemKey = Finanzuebersicht.Core.Constants.SystemCategoryKeys.Unkategorisiert }
             };
 
             var dto = new TransactionDto { Zahlungsempfaenger = "DB Bahn" };
@@ -252,7 +252,7 @@ namespace Finanzuebersicht.Tests.Services
             var categories = new List<Category>
             {
                 category,
-                new Category { Id = "2", Name = "Unkategorisiert", SystemKey = "SysCat_Unkategorisiert" }
+                new Category { Id = "2", Name = "Unkategorisiert", SystemKey = Finanzuebersicht.Core.Constants.SystemCategoryKeys.Unkategorisiert }
             };
 
             var dto = new TransactionDto { Zahlungsempfaenger = "REWE" };

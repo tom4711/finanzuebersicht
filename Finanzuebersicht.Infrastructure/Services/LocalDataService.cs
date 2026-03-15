@@ -254,7 +254,7 @@ public class LocalDataService : ICategoryRepository, ITransactionRepository, IRe
 
             // Don't use Unkategorisiert category
             if (topCategory != null && 
-                topCategory.SystemKey != "SysCat_Unkategorisiert" && 
+                topCategory.SystemKey != Finanzuebersicht.Core.Constants.SystemCategoryKeys.Unkategorisiert && 
                 topCategory.Name != "Unkategorisiert")
             {
                 return topCategory;
