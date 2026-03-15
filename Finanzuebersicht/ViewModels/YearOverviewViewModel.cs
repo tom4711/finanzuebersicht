@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using Microsoft.Extensions.Logging;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Finanzuebersicht.Application.UseCases.Dashboard;
@@ -11,10 +12,12 @@ namespace Finanzuebersicht.ViewModels
     public partial class YearOverviewViewModel : ObservableObject
     {
         private readonly LoadDashboardYearUseCase _loadDashboardYearUseCase;
+        private readonly ILogger<YearOverviewViewModel>? _logger;
 
-        public YearOverviewViewModel(LoadDashboardYearUseCase loadDashboardYearUseCase)
+        public YearOverviewViewModel(LoadDashboardYearUseCase loadDashboardYearUseCase, ILogger<YearOverviewViewModel>? logger = null)
         {
             _loadDashboardYearUseCase = loadDashboardYearUseCase;
+            _logger = logger;
             Year = DateTime.Now.Year;
             Categories = new List<CategorySummary>();
         }
@@ -43,7 +46,7 @@ namespace Finanzuebersicht.ViewModels
                     }
                     catch (Exception ex)
                     {
-                        System.Diagnostics.Debug.WriteLine($"LoadAsync MainThread error: {ex}");
+                        _logger?.LogError(ex, "LoadAsync MainThread error");
                         YearTotal = 0;
                         Categories = new List<CategorySummary>();
                     }
@@ -51,7 +54,7 @@ namespace Finanzuebersicht.ViewModels
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"LoadAsync error: {ex}");
+                _logger?.LogError(ex, "LoadAsync error");
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
                     YearTotal = 0;
