@@ -62,7 +62,7 @@
                                     Stroke="Transparent"
                                     WidthRequest="40" HeightRequest="40"
                                     HorizontalOptions="Center" VerticalOptions="Center">
-                                <Label Text="🔄" FontSize="18"
+                                <Label Text="{loc:Translate Icn_Recurring}" FontSize="18"
                                        HorizontalOptions="Center" VerticalOptions="Center" />
                             </Border>
 
@@ -85,7 +85,7 @@
                                    FontSize="16" FontAttributes="Bold"
                                    VerticalTextAlignment="Center">
                                 <Label.Text>
-                                    <MultiBinding StringFormat="{}{0}{1:N2} €">
+                                    <MultiBinding StringFormat="{}{0}{1:C}">
                                         <Binding Path="Typ" Converter="{StaticResource VorzeichenConv}" />
                                         <Binding Path="Betrag" />
                                     </MultiBinding>
@@ -99,14 +99,14 @@
     </RefreshView>
 
         <!-- FAB -->
-        <Button Text="+"
-                FontSize="28" TextColor="White"
-                BackgroundColor="#007AFF"
-                CornerRadius="28"
-                WidthRequest="56" HeightRequest="56"
-                HorizontalOptions="End" VerticalOptions="End"
-                Margin="0,0,20,20"
-                Shadow="{Shadow Brush='#40000000', Offset='0,4', Radius=8}"
-                Command="{Binding GoToDetailCommand}" />
+        <Button Text="{loc:Translate Btn_Hinzufuegen}"
+            FontSize="28" TextColor="White"
+            BackgroundColor="#007AFF"
+            CornerRadius="28"
+            WidthRequest="56" HeightRequest="56"
+            HorizontalOptions="End" VerticalOptions="End"
+            Margin="0,0,20,20"
+            Shadow="{Shadow Brush='#40000000', Offset='0,4', Radius=8}"
+            Command="{Binding GoToDetailCommand}" />
     </Grid>
 </ContentPage>

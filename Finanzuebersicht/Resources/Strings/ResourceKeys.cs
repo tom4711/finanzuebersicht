@@ -117,4 +117,60 @@ public static class ResourceKeys
     public const string SysCat_Gesundheit = nameof(SysCat_Gesundheit);
     public const string SysCat_Gehalt = nameof(SysCat_Gehalt);
     public const string SysCat_Sonstiges = nameof(SysCat_Sonstiges);
+
+    // Backup / Restore / Export
+    public const string Stn_NoBackupYet = nameof(Stn_NoBackupYet);
+    public const string Stn_LastBackupSeconds = nameof(Stn_LastBackupSeconds);
+    public const string Stn_LastBackupMinutes = nameof(Stn_LastBackupMinutes);
+    public const string Stn_LastBackupHours = nameof(Stn_LastBackupHours);
+    public const string Stn_LastBackupDays = nameof(Stn_LastBackupDays);
+    public const string Msg_BackupServiceNotAvailable = nameof(Msg_BackupServiceNotAvailable);
+    public const string Msg_BackupSuccessTitle = nameof(Msg_BackupSuccessTitle);
+    public const string Msg_BackupCreatedBody = nameof(Msg_BackupCreatedBody);
+    public const string Msg_BackupFailedTitle = nameof(Msg_BackupFailedTitle);
+    public const string Msg_NoBackupsTitle = nameof(Msg_NoBackupsTitle);
+    public const string Msg_NoBackupsDesc = nameof(Msg_NoBackupsDesc);
+    public const string Msg_AvailableBackupsTitle = nameof(Msg_AvailableBackupsTitle);
+    public const string Msg_RestoreConfirmTitle = nameof(Msg_RestoreConfirmTitle);
+    public const string Msg_RestoreConfirmBody = nameof(Msg_RestoreConfirmBody);
+    public const string Msg_RestoreSuccessTitle = nameof(Msg_RestoreSuccessTitle);
+    public const string Msg_RestoreSuccessDesc = nameof(Msg_RestoreSuccessDesc);
+    public const string Msg_RestoreFailedTitle = nameof(Msg_RestoreFailedTitle);
+    public const string Msg_CSVExportedTitle = nameof(Msg_CSVExportedTitle);
+    public const string Msg_CSVExportedBody = nameof(Msg_CSVExportedBody);
+    public const string Msg_CSVExportFailedTitle = nameof(Msg_CSVExportFailedTitle);
+
+    // Import messages
+    public const string Msg_ImportFehlgeschlagen_Title = nameof(Msg_ImportFehlgeschlagen_Title);
+    public const string Msg_ImportServiceNichtVerfuegbar = nameof(Msg_ImportServiceNichtVerfuegbar);
+    public const string Msg_ImportAbgeschlossen_Title = nameof(Msg_ImportAbgeschlossen_Title);
+    public const string Msg_ImportiertCount = nameof(Msg_ImportiertCount);
+    public const string Msg_ImportFehler_Title = nameof(Msg_ImportFehler_Title);
+
+    // Additional keys found during XAML scan
+    public const string Lbl_OriginalDatum = nameof(Lbl_OriginalDatum);
+    public const string Lbl_NeuesDatum = nameof(Lbl_NeuesDatum);
+    public const string Hint_NotizOptional = nameof(Hint_NotizOptional);
+    public const string Lbl_Intervall = nameof(Lbl_Intervall);
+    public const string Lbl_IntervallFaktor = nameof(Lbl_IntervallFaktor);
+    public const string Lbl_ErinnerungTage = nameof(Lbl_ErinnerungTage);
+    public const string Lbl_Ausnahmen = nameof(Lbl_Ausnahmen);
+    public const string Btn_SkipNextInstance = nameof(Btn_SkipNextInstance);
+    public const string Btn_ShiftInstance = nameof(Btn_ShiftInstance);
+    public const string Btn_BackupCreate = nameof(Btn_BackupCreate);
+    public const string Btn_BackupManage = nameof(Btn_BackupManage);
+    public const string Btn_BackupRestore = nameof(Btn_BackupRestore);
+    public const string Btn_ExportCSV = nameof(Btn_ExportCSV);
+    public const string Msg_BackupRestoreTitle = nameof(Msg_BackupRestoreTitle);
+    public const string Msg_BackupRestoreDesc = nameof(Msg_BackupRestoreDesc);
+    public const string Btn_Import = nameof(Btn_Import);
+    public const string Title_ShiftInstance = nameof(Title_ShiftInstance);
+
+    // Additional common buttons / app info
+    public const string Btn_Hinzufuegen = nameof(Btn_Hinzufuegen);
+    public const string Btn_Prev = nameof(Btn_Prev);
+    public const string Btn_Next = nameof(Btn_Next);
+    public const string Title_AppName = nameof(Title_AppName);
+    public const string Lbl_FrameworkInfo = nameof(Lbl_FrameworkInfo);
+    public const string Icn_Recurring = nameof(Icn_Recurring);
 }

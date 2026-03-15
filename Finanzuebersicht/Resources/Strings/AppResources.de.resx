@@ -123,4 +123,59 @@ Bitte starte die App neu.</value></data>
   <data name="SysCat_Gesundheit" xml:space="preserve"><value>Gesundheit</value></data>
   <data name="SysCat_Gehalt" xml:space="preserve"><value>Gehalt</value></data>
   <data name="SysCat_Sonstiges" xml:space="preserve"><value>Sonstiges</value></data>
+
+  <!-- Import Messages -->
+  <data name="Msg_ImportFehlgeschlagen_Title" xml:space="preserve"><value>Import fehlgeschlagen</value></data>
+  <data name="Msg_ImportServiceNichtVerfuegbar" xml:space="preserve"><value>ImportService nicht verfügbar.</value></data>
+  <data name="Msg_ImportAbgeschlossen_Title" xml:space="preserve"><value>Import abgeschlossen</value></data>
+  <data name="Msg_ImportiertCount" xml:space="preserve"><value>Importiert: {0} Transaktionen</value></data>
+  <data name="Msg_ImportFehler_Title" xml:space="preserve"><value>Fehler beim Import</value></data>
+
+  <!-- Backup / Restore / Export -->
+  <data name="Stn_NoBackupYet" xml:space="preserve"><value>Noch keine Sicherung erstellt</value></data>
+  <data name="Stn_LastBackupSeconds" xml:space="preserve"><value>Letzte Sicherung vor wenigen Sekunden</value></data>
+  <data name="Stn_LastBackupMinutes" xml:space="preserve"><value>Letzte Sicherung vor {0} Minuten</value></data>
+  <data name="Stn_LastBackupHours" xml:space="preserve"><value>Letzte Sicherung vor {0} Stunden</value></data>
+  <data name="Stn_LastBackupDays" xml:space="preserve"><value>Letzte Sicherung vor {0} Tagen</value></data>
+  <data name="Msg_BackupServiceNotAvailable" xml:space="preserve"><value>Backup-Service nicht verfügbar</value></data>
+  <data name="Msg_BackupSuccessTitle" xml:space="preserve"><value>Sicherung erfolgreich</value></data>
+  <data name="Msg_BackupCreatedBody" xml:space="preserve"><value>Sicherung erstellt mit {0} Kategorien, {1} Transaktionen und {2} Daueraufträgen</value></data>
+  <data name="Msg_BackupFailedTitle" xml:space="preserve"><value>Fehler beim Erstellen der Sicherung</value></data>
+  <data name="Msg_NoBackupsTitle" xml:space="preserve"><value>Keine Sicherungen</value></data>
+  <data name="Msg_NoBackupsDesc" xml:space="preserve"><value>Es wurden noch keine Sicherungen erstellt.</value></data>
+  <data name="Msg_AvailableBackupsTitle" xml:space="preserve"><value>Verfügbare Sicherungen</value></data>
+  <data name="Msg_RestoreConfirmTitle" xml:space="preserve"><value>Sicherung wiederherstellen</value></data>
+  <data name="Msg_RestoreConfirmBody" xml:space="preserve"><value>Möchtest du die Sicherung vom {0} mit {1} Transaktionen wiederherstellen? Dies überschreibt alle aktuellen Daten.</value></data>
+  <data name="Msg_RestoreSuccessTitle" xml:space="preserve"><value>Wiederherstellung erfolgreich</value></data>
+  <data name="Msg_RestoreSuccessDesc" xml:space="preserve"><value>Die Sicherung wurde erfolgreich wiederhergestellt.</value></data>
+  <data name="Msg_RestoreFailedTitle" xml:space="preserve"><value>Wiederherstellung fehlgeschlagen</value></data>
+  <data name="Msg_CSVExportedTitle" xml:space="preserve"><value>CSV exportiert</value></data>
+  <data name="Msg_CSVExportedBody" xml:space="preserve"><value>Die Daten wurden zu:
+{0}</value></data>
+  <data name="Msg_CSVExportFailedTitle" xml:space="preserve"><value>Fehler beim CSV-Export</value></data>
+
+  <!-- Zusätzliche Übersetzungen ergänzt -->
+  <data name="Lbl_OriginalDatum" xml:space="preserve"><value>Originaldatum</value></data>
+  <data name="Lbl_NeuesDatum" xml:space="preserve"><value>Neues Datum</value></data>
+  <data name="Hint_NotizOptional" xml:space="preserve"><value>Notiz (optional)</value></data>
+  <data name="Lbl_Intervall" xml:space="preserve"><value>Intervall</value></data>
+  <data name="Lbl_IntervallFaktor" xml:space="preserve"><value>Intervall-Faktor</value></data>
+  <data name="Lbl_ErinnerungTage" xml:space="preserve"><value>Erinnerung (Tage vorher)</value></data>
+  <data name="Lbl_Ausnahmen" xml:space="preserve"><value>Ausnahmen</value></data>
+  <data name="Btn_SkipNextInstance" xml:space="preserve"><value>Nächste Instanz überspringen</value></data>
+  <data name="Btn_ShiftInstance" xml:space="preserve"><value>Instanz verschieben</value></data>
+  <data name="Btn_BackupCreate" xml:space="preserve"><value>💾 Sicherung erstellen</value></data>
+  <data name="Btn_BackupManage" xml:space="preserve"><value>📂 Sicherungen verwalten</value></data>
+  <data name="Btn_BackupRestore" xml:space="preserve"><value>📥 Wiederherstellen</value></data>
+  <data name="Btn_ExportCSV" xml:space="preserve"><value>📊 CSV exportieren</value></data>
+  <data name="Msg_BackupRestoreTitle" xml:space="preserve"><value>Sicherung & Wiederherstellung</value></data>
+  <data name="Msg_BackupRestoreDesc" xml:space="preserve"><value>Erstelle Sicherungen deiner Daten und stelle sie bei Bedarf wieder her.</value></data>
+  <data name="Btn_Import" xml:space="preserve"><value>Import</value></data>
+  <data name="Title_ShiftInstance" xml:space="preserve"><value>Instanz verschieben</value></data>
+  <data name="Btn_Hinzufuegen" xml:space="preserve"><value>+</value></data>
+  <data name="Btn_Prev" xml:space="preserve"><value>‹</value></data>
+  <data name="Btn_Next" xml:space="preserve"><value>›</value></data>
+  <data name="Title_AppName" xml:space="preserve"><value>Finanzübersicht</value></data>
+  <data name="Lbl_FrameworkInfo" xml:space="preserve"><value>.NET 10 · MAUI · MVVM</value></data>
+  <data name="Icn_Recurring" xml:space="preserve"><value>🔄</value></data>
 </root>

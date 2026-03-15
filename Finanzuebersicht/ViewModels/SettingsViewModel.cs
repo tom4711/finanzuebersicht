@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Diagnostics;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Finanzuebersicht.Core.Services;
@@ -30,13 +31,7 @@ public partial class SettingsViewModel : ObservableObject
     public string AppVersion { get; }
     public string BuildInfo { get; }
 
-    public List<LibraryInfo> Libraries { get; } =
-    [
-        new("CommunityToolkit.Mvvm", "MVVM-Toolkit mit Source Generators"),
-        new("CommunityToolkit.Maui", "UI-Erweiterungen für .NET MAUI"),
-        new("Nerdbank.GitVersioning", "Automatische SemVer-Versionierung"),
-        new("xUnit", "Unit-Test-Framework (nur Tests)"),
-    ];
+    public List<LibraryInfo> Libraries { get; } = new();
 
     public SettingsViewModel(
         SettingsService settings,
@@ -86,6 +81,52 @@ public partial class SettingsViewModel : ObservableObject
 
         // Letztes Backup anzeigen
         UpdateLastBackupInfo();
+
+        // Libraries dynamisch aus Referenzen befüllen
+        PopulateLibraries();
+    }
+
+    private void PopulateLibraries()
+    {
+        try
+        {
+            var entry = Assembly.GetEntryAssembly() ?? Assembly.GetExecutingAssembly();
+            var refs = entry.GetReferencedAssemblies();
+
+            foreach (var ra in refs.OrderBy(r => r.Name))
+            {
+                if (ra.Name.StartsWith("System", StringComparison.OrdinalIgnoreCase) ||
+                    ra.Name.StartsWith("Microsoft", StringComparison.OrdinalIgnoreCase) ||
+                    ra.Name.StartsWith("netstandard", StringComparison.OrdinalIgnoreCase) ||
+                    ra.Name.Contains("Windows", StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+
+                Libraries.Add(new LibraryInfo(ra.Name, $"Version {ra.Version}"));
+            }
+
+            // Ergänzend: lade bekannte Assemblies, falls vorhanden
+            var known = new[] { "CommunityToolkit.Mvvm", "CommunityToolkit.Maui", "Nerdbank.GitVersioning" };
+            foreach (var name in known)
+            {
+                try
+                {
+                    var asm = Assembly.Load(new AssemblyName(name));
+                    var n = asm.GetName();
+                    if (!Libraries.Any(l => l.Name == n.Name))
+                        Libraries.Add(new LibraryInfo(n.Name, $"Version {n.Version}"));
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"[SettingsViewModel] Konnte bekannte Assembly '{name}' nicht laden: {ex}");
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"[SettingsViewModel] Fehler beim Ermitteln der verwendeten Bibliotheken: {ex}");
+        }
     }
 
     partial void OnSelectedThemeIndexChanged(int value)
@@ -186,29 +227,29 @@ public partial class SettingsViewModel : ObservableObject
         var lastBackupStr = _settings.Get("LastBackupTime", "");
         if (string.IsNullOrEmpty(lastBackupStr))
         {
-            LastBackupInfo = "Noch keine Sicherung erstellt";
+            LastBackupInfo = _loc.GetString(ResourceKeys.Stn_NoBackupYet);
         }
         else if (DateTime.TryParse(lastBackupStr, out var lastBackup))
         {
             var diff = DateTime.UtcNow - lastBackup;
             if (diff.TotalSeconds < 60)
             {
-                LastBackupInfo = $"Letzte Sicherung vor wenigen Sekunden";
+                LastBackupInfo = _loc.GetString(ResourceKeys.Stn_LastBackupSeconds);
             }
             else if (diff.TotalMinutes < 60)
             {
-                LastBackupInfo = $"Letzte Sicherung vor {(int)diff.TotalMinutes} Minuten";
+                LastBackupInfo = string.Format(_loc.GetString(ResourceKeys.Stn_LastBackupMinutes), (int)diff.TotalMinutes);
             }
             else
             {
                 LastBackupInfo = diff.TotalHours < 24
-                ? $"Letzte Sicherung vor {(int)diff.TotalHours} Stunden"
-                : $"Letzte Sicherung vor {(int)diff.TotalDays} Tagen";
+                ? string.Format(_loc.GetString(ResourceKeys.Stn_LastBackupHours), (int)diff.TotalHours)
+                : string.Format(_loc.GetString(ResourceKeys.Stn_LastBackupDays), (int)diff.TotalDays);
             }
         }
         else
         {
-            LastBackupInfo = "Sicherungsstatus unbekannt";
+            LastBackupInfo = _loc.GetString(ResourceKeys.Stn_NoBackupYet);
         }
     }
 
@@ -219,7 +260,7 @@ public partial class SettingsViewModel : ObservableObject
         {
             await _dialogService.ShowAlertAsync(
                 _loc.GetString(ResourceKeys.Err_Titel),
-                "Backup-Service nicht verfügbar",
+                _loc.GetString(ResourceKeys.Msg_BackupServiceNotAvailable),
                 _loc.GetString(ResourceKeys.Btn_OK));
             return;
         }
@@ -243,15 +284,15 @@ public partial class SettingsViewModel : ObservableObject
             UpdateLastBackupInfo();
 
             await _dialogService.ShowAlertAsync(
-                "Sicherung erfolgreich",
-                $"Sicherung erstellt mit {metadata.EntityCounts["categories"]} Kategorien, {metadata.EntityCounts["transactions"]} Transaktionen und {metadata.EntityCounts["recurring"]} Daueraufträgen",
+                _loc.GetString(ResourceKeys.Msg_BackupSuccessTitle),
+                string.Format(_loc.GetString(ResourceKeys.Msg_BackupCreatedBody), metadata.EntityCounts["categories"], metadata.EntityCounts["transactions"], metadata.EntityCounts["recurring"]),
                 _loc.GetString(ResourceKeys.Btn_OK));
         }
         catch (Exception ex)
         {
             await _dialogService.ShowAlertAsync(
-                _loc.GetString(ResourceKeys.Err_Titel),
-                $"Fehler beim Erstellen der Sicherung: {ex.Message}",
+                _loc.GetString(ResourceKeys.Msg_BackupFailedTitle),
+                string.Format(_loc.GetString(ResourceKeys.Err_SpeichernFehlgeschlagen), ex.Message),
                 _loc.GetString(ResourceKeys.Btn_OK));
         }
     }
@@ -263,7 +304,7 @@ public partial class SettingsViewModel : ObservableObject
         {
             await _dialogService.ShowAlertAsync(
                 _loc.GetString(ResourceKeys.Err_Titel),
-                "Backup-Service nicht verfügbar",
+                _loc.GetString(ResourceKeys.Msg_BackupServiceNotAvailable),
                 _loc.GetString(ResourceKeys.Btn_OK));
             return;
         }
@@ -286,8 +327,8 @@ public partial class SettingsViewModel : ObservableObject
             if (!backups.Any())
             {
                 await _dialogService.ShowAlertAsync(
-                    "Keine Sicherungen",
-                    "Es wurden noch keine Sicherungen erstellt.",
+                    _loc.GetString(ResourceKeys.Msg_NoBackupsTitle),
+                    _loc.GetString(ResourceKeys.Msg_NoBackupsDesc),
                     _loc.GetString(ResourceKeys.Btn_OK));
                 return;
             }
@@ -300,7 +341,7 @@ public partial class SettingsViewModel : ObservableObject
             }
 
             await _dialogService.ShowAlertAsync(
-                "Verfügbare Sicherungen",
+                _loc.GetString(ResourceKeys.Msg_AvailableBackupsTitle),
                 backupList,
                 _loc.GetString(ResourceKeys.Btn_OK));
         }
@@ -308,7 +349,7 @@ public partial class SettingsViewModel : ObservableObject
         {
             await _dialogService.ShowAlertAsync(
                 _loc.GetString(ResourceKeys.Err_Titel),
-                $"Fehler beim Laden der Sicherungen: {ex.Message}",
+                string.Format(_loc.GetString(ResourceKeys.Err_SpeichernFehlgeschlagen), ex.Message),
                 _loc.GetString(ResourceKeys.Btn_OK));
         }
     }
@@ -320,7 +361,7 @@ public partial class SettingsViewModel : ObservableObject
         {
             await _dialogService.ShowAlertAsync(
                 _loc.GetString(ResourceKeys.Err_Titel),
-                "Backup-Service nicht verfügbar",
+                _loc.GetString(ResourceKeys.Msg_BackupServiceNotAvailable),
                 _loc.GetString(ResourceKeys.Btn_OK));
             return;
         }
@@ -343,8 +384,8 @@ public partial class SettingsViewModel : ObservableObject
             if (!backups.Any())
             {
                 await _dialogService.ShowAlertAsync(
-                    "Keine Sicherungen",
-                    "Es wurden noch keine Sicherungen erstellt.",
+                    _loc.GetString(ResourceKeys.Msg_NoBackupsTitle),
+                    _loc.GetString(ResourceKeys.Msg_NoBackupsDesc),
                     _loc.GetString(ResourceKeys.Btn_OK));
                 return;
             }
@@ -352,11 +393,11 @@ public partial class SettingsViewModel : ObservableObject
             // Hier könnten wir zu einer separaten Restore-Dialog-Page navigieren
             // Für nun: Informationen anzeigen
             var newestBackup = backups.First();
-            var confirmed = await Shell.Current.DisplayAlert(
-                "Sicherung wiederherstellen",
-                $"Möchtest du die Sicherung vom {newestBackup.CreatedAt:g} mit {newestBackup.EntityCounts["transactions"]} Transaktionen wiederherstellen?\n\nWarnung: Dies überschreibt alle aktuellen Daten.",
-                "Ja, wiederherstellen",
-                "Abbrechen");
+            var confirmed = await _dialogService.ShowConfirmationAsync(
+                _loc.GetString(ResourceKeys.Msg_RestoreConfirmTitle),
+                string.Format(_loc.GetString(ResourceKeys.Msg_RestoreConfirmBody), newestBackup.CreatedAt.ToString("g"), newestBackup.EntityCounts["transactions"]),
+                _loc.GetString(ResourceKeys.Btn_Ja),
+                _loc.GetString(ResourceKeys.Btn_Abbrechen));
 
             if (confirmed)
             {
@@ -364,15 +405,15 @@ public partial class SettingsViewModel : ObservableObject
                 if (result.Success)
                 {
                     await _dialogService.ShowAlertAsync(
-                        "Wiederherstellung erfolgreich",
-                        "Die Sicherung wurde erfolgreich wiederhergestellt.",
+                        _loc.GetString(ResourceKeys.Msg_RestoreSuccessTitle),
+                        _loc.GetString(ResourceKeys.Msg_RestoreSuccessDesc),
                         _loc.GetString(ResourceKeys.Btn_OK));
                 }
                 else
                 {
                     await _dialogService.ShowAlertAsync(
-                        _loc.GetString(ResourceKeys.Err_Titel),
-                        $"Wiederherstellung fehlgeschlagen: {result.ErrorMessage}",
+                        _loc.GetString(ResourceKeys.Msg_RestoreFailedTitle),
+                        string.Format(_loc.GetString(ResourceKeys.Err_SpeichernFehlgeschlagen), result.ErrorMessage),
                         _loc.GetString(ResourceKeys.Btn_OK));
                 }
             }
@@ -381,7 +422,7 @@ public partial class SettingsViewModel : ObservableObject
         {
             await _dialogService.ShowAlertAsync(
                 _loc.GetString(ResourceKeys.Err_Titel),
-                $"Fehler beim Wiederherstellen: {ex.Message}",
+                string.Format(_loc.GetString(ResourceKeys.Err_SpeichernFehlgeschlagen), ex.Message),
                 _loc.GetString(ResourceKeys.Btn_OK));
         }
     }
@@ -393,7 +434,7 @@ public partial class SettingsViewModel : ObservableObject
         {
             await _dialogService.ShowAlertAsync(
                 _loc.GetString(ResourceKeys.Err_Titel),
-                "Backup-Service nicht verfügbar",
+                _loc.GetString(ResourceKeys.Msg_BackupServiceNotAvailable),
                 _loc.GetString(ResourceKeys.Btn_OK));
             return;
         }
@@ -411,15 +452,15 @@ public partial class SettingsViewModel : ObservableObject
             File.WriteAllBytes(filePath, csvData);
 
             await _dialogService.ShowAlertAsync(
-                "CSV exportiert",
-                $"Die Daten wurden zu:\n{filePath}",
+                _loc.GetString(ResourceKeys.Msg_CSVExportedTitle),
+                string.Format(_loc.GetString(ResourceKeys.Msg_CSVExportedBody), filePath),
                 _loc.GetString(ResourceKeys.Btn_OK));
         }
         catch (Exception ex)
         {
             await _dialogService.ShowAlertAsync(
-                _loc.GetString(ResourceKeys.Err_Titel),
-                $"Fehler beim CSV-Export: {ex.Message}",
+                _loc.GetString(ResourceKeys.Msg_CSVExportFailedTitle),
+                string.Format(_loc.GetString(ResourceKeys.Err_SpeichernFehlgeschlagen), ex.Message),
                 _loc.GetString(ResourceKeys.Btn_OK));
         }
     }

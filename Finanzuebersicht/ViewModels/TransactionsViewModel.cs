@@ -18,6 +18,7 @@ public partial class TransactionsViewModel(
     INavigationService navigationService,
     ImportService importService,
     IDialogService dialogService,
+    ILocalizationService localizationService,
     ILogger<TransactionsViewModel> logger) : MonthNavigationViewModel
 {
     private readonly DeleteTransactionUseCase _deleteTransactionUseCase = deleteTransactionUseCase;
@@ -25,6 +26,7 @@ public partial class TransactionsViewModel(
     private readonly INavigationService _navigationService = navigationService;
     private readonly ImportService _importService = importService;
     private readonly IDialogService _dialogService = dialogService;
+    private readonly ILocalizationService _loc = localizationService;
     private readonly ILogger<TransactionsViewModel> _logger = logger;
 
     [ObservableProperty]
@@ -111,13 +113,18 @@ public partial class TransactionsViewModel(
         // Defensive checks to avoid NullReferenceExceptions when DI failed
         if (_importService == null)
         {
+            var title = _loc?.GetString(Finanzuebersicht.Resources.Strings.ResourceKeys.Msg_ImportFehlgeschlagen_Title) ?? "Import fehlgeschlagen";
+            var msg = _loc?.GetString(Finanzuebersicht.Resources.Strings.ResourceKeys.Msg_ImportServiceNichtVerfuegbar) ?? "ImportService nicht verfügbar.";
+            var ok = _loc?.GetString(Finanzuebersicht.Resources.Strings.ResourceKeys.Btn_OK) ?? "OK";
+
             if (_dialogService != null)
             {
-                await _dialogService.ShowAlertAsync("Import fehlgeschlagen", "ImportService nicht verfügbar.", "OK");
+                await _dialogService.ShowAlertAsync(title, msg, ok);
             }
             else
             {
-                await App.Current.MainPage.DisplayAlert("Import fehlgeschlagen", "ImportService nicht verfügbar.", "OK");
+                _logger?.LogError("ImportCsv: DialogService is null while handling missing ImportService");
+                try { Finanzuebersicht.Core.Services.FileLogger.Append("TransactionsViewModel", "ImportCsv: DialogService is null while handling missing ImportService"); } catch { }
             }
 
             return;
@@ -132,13 +139,18 @@ public partial class TransactionsViewModel(
             var imported = await _importService.ImportFromCsvAsync(stream);
             var count = imported?.Count() ?? 0;
 
+            var titleDone = _loc?.GetString(Finanzuebersicht.Resources.Strings.ResourceKeys.Msg_ImportAbgeschlossen_Title) ?? "Import abgeschlossen";
+            var importedMsg = string.Format(_loc?.GetString(Finanzuebersicht.Resources.Strings.ResourceKeys.Msg_ImportiertCount) ?? "Importiert: {0} Transaktionen", count);
+            var okBtn = _loc?.GetString(Finanzuebersicht.Resources.Strings.ResourceKeys.Btn_OK) ?? "OK";
+
             if (_dialogService != null)
             {
-                await _dialogService.ShowAlertAsync("Import abgeschlossen", $"Importiert: {count} Transaktionen", "OK");
+                await _dialogService.ShowAlertAsync(titleDone, importedMsg, okBtn);
             }
             else
             {
-                await App.Current.MainPage.DisplayAlert("Import abgeschlossen", $"Importiert: {count} Transaktionen", "OK");
+                _logger?.LogError("ImportCsv: DialogService is null after successful import");
+                try { Finanzuebersicht.Core.Services.FileLogger.Append("TransactionsViewModel", "ImportCsv: DialogService is null after successful import"); } catch { }
             }
 
             await LoadTransaktionen();
@@ -157,14 +169,10 @@ public partial class TransactionsViewModel(
 
             // Ensure we don't call a null dialog service in the catch
             var msg = ex.Message + (ex.InnerException != null ? " - " + ex.InnerException.Message : string.Empty);
-            if (_dialogService != null)
-            {
-                await _dialogService.ShowAlertAsync("Fehler beim Import", msg, "OK");
-            }
-            else
-            {
-                await App.Current.MainPage.DisplayAlert("Fehler beim Import", msg, "OK");
-            }
+            var errTitle = _loc?.GetString(Finanzuebersicht.Resources.Strings.ResourceKeys.Msg_ImportFehler_Title) ?? "Fehler beim Import";
+            var okError = _loc?.GetString(Finanzuebersicht.Resources.Strings.ResourceKeys.Btn_OK) ?? "OK";
+
+            await _dialogService.ShowAlertAsync(errTitle, msg, okError);
         }
     }
 }

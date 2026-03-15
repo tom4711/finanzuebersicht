@@ -52,8 +52,8 @@
                                 <Label Text="{Binding Typ}" FontSize="13" TextColor="Gray" />
                             </VerticalStackLayout>
 
-                            <Label Grid.Column="2" Text="›" FontSize="24" TextColor="Gray"
-                                   VerticalOptions="Center" />
+                            <Label Grid.Column="2" Text="{loc:Translate Btn_Next}" FontSize="24" TextColor="Gray"
+                                VerticalOptions="Center" />
                         </Grid>
                     </SwipeView>
                 </DataTemplate>
@@ -62,7 +62,7 @@
     </RefreshView>
 
         <!-- FAB -->
-        <Button Text="+"
+        <Button Text="{loc:Translate Btn_Hinzufuegen}"
                 FontSize="28" TextColor="White"
                 BackgroundColor="#007AFF"
                 CornerRadius="28"
