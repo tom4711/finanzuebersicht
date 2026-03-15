@@ -40,7 +40,7 @@ jobs:
 
   full-maui-checks:
     name: Full MAUI build (macOS)
-    runs-on: macos-13
+    runs-on: macos-latest
     needs: quick-checks
     if: github.event_name == 'pull_request' || github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
     strategy:
@@ -67,12 +67,18 @@ jobs:
         if: steps.labelcheck.outputs.run_maui == 'true'
         run: |
           sudo gem install cocoapods --no-document || true
-      - name: Workload restore
+      - name: Workload restore (with retry)
         if: steps.labelcheck.outputs.run_maui == 'true'
-        run: dotnet workload restore
-      - name: Build MAUI targets
+        run: |
+          for i in 1 2 3; do
+            dotnet workload restore && break || echo "workload restore failed, retrying ($i)" && sleep 5;
+          done
+      - name: Build MAUI targets (with retry)
         if: steps.labelcheck.outputs.run_maui == 'true'
-        run: dotnet build -f net10.0-maccatalyst -c Release --no-restore
+        run: |
+          for i in 1 2 3; do
+            dotnet build -f net10.0-maccatalyst -c Release --no-restore && break || echo "maui build failed, retrying ($i)" && sleep 5;
+          done
       - name: Skip MAUI build
         if: steps.labelcheck.outputs.run_maui != 'true'
         run: echo "Skipped MAUI build (requires label 'run-maui')"
