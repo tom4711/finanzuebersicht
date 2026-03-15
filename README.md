@@ -86,6 +86,22 @@ dotnet test Finanzuebersicht.Tests
 - Nerdbank.GitVersioning (`version.json`) steuert Versionsnummern
 - CI / Pre-Release Workflows in `.github/workflows/`
 
+Full MAUI build (macCatalyst)
+
+- Quick checks (unit tests, linters) werden bei Push auf Branches ausgeführt (ubuntu runner) — das spart macOS-Runner-Minuten.
+- Der vollständige MAUI macCatalyst-Build läuft für Pull Requests gegen `main` und für `main`-Pushes. Dadurch werden macOS-Ressourcen nur bei echten Integrationsprüfungen verwendet.
+- Um einen vollständigen MAUI-Build für einen PR explizit anzustoßen, füge das Label `run-maui` zur PR hinzu oder starte den Workflow manuell über Actions → "CI - Split quick and full" → Run workflow.
+- Wenn du lokal einen vollständigen Build machen willst, installiere die Workloads und baue mit:
+
+```bash
+# Workloads installieren (macOS)
+dotnet workload install maui
+# Mac Catalyst build
+dotnet build Finanzuebersicht/Finanzuebersicht.csproj -f net10.0-maccatalyst
+```
+
+Hinweis: Die CI-Strategie reduziert Kosten und macht Fehler (z. B. missing workloads oder MAUI-spezifische Probleme) früher sichtbar in PRs, bevor sie in main gemerged werden.
+
 ## Mitmachen
 
 Bitte arbeite auf Feature-Branches und eröffne Pull Requests gegen `main`:
