@@ -1,0 +1,48 @@
+name: CI - Split quick and full
+
+on:
+  push:
+    branches: [ "**" ]
+    paths-ignore:
+      - '.github/**'
+      - 'docs/**'
+      - 'README.md'
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  checks: write
+
+jobs:
+  quick-checks:
+    name: Quick checks (ubuntu)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      - name: Restore
+        run: dotnet restore
+      - name: Build & Test
+        run: dotnet test Finanzuebersicht.Tests -c Release --no-restore --logger "console;verbosity=minimal"
+
+  full-maui-checks:
+    name: Full MAUI build (macOS)
+    runs-on: macos-13
+    needs: quick-checks
+    if: github.event_name == 'pull_request' || github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      - name: Install dependencies
+        run: |
+          sudo gem install cocoapods --no-document || true
+      - name: Build MAUI targets
+        run: dotnet build -f net10.0-maccatalyst -c Release --no-restore
