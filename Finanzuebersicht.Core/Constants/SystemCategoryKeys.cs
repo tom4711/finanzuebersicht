@@ -9,7 +9,7 @@ namespace Finanzuebersicht.Core.Constants
     public static class SystemCategoryKeys
     {
         // Example system/fallback category key
-        public const string Sonstiges = "SysCat_Sonstiges";
+        public const string Sonstiges = Finanzuebersicht.Core.Constants.SystemCategoryKeys.Sonstiges;
 
         // Add additional keys as needed, e.g.:
         // public const string Unassigned = "SysCat_Unassigned";

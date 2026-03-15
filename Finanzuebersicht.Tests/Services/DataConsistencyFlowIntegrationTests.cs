@@ -33,7 +33,7 @@ namespace Finanzuebersicht.Tests.Services
                 Icon = "📦",
                 Color = "#A2845E",
                 Typ = TransactionType.Ausgabe,
-                SystemKey = "SysCat_Sonstiges"
+                SystemKey = Finanzuebersicht.Core.Constants.SystemCategoryKeys.Sonstiges
             };
 
             await dataService.SaveCategoryAsync(groceriesCategory);
@@ -106,7 +106,7 @@ namespace Finanzuebersicht.Tests.Services
                 Icon = "📦",
                 Color = "#A2845E",
                 Typ = TransactionType.Ausgabe,
-                SystemKey = "SysCat_Sonstiges"
+                SystemKey = Finanzuebersicht.Core.Constants.SystemCategoryKeys.Sonstiges
             };
 
             await dataService.SaveCategoryAsync(utilitiesCategory);
@@ -178,7 +178,7 @@ namespace Finanzuebersicht.Tests.Services
 
             // Assert - fallback was created
             var categories = await dataService.GetCategoriesAsync();
-            var fallback = categories.FirstOrDefault(c => c.SystemKey == "SysCat_Sonstiges");
+            var fallback = categories.FirstOrDefault(c => c.SystemKey == Finanzuebersicht.Core.Constants.SystemCategoryKeys.Sonstiges);
             
             Assert.NotNull(fallback);
             
@@ -212,7 +212,7 @@ namespace Finanzuebersicht.Tests.Services
                 Icon = "📦",
                 Color = "#A2845E",
                 Typ = TransactionType.Ausgabe,
-                SystemKey = "SysCat_Sonstiges"
+                SystemKey = Finanzuebersicht.Core.Constants.SystemCategoryKeys.Sonstiges
             };
 
             await dataService.SaveCategoryAsync(entertainmentCategory);

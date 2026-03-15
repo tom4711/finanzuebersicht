@@ -34,7 +34,7 @@ public class CategorizationService(
         ArgumentNullException.ThrowIfNull(availableCategories);
 
         var categories = availableCategories.ToList();
-        var uncategorizedCategory = categories.FirstOrDefault(c => c.SystemKey == "SysCat_Unkategorisiert")
+        var uncategorizedCategory = categories.FirstOrDefault(c => c.SystemKey == Finanzuebersicht.Core.Constants.SystemCategoryKeys.Unkategorisiert)
             ?? categories.FirstOrDefault(c => c.Name == "Unkategorisiert");
 
         // Execute strategies in priority order

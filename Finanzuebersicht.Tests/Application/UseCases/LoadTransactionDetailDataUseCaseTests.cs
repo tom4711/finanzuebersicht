@@ -34,7 +34,7 @@ public class LoadTransactionDetailDataUseCaseTests
         categoryRepository.GetCategoriesAsync().Returns(new List<Category>
         {
             new() { Id = "cat-1", Name = "Lebensmittel" },
-            new() { Id = "cat-2", Name = "Sonstiges", SystemKey = "SysCat_Sonstiges" }
+            new() { Id = "cat-2", Name = "Sonstiges", SystemKey = Finanzuebersicht.Core.Constants.SystemCategoryKeys.Sonstiges }
         });
 
         var sut = new LoadTransactionDetailDataUseCase(categoryRepository);
