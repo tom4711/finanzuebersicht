@@ -8,8 +8,15 @@ namespace Finanzuebersicht.Core.Constants
     /// </summary>
     public static class SystemCategoryKeys
     {
-        // Example system/fallback category key
-        public const string Sonstiges = Finanzuebersicht.Core.Constants.SystemCategoryKeys.Sonstiges;
+        // System / fallback category keys
+        public const string Unkategorisiert = "SysCat_Unkategorisiert";
+        public const string Sonstiges = "SysCat_Sonstiges";
+        public const string Lebensmittel = "SysCat_Lebensmittel";
+        public const string Transport = "SysCat_Transport";
+        public const string Wohnen = "SysCat_Wohnen";
+        public const string Unterhaltung = "SysCat_Unterhaltung";
+        public const string Gesundheit = "SysCat_Gesundheit";
+        public const string Gehalt = "SysCat_Gehalt";
 
         // Add additional keys as needed, e.g.:
         // public const string Unassigned = "SysCat_Unassigned";
