@@ -123,4 +123,34 @@ Bitte starte die App neu.</value></data>
   <data name="SysCat_Gesundheit" xml:space="preserve"><value>Gesundheit</value></data>
   <data name="SysCat_Gehalt" xml:space="preserve"><value>Gehalt</value></data>
   <data name="SysCat_Sonstiges" xml:space="preserve"><value>Sonstiges</value></data>
+
+  <!-- Import Messages -->
+  <data name="Msg_ImportFehlgeschlagen_Title" xml:space="preserve"><value>Import fehlgeschlagen</value></data>
+  <data name="Msg_ImportServiceNichtVerfuegbar" xml:space="preserve"><value>ImportService nicht verfügbar.</value></data>
+  <data name="Msg_ImportAbgeschlossen_Title" xml:space="preserve"><value>Import abgeschlossen</value></data>
+  <data name="Msg_ImportiertCount" xml:space="preserve"><value>Importiert: {0} Transaktionen</value></data>
+  <data name="Msg_ImportFehler_Title" xml:space="preserve"><value>Fehler beim Import</value></data>
+
+  <!-- Backup / Restore / Export -->
+  <data name="Stn_NoBackupYet" xml:space="preserve"><value>Noch keine Sicherung erstellt</value></data>
+  <data name="Stn_LastBackupSeconds" xml:space="preserve"><value>Letzte Sicherung vor wenigen Sekunden</value></data>
+  <data name="Stn_LastBackupMinutes" xml:space="preserve"><value>Letzte Sicherung vor {0} Minuten</value></data>
+  <data name="Stn_LastBackupHours" xml:space="preserve"><value>Letzte Sicherung vor {0} Stunden</value></data>
+  <data name="Stn_LastBackupDays" xml:space="preserve"><value>Letzte Sicherung vor {0} Tagen</value></data>
+  <data name="Msg_BackupServiceNotAvailable" xml:space="preserve"><value>Backup-Service nicht verfügbar</value></data>
+  <data name="Msg_BackupSuccessTitle" xml:space="preserve"><value>Sicherung erfolgreich</value></data>
+  <data name="Msg_BackupCreatedBody" xml:space="preserve"><value>Sicherung erstellt mit {0} Kategorien, {1} Transaktionen und {2} Daueraufträgen</value></data>
+  <data name="Msg_BackupFailedTitle" xml:space="preserve"><value>Fehler beim Erstellen der Sicherung</value></data>
+  <data name="Msg_NoBackupsTitle" xml:space="preserve"><value>Keine Sicherungen</value></data>
+  <data name="Msg_NoBackupsDesc" xml:space="preserve"><value>Es wurden noch keine Sicherungen erstellt.</value></data>
+  <data name="Msg_AvailableBackupsTitle" xml:space="preserve"><value>Verfügbare Sicherungen</value></data>
+  <data name="Msg_RestoreConfirmTitle" xml:space="preserve"><value>Sicherung wiederherstellen</value></data>
+  <data name="Msg_RestoreConfirmBody" xml:space="preserve"><value>Möchtest du die Sicherung vom {0} mit {1} Transaktionen wiederherstellen? Dies überschreibt alle aktuellen Daten.</value></data>
+  <data name="Msg_RestoreSuccessTitle" xml:space="preserve"><value>Wiederherstellung erfolgreich</value></data>
+  <data name="Msg_RestoreSuccessDesc" xml:space="preserve"><value>Die Sicherung wurde erfolgreich wiederhergestellt.</value></data>
+  <data name="Msg_RestoreFailedTitle" xml:space="preserve"><value>Wiederherstellung fehlgeschlagen</value></data>
+  <data name="Msg_CSVExportedTitle" xml:space="preserve"><value>CSV exportiert</value></data>
+  <data name="Msg_CSVExportedBody" xml:space="preserve"><value>Die Daten wurden zu:
+{0}</value></data>
+  <data name="Msg_CSVExportFailedTitle" xml:space="preserve"><value>Fehler beim CSV-Export</value></data>
 </root>

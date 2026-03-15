@@ -117,4 +117,33 @@ public static class ResourceKeys
     public const string SysCat_Gesundheit = nameof(SysCat_Gesundheit);
     public const string SysCat_Gehalt = nameof(SysCat_Gehalt);
     public const string SysCat_Sonstiges = nameof(SysCat_Sonstiges);
+
+    // Backup / Restore / Export
+    public const string Stn_NoBackupYet = nameof(Stn_NoBackupYet);
+    public const string Stn_LastBackupSeconds = nameof(Stn_LastBackupSeconds);
+    public const string Stn_LastBackupMinutes = nameof(Stn_LastBackupMinutes);
+    public const string Stn_LastBackupHours = nameof(Stn_LastBackupHours);
+    public const string Stn_LastBackupDays = nameof(Stn_LastBackupDays);
+    public const string Msg_BackupServiceNotAvailable = nameof(Msg_BackupServiceNotAvailable);
+    public const string Msg_BackupSuccessTitle = nameof(Msg_BackupSuccessTitle);
+    public const string Msg_BackupCreatedBody = nameof(Msg_BackupCreatedBody);
+    public const string Msg_BackupFailedTitle = nameof(Msg_BackupFailedTitle);
+    public const string Msg_NoBackupsTitle = nameof(Msg_NoBackupsTitle);
+    public const string Msg_NoBackupsDesc = nameof(Msg_NoBackupsDesc);
+    public const string Msg_AvailableBackupsTitle = nameof(Msg_AvailableBackupsTitle);
+    public const string Msg_RestoreConfirmTitle = nameof(Msg_RestoreConfirmTitle);
+    public const string Msg_RestoreConfirmBody = nameof(Msg_RestoreConfirmBody);
+    public const string Msg_RestoreSuccessTitle = nameof(Msg_RestoreSuccessTitle);
+    public const string Msg_RestoreSuccessDesc = nameof(Msg_RestoreSuccessDesc);
+    public const string Msg_RestoreFailedTitle = nameof(Msg_RestoreFailedTitle);
+    public const string Msg_CSVExportedTitle = nameof(Msg_CSVExportedTitle);
+    public const string Msg_CSVExportedBody = nameof(Msg_CSVExportedBody);
+    public const string Msg_CSVExportFailedTitle = nameof(Msg_CSVExportFailedTitle);
+
+    // Import messages
+    public const string Msg_ImportFehlgeschlagen_Title = nameof(Msg_ImportFehlgeschlagen_Title);
+    public const string Msg_ImportServiceNichtVerfuegbar = nameof(Msg_ImportServiceNichtVerfuegbar);
+    public const string Msg_ImportAbgeschlossen_Title = nameof(Msg_ImportAbgeschlossen_Title);
+    public const string Msg_ImportiertCount = nameof(Msg_ImportiertCount);
+    public const string Msg_ImportFehler_Title = nameof(Msg_ImportFehler_Title);
 }

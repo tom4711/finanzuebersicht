@@ -123,4 +123,34 @@ Please restart the app.</value></data>
   <data name="SysCat_Gesundheit" xml:space="preserve"><value>Health</value></data>
   <data name="SysCat_Gehalt" xml:space="preserve"><value>Salary</value></data>
   <data name="SysCat_Sonstiges" xml:space="preserve"><value>Miscellaneous</value></data>
+
+  <!-- Import Messages -->
+  <data name="Msg_ImportFehlgeschlagen_Title" xml:space="preserve"><value>Import failed</value></data>
+  <data name="Msg_ImportServiceNichtVerfuegbar" xml:space="preserve"><value>Import service not available.</value></data>
+  <data name="Msg_ImportAbgeschlossen_Title" xml:space="preserve"><value>Import completed</value></data>
+  <data name="Msg_ImportiertCount" xml:space="preserve"><value>Imported: {0} transactions</value></data>
+  <data name="Msg_ImportFehler_Title" xml:space="preserve"><value>Error during import</value></data>
+
+  <!-- Backup / Restore / Export -->
+  <data name="Stn_NoBackupYet" xml:space="preserve"><value>No backup created yet</value></data>
+  <data name="Stn_LastBackupSeconds" xml:space="preserve"><value>Last backup a few seconds ago</value></data>
+  <data name="Stn_LastBackupMinutes" xml:space="preserve"><value>Last backup {0} minutes ago</value></data>
+  <data name="Stn_LastBackupHours" xml:space="preserve"><value>Last backup {0} hours ago</value></data>
+  <data name="Stn_LastBackupDays" xml:space="preserve"><value>Last backup {0} days ago</value></data>
+  <data name="Msg_BackupServiceNotAvailable" xml:space="preserve"><value>Backup service not available</value></data>
+  <data name="Msg_BackupSuccessTitle" xml:space="preserve"><value>Backup successful</value></data>
+  <data name="Msg_BackupCreatedBody" xml:space="preserve"><value>Backup created with {0} categories, {1} transactions and {2} recurring transactions</value></data>
+  <data name="Msg_BackupFailedTitle" xml:space="preserve"><value>Error creating backup</value></data>
+  <data name="Msg_NoBackupsTitle" xml:space="preserve"><value>No backups</value></data>
+  <data name="Msg_NoBackupsDesc" xml:space="preserve"><value>No backups have been created yet.</value></data>
+  <data name="Msg_AvailableBackupsTitle" xml:space="preserve"><value>Available backups</value></data>
+  <data name="Msg_RestoreConfirmTitle" xml:space="preserve"><value>Restore backup</value></data>
+  <data name="Msg_RestoreConfirmBody" xml:space="preserve"><value>Do you want to restore the backup from {0} with {1} transactions? This will overwrite current data.</value></data>
+  <data name="Msg_RestoreSuccessTitle" xml:space="preserve"><value>Restore successful</value></data>
+  <data name="Msg_RestoreSuccessDesc" xml:space="preserve"><value>The backup was restored successfully.</value></data>
+  <data name="Msg_RestoreFailedTitle" xml:space="preserve"><value>Restore failed</value></data>
+  <data name="Msg_CSVExportedTitle" xml:space="preserve"><value>CSV exported</value></data>
+  <data name="Msg_CSVExportedBody" xml:space="preserve"><value>Data exported to:
+{0}</value></data>
+  <data name="Msg_CSVExportFailedTitle" xml:space="preserve"><value>Error exporting CSV</value></data>
 </root>
