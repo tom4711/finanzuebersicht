@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Diagnostics;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Finanzuebersicht.Core.Services;
@@ -116,10 +117,16 @@ public partial class SettingsViewModel : ObservableObject
                     if (!Libraries.Any(l => l.Name == n.Name))
                         Libraries.Add(new LibraryInfo(n.Name, $"Version {n.Version}"));
                 }
-                catch { }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"[SettingsViewModel] Konnte bekannte Assembly '{name}' nicht laden: {ex}");
+                }
             }
         }
-        catch { }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"[SettingsViewModel] Fehler beim Ermitteln der verwendeten Bibliotheken: {ex}");
+        }
     }
 
     partial void OnSelectedThemeIndexChanged(int value)
