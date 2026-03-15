@@ -168,7 +168,7 @@ Bitte starte die App neu.</value></data>
   <data name="Btn_BackupManage" xml:space="preserve"><value>📂 Sicherungen verwalten</value></data>
   <data name="Btn_BackupRestore" xml:space="preserve"><value>📥 Wiederherstellen</value></data>
   <data name="Btn_ExportCSV" xml:space="preserve"><value>📊 CSV exportieren</value></data>
-  <data name="Msg_BackupRestoreTitle" xml:space="preserve"><value>Sicherung & Wiederherstellung</value></data>
+  <data name="Msg_BackupRestoreTitle" xml:space="preserve"><value>Sicherung &amp; Wiederherstellung</value></data>
   <data name="Msg_BackupRestoreDesc" xml:space="preserve"><value>Erstelle Sicherungen deiner Daten und stelle sie bei Bedarf wieder her.</value></data>
   <data name="Btn_Import" xml:space="preserve"><value>Import</value></data>
   <data name="Title_ShiftInstance" xml:space="preserve"><value>Instanz verschieben</value></data>
