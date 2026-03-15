@@ -1,13 +1,15 @@
-# Changelog
+# Änderungsverlauf
 
-## [0.5] - Unreleased
-### Added
-- Centralized SystemCategoryKeys constants to avoid magic string usage in business logic. (Issue #43)
+## [0.5] - Unveröffentlicht
+### Hinzugefügt
+- Zentrale `SystemCategoryKeys`-Konstanten eingeführt, um die Verwendung von `magic strings`
+  in der Geschäftslogik zu vermeiden. (Issue #43)
 
-### Changed
-- Replaced SysCat_* magic string literals across Core, Infrastructure and Tests with SystemCategoryKeys constants.
+### Geändert
+- `SysCat_*`-`magic string`-Literale in Core, Infrastruktur und Tests durch
+  `SystemCategoryKeys`-Konstanten ersetzt.
 
-### Notes
-- All unit tests pass locally (118 tests).
-- Version bumped to 0.5.
+### Hinweise
+- Alle Unit-Tests laufen lokal erfolgreich durch (118 Tests).
+- Version auf 0.5 erhöht.
 
