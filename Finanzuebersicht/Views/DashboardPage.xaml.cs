@@ -72,7 +72,7 @@ public partial class DashboardPage : ContentPage
                 break;
             case nameof(DashboardViewModel.JahrMonate):
                 _yearBar.Months = _vm.JahrMonate;
-                _yearBar.CurrentMonth = _vm.IsYearView ? 0 : Finanzuebersicht.Core.Services.SystemClock.Instance.Today.Month;
+                _yearBar.CurrentMonth = _vm.IsYearView ? 0 : _vm.AktuellerMonat.Month;
                 MainThread.BeginInvokeOnMainThread(() => YearBarChart.Invalidate());
                 break;
             case nameof(DashboardViewModel.JahrKategorien):
