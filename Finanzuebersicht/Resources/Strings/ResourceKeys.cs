@@ -146,4 +146,23 @@ public static class ResourceKeys
     public const string Msg_ImportAbgeschlossen_Title = nameof(Msg_ImportAbgeschlossen_Title);
     public const string Msg_ImportiertCount = nameof(Msg_ImportiertCount);
     public const string Msg_ImportFehler_Title = nameof(Msg_ImportFehler_Title);
+
+    // Additional keys found during XAML scan
+    public const string Lbl_OriginalDatum = nameof(Lbl_OriginalDatum);
+    public const string Lbl_NeuesDatum = nameof(Lbl_NeuesDatum);
+    public const string Hint_NotizOptional = nameof(Hint_NotizOptional);
+    public const string Lbl_Intervall = nameof(Lbl_Intervall);
+    public const string Lbl_IntervallFaktor = nameof(Lbl_IntervallFaktor);
+    public const string Lbl_ErinnerungTage = nameof(Lbl_ErinnerungTage);
+    public const string Lbl_Ausnahmen = nameof(Lbl_Ausnahmen);
+    public const string Btn_SkipNextInstance = nameof(Btn_SkipNextInstance);
+    public const string Btn_ShiftInstance = nameof(Btn_ShiftInstance);
+    public const string Btn_BackupCreate = nameof(Btn_BackupCreate);
+    public const string Btn_BackupManage = nameof(Btn_BackupManage);
+    public const string Btn_BackupRestore = nameof(Btn_BackupRestore);
+    public const string Btn_ExportCSV = nameof(Btn_ExportCSV);
+    public const string Msg_BackupRestoreTitle = nameof(Msg_BackupRestoreTitle);
+    public const string Msg_BackupRestoreDesc = nameof(Msg_BackupRestoreDesc);
+    public const string Btn_Import = nameof(Btn_Import);
+    public const string Title_ShiftInstance = nameof(Title_ShiftInstance);
 }

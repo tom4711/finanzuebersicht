@@ -108,8 +108,8 @@
 
         <!-- Buttons: FAB + Import -->
         <Grid Grid.Row="1" HorizontalOptions="Fill" VerticalOptions="End" Padding="20,0,20,20">
-            <!-- Import Button -->
-            <Button Text="Import" FontSize="14" TextColor="#007AFF"
+                <!-- Import Button -->
+                <Button Text="{loc:Translate Btn_Import}" FontSize="14" TextColor="#007AFF"
                     BackgroundColor="Transparent"
                     HorizontalOptions="Start" VerticalOptions="End"
                     Command="{Binding ImportCsvCommand}" />

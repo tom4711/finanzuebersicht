@@ -128,39 +128,39 @@
                     BackgroundColor="{AppThemeBinding Light={StaticResource CardBackground}, Dark={StaticResource CardBackgroundDark}}"
                     Padding="16">
                 <VerticalStackLayout Spacing="12">
-                    <Label Text="Sicherung &amp; Wiederherstellung"
+                        <Label Text="{loc:Translate Msg_BackupRestoreTitle}"
                            FontSize="18"
                            FontAttributes="Bold"
                            TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
 
-                    <Label Text="Erstelle Sicherungen deiner Daten und stelle sie bei Bedarf wieder her."
+                        <Label Text="{loc:Translate Msg_BackupRestoreDesc}"
                            FontSize="14"
                            TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}" />
 
-                    <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
-                        <Button Text="💾 Sicherung erstellen"
-                                Command="{Binding CreateBackupCommand}"
-                                FontSize="14"
-                                Padding="12,8" />
-                        <Button Text="📂 Sicherungen verwalten"
-                                Grid.Column="1"
-                                Command="{Binding BrowseBackupsCommand}"
-                                FontSize="14"
-                                Padding="12,8" />
-                    </Grid>
+                        <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+                        <Button Text="{loc:Translate Btn_BackupCreate}"
+                            Command="{Binding CreateBackupCommand}"
+                            FontSize="14"
+                            Padding="12,8" />
+                        <Button Text="{loc:Translate Btn_BackupManage}"
+                            Grid.Column="1"
+                            Command="{Binding BrowseBackupsCommand}"
+                            FontSize="14"
+                            Padding="12,8" />
+                        </Grid>
 
-                    <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
-                        <Button Text="📥 Wiederherstellen"
-                                Command="{Binding RestoreBackupCommand}"
-                                FontSize="14"
-                                Padding="12,8"
-                                BackgroundColor="{AppThemeBinding Light={StaticResource Warning}, Dark={StaticResource WarningDark}}" />
-                        <Button Text="📊 CSV exportieren"
-                                Grid.Column="1"
-                                Command="{Binding ExportAsCSVCommand}"
-                                FontSize="14"
-                                Padding="12,8" />
-                    </Grid>
+                        <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+                        <Button Text="{loc:Translate Btn_BackupRestore}"
+                            Command="{Binding RestoreBackupCommand}"
+                            FontSize="14"
+                            Padding="12,8"
+                            BackgroundColor="{AppThemeBinding Light={StaticResource Warning}, Dark={StaticResource WarningDark}}" />
+                        <Button Text="{loc:Translate Btn_ExportCSV}"
+                            Grid.Column="1"
+                            Command="{Binding ExportAsCSVCommand}"
+                            FontSize="14"
+                            Padding="12,8" />
+                        </Grid>
 
                     <Label Text="{Binding LastBackupInfo}"
                            FontSize="12"

@@ -153,4 +153,23 @@ Bitte starte die App neu.</value></data>
   <data name="Msg_CSVExportedBody" xml:space="preserve"><value>Die Daten wurden zu:
 {0}</value></data>
   <data name="Msg_CSVExportFailedTitle" xml:space="preserve"><value>Fehler beim CSV-Export</value></data>
+
+  <!-- Zusätzliche Übersetzungen ergänzt -->
+  <data name="Lbl_OriginalDatum" xml:space="preserve"><value>Originaldatum</value></data>
+  <data name="Lbl_NeuesDatum" xml:space="preserve"><value>Neues Datum</value></data>
+  <data name="Hint_NotizOptional" xml:space="preserve"><value>Notiz (optional)</value></data>
+  <data name="Lbl_Intervall" xml:space="preserve"><value>Intervall</value></data>
+  <data name="Lbl_IntervallFaktor" xml:space="preserve"><value>Intervall-Faktor</value></data>
+  <data name="Lbl_ErinnerungTage" xml:space="preserve"><value>Erinnerung (Tage vorher)</value></data>
+  <data name="Lbl_Ausnahmen" xml:space="preserve"><value>Ausnahmen</value></data>
+  <data name="Btn_SkipNextInstance" xml:space="preserve"><value>Nächste Instanz überspringen</value></data>
+  <data name="Btn_ShiftInstance" xml:space="preserve"><value>Instanz verschieben</value></data>
+  <data name="Btn_BackupCreate" xml:space="preserve"><value>💾 Sicherung erstellen</value></data>
+  <data name="Btn_BackupManage" xml:space="preserve"><value>📂 Sicherungen verwalten</value></data>
+  <data name="Btn_BackupRestore" xml:space="preserve"><value>📥 Wiederherstellen</value></data>
+  <data name="Btn_ExportCSV" xml:space="preserve"><value>📊 CSV exportieren</value></data>
+  <data name="Msg_BackupRestoreTitle" xml:space="preserve"><value>Sicherung & Wiederherstellung</value></data>
+  <data name="Msg_BackupRestoreDesc" xml:space="preserve"><value>Erstelle Sicherungen deiner Daten und stelle sie bei Bedarf wieder her.</value></data>
+  <data name="Btn_Import" xml:space="preserve"><value>Import</value></data>
+  <data name="Title_ShiftInstance" xml:space="preserve"><value>Instanz verschieben</value></data>
 </root>
