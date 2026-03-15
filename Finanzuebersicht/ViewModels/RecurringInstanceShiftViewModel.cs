@@ -15,7 +15,7 @@ public partial class RecurringInstanceShiftViewModel(
     Finanzuebersicht.Core.Services.IClock? clock = null) : ObservableObject
 {
     private readonly ShiftRecurringInstanceUseCase _shiftRecurringInstanceUseCase = shiftRecurringInstanceUseCase;
-    private readonly INavigationService _navigation_service = navigationService;
+    private readonly INavigationService _navigationService = navigationService;
     private readonly Finanzuebersicht.Core.Services.IClock _clock = clock ?? Finanzuebersicht.Core.Services.SystemClock.Instance;
 
     [ObservableProperty]
