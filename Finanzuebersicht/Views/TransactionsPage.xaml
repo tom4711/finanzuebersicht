@@ -20,14 +20,14 @@
         <!-- Monatsnavigation -->
         <Grid Grid.Row="0" ColumnDefinitions="Auto, *, Auto"
               Padding="16,12">
-            <Button Grid.Column="0" Text="‹" FontSize="28"
+                <Button Grid.Column="0" Text="{loc:Translate Btn_Prev}" FontSize="28"
                     BackgroundColor="Transparent" TextColor="#007AFF"
                     Command="{Binding PreviousMonthCommand}"
                     WidthRequest="44" />
             <Label Grid.Column="1" Text="{Binding MonatAnzeige}"
                    FontSize="18" FontAttributes="Bold"
                    HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
-            <Button Grid.Column="2" Text="›" FontSize="28"
+                <Button Grid.Column="2" Text="{loc:Translate Btn_Next}" FontSize="28"
                     BackgroundColor="Transparent" TextColor="#007AFF"
                     Command="{Binding NextMonthCommand}"
                     WidthRequest="44" />
@@ -115,7 +115,7 @@
                     Command="{Binding ImportCsvCommand}" />
             
             <!-- FAB -->
-            <Button Text="+"
+                <Button Text="{loc:Translate Btn_Hinzufuegen}"
                     FontSize="28" TextColor="White"
                     BackgroundColor="#007AFF"
                     CornerRadius="28"

@@ -172,4 +172,9 @@ Bitte starte die App neu.</value></data>
   <data name="Msg_BackupRestoreDesc" xml:space="preserve"><value>Erstelle Sicherungen deiner Daten und stelle sie bei Bedarf wieder her.</value></data>
   <data name="Btn_Import" xml:space="preserve"><value>Import</value></data>
   <data name="Title_ShiftInstance" xml:space="preserve"><value>Instanz verschieben</value></data>
+  <data name="Btn_Hinzufuegen" xml:space="preserve"><value>+</value></data>
+  <data name="Btn_Prev" xml:space="preserve"><value>‹</value></data>
+  <data name="Btn_Next" xml:space="preserve"><value>›</value></data>
+  <data name="Title_AppName" xml:space="preserve"><value>Finanzübersicht</value></data>
+  <data name="Lbl_FrameworkInfo" xml:space="preserve"><value>.NET 10 · MAUI · MVVM</value></data>
 </root>

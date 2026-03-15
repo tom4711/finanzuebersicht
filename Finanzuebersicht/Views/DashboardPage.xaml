@@ -56,7 +56,7 @@
 
                 <!-- Monatsnavigation -->
                 <Grid ColumnDefinitions="Auto, *, Auto">
-                    <Button Grid.Column="0" Text="‹" FontSize="28"
+                        <Button Grid.Column="0" Text="{loc:Translate Btn_Prev}" FontSize="28"
                             BackgroundColor="Transparent" TextColor="#007AFF"
                             Command="{Binding PreviousMonthCommand}"
                             WidthRequest="44" />
@@ -68,7 +68,7 @@
                                HorizontalTextAlignment="Center"
                                IsVisible="{Binding IstPrognose}" />
                     </VerticalStackLayout>
-                    <Button Grid.Column="2" Text="›" FontSize="28"
+                        <Button Grid.Column="2" Text="{loc:Translate Btn_Next}" FontSize="28"
                             BackgroundColor="Transparent" TextColor="#007AFF"
                             Command="{Binding NextMonthCommand}"
                             WidthRequest="44" />
@@ -176,14 +176,14 @@
 
                 <!-- Jahresnavigation -->
                 <Grid ColumnDefinitions="Auto, *, Auto">
-                    <Button Grid.Column="0" Text="‹" FontSize="28"
+                        <Button Grid.Column="0" Text="{loc:Translate Btn_Prev}" FontSize="28"
                             BackgroundColor="Transparent" TextColor="#007AFF"
                             Command="{Binding PreviousYearCommand}"
                             WidthRequest="44" />
                     <Label Grid.Column="1" Text="{Binding JahrAnzeige}"
                            FontSize="20" FontAttributes="Bold"
                            HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
-                    <Button Grid.Column="2" Text="›" FontSize="28"
+                        <Button Grid.Column="2" Text="{loc:Translate Btn_Next}" FontSize="28"
                             BackgroundColor="Transparent" TextColor="#007AFF"
                             Command="{Binding NextYearCommand}"
                             WidthRequest="44" />

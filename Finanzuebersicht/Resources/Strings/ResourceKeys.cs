@@ -165,4 +165,11 @@ public static class ResourceKeys
     public const string Msg_BackupRestoreDesc = nameof(Msg_BackupRestoreDesc);
     public const string Btn_Import = nameof(Btn_Import);
     public const string Title_ShiftInstance = nameof(Title_ShiftInstance);
+
+    // Additional common buttons / app info
+    public const string Btn_Hinzufuegen = nameof(Btn_Hinzufuegen);
+    public const string Btn_Prev = nameof(Btn_Prev);
+    public const string Btn_Next = nameof(Btn_Next);
+    public const string Title_AppName = nameof(Title_AppName);
+    public const string Lbl_FrameworkInfo = nameof(Lbl_FrameworkInfo);
 }
