@@ -20,7 +20,7 @@ jobs:
     name: Quick checks (ubuntu)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Ensure sufficient git history for Nerdbank.GitVersioning
         run: |
           if [ "$(git rev-parse --is-shallow-repository 2>/dev/null)" = "true" ]; then
@@ -51,7 +51,7 @@ jobs:
           - name: mac-label-only
             run-maui: false
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
       - name: Check for label
