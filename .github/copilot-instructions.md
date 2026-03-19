@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-A personal finance overview app built with **.NET 10 and .NET MAUI**, targeting **iOS and macOS** (Mac Catalyst). Data is persisted locally via JSON files (`LocalDataService`); CloudKit support requires a paid Apple Developer account. Architecture follows **MVVM**. Language: German only.
+A personal finance overview app built with **.NET 10 and .NET MAUI**, targeting **iOS and macOS** (Mac Catalyst). Data is persisted locally via JSON files (`LocalDataService`); CloudKit support requires a paid Apple Developer account. Architecture follows **MVVM**. Languages: German and English supported; additional languages possible but not actively maintained.
 
 ## Build & Run
 
@@ -63,7 +63,7 @@ Navigation: Shell with 5 tabs (Dashboard, Transaktionen, Daueraufträge, Kategor
 - Use `Border` with `StrokeShape="RoundRectangle"` instead of deprecated `Frame`
 - Colors defined in `Resources/Styles/Colors.xaml` (Apple System Colors palette)
 - Light/Dark mode via `AppThemeBinding` — avoid hardcoded color values in XAML
-- German-only UI — no localization infrastructure
+- Multi-language support (German and English); additional languages possible but not maintained
 
 ## Versioning
 
