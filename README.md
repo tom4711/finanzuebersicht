@@ -48,6 +48,10 @@ dotnet workload install maui
 
 ## Schnellstart
 
+### Für Deutsch-sprechende Entwickler
+
+Siehe [Entwickler-Leitfaden (docs/GUIDE.md)](docs/GUIDE.md) für detaillierte Setup- und Entwicklungsanweisungen.
+
 ```bash
 git clone https://github.com/tom4711/finanzuebersicht.git
 cd finanzuebersicht
@@ -64,6 +68,10 @@ open "/Applications/Finanzübersicht.app"
 # Tests
 dotnet test Finanzuebersicht.Tests
 ```
+
+### For English Speakers
+
+See [Quick Start (docs/QUICK_START.md)](docs/QUICK_START.md) for a concise guide.
 
 ## Projektstruktur (Kurz)
 
