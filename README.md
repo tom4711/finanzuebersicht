@@ -13,7 +13,7 @@
 
 Finanzübersicht ist eine Open‑Source App zur lokalen Verwaltung von Einnahmen, Ausgaben und wiederkehrenden Buchungen. Die App speichert Daten lokal als JSON; Cloud‑Funktionen (z. B. CloudKit) sind vorhanden, aber optional und können weitere Voraussetzungen (Apple Developer Account) erfordern.
 
-Kurz: .NET 10 + MAUI, deutschsprachige UI, MVVM-Architektur.
+Kurz: .NET 10 + MAUI, Multi-Language UI (Deutsch & Englisch), MVVM-Architektur.
 
 ## Kern-Features
 
@@ -22,8 +22,9 @@ Kurz: .NET 10 + MAUI, deutschsprachige UI, MVVM-Architektur.
 - Wiederkehrende Buchungen (Daueraufträge)
 - Kategorien mit Icon und Farbe
 - Dark Mode Unterstützung
+- Multi-Language Support (Deutsch & Englisch)
 
-Hinweis: Die Benutzeroberfläche ist primär auf Deutsch ausgelegt.
+Hinweis: Die Benutzeroberfläche unterstützt Deutsch und Englisch; weitere Sprachen sind möglich, werden aber nicht aktiv gepflegt.
 
 ## Plattformen
 
@@ -47,6 +48,10 @@ dotnet workload install maui
 
 ## Schnellstart
 
+### Für Deutsch-sprechende Entwickler
+
+Siehe [Entwickler-Leitfaden (docs/GUIDE.md)](docs/GUIDE.md) für detaillierte Setup- und Entwicklungsanweisungen.
+
 ```bash
 git clone https://github.com/tom4711/finanzuebersicht.git
 cd finanzuebersicht
@@ -64,6 +69,10 @@ open "/Applications/Finanzübersicht.app"
 dotnet test Finanzuebersicht.Tests
 ```
 
+### For English Speakers
+
+See [Quick Start (docs/QUICK_START.md)](docs/QUICK_START.md) for a concise guide.
+
 ## Projektstruktur (Kurz)
 
 - `Finanzuebersicht/` – MAUI App (Views, ViewModels, Converters, Resources)
@@ -74,7 +83,7 @@ dotnet test Finanzuebersicht.Tests
 ## Lokalisierung & Ressourcen
 
 - UI‑Texte werden über Ressourcenfiles (`Resources/Strings/AppResources.resx`) verwaltet.
-- Die App ist primär auf Deutsch ausgerichtet; Übersetzungen sind als ResX vorhanden.
+- Unterstützte Sprachen: Deutsch (Standard) und Englisch. Weitere Sprachen sind möglich, werden aber nicht aktiv gewartet.
 
 ## Dokumentation
 
