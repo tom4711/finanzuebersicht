@@ -1,290 +1,124 @@
-using System.Text.Json;
-using System.Linq;
-using System;
-using Microsoft.Extensions.Logging;
 using Finanzuebersicht.Models;
+using Finanzuebersicht.Core.Services;
 
 namespace Finanzuebersicht.Services;
 
 /// <summary>
-/// Lokale JSON-basierte Implementierung der Repository-Ports.
-/// Unterstützt einen konfigurierbaren Speicherpfad (z.B. iCloud Drive).
+/// Composite data service that coordinates multiple specialized stores.
+/// Uses Dependency Injection to receive pre-configured stores from the DI container,
+/// allowing proper logger propagation and testability.
+///
+/// - CategoryStore: Category persistence
+/// - TransactionStore: Transaction persistence with smart categorization
+/// - RecurringStore: Recurring transaction persistence
+/// - ReportingService: Transaction aggregations
+/// - RecurringGenerationService: Auto-generation of recurring transactions
 /// </summary>
-public class LocalDataService : ICategoryRepository, ITransactionRepository, IRecurringTransactionRepository, IDisposable
+public class LocalDataService : IDataService, IDisposable
 {
-    private static readonly string DefaultDataDir = AppPaths.GetDefaultDataDir();
+    private readonly CategoryStore _categoryStore;
+    private readonly TransactionStore _transactionStore;
+    private readonly RecurringStore _recurringStore;
+    private readonly ReportingService _reportingService;
+    private readonly RecurringGenerationService _recurringGenerationService;
 
-    private readonly string _dataDir;
-    private readonly ILogger<LocalDataService>? _logger;
-
-    private string CategoriesFile => Path.Combine(_dataDir, "categories.json");
-    private string TransactionsFile => Path.Combine(_dataDir, "transactions.json");
-    private string RecurringFile => Path.Combine(_dataDir, "recurring.json");
-
-    private readonly SemaphoreSlim _categoriesLock = new(1, 1);
-    private readonly SemaphoreSlim _transactionsLock = new(1, 1);
-    private readonly SemaphoreSlim _recurringLock = new(1, 1);
-
-    private static readonly JsonSerializerOptions JsonOptions = new()
+    /// <summary>
+    /// Constructor for DI: receives pre-configured stores from the container.
+    /// </summary>
+    public LocalDataService(
+        CategoryStore categoryStore,
+        TransactionStore transactionStore,
+        RecurringStore recurringStore,
+        IClock clock)
     {
-        WriteIndented = true,
-        PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-    };
-
-    public LocalDataService() : this(null, new Finanzuebersicht.Core.Services.SystemClock(), null) { }
-
-    private readonly Finanzuebersicht.Core.Services.IClock _clock;
-
-    public LocalDataService(SettingsService? settings, Finanzuebersicht.Core.Services.IClock clock, ILogger<LocalDataService>? logger = null)
-    {
-        _logger = logger;
-        _clock = clock;
-        var customPath = settings?.Get("DataPath", "");
-        _dataDir = string.IsNullOrWhiteSpace(customPath) ? DefaultDataDir : customPath;
-        Directory.CreateDirectory(_dataDir);
-    }
-
-    public string CurrentDataDir => _dataDir;
-
-    #region Categories
-
-    public async Task<List<Category>> GetCategoriesAsync()
-    {
-        await _categoriesLock.WaitAsync();
-        try { return await LoadAsync<Category>(CategoriesFile); }
-        finally { _categoriesLock.Release(); }
-    }
-
-    public async Task SaveCategoryAsync(Category category)
-    {
-        await _categoriesLock.WaitAsync();
-        try
-        {
-            var items = await LoadAsync<Category>(CategoriesFile);
-            var idx = items.FindIndex(c => c.Id == category.Id);
-            if (idx >= 0)
-                items[idx] = category;
-            else
-                items.Add(category);
-            await SaveAsync(CategoriesFile, items);
-        }
-        finally { _categoriesLock.Release(); }
-    }
-
-    public async Task DeleteCategoryAsync(string id)
-    {
-        await _categoriesLock.WaitAsync();
-        try
-        {
-            var items = await LoadAsync<Category>(CategoriesFile);
-            items.RemoveAll(c => c.Id == id);
-            await SaveAsync(CategoriesFile, items);
-        }
-        finally { _categoriesLock.Release(); }
-    }
-
-    #endregion
-
-    #region Transactions
-
-    public async Task<List<Transaction>> GetTransactionsAsync(DateTime vonDatum, DateTime bisDatum)
-    {
-        await _transactionsLock.WaitAsync();
-        try
-        {
-            var items = await LoadAsync<Transaction>(TransactionsFile);
-            return [.. items
-                .Where(t => t.Datum >= vonDatum && t.Datum <= bisDatum)
-                .OrderByDescending(t => t.Datum)];
-        }
-        finally { _transactionsLock.Release(); }
-    }
-
-    public async Task SaveTransactionAsync(Transaction transaction)
-    {
-        await _transactionsLock.WaitAsync();
-        try
-        {
-            var items = await LoadAsync<Transaction>(TransactionsFile);
-            var idx = items.FindIndex(t => t.Id == transaction.Id);
-            if (idx >= 0)
-                items[idx] = transaction;
-            else
-                items.Add(transaction);
-            await SaveAsync(TransactionsFile, items);
-        }
-        finally { _transactionsLock.Release(); }
-    }
-
-    public async Task DeleteTransactionAsync(string id)
-    {
-        await _transactionsLock.WaitAsync();
-        try
-        {
-            var items = await LoadAsync<Transaction>(TransactionsFile);
-            items.RemoveAll(t => t.Id == id);
-            await SaveAsync(TransactionsFile, items);
-        }
-        finally { _transactionsLock.Release(); }
-    }
-
-    // Aggregation: month summary
-    public async Task<MonthSummary> GetMonthSummaryAsync(int year, int month)
-    {
-        var service = new ReportingService(this, this);
-        return await service.GetMonthSummaryAsync(year, month);
-    }
-
-    // Aggregation: year summary (12 months + by category)
-    public async Task<YearSummary> GetYearSummaryAsync(int year)
-    {
-        var service = new ReportingService(this, this);
-        return await service.GetYearSummaryAsync(year);
-    }
-
-    #endregion
-
-    #region Recurring Transactions
-
-    public async Task<List<RecurringTransaction>> GetRecurringTransactionsAsync()
-    {
-        await _recurringLock.WaitAsync();
-        try { return await LoadAsync<RecurringTransaction>(RecurringFile); }
-        finally { _recurringLock.Release(); }
-    }
-
-    public async Task SaveRecurringTransactionAsync(RecurringTransaction recurring)
-    {
-        await _recurringLock.WaitAsync();
-        try
-        {
-            var items = await LoadAsync<RecurringTransaction>(RecurringFile);
-            var idx = items.FindIndex(r => r.Id == recurring.Id);
-            if (idx >= 0)
-                items[idx] = recurring;
-            else
-                items.Add(recurring);
-            await SaveAsync(RecurringFile, items);
-        }
-        finally { _recurringLock.Release(); }
-    }
-
-    public async Task DeleteRecurringTransactionAsync(string id)
-    {
-        await _recurringLock.WaitAsync();
-        try
-        {
-            var items = await LoadAsync<RecurringTransaction>(RecurringFile);
-            items.RemoveAll(r => r.Id == id);
-            await SaveAsync(RecurringFile, items);
-        }
-        finally { _recurringLock.Release(); }
-    }
-
-    public async Task GeneratePendingRecurringTransactionsAsync()
-    {
-        var service = new RecurringGenerationService(this, this, _clock);
-        await service.GeneratePendingRecurringTransactionsAsync();
-    }
-
-    #endregion
-
-    #region JSON Helpers
-
-    private async Task<List<T>> LoadAsync<T>(string path)
-    {
-        if (!File.Exists(path))
-            return [];
-
-        var json = await File.ReadAllTextAsync(path);
-        try
-        {
-            return JsonSerializer.Deserialize<List<T>>(json, JsonOptions) ?? [];
-        }
-        catch (JsonException ex)
-        {
-            _logger?.LogWarning(ex, "Fehler beim Deserialisieren von {Path}", path);
-            return [];
-        }
+        _categoryStore = categoryStore;
+        _transactionStore = transactionStore;
+        _recurringStore = recurringStore;
+        _reportingService = new ReportingService(_transactionStore, _categoryStore);
+        _recurringGenerationService = new RecurringGenerationService(_recurringStore, _transactionStore, clock);
     }
 
     /// <summary>
-    /// Finds the most common category for a given payee name (case-insensitive).
-    /// Only considers non-Unkategorisiert categories.
+    /// Alternative constructor for manual instantiation (e.g., in tests).
     /// </summary>
+    public LocalDataService(SettingsService? settings, IClock clock)
+    {
+        var defaultDataDir = AppPaths.GetDefaultDataDir();
+        var customPath = settings?.Get("DataPath", "");
+        var dataDir = string.IsNullOrWhiteSpace(customPath) ? defaultDataDir : customPath;
+
+        _categoryStore = new CategoryStore(dataDir);
+        _transactionStore = new TransactionStore(dataDir, categoryStore: _categoryStore);
+        _recurringStore = new RecurringStore(dataDir);
+        _reportingService = new ReportingService(_transactionStore, _categoryStore);
+        _recurringGenerationService = new RecurringGenerationService(_recurringStore, _transactionStore, clock);
+    }
+
+    #region ICategoryRepository delegation
+
+    public async Task<List<Category>> GetCategoriesAsync()
+        => await _categoryStore.GetCategoriesAsync();
+
+    public async Task SaveCategoryAsync(Category category)
+        => await _categoryStore.SaveCategoryAsync(category);
+
+    public async Task DeleteCategoryAsync(string id)
+        => await _categoryStore.DeleteCategoryAsync(id);
+
+    #endregion
+
+    #region ITransactionRepository delegation
+
+    public async Task<List<Transaction>> GetTransactionsAsync(DateTime vonDatum, DateTime bisDatum)
+        => await _transactionStore.GetTransactionsAsync(vonDatum, bisDatum);
+
+    public async Task SaveTransactionAsync(Transaction transaction)
+        => await _transactionStore.SaveTransactionAsync(transaction);
+
+    public async Task DeleteTransactionAsync(string id)
+        => await _transactionStore.DeleteTransactionAsync(id);
+
     public async Task<Category?> GetMostCommonCategoryForPayeeAsync(
         string payee,
         double confidenceThreshold = 0.5,
         CancellationToken cancellationToken = default)
-    {
-        if (string.IsNullOrWhiteSpace(payee))
-            return null;
+        => await _transactionStore.GetMostCommonCategoryForPayeeAsync(payee, confidenceThreshold, cancellationToken);
 
-        await _transactionsLock.WaitAsync(cancellationToken);
-        try
-        {
-            var transactions = await LoadAsync<Transaction>(TransactionsFile);
-            var categories = await LoadAsync<Category>(CategoriesFile);
+    #endregion
 
-            // Normalize payee for case-insensitive matching
-            var normalizedPayee = payee.Trim();
+    #region IRecurringTransactionRepository delegation
 
-            // Find transactions with matching payee (case-insensitive)
-            var matchingTransactions = transactions
-                .Where(t => !string.IsNullOrEmpty(t.Titel) &&
-                           (t.Titel.Equals(normalizedPayee, StringComparison.OrdinalIgnoreCase) ||
-                            t.Titel.Contains(normalizedPayee, StringComparison.OrdinalIgnoreCase)))
-                .ToList();
+    public async Task<List<RecurringTransaction>> GetRecurringTransactionsAsync()
+        => await _recurringStore.GetRecurringTransactionsAsync();
 
-            if (matchingTransactions.Count == 0)
-                return null;
+    public async Task SaveRecurringTransactionAsync(RecurringTransaction recurring)
+        => await _recurringStore.SaveRecurringTransactionAsync(recurring);
 
-            // Count categories, excluding Unkategorisiert
-            var categoryCounts = matchingTransactions
-                .GroupBy(t => t.KategorieId)
-                .Select(g => new { CategoryId = g.Key, Count = g.Count() })
-                .OrderByDescending(x => x.Count)
-                .ToList();
+    public async Task DeleteRecurringTransactionAsync(string id)
+        => await _recurringStore.DeleteRecurringTransactionAsync(id);
 
-            if (categoryCounts.Count == 0)
-                return null;
+    #endregion
 
-            var topCount = categoryCounts.First().Count;
-            var totalCount = matchingTransactions.Count;
-            var confidence = (double)topCount / totalCount;
+    #region IReportingService delegation
 
-            // Check confidence threshold
-            if (confidence < confidenceThreshold)
-                return null;
+    public async Task<MonthSummary> GetMonthSummaryAsync(int year, int month)
+        => await _reportingService.GetMonthSummaryAsync(year, month);
 
-            var topCategoryId = categoryCounts.First().CategoryId;
-            var topCategory = categories.FirstOrDefault(c => c.Id == topCategoryId);
+    public async Task<YearSummary> GetYearSummaryAsync(int year)
+        => await _reportingService.GetYearSummaryAsync(year);
 
-            // Don't use Unkategorisiert category
-            if (topCategory != null && 
-                topCategory.SystemKey != Finanzuebersicht.Core.Constants.SystemCategoryKeys.Unkategorisiert && 
-                topCategory.Name != "Unkategorisiert")
-            {
-                return topCategory;
-            }
+    #endregion
 
-            return null;
-        }
-        finally { _transactionsLock.Release(); }
-    }
+    #region IRecurringGenerationService delegation
 
-    private static async Task SaveAsync<T>(string path, List<T> items)
-    {
-        var json = JsonSerializer.Serialize(items, JsonOptions);
-        await File.WriteAllTextAsync(path, json);
-    }
+    public async Task GeneratePendingRecurringTransactionsAsync()
+        => await _recurringGenerationService.GeneratePendingRecurringTransactionsAsync();
 
     #endregion
 
     public void Dispose()
     {
-        _categoriesLock.Dispose();
-        _transactionsLock.Dispose();
-        _recurringLock.Dispose();
+        // Intentionally left empty.
+        // The injected stores are managed and disposed by the DI container.
     }
 }

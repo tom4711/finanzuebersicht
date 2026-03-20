@@ -1,5 +1,6 @@
 using Finanzuebersicht.Services;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Finanzuebersicht.Infrastructure;
 
@@ -7,9 +8,42 @@ public static class InfrastructureServiceCollectionExtensions
 {
     public static IServiceCollection AddInfrastructureServices(this IServiceCollection services)
     {
-        services.AddSingleton<LocalDataService>(sp =>
-            new LocalDataService(sp.GetRequiredService<SettingsService>(), sp.GetRequiredService<Finanzuebersicht.Core.Services.IClock>(), sp.GetService<Microsoft.Extensions.Logging.ILogger<LocalDataService>>()));
+        // Helper to resolve data directory
+        string GetDataDir(IServiceProvider sp)
+        {
+            var settings = sp.GetRequiredService<SettingsService>();
+            var customPath = settings.Get("DataPath", "");
+            return string.IsNullOrWhiteSpace(customPath) ? AppPaths.GetDefaultDataDir() : customPath;
+        }
 
+        // Register specialized data stores as singletons with factory pattern
+        // Each store receives the resolved dataDir and optional logger
+        services.AddSingleton<CategoryStore>(sp =>
+            new CategoryStore(
+                GetDataDir(sp),
+                sp.GetService<ILogger<CategoryStore>>()));
+
+        services.AddSingleton<TransactionStore>(sp =>
+            new TransactionStore(
+                GetDataDir(sp),
+                sp.GetService<ILogger<TransactionStore>>(),
+                sp.GetRequiredService<CategoryStore>()));
+
+        services.AddSingleton<RecurringStore>(sp =>
+            new RecurringStore(
+                GetDataDir(sp),
+                sp.GetService<ILogger<RecurringStore>>()));
+
+        // Register composite LocalDataService which coordinates all stores
+        // Stores are injected, not manually constructed
+        services.AddSingleton<LocalDataService>(sp =>
+            new LocalDataService(
+                sp.GetRequiredService<CategoryStore>(),
+                sp.GetRequiredService<TransactionStore>(),
+                sp.GetRequiredService<RecurringStore>(),
+                sp.GetRequiredService<Finanzuebersicht.Core.Services.IClock>()));
+
+        // Expose the LocalDataService instance via the repository interfaces it implements
         services.AddSingleton<ICategoryRepository>(sp => sp.GetRequiredService<LocalDataService>());
         services.AddSingleton<ITransactionRepository>(sp => sp.GetRequiredService<LocalDataService>());
         services.AddSingleton<IRecurringTransactionRepository>(sp => sp.GetRequiredService<LocalDataService>());
