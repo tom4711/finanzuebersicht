@@ -118,8 +118,7 @@ public class LocalDataService : IDataService, IDisposable
 
     public void Dispose()
     {
-        _categoryStore.Dispose();
-        _transactionStore.Dispose();
-        _recurringStore.Dispose();
+        // Intentionally left empty.
+        // The injected stores are managed and disposed by the DI container.
     }
 }

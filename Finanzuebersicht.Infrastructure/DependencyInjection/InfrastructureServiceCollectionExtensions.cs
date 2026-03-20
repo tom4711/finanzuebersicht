@@ -42,7 +42,7 @@ public static class InfrastructureServiceCollectionExtensions
                 sp.GetRequiredService<RecurringStore>(),
                 sp.GetRequiredService<Finanzuebersicht.Core.Services.IClock>()));
 
-        // Expose stores via their repository interfaces
+        // Expose the LocalDataService instance via the repository interfaces it implements
         services.AddSingleton<ICategoryRepository>(sp => sp.GetRequiredService<LocalDataService>());
         services.AddSingleton<ITransactionRepository>(sp => sp.GetRequiredService<LocalDataService>());
         services.AddSingleton<IRecurringTransactionRepository>(sp => sp.GetRequiredService<LocalDataService>());

@@ -72,7 +72,7 @@ public class TransactionStore : JsonDataStoreBase, ITransactionRepository
 
     /// <summary>
     /// Finds the most common category for a given payee name (case-insensitive).
-    /// Only considers non-Unkategorisiert categories.
+    /// Only considers non-Unkategorisiert categories with a confidence threshold.
     /// </summary>
     public async Task<Category?> GetMostCommonCategoryForPayeeAsync(
         string payee,
@@ -101,8 +101,16 @@ public class TransactionStore : JsonDataStoreBase, ITransactionRepository
             if (matchingTransactions.Count == 0)
                 return null;
 
-            // Count categories, excluding Unkategorisiert
-            var categoryCounts = matchingTransactions
+            // Filter to only categorized transactions (non-empty KategorieId)
+            var categorizedMatches = matchingTransactions
+                .Where(t => !string.IsNullOrEmpty(t.KategorieId))
+                .ToList();
+
+            if (categorizedMatches.Count == 0)
+                return null;
+
+            // Count only the categorized matches
+            var categoryCounts = categorizedMatches
                 .GroupBy(t => t.KategorieId)
                 .Select(g => new { CategoryId = g.Key, Count = g.Count() })
                 .OrderByDescending(x => x.Count)
@@ -112,8 +120,8 @@ public class TransactionStore : JsonDataStoreBase, ITransactionRepository
                 return null;
 
             var topCount = categoryCounts.First().Count;
-            var totalCount = matchingTransactions.Count;
-            var confidence = (double)topCount / totalCount;
+            // Confidence based only on categorized transactions
+            var confidence = (double)topCount / categorizedMatches.Count;
 
             // Check confidence threshold
             if (confidence < confidenceThreshold)
