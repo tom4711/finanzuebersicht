@@ -5,44 +5,54 @@ namespace Finanzuebersicht.Services;
 
 /// <summary>
 /// Composite data service that coordinates multiple specialized stores.
+/// Uses Dependency Injection to receive pre-configured stores from the DI container,
+/// allowing proper logger propagation and testability.
+///
 /// - CategoryStore: Category persistence
 /// - TransactionStore: Transaction persistence with smart categorization
 /// - RecurringStore: Recurring transaction persistence
 /// - ReportingService: Transaction aggregations
 /// - RecurringGenerationService: Auto-generation of recurring transactions
-///
-/// This design separates concerns while maintaining the unified IDataService interface.
 /// </summary>
 public class LocalDataService : IDataService, IDisposable
 {
-    private static readonly string DefaultDataDir = AppPaths.GetDefaultDataDir();
-
-    private readonly string _dataDir;
-    private readonly IClock _clock;
-
     private readonly CategoryStore _categoryStore;
     private readonly TransactionStore _transactionStore;
     private readonly RecurringStore _recurringStore;
     private readonly ReportingService _reportingService;
     private readonly RecurringGenerationService _recurringGenerationService;
 
-    public LocalDataService() : this(null, new SystemClock(), null) { }
-
-    public LocalDataService(SettingsService? settings, IClock clock, Microsoft.Extensions.Logging.ILogger<LocalDataService>? logger = null)
+    /// <summary>
+    /// Constructor for DI: receives pre-configured stores from the container.
+    /// </summary>
+    public LocalDataService(
+        CategoryStore categoryStore,
+        TransactionStore transactionStore,
+        RecurringStore recurringStore,
+        IClock clock)
     {
-        _clock = clock;
-        var customPath = settings?.Get("DataPath", "");
-        _dataDir = string.IsNullOrWhiteSpace(customPath) ? DefaultDataDir : customPath;
-
-        // Initialize all specialized stores with shared data directory
-        _categoryStore = new CategoryStore(_dataDir);
-        _transactionStore = new TransactionStore(_dataDir);
-        _recurringStore = new RecurringStore(_dataDir);
+        _categoryStore = categoryStore;
+        _transactionStore = transactionStore;
+        _recurringStore = recurringStore;
         _reportingService = new ReportingService(_transactionStore, _categoryStore);
-        _recurringGenerationService = new RecurringGenerationService(_recurringStore, _transactionStore, _clock);
+        _recurringGenerationService = new RecurringGenerationService(_recurringStore, _transactionStore, clock);
     }
 
-    public string CurrentDataDir => _dataDir;
+    /// <summary>
+    /// Alternative constructor for manual instantiation (e.g., in tests).
+    /// </summary>
+    public LocalDataService(SettingsService? settings, IClock clock)
+    {
+        var defaultDataDir = AppPaths.GetDefaultDataDir();
+        var customPath = settings?.Get("DataPath", "");
+        var dataDir = string.IsNullOrWhiteSpace(customPath) ? defaultDataDir : customPath;
+
+        _categoryStore = new CategoryStore(dataDir);
+        _transactionStore = new TransactionStore(dataDir);
+        _recurringStore = new RecurringStore(dataDir);
+        _reportingService = new ReportingService(_transactionStore, _categoryStore);
+        _recurringGenerationService = new RecurringGenerationService(_recurringStore, _transactionStore, clock);
+    }
 
     #region ICategoryRepository delegation
 
