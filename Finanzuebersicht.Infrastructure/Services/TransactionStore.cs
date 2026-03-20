@@ -75,6 +75,7 @@ public class TransactionStore : JsonDataStoreBase, ITransactionRepository
     /// Finds the most common category for a given payee name (case-insensitive).
     /// Only considers non-Unkategorisiert categories with a confidence threshold.
     /// Uses CategoryStore when available to avoid race conditions on shared files.
+    /// Respects the provided CancellationToken for async operations.
     /// </summary>
     public async Task<Category?> GetMostCommonCategoryForPayeeAsync(
         string payee,
@@ -87,6 +88,9 @@ public class TransactionStore : JsonDataStoreBase, ITransactionRepository
         await StoreLock.WaitAsync(cancellationToken);
         try
         {
+            // Honor cancellation before loading transactions
+            cancellationToken.ThrowIfCancellationRequested();
+
             var transactions = await LoadAsync<Transaction>(TransactionsFile);
 
             // Normalize payee for case-insensitive matching
@@ -131,6 +135,9 @@ public class TransactionStore : JsonDataStoreBase, ITransactionRepository
 
             var topCategoryId = categoryCounts.First().CategoryId;
 
+            // Honor cancellation before category load
+            cancellationToken.ThrowIfCancellationRequested();
+
             // Load categories through CategoryStore if available (thread-safe)
             // Otherwise fall back to direct load (for testing)
             List<Category> categories;
@@ -143,6 +150,9 @@ public class TransactionStore : JsonDataStoreBase, ITransactionRepository
                 var categoriesFile = Path.Combine(DataDir, "categories.json");
                 categories = await LoadAsync<Category>(categoriesFile);
             }
+
+            // Honor cancellation after category load
+            cancellationToken.ThrowIfCancellationRequested();
 
             var topCategory = categories.FirstOrDefault(c => c.Id == topCategoryId);
 

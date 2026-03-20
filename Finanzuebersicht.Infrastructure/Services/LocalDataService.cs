@@ -48,7 +48,7 @@ public class LocalDataService : IDataService, IDisposable
         var dataDir = string.IsNullOrWhiteSpace(customPath) ? defaultDataDir : customPath;
 
         _categoryStore = new CategoryStore(dataDir);
-        _transactionStore = new TransactionStore(dataDir);
+        _transactionStore = new TransactionStore(dataDir, categoryStore: _categoryStore);
         _recurringStore = new RecurringStore(dataDir);
         _reportingService = new ReportingService(_transactionStore, _categoryStore);
         _recurringGenerationService = new RecurringGenerationService(_recurringStore, _transactionStore, clock);
