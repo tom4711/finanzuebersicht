@@ -13,11 +13,12 @@ namespace Finanzuebersicht.Services;
 public class TransactionStore : JsonDataStoreBase, ITransactionRepository
 {
     private string TransactionsFile => Path.Combine(DataDir, "transactions.json");
-    private string CategoriesFile => Path.Combine(DataDir, "categories.json");
+    private readonly CategoryStore? _categoryStore;
 
-    public TransactionStore(string dataDir, ILogger<TransactionStore>? logger = null)
+    public TransactionStore(string dataDir, ILogger<TransactionStore>? logger = null, CategoryStore? categoryStore = null)
         : base(dataDir, logger)
     {
+        _categoryStore = categoryStore;
     }
 
     public async Task<List<Transaction>> GetTransactionsAsync(DateTime vonDatum, DateTime bisDatum)
@@ -73,6 +74,7 @@ public class TransactionStore : JsonDataStoreBase, ITransactionRepository
     /// <summary>
     /// Finds the most common category for a given payee name (case-insensitive).
     /// Only considers non-Unkategorisiert categories with a confidence threshold.
+    /// Uses CategoryStore when available to avoid race conditions on shared files.
     /// </summary>
     public async Task<Category?> GetMostCommonCategoryForPayeeAsync(
         string payee,
@@ -86,7 +88,6 @@ public class TransactionStore : JsonDataStoreBase, ITransactionRepository
         try
         {
             var transactions = await LoadAsync<Transaction>(TransactionsFile);
-            var categories = await LoadAsync<Category>(CategoriesFile);
 
             // Normalize payee for case-insensitive matching
             var normalizedPayee = payee.Trim();
@@ -120,14 +121,29 @@ public class TransactionStore : JsonDataStoreBase, ITransactionRepository
                 return null;
 
             var topCount = categoryCounts.First().Count;
-            // Confidence based only on categorized transactions
-            var confidence = (double)topCount / categorizedMatches.Count;
+            // Confidence based on ALL matching transactions (including uncategorized)
+            // This gives an honest percentage of how many transactions have this category
+            var confidence = (double)topCount / matchingTransactions.Count;
 
             // Check confidence threshold
             if (confidence < confidenceThreshold)
                 return null;
 
             var topCategoryId = categoryCounts.First().CategoryId;
+
+            // Load categories through CategoryStore if available (thread-safe)
+            // Otherwise fall back to direct load (for testing)
+            List<Category> categories;
+            if (_categoryStore != null)
+            {
+                categories = await _categoryStore.GetCategoriesAsync();
+            }
+            else
+            {
+                var categoriesFile = Path.Combine(DataDir, "categories.json");
+                categories = await LoadAsync<Category>(categoriesFile);
+            }
+
             var topCategory = categories.FirstOrDefault(c => c.Id == topCategoryId);
 
             // Don't use Unkategorisiert category

@@ -26,7 +26,8 @@ public static class InfrastructureServiceCollectionExtensions
         services.AddSingleton<TransactionStore>(sp =>
             new TransactionStore(
                 GetDataDir(sp),
-                sp.GetService<ILogger<TransactionStore>>()));
+                sp.GetService<ILogger<TransactionStore>>(),
+                sp.GetRequiredService<CategoryStore>()));
 
         services.AddSingleton<RecurringStore>(sp =>
             new RecurringStore(
