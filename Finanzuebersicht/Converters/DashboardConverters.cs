@@ -22,10 +22,15 @@ public class ProzentToWidthConverter : IValueConverter
 {
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        if (value is double prozent)
-            return Math.Max(prozent / 100.0, 0.02); // Minimum 2% sichtbar
-
-        return 0.0;
+        var prozent = value switch
+        {
+            double d => d,
+            decimal dec => (double)dec,
+            float f => (double)f,
+            int i => (double)i,
+            _ => 0.0
+        };
+        return Math.Clamp(prozent / 100.0, 0.0, 1.0);
     }
 
     public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
