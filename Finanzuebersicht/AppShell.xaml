@@ -35,18 +35,20 @@
             ContentTemplate="{DataTemplate views:CategoriesPage}"
             Route="CategoriesPage" />
 
-        <!-- TODO: Replace categories.png with a dedicated savings icon -->
         <ShellContent
             Title="{loc:Translate Nav_SparZiele}"
-            Icon="categories.png"
+            Icon="savings.png"
             ContentTemplate="{DataTemplate views:SparZielePage}"
             Route="SparZielePage" />
 
-        <ShellContent
-            Title="{loc:Translate Nav_Einstellungen}"
-            Icon="settings.png"
-            ContentTemplate="{DataTemplate views:SettingsPage}"
-            Route="SettingsPage" />
     </TabBar>
+
+    <Shell.ToolbarItems>
+        <ToolbarItem IconImageSource="settings.png"
+                     Text="{loc:Translate Nav_Einstellungen}"
+                     Order="Primary"
+                     Priority="0"
+                     Clicked="OnSettingsClicked" />
+    </Shell.ToolbarItems>
 
 </Shell>
