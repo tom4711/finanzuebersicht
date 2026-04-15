@@ -4,6 +4,7 @@ using Finanzuebersicht.Application.UseCases.Categories;
 using Finanzuebersicht.Models;
 using Finanzuebersicht.Services;
 using Finanzuebersicht.Resources.Strings;
+using System.Globalization;
 
 namespace Finanzuebersicht.ViewModels;
 
@@ -32,8 +33,9 @@ public partial class CategoryDetailViewModel(
     [ObservableProperty]
     private TransactionType typ = TransactionType.Ausgabe;
 
+    // String-backed property for culture-safe decimal input
     [ObservableProperty]
-    private decimal monthlyBudget;
+    private string monthlyBudgetText = string.Empty;
 
     public string PageTitle => _existingCategory == null 
         ? LocalizationResourceManager.Current[ResourceKeys.Title_NeueKategorie] 
@@ -71,11 +73,19 @@ public partial class CategoryDetailViewModel(
 
     private async Task LoadBudgetAsync(string kategorieId)
     {
-        if (_budgetRepository == null || string.IsNullOrEmpty(kategorieId)) return;
-        var budget = await _budgetRepository.GetBudgetForCategoryAsync(kategorieId, DateTime.Today.Year, DateTime.Today.Month);
-        budget ??= (await _budgetRepository.GetBudgetsAsync())
-            .FirstOrDefault(b => b.KategorieId == kategorieId && b.Monat == null && b.Jahr == null);
-        MonthlyBudget = budget?.Betrag ?? 0;
+        try
+        {
+            if (_budgetRepository == null || string.IsNullOrEmpty(kategorieId)) return;
+            // Always load the default budget (monat=null, jahr=null) — consistent with Save
+            var budgets = await _budgetRepository.GetBudgetsAsync();
+            var budget = budgets.FirstOrDefault(b => b.KategorieId == kategorieId && b.Monat == null && b.Jahr == null);
+            var betrag = budget?.Betrag ?? 0;
+            MonthlyBudgetText = betrag > 0 ? betrag.ToString("F2", CultureInfo.CurrentCulture) : string.Empty;
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"[CategoryDetailViewModel] LoadBudgetAsync failed: {ex}");
+        }
     }
 
     [RelayCommand]
@@ -86,7 +96,8 @@ public partial class CategoryDetailViewModel(
         var savedCategory = await _saveCategoryDetailUseCase.ExecuteAsync(_existingCategory, Name, Icon, Color, Typ);
         if (_saveCategoryBudgetUseCase != null && !string.IsNullOrEmpty(savedCategory.Id))
         {
-            await _saveCategoryBudgetUseCase.ExecuteAsync(savedCategory.Id, MonthlyBudget);
+            decimal.TryParse(MonthlyBudgetText, NumberStyles.Any, CultureInfo.CurrentCulture, out var budget);
+            await _saveCategoryBudgetUseCase.ExecuteAsync(savedCategory.Id, budget);
         }
         await _navigationService.GoBackAsync();
     }

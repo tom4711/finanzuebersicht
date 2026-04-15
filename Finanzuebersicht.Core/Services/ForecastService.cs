@@ -9,6 +9,9 @@ public class ForecastService(
 {
     public async Task<ForecastResult> GetMovingAverageAsync(int year, int month, int lookbackMonths = 3)
     {
+        if (lookbackMonths < 1)
+            throw new ArgumentOutOfRangeException(nameof(lookbackMonths), "lookbackMonths must be >= 1");
+
         var categories = await categoryRepository.GetCategoriesAsync();
         var catDict = categories.ToDictionary(c => c.Id);
 
@@ -44,12 +47,11 @@ public class ForecastService(
             .OrderByDescending(c => c.Total)
             .ToList();
 
-        // Enrich with budgets
-        var budgets = await budgetRepository.GetBudgetsAsync();
+        // Enrich with budgets using the repository's standard priority:
+        // specific year+month > month-only > default
         foreach (var cs in byCategory)
         {
-            var budget = budgets.FirstOrDefault(b => b.KategorieId == cs.CategoryId && b.Monat == null && b.Jahr == null)
-                ?? budgets.FirstOrDefault(b => b.KategorieId == cs.CategoryId && b.Monat == month && b.Jahr == null);
+            var budget = await budgetRepository.GetBudgetForCategoryAsync(cs.CategoryId, year, month);
             if (budget != null)
                 cs.BudgetBetrag = budget.Betrag;
         }

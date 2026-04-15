@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.Input;
 using Finanzuebersicht.Application.UseCases.Dashboard;
 using Finanzuebersicht.Models;
 using Finanzuebersicht.Services;
+using Finanzuebersicht.Core.Services;
 namespace Finanzuebersicht.ViewModels;
 
 public partial class DashboardViewModel : MonthNavigationViewModel
@@ -11,6 +12,7 @@ public partial class DashboardViewModel : MonthNavigationViewModel
     private readonly LoadDashboardMonthUseCase _loadDashboardMonthUseCase;
     private readonly LoadDashboardYearUseCase _loadDashboardYearUseCase;
     private readonly LoadForecastUseCase _loadForecastUseCase;
+    private readonly IClock _clock;
 
     // --- Monatsansicht ---
 
@@ -63,14 +65,16 @@ public partial class DashboardViewModel : MonthNavigationViewModel
 
     public bool IsYearView => !IsMonthView;
 
-    private int _aktuellesJahr = DateTime.Today.Year;
+    private int _aktuellesJahr;
 
     public DashboardViewModel(
         LoadDashboardMonthUseCase loadDashboardMonthUseCase,
         LoadDashboardYearUseCase loadDashboardYearUseCase,
         LoadForecastUseCase loadForecastUseCase,
-        Finanzuebersicht.Core.Services.IClock? clock = null) : base(clock)
+        IClock? clock = null) : base(clock)
     {
+        _clock = clock ?? SystemClock.Instance;
+        _aktuellesJahr = _clock.Today.Year;
         _loadDashboardMonthUseCase = loadDashboardMonthUseCase;
         _loadDashboardYearUseCase = loadDashboardYearUseCase;
         _loadForecastUseCase = loadForecastUseCase;
@@ -103,7 +107,7 @@ public partial class DashboardViewModel : MonthNavigationViewModel
 
     private async Task LadeMonatAsync()
     {
-        var data = await _loadDashboardMonthUseCase.ExecuteAsync(AktuellerMonat, DateTime.Today);
+        var data = await _loadDashboardMonthUseCase.ExecuteAsync(AktuellerMonat, _clock.Today);
 
         IstPrognose = data.IstPrognose;
         GesamtEinnahmen = data.GesamtEinnahmen;
@@ -113,7 +117,8 @@ public partial class DashboardViewModel : MonthNavigationViewModel
         KategorieEinnahmen = new ObservableCollection<CategorySummary>(data.KategorieEinnahmen);
 
         // Load forecast for current month only (not for past/future navigation)
-        var isCurrentMonth = AktuellerMonat.Year == DateTime.Today.Year && AktuellerMonat.Month == DateTime.Today.Month;
+        var today = _clock.Today;
+        var isCurrentMonth = AktuellerMonat.Year == today.Year && AktuellerMonat.Month == today.Month;
         if (isCurrentMonth)
         {
             var nextMonth = AktuellerMonat.AddMonths(1);

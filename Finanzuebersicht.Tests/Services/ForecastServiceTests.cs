@@ -116,9 +116,8 @@ public class ForecastServiceTests
             .Returns([
                 new Transaction { Typ = TransactionType.Ausgabe, Betrag = 200m, KategorieId = "food" }
             ]);
-        _budgetRepository.GetBudgetsAsync().Returns([
-            new CategoryBudget { KategorieId = "food", Betrag = 300m, Monat = null, Jahr = null }
-        ]);
+        _budgetRepository.GetBudgetForCategoryAsync("food", 2025, 4)
+            .Returns(new CategoryBudget { KategorieId = "food", Betrag = 300m, Monat = null, Jahr = null });
 
         var service = CreateService();
         var result = await service.GetMovingAverageAsync(2025, 4, lookbackMonths: 1);

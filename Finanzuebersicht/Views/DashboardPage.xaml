@@ -144,7 +144,7 @@
                                     <ProgressBar
                                         Progress="{Binding BudgetAusgeschoepft, Converter={StaticResource ProzentToWidth}}"
                                         ProgressColor="{Binding IstUeberBudget, Converter={StaticResource BudgetProgressColor}}"
-                                        BackgroundColor="#E5E5EA"
+                                        BackgroundColor="{AppThemeBinding Light=#E5E5EA, Dark=#3A3A3C}"
                                         VerticalOptions="Center" />
                                     <!-- Über Budget: rote Warnung mit Überschreitungsbetrag -->
                                     <Grid ColumnDefinitions="Auto, *, Auto, Auto"

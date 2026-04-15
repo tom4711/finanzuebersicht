@@ -43,7 +43,8 @@ public static class MauiProgram
 		builder.Services.AddSingleton<IRecurringGenerationService, RecurringGenerationService>();
 		builder.Services.AddSingleton<IReportingService, ReportingService>();
 		builder.Services.AddSingleton<IDataService, DataServiceFacade>();
-		builder.Services.AddSingleton<IForecastService, ForecastService>();		builder.Services.AddSingleton<ITransactionValidationService, TransactionValidationService>();
+		builder.Services.AddSingleton<IForecastService, ForecastService>();
+		builder.Services.AddSingleton<ITransactionValidationService, TransactionValidationService>();
 		builder.Services.AddSingleton<IBackupService, BackupService>();
 		// Import/parsers
 		// register parser explicitly using DI extension to avoid ambiguous CommunityToolkit overloads
