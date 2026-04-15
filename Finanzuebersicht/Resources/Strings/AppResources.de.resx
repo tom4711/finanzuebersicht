@@ -178,4 +178,24 @@ Bitte starte die App neu.</value></data>
   <data name="Title_AppName" xml:space="preserve"><value>Finanzübersicht</value></data>
   <data name="Lbl_FrameworkInfo" xml:space="preserve"><value>.NET 10 · MAUI · MVVM</value></data>
   <data name="Icn_Recurring" xml:space="preserve"><value>🔄</value></data>
+
+  <!-- Budgeting & Forecasting -->
+  <data name="Nav_SparZiele" xml:space="preserve"><value>Sparziele</value></data>
+  <data name="Title_SparZiele" xml:space="preserve"><value>Sparziele</value></data>
+  <data name="Lbl_MonatlichesBudget" xml:space="preserve"><value>Monatliches Budget</value></data>
+  <data name="Lbl_ZielBetrag" xml:space="preserve"><value>Zielbetrag</value></data>
+  <data name="Lbl_AktuellerBetrag" xml:space="preserve"><value>Aktueller Betrag</value></data>
+  <data name="Lbl_Faelligkeit" xml:space="preserve"><value>Fälligkeit</value></data>
+  <data name="Lbl_Fortschritt" xml:space="preserve"><value>Fortschritt</value></data>
+  <data name="Lbl_Forecast" xml:space="preserve"><value>Prognose</value></data>
+  <data name="Lbl_ForecastNaechsterMonat" xml:space="preserve"><value>Erwarteter nächster Monat (Ø 3M)</value></data>
+  <data name="Lbl_BudgetVon" xml:space="preserve"><value>von {0}</value></data>
+  <data name="Lbl_Von" xml:space="preserve"><value>von</value></data>
+  <data name="Lbl_UeberBudget" xml:space="preserve"><value>über Budget</value></data>
+  <data name="Hint_BudgetOptional" xml:space="preserve"><value>0,00 (kein Budget)</value></data>
+  <data name="Hint_BudgetNull" xml:space="preserve"><value>Auf 0 setzen um Budget zu entfernen</value></data>
+  <data name="Hint_ZielTitel" xml:space="preserve"><value>z.B. Urlaub, Neuer Laptop</value></data>
+  <data name="Empty_KeineSparZiele" xml:space="preserve"><value>Noch keine Sparziele angelegt</value></data>
+  <data name="Btn_NeuesZiel" xml:space="preserve"><value>+ Neues Ziel</value></data>
+  <data name="Btn_ZielHinzufuegen" xml:space="preserve"><value>Ziel hinzufügen</value></data>
 </root>

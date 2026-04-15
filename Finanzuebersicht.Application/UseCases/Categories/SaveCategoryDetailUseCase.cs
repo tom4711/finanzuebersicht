@@ -7,7 +7,7 @@ public class SaveCategoryDetailUseCase(ICategoryRepository categoryRepository)
 {
     private readonly ICategoryRepository _categoryRepository = categoryRepository;
 
-    public async Task ExecuteAsync(
+    public async Task<Category> ExecuteAsync(
         Category? existingCategory,
         string name,
         string icon,
@@ -21,5 +21,6 @@ public class SaveCategoryDetailUseCase(ICategoryRepository categoryRepository)
         category.Typ = typ;
 
         await _categoryRepository.SaveCategoryAsync(category);
+        return category;
     }
 }

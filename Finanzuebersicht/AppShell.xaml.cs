@@ -12,5 +12,11 @@ public partial class AppShell : Shell
 		Routing.RegisterRoute(nameof(RecurringTransactionDetailPage), typeof(RecurringTransactionDetailPage));
 		Routing.RegisterRoute(nameof(CategoryDetailPage), typeof(CategoryDetailPage));
 		Routing.RegisterRoute(nameof(RecurringInstanceShiftPage), typeof(RecurringInstanceShiftPage));
+		Routing.RegisterRoute(nameof(SettingsPage), typeof(SettingsPage));
+	}
+
+	private async void OnSettingsClicked(object? sender, EventArgs e)
+	{
+		await Shell.Current.GoToAsync(nameof(SettingsPage));
 	}
 }

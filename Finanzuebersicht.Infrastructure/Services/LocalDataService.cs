@@ -19,6 +19,8 @@ public class LocalDataService : IDataService, IDisposable
     private readonly CategoryStore _categoryStore;
     private readonly TransactionStore _transactionStore;
     private readonly RecurringStore _recurringStore;
+    private readonly BudgetStore _budgetStore;
+    private readonly SparZielStore _sparZielStore;
     private readonly ReportingService _reportingService;
     private readonly RecurringGenerationService _recurringGenerationService;
 
@@ -29,11 +31,15 @@ public class LocalDataService : IDataService, IDisposable
         CategoryStore categoryStore,
         TransactionStore transactionStore,
         RecurringStore recurringStore,
+        BudgetStore budgetStore,
+        SparZielStore sparZielStore,
         IClock clock)
     {
         _categoryStore = categoryStore;
         _transactionStore = transactionStore;
         _recurringStore = recurringStore;
+        _budgetStore = budgetStore;
+        _sparZielStore = sparZielStore;
         _reportingService = new ReportingService(_transactionStore, _categoryStore);
         _recurringGenerationService = new RecurringGenerationService(_recurringStore, _transactionStore, clock);
     }
@@ -50,6 +56,8 @@ public class LocalDataService : IDataService, IDisposable
         _categoryStore = new CategoryStore(dataDir);
         _transactionStore = new TransactionStore(dataDir, categoryStore: _categoryStore);
         _recurringStore = new RecurringStore(dataDir);
+        _budgetStore = new BudgetStore(dataDir);
+        _sparZielStore = new SparZielStore(dataDir);
         _reportingService = new ReportingService(_transactionStore, _categoryStore);
         _recurringGenerationService = new RecurringGenerationService(_recurringStore, _transactionStore, clock);
     }
@@ -113,6 +121,24 @@ public class LocalDataService : IDataService, IDisposable
 
     public async Task GeneratePendingRecurringTransactionsAsync()
         => await _recurringGenerationService.GeneratePendingRecurringTransactionsAsync();
+
+    #endregion
+
+    #region IBudgetRepository delegation
+
+    public Task<List<CategoryBudget>> GetBudgetsAsync() => _budgetStore.GetBudgetsAsync();
+    public Task SaveBudgetAsync(CategoryBudget budget) => _budgetStore.SaveBudgetAsync(budget);
+    public Task DeleteBudgetAsync(string id) => _budgetStore.DeleteBudgetAsync(id);
+    public Task<CategoryBudget?> GetBudgetForCategoryAsync(string kategorieId, int year, int month)
+        => _budgetStore.GetBudgetForCategoryAsync(kategorieId, year, month);
+
+    #endregion
+
+    #region ISparZielRepository delegation
+
+    public Task<List<SparZiel>> GetSparZieleAsync() => _sparZielStore.GetSparZieleAsync();
+    public Task SaveSparZielAsync(SparZiel sparZiel) => _sparZielStore.SaveSparZielAsync(sparZiel);
+    public Task DeleteSparZielAsync(string id) => _sparZielStore.DeleteSparZielAsync(id);
 
     #endregion
 

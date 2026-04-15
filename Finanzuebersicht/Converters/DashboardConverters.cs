@@ -22,10 +22,15 @@ public class ProzentToWidthConverter : IValueConverter
 {
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        if (value is double prozent)
-            return Math.Max(prozent / 100.0, 0.02); // Minimum 2% sichtbar
-
-        return 0.0;
+        var prozent = value switch
+        {
+            double d => d,
+            decimal dec => (double)dec,
+            float f => (double)f,
+            int i => (double)i,
+            _ => 0.0
+        };
+        return Math.Clamp(prozent / 100.0, 0.0, 1.0);
     }
 
     public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
@@ -88,4 +93,24 @@ public class ToggleActiveTextColorConverter : IValueConverter
 
     public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
         => throw new NotImplementedException();
+}
+
+public class BudgetProgressColorConverter : IValueConverter
+{
+    public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+        => value is true
+            ? Color.FromArgb("#FF3B30")   // über Budget → rot
+            : Color.FromArgb("#FF9500");  // im Budget → orange
+
+    public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
+        => throw new NotImplementedException();
+}
+
+public class InvertBoolConverter : IValueConverter
+{
+    public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+        => value is bool b ? !b : value;
+
+    public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
+        => value is bool b ? !b : value;
 }

@@ -34,6 +34,16 @@ public static class InfrastructureServiceCollectionExtensions
                 GetDataDir(sp),
                 sp.GetService<ILogger<RecurringStore>>()));
 
+        services.AddSingleton<BudgetStore>(sp =>
+            new BudgetStore(
+                GetDataDir(sp),
+                sp.GetService<ILogger<BudgetStore>>()));
+
+        services.AddSingleton<SparZielStore>(sp =>
+            new SparZielStore(
+                GetDataDir(sp),
+                sp.GetService<ILogger<SparZielStore>>()));
+
         // Register composite LocalDataService which coordinates all stores
         // Stores are injected, not manually constructed
         services.AddSingleton<LocalDataService>(sp =>
@@ -41,12 +51,16 @@ public static class InfrastructureServiceCollectionExtensions
                 sp.GetRequiredService<CategoryStore>(),
                 sp.GetRequiredService<TransactionStore>(),
                 sp.GetRequiredService<RecurringStore>(),
+                sp.GetRequiredService<BudgetStore>(),
+                sp.GetRequiredService<SparZielStore>(),
                 sp.GetRequiredService<Finanzuebersicht.Core.Services.IClock>()));
 
         // Expose the LocalDataService instance via the repository interfaces it implements
         services.AddSingleton<ICategoryRepository>(sp => sp.GetRequiredService<LocalDataService>());
         services.AddSingleton<ITransactionRepository>(sp => sp.GetRequiredService<LocalDataService>());
         services.AddSingleton<IRecurringTransactionRepository>(sp => sp.GetRequiredService<LocalDataService>());
+        services.AddSingleton<IBudgetRepository>(sp => sp.GetRequiredService<LocalDataService>());
+        services.AddSingleton<ISparZielRepository>(sp => sp.GetRequiredService<LocalDataService>());
 
         return services;
     }

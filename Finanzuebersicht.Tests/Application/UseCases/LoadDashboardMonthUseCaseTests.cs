@@ -26,7 +26,7 @@ public class LoadDashboardMonthUseCaseTests
                 new() { Typ = TransactionType.Ausgabe, Betrag = 800m, KategorieId = "cat-b" }
             });
 
-        var useCase = new LoadDashboardMonthUseCase(categoryRepository, transactionRepository, recurringRepository);
+        var useCase = new LoadDashboardMonthUseCase(categoryRepository, transactionRepository, recurringRepository, Substitute.For<IBudgetRepository>());
 
         var result = await useCase.ExecuteAsync(new DateTime(2026, 3, 1), new DateTime(2026, 3, 15));
 
@@ -68,7 +68,7 @@ public class LoadDashboardMonthUseCaseTests
             }
         });
 
-        var useCase = new LoadDashboardMonthUseCase(categoryRepository, transactionRepository, recurringRepository);
+        var useCase = new LoadDashboardMonthUseCase(categoryRepository, transactionRepository, recurringRepository, Substitute.For<IBudgetRepository>());
 
         var result = await useCase.ExecuteAsync(new DateTime(2026, 4, 1), new DateTime(2026, 3, 15));
 

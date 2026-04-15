@@ -173,4 +173,24 @@ public static class ResourceKeys
     public const string Title_AppName = nameof(Title_AppName);
     public const string Lbl_FrameworkInfo = nameof(Lbl_FrameworkInfo);
     public const string Icn_Recurring = nameof(Icn_Recurring);
+
+    // Budgeting & Forecasting
+    public const string Nav_SparZiele = nameof(Nav_SparZiele);
+    public const string Title_SparZiele = nameof(Title_SparZiele);
+    public const string Lbl_MonatlichesBudget = nameof(Lbl_MonatlichesBudget);
+    public const string Lbl_ZielBetrag = nameof(Lbl_ZielBetrag);
+    public const string Lbl_AktuellerBetrag = nameof(Lbl_AktuellerBetrag);
+    public const string Lbl_Faelligkeit = nameof(Lbl_Faelligkeit);
+    public const string Lbl_Fortschritt = nameof(Lbl_Fortschritt);
+    public const string Lbl_Forecast = nameof(Lbl_Forecast);
+    public const string Lbl_ForecastNaechsterMonat = nameof(Lbl_ForecastNaechsterMonat);
+    public const string Lbl_BudgetVon = nameof(Lbl_BudgetVon);
+    public const string Lbl_Von = nameof(Lbl_Von);
+    public const string Lbl_UeberBudget = nameof(Lbl_UeberBudget);
+    public const string Hint_BudgetOptional = nameof(Hint_BudgetOptional);
+    public const string Hint_BudgetNull = nameof(Hint_BudgetNull);
+    public const string Hint_ZielTitel = nameof(Hint_ZielTitel);
+    public const string Empty_KeineSparZiele = nameof(Empty_KeineSparZiele);
+    public const string Btn_NeuesZiel = nameof(Btn_NeuesZiel);
+    public const string Btn_ZielHinzufuegen = nameof(Btn_ZielHinzufuegen);
 }
