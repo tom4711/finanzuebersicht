@@ -20,6 +20,7 @@ namespace Finanzuebersicht.Models
         public decimal? BudgetBetrag { get; set; }
         public decimal? BudgetAbweichung => BudgetBetrag.HasValue ? Total - BudgetBetrag.Value : null;
         public bool HatBudget => BudgetBetrag.HasValue;
+        public bool IstUeberBudget => BudgetAbweichung.HasValue && BudgetAbweichung.Value > 0;
         public decimal BudgetAusgeschoepft => BudgetBetrag.HasValue && BudgetBetrag.Value > 0
             ? Math.Min(Total / BudgetBetrag.Value * 100, 100)
             : 0;

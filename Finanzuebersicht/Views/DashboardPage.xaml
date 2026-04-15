@@ -17,6 +17,8 @@
         <conv:CountToBoolConverter x:Key="CountToBool" />
         <conv:ToggleActiveColorConverter x:Key="ToggleActiveColor" />
         <conv:ToggleActiveTextColorConverter x:Key="ToggleActiveText" />
+        <conv:BudgetProgressColorConverter x:Key="BudgetProgressColor" />
+        <conv:InvertBoolConverter x:Key="InvertBool" />
     </ContentPage.Resources>
 
     <RefreshView Command="{Binding LoadDashboardCommand}"
@@ -138,17 +140,39 @@
                                            TextColor="#FF3B30" VerticalTextAlignment="Center" />
                                 </Grid>
                                 <!-- Budget-Fortschrittsbalken -->
-                                <Grid ColumnDefinitions="*, Auto" IsVisible="{Binding HatBudget}">
-                                    <ProgressBar Grid.Column="0"
-                                                 Progress="{Binding BudgetAusgeschoepft, Converter={StaticResource ProzentToWidth}}"
-                                                 ProgressColor="#FF9500"
-                                                 BackgroundColor="#E5E5EA"
-                                                 VerticalOptions="Center" />
-                                    <Label Grid.Column="1"
-                                           Text="{Binding BudgetBetrag, Converter={StaticResource Currency}}"
-                                           FontSize="11" TextColor="Gray"
-                                           VerticalTextAlignment="Center" Margin="6,0,0,0" />
-                                </Grid>
+                                <VerticalStackLayout IsVisible="{Binding HatBudget}" Spacing="2">
+                                    <ProgressBar
+                                        Progress="{Binding BudgetAusgeschoepft, Converter={StaticResource ProzentToWidth}}"
+                                        ProgressColor="{Binding IstUeberBudget, Converter={StaticResource BudgetProgressColor}}"
+                                        BackgroundColor="#E5E5EA"
+                                        VerticalOptions="Center" />
+                                    <!-- Über Budget: rote Warnung mit Überschreitungsbetrag -->
+                                    <Grid ColumnDefinitions="Auto, *, Auto, Auto"
+                                          IsVisible="{Binding IstUeberBudget}">
+                                        <Label Grid.Column="0" Text="⚠️" FontSize="11"
+                                               VerticalTextAlignment="Center" />
+                                        <Label Grid.Column="1"
+                                               Text="{loc:Translate Lbl_UeberBudget}"
+                                               FontSize="11" TextColor="#FF3B30"
+                                               VerticalTextAlignment="Center" Margin="3,0,0,0" />
+                                        <Label Grid.Column="2" Text="+" FontSize="11"
+                                               TextColor="#FF3B30" FontAttributes="Bold"
+                                               VerticalTextAlignment="Center" />
+                                        <Label Grid.Column="3"
+                                               Text="{Binding BudgetAbweichung, Converter={StaticResource Currency}}"
+                                               FontSize="11" TextColor="#FF3B30" FontAttributes="Bold"
+                                               VerticalTextAlignment="Center" />
+                                    </Grid>
+                                    <!-- Im Budget: Budget-Betrag rechts -->
+                                    <HorizontalStackLayout
+                                        IsVisible="{Binding IstUeberBudget, Converter={StaticResource InvertBool}}"
+                                        HorizontalOptions="End" Spacing="2">
+                                        <Label Text="{loc:Translate Lbl_Von}"
+                                               FontSize="11" TextColor="Gray" />
+                                        <Label Text="{Binding BudgetBetrag, Converter={StaticResource Currency}}"
+                                               FontSize="11" TextColor="Gray" />
+                                    </HorizontalStackLayout>
+                                </VerticalStackLayout>
                             </VerticalStackLayout>
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
