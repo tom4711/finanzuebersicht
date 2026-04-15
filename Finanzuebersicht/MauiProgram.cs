@@ -2,6 +2,7 @@
 using Finanzuebersicht.Application.UseCases.Categories;
 using Finanzuebersicht.Application.UseCases.Dashboard;
 using Finanzuebersicht.Application.UseCases.RecurringTransactions;
+using Finanzuebersicht.Application.UseCases.SparZiele;
 using Finanzuebersicht.Application.UseCases.Transactions;
 using Finanzuebersicht.Infrastructure;
 using Finanzuebersicht.Services;
@@ -42,7 +43,7 @@ public static class MauiProgram
 		builder.Services.AddSingleton<IRecurringGenerationService, RecurringGenerationService>();
 		builder.Services.AddSingleton<IReportingService, ReportingService>();
 		builder.Services.AddSingleton<IDataService, DataServiceFacade>();
-		builder.Services.AddSingleton<ITransactionValidationService, TransactionValidationService>();
+		builder.Services.AddSingleton<IForecastService, ForecastService>();		builder.Services.AddSingleton<ITransactionValidationService, TransactionValidationService>();
 		builder.Services.AddSingleton<IBackupService, BackupService>();
 		// Import/parsers
 		// register parser explicitly using DI extension to avoid ambiguous CommunityToolkit overloads
@@ -56,8 +57,10 @@ public static class MauiProgram
 		builder.Services.AddTransient<DeleteCategoryUseCase>();
 		builder.Services.AddTransient<LoadCategoriesUseCase>();
 		builder.Services.AddTransient<SaveCategoryDetailUseCase>();
+		builder.Services.AddTransient<SaveCategoryBudgetUseCase>();
 		builder.Services.AddTransient<LoadDashboardMonthUseCase>();
 		builder.Services.AddTransient<LoadDashboardYearUseCase>();
+		builder.Services.AddTransient<LoadForecastUseCase>();
 		builder.Services.AddTransient<DeleteRecurringTransactionUseCase>();
 		builder.Services.AddTransient<LoadRecurringTransactionDetailDataUseCase>();
 		builder.Services.AddTransient<LoadRecurringTransactionsUseCase>();
@@ -72,6 +75,9 @@ public static class MauiProgram
 		builder.Services.AddTransient<SaveRecurringTransactionDetailUseCase>();
 		builder.Services.AddTransient<SaveTransactionDetailUseCase>();
 		builder.Services.AddSingleton<InitializationService>();
+		builder.Services.AddTransient<LoadSparZieleUseCase>();
+		builder.Services.AddTransient<SaveSparZielUseCase>();
+		builder.Services.AddTransient<DeleteSparZielUseCase>();
 		builder.Services.AddSingleton<ThemeService>();
 		builder.Services.AddSingleton<ILocalizationService, LocalizationService>();
 		builder.Services.AddSingleton<INavigationService, ShellNavigationService>();
@@ -88,6 +94,7 @@ public static class MauiProgram
         builder.Services.AddTransient<RecurringInstanceShiftViewModel>();
 		builder.Services.AddTransient<SettingsViewModel>();
 		builder.Services.AddTransient<YearOverviewViewModel>();
+		builder.Services.AddTransient<SparZieleViewModel>();
 
 		// Pages
 		builder.Services.AddTransient<DashboardPage>();
@@ -100,6 +107,7 @@ public static class MauiProgram
 		builder.Services.AddTransient<CategoryDetailPage>();
 		builder.Services.AddTransient<SettingsPage>();
 		builder.Services.AddTransient<YearOverviewPage>();
+		builder.Services.AddTransient<SparZielePage>();
 
 #if DEBUG
 		builder.Logging.AddDebug();

@@ -351,6 +351,17 @@ namespace Finanzuebersicht.Tests.Services
 
             public Task<MonthSummary> GetMonthSummaryAsync(int year, int month) =>
                 Task.FromResult(new MonthSummary());
+
+            // IBudgetRepository
+            public Task<List<CategoryBudget>> GetBudgetsAsync() => Task.FromResult(new List<CategoryBudget>());
+            public Task SaveBudgetAsync(CategoryBudget budget) => Task.CompletedTask;
+            public Task DeleteBudgetAsync(string id) => Task.CompletedTask;
+            public Task<CategoryBudget?> GetBudgetForCategoryAsync(string kategorieId, int year, int month) => Task.FromResult<CategoryBudget?>(null);
+
+            // ISparZielRepository
+            public Task<List<SparZiel>> GetSparZieleAsync() => Task.FromResult(new List<SparZiel>());
+            public Task SaveSparZielAsync(SparZiel sparZiel) => Task.CompletedTask;
+            public Task DeleteSparZielAsync(string id) => Task.CompletedTask;
         }
     }
 }

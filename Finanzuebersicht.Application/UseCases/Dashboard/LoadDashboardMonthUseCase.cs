@@ -7,11 +7,13 @@ namespace Finanzuebersicht.Application.UseCases.Dashboard;
 public class LoadDashboardMonthUseCase(
     ICategoryRepository categoryRepository,
     ITransactionRepository transactionRepository,
-    IRecurringTransactionRepository recurringTransactionRepository)
+    IRecurringTransactionRepository recurringTransactionRepository,
+    IBudgetRepository budgetRepository)
 {
     private readonly ICategoryRepository _categoryRepository = categoryRepository;
     private readonly ITransactionRepository _transactionRepository = transactionRepository;
     private readonly IRecurringTransactionRepository _recurringTransactionRepository = recurringTransactionRepository;
+    private readonly IBudgetRepository _budgetRepository = budgetRepository;
 
     public async Task<DashboardMonthData> ExecuteAsync(DateTime aktuellerMonat, DateTime today)
     {
@@ -71,6 +73,17 @@ public class LoadDashboardMonthUseCase(
             })
             .OrderByDescending(k => k.Total)
             .ToList();
+
+        // Enrich with budget data
+        var budgets = await _budgetRepository.GetBudgetsAsync() ?? [];
+        foreach (var cs in kategorieAusgaben)
+        {
+            var budget = budgets.FirstOrDefault(b => b.KategorieId == cs.CategoryId && b.Jahr == aktuellerMonat.Year && b.Monat == aktuellerMonat.Month)
+                ?? budgets.FirstOrDefault(b => b.KategorieId == cs.CategoryId && b.Jahr == null && b.Monat == aktuellerMonat.Month)
+                ?? budgets.FirstOrDefault(b => b.KategorieId == cs.CategoryId && b.Jahr == null && b.Monat == null);
+            if (budget != null)
+                cs.BudgetBetrag = budget.Betrag;
+        }
 
         var kategorieEinnahmen = transaktionen
             .Where(t => t.Typ == TransactionType.Einnahme)

@@ -170,6 +170,8 @@ public class DataServiceFacadeTests
             transactionRepository,
             recurringRepository,
             recurringGenerationService,
-            reportingService);
+            reportingService,
+            Substitute.For<IBudgetRepository>(),
+            Substitute.For<ISparZielRepository>());
     }
 }

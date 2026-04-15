@@ -4,13 +4,13 @@ using CommunityToolkit.Mvvm.Input;
 using Finanzuebersicht.Application.UseCases.Dashboard;
 using Finanzuebersicht.Models;
 using Finanzuebersicht.Services;
-
 namespace Finanzuebersicht.ViewModels;
 
 public partial class DashboardViewModel : MonthNavigationViewModel
 {
     private readonly LoadDashboardMonthUseCase _loadDashboardMonthUseCase;
     private readonly LoadDashboardYearUseCase _loadDashboardYearUseCase;
+    private readonly LoadForecastUseCase _loadForecastUseCase;
 
     // --- Monatsansicht ---
 
@@ -31,6 +31,12 @@ public partial class DashboardViewModel : MonthNavigationViewModel
 
     [ObservableProperty]
     private bool istPrognose;
+
+    [ObservableProperty]
+    private decimal forecastTotal;
+
+    [ObservableProperty]
+    private bool hasForecast;
 
     // --- Jahresansicht ---
 
@@ -62,10 +68,12 @@ public partial class DashboardViewModel : MonthNavigationViewModel
     public DashboardViewModel(
         LoadDashboardMonthUseCase loadDashboardMonthUseCase,
         LoadDashboardYearUseCase loadDashboardYearUseCase,
+        LoadForecastUseCase loadForecastUseCase,
         Finanzuebersicht.Core.Services.IClock? clock = null) : base(clock)
     {
         _loadDashboardMonthUseCase = loadDashboardMonthUseCase;
         _loadDashboardYearUseCase = loadDashboardYearUseCase;
+        _loadForecastUseCase = loadForecastUseCase;
         UpdateJahrAnzeige();
     }
 
@@ -103,6 +111,20 @@ public partial class DashboardViewModel : MonthNavigationViewModel
         Bilanz = data.Bilanz;
         KategorieAusgaben = new ObservableCollection<CategorySummary>(data.KategorieAusgaben);
         KategorieEinnahmen = new ObservableCollection<CategorySummary>(data.KategorieEinnahmen);
+
+        // Load forecast for current month only (not for past/future navigation)
+        var isCurrentMonth = AktuellerMonat.Year == DateTime.Today.Year && AktuellerMonat.Month == DateTime.Today.Month;
+        if (isCurrentMonth)
+        {
+            var nextMonth = AktuellerMonat.AddMonths(1);
+            var forecast = await _loadForecastUseCase.ExecuteAsync(nextMonth.Year, nextMonth.Month);
+            ForecastTotal = forecast.ForecastedTotal;
+            HasForecast = forecast.ForecastedTotal > 0;
+        }
+        else
+        {
+            HasForecast = false;
+        }
     }
 
     private async Task LadeJahrAsync()

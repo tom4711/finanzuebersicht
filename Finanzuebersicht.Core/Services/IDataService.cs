@@ -5,6 +5,8 @@ public interface IDataService :
     ITransactionRepository,
     IRecurringTransactionRepository,
     IRecurringGenerationService,
-    IReportingService
+    IReportingService,
+    IBudgetRepository,
+    ISparZielRepository
 {
 }

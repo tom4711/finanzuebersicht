@@ -8,10 +8,16 @@ using Finanzuebersicht.Resources.Strings;
 namespace Finanzuebersicht.ViewModels;
 
 [QueryProperty(nameof(Category), "Category")]
-public partial class CategoryDetailViewModel(SaveCategoryDetailUseCase saveCategoryDetailUseCase, INavigationService navigationService) : ObservableObject
+public partial class CategoryDetailViewModel(
+    SaveCategoryDetailUseCase saveCategoryDetailUseCase,
+    INavigationService navigationService,
+    SaveCategoryBudgetUseCase? saveCategoryBudgetUseCase = null,
+    IBudgetRepository? budgetRepository = null) : ObservableObject
 {
     private readonly SaveCategoryDetailUseCase _saveCategoryDetailUseCase = saveCategoryDetailUseCase;
     private readonly INavigationService _navigationService = navigationService;
+    private readonly SaveCategoryBudgetUseCase? _saveCategoryBudgetUseCase = saveCategoryBudgetUseCase;
+    private readonly IBudgetRepository? _budgetRepository = budgetRepository;
     private Category? _existingCategory;
 
     [ObservableProperty]
@@ -25,6 +31,9 @@ public partial class CategoryDetailViewModel(SaveCategoryDetailUseCase saveCateg
 
     [ObservableProperty]
     private TransactionType typ = TransactionType.Ausgabe;
+
+    [ObservableProperty]
+    private decimal monthlyBudget;
 
     public string PageTitle => _existingCategory == null 
         ? LocalizationResourceManager.Current[ResourceKeys.Title_NeueKategorie] 
@@ -55,8 +64,18 @@ public partial class CategoryDetailViewModel(SaveCategoryDetailUseCase saveCateg
                 Icon = value.Icon;
                 Color = value.Color;
                 Typ = value.Typ;
+                _ = LoadBudgetAsync(value.Id);
             }
         }
+    }
+
+    private async Task LoadBudgetAsync(string kategorieId)
+    {
+        if (_budgetRepository == null || string.IsNullOrEmpty(kategorieId)) return;
+        var budget = await _budgetRepository.GetBudgetForCategoryAsync(kategorieId, DateTime.Today.Year, DateTime.Today.Month);
+        budget ??= (await _budgetRepository.GetBudgetsAsync())
+            .FirstOrDefault(b => b.KategorieId == kategorieId && b.Monat == null && b.Jahr == null);
+        MonthlyBudget = budget?.Betrag ?? 0;
     }
 
     [RelayCommand]
@@ -64,7 +83,11 @@ public partial class CategoryDetailViewModel(SaveCategoryDetailUseCase saveCateg
     {
         if (string.IsNullOrWhiteSpace(Name)) return;
 
-        await _saveCategoryDetailUseCase.ExecuteAsync(_existingCategory, Name, Icon, Color, Typ);
+        var savedCategory = await _saveCategoryDetailUseCase.ExecuteAsync(_existingCategory, Name, Icon, Color, Typ);
+        if (_saveCategoryBudgetUseCase != null && !string.IsNullOrEmpty(savedCategory.Id))
+        {
+            await _saveCategoryBudgetUseCase.ExecuteAsync(savedCategory.Id, MonthlyBudget);
+        }
         await _navigationService.GoBackAsync();
     }
 }

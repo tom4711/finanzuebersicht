@@ -137,6 +137,18 @@
                                            FontSize="15" FontAttributes="Bold"
                                            TextColor="#FF3B30" VerticalTextAlignment="Center" />
                                 </Grid>
+                                <!-- Budget-Fortschrittsbalken -->
+                                <Grid ColumnDefinitions="*, Auto" IsVisible="{Binding HatBudget}">
+                                    <ProgressBar Grid.Column="0"
+                                                 Progress="{Binding BudgetAusgeschoepft, Converter={StaticResource ProzentToWidth}}"
+                                                 ProgressColor="#FF9500"
+                                                 BackgroundColor="#E5E5EA"
+                                                 VerticalOptions="Center" />
+                                    <Label Grid.Column="1"
+                                           Text="{Binding BudgetBetrag, Converter={StaticResource Currency}}"
+                                           FontSize="11" TextColor="Gray"
+                                           VerticalTextAlignment="Center" Margin="6,0,0,0" />
+                                </Grid>
                             </VerticalStackLayout>
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
@@ -168,6 +180,27 @@
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
                 </CollectionView>
+
+                <!-- Forecast nächster Monat -->
+                <Border StrokeShape="RoundRectangle 12"
+                        Stroke="{AppThemeBinding Light=#E5E5EA, Dark=#3A3A3C}"
+                        BackgroundColor="{AppThemeBinding Light=#F2F2F7, Dark=#2C2C2E}"
+                        Padding="12"
+                        Margin="0,8,0,0"
+                        IsVisible="{Binding HasForecast}">
+                    <Grid ColumnDefinitions="*, Auto">
+                        <Label Grid.Column="0"
+                               Text="{loc:Translate Lbl_ForecastNaechsterMonat}"
+                               FontSize="13"
+                               TextColor="{AppThemeBinding Light=#8E8E93, Dark=#636366}"
+                               VerticalTextAlignment="Center" />
+                        <Label Grid.Column="1"
+                               Text="{Binding ForecastTotal, Converter={StaticResource Currency}}"
+                               FontSize="15" FontAttributes="Bold"
+                               TextColor="{AppThemeBinding Light=#FF9500, Dark=#FF9F0A}"
+                               VerticalTextAlignment="Center" />
+                    </Grid>
+                </Border>
 
                 </VerticalStackLayout>
 

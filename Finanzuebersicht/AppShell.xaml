@@ -35,6 +35,12 @@
             ContentTemplate="{DataTemplate views:CategoriesPage}"
             Route="CategoriesPage" />
 
+        <!-- TODO: Replace categories.png with a dedicated savings icon -->
+        <ShellContent
+            Title="{loc:Translate Nav_SparZiele}"
+            Icon="categories.png"
+            ContentTemplate="{DataTemplate views:SparZielePage}"
+            Route="SparZielePage" />
 
         <ShellContent
             Title="{loc:Translate Nav_Einstellungen}"
