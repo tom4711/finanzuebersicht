@@ -79,6 +79,16 @@ public partial class DashboardPage : ContentPage
                 _yearDonut.Items = _vm.JahrKategorien;
                 MainThread.BeginInvokeOnMainThread(() => YearDonutChart.Invalidate());
                 break;
+            case nameof(DashboardViewModel.JahrBudgetTotal):
+                _yearBar.MonthlyBudgetTotal = _vm.JahrBudgetTotal;
+                MainThread.BeginInvokeOnMainThread(() => YearBarChart.Invalidate());
+                break;
+            case nameof(DashboardViewModel.ForecastBarMonth):
+            case nameof(DashboardViewModel.ForecastBarValue):
+                _yearBar.ForecastMonth = _vm.ForecastBarMonth;
+                _yearBar.ForecastValue = _vm.ForecastBarValue;
+                MainThread.BeginInvokeOnMainThread(() => YearBarChart.Invalidate());
+                break;
         }
     }
 }

@@ -114,3 +114,25 @@ public class InvertBoolConverter : IValueConverter
     public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
         => value is bool b ? !b : value;
 }
+
+/// <summary>Gibt true zurück wenn der String nicht leer ist (für IsVisible-Binding).</summary>
+public class StringToBoolConverter : IValueConverter
+{
+    public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+        => value is string s && !string.IsNullOrEmpty(s);
+
+    public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
+        => throw new NotImplementedException();
+}
+
+/// <summary>bool → grün (true = weniger Ausgaben) oder rot (false = mehr Ausgaben).</summary>
+public class TrendColorConverter : IValueConverter
+{
+    public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+        => value is true
+            ? Color.FromArgb("#34C759")   // positiver Trend → grün
+            : Color.FromArgb("#FF3B30");  // negativer Trend → rot
+
+    public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
+        => throw new NotImplementedException();
+}

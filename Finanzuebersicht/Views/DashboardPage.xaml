@@ -19,6 +19,8 @@
         <conv:ToggleActiveTextColorConverter x:Key="ToggleActiveText" />
         <conv:BudgetProgressColorConverter x:Key="BudgetProgressColor" />
         <conv:InvertBoolConverter x:Key="InvertBool" />
+        <conv:StringToBoolConverter x:Key="StringToBool" />
+        <conv:TrendColorConverter x:Key="TrendColor" />
     </ContentPage.Resources>
 
     <RefreshView Command="{Binding LoadDashboardCommand}"
@@ -96,6 +98,10 @@
                             <Label Text="{loc:Translate Lbl_Ausgaben}" FontSize="11" TextColor="#FF3B30" />
                             <Label Text="{Binding GesamtAusgaben, Converter={StaticResource Currency}}"
                                    FontSize="15" FontAttributes="Bold" TextColor="#FF3B30" />
+                            <Label Text="{Binding TrendText}"
+                                   FontSize="11" FontAttributes="Bold"
+                                   IsVisible="{Binding TrendText, Converter={StaticResource StringToBool}}"
+                                   TextColor="{Binding TrendPositiv, Converter={StaticResource TrendColor}}" />
                         </VerticalStackLayout>
                     </Border>
 

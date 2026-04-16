@@ -6,12 +6,12 @@ using Finanzuebersicht.Models;
 using Finanzuebersicht.Services;
 using Finanzuebersicht.Core.Services;
 namespace Finanzuebersicht.ViewModels;
-
 public partial class DashboardViewModel : MonthNavigationViewModel
 {
     private readonly LoadDashboardMonthUseCase _loadDashboardMonthUseCase;
     private readonly LoadDashboardYearUseCase _loadDashboardYearUseCase;
     private readonly LoadForecastUseCase _loadForecastUseCase;
+    private readonly IBudgetRepository _budgetRepository;
     private readonly IClock _clock;
 
     // --- Monatsansicht ---
@@ -39,6 +39,26 @@ public partial class DashboardViewModel : MonthNavigationViewModel
 
     [ObservableProperty]
     private bool hasForecast;
+
+    // Trend Vormonatsvergleich
+    [ObservableProperty]
+    private decimal? trendProzent;
+
+    [ObservableProperty]
+    private string trendText = string.Empty;
+
+    [ObservableProperty]
+    private bool trendPositiv;
+
+    // Für BarChart: Forecast-Balken und Budget-Linie
+    [ObservableProperty]
+    private int forecastBarMonth;
+
+    [ObservableProperty]
+    private decimal forecastBarValue;
+
+    [ObservableProperty]
+    private decimal jahrBudgetTotal;
 
     // --- Jahresansicht ---
 
@@ -71,6 +91,7 @@ public partial class DashboardViewModel : MonthNavigationViewModel
         LoadDashboardMonthUseCase loadDashboardMonthUseCase,
         LoadDashboardYearUseCase loadDashboardYearUseCase,
         LoadForecastUseCase loadForecastUseCase,
+        IBudgetRepository budgetRepository,
         IClock? clock = null) : base(clock)
     {
         _clock = clock ?? SystemClock.Instance;
@@ -78,6 +99,7 @@ public partial class DashboardViewModel : MonthNavigationViewModel
         _loadDashboardMonthUseCase = loadDashboardMonthUseCase;
         _loadDashboardYearUseCase = loadDashboardYearUseCase;
         _loadForecastUseCase = loadForecastUseCase;
+        _budgetRepository = budgetRepository;
         UpdateJahrAnzeige();
     }
 
@@ -116,6 +138,24 @@ public partial class DashboardViewModel : MonthNavigationViewModel
         KategorieAusgaben = new ObservableCollection<CategorySummary>(data.KategorieAusgaben);
         KategorieEinnahmen = new ObservableCollection<CategorySummary>(data.KategorieEinnahmen);
 
+        // Vormonatsvergleich für Trend-Indikator
+        var prevMonth = AktuellerMonat.AddMonths(-1);
+        var prevData = await _loadDashboardMonthUseCase.ExecuteAsync(prevMonth, _clock.Today);
+        if (prevData.GesamtAusgaben > 0)
+        {
+            var pct = (GesamtAusgaben - prevData.GesamtAusgaben) / prevData.GesamtAusgaben * 100;
+            TrendProzent = pct;
+            TrendPositiv = pct < 0; // weniger Ausgaben = positiv (grün)
+            TrendText = pct >= 0
+                ? $"↑ +{pct:F0} %"
+                : $"↓ {pct:F0} %";
+        }
+        else
+        {
+            TrendProzent = null;
+            TrendText = string.Empty;
+        }
+
         // Load forecast for current month only (not for past/future navigation)
         var today = _clock.Today;
         var isCurrentMonth = AktuellerMonat.Year == today.Year && AktuellerMonat.Month == today.Month;
@@ -138,6 +178,35 @@ public partial class DashboardViewModel : MonthNavigationViewModel
         JahrGesamtAusgaben = data.GesamtAusgaben;
         JahrMonate = data.Monate;
         JahrKategorien = new ObservableCollection<CategorySummary>(data.Kategorien);
+
+        // Monatliches Gesamtbudget für Budget-Referenzlinie im Bar-Chart
+        var budgets = await _budgetRepository.GetBudgetsAsync();
+        JahrBudgetTotal = budgets
+            .Where(b => b.Monat == null && b.Jahr == null && b.Betrag > 0)
+            .Sum(b => b.Betrag);
+
+        // Forecast-Balken für nächsten Monat (nur im aktuellen Jahr)
+        var today = _clock.Today;
+        if (_aktuellesJahr == today.Year)
+        {
+            var nextMonth = new DateTime(today.Year, today.Month, 1).AddMonths(1);
+            if (nextMonth.Year == _aktuellesJahr)
+            {
+                var forecast = await _loadForecastUseCase.ExecuteAsync(nextMonth.Year, nextMonth.Month);
+                ForecastBarMonth = nextMonth.Month;
+                ForecastBarValue = forecast.ForecastedTotal;
+            }
+            else
+            {
+                ForecastBarMonth = 0;
+                ForecastBarValue = 0;
+            }
+        }
+        else
+        {
+            ForecastBarMonth = 0;
+            ForecastBarValue = 0;
+        }
     }
 
     [RelayCommand]
