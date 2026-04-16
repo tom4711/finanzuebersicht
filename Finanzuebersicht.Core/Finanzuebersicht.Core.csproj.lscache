@@ -75,9 +75,11 @@ obj/Debug/net10.0/
  Finanzuebersicht.Core.Version.cs
 Services/
  AppPaths.cs
+ BackupArchiveData.cs
  BackupMetadata.cs
  BackupService.cs
  CategorizationService.cs
+ DataMigrationService.cs
  DataServiceFacade.cs
  DkbCsvParser.cs
  FileLogger.cs
@@ -88,6 +90,7 @@ Services/
  ICategorizationStrategy.cs
  ICategoryRepository.cs
  IClock.cs
+ IDataMigrator.cs
  IDataService.cs
  IForecastService.cs
  ImportService.cs
@@ -100,6 +103,7 @@ Services/
  ITransactionRepository.cs
  ITransactionValidationService.cs
  KeywordCategorizationStrategy.cs
+ Migrations/V1ToV2Migrator.cs
  RecurringGenerationService.cs
  ReportingService.cs
  SettingsKeys.cs

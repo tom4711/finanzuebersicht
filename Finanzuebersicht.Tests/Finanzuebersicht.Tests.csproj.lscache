@@ -99,6 +99,7 @@ Services/
  BudgetStoreTests.cs
  CategorizationTests.cs
  DataConsistencyFlowIntegrationTests.cs
+ DataMigrationTests.cs
  DkbCsvParserTests.cs
  ForecastServiceTests.cs
  ImportServiceTests.cs

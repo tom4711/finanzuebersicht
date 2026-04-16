@@ -1,5 +1,6 @@
 using Xunit;
 using Finanzuebersicht.Core.Services;
+using Finanzuebersicht.Core.Services.Migrations;
 using Finanzuebersicht.Models;
 using Finanzuebersicht.Services;
 using System.IO.Compression;
@@ -41,7 +42,7 @@ namespace Finanzuebersicht.Tests.Services
         public async Task CreateBackupAsync_CreatesValidZipFile()
         {
             // Arrange
-            var service = new BackupService(_mockDataService, _mockSettingsService);
+            var service = new BackupService(_mockDataService, _mockSettingsService, new DataMigrationService([new V1ToV2Migrator()]));
             _mockDataService.SetCategories(new[]
             {
                 new Category { Id = "cat1", Name = "Test", Icon = "🏠", Color = "#000" }
@@ -66,7 +67,7 @@ namespace Finanzuebersicht.Tests.Services
         public async Task CreateBackupAsync_ZipContainsAllRequiredFiles()
         {
             // Arrange
-            var service = new BackupService(_mockDataService, _mockSettingsService);
+            var service = new BackupService(_mockDataService, _mockSettingsService, new DataMigrationService([new V1ToV2Migrator()]));
             _mockDataService.SetCategories(new[] { new Category { Id = "1", Name = "Test", Icon = "🏠", Color = "#000" } });
 
             // Act
@@ -87,7 +88,7 @@ namespace Finanzuebersicht.Tests.Services
         public async Task CreateBackupAsync_MetadataHasCorrectEntityCounts()
         {
             // Arrange
-            var service = new BackupService(_mockDataService, _mockSettingsService);
+            var service = new BackupService(_mockDataService, _mockSettingsService, new DataMigrationService([new V1ToV2Migrator()]));
             var categories = new[] { 
                 new Category { Id = "1", Name = "Cat1", Icon = "🏠", Color = "#000" },
                 new Category { Id = "2", Name = "Cat2", Icon = "🛒", Color = "#111" }
@@ -118,7 +119,7 @@ namespace Finanzuebersicht.Tests.Services
         public async Task ListBackupsAsync_ReturnsBackupsInReverseChronologicalOrder()
         {
             // Arrange
-            var service = new BackupService(_mockDataService, _mockSettingsService);
+            var service = new BackupService(_mockDataService, _mockSettingsService, new DataMigrationService([new V1ToV2Migrator()]));
             _mockDataService.SetCategories(new[] { new Category { Id = "1", Name = "Test", Icon = "🏠", Color = "#000" } });
 
             // Create backups with small delays
@@ -138,7 +139,7 @@ namespace Finanzuebersicht.Tests.Services
         public async Task ListBackupsAsync_ReturnsEmptyWhenDirectoryDoesNotExist()
         {
             // Arrange
-            var service = new BackupService(_mockDataService, _mockSettingsService);
+            var service = new BackupService(_mockDataService, _mockSettingsService, new DataMigrationService([new V1ToV2Migrator()]));
             var nonExistentPath = Path.Combine(_testBackupDir, "nonexistent");
 
             // Act
@@ -152,7 +153,7 @@ namespace Finanzuebersicht.Tests.Services
         public async Task RestoreBackupAsync_FailsWhenFileDoesNotExist()
         {
             // Arrange
-            var service = new BackupService(_mockDataService, _mockSettingsService);
+            var service = new BackupService(_mockDataService, _mockSettingsService, new DataMigrationService([new V1ToV2Migrator()]));
 
             // Act
             var result = await service.RestoreBackupAsync(_testBackupDir, "nonexistent_id");
@@ -166,7 +167,7 @@ namespace Finanzuebersicht.Tests.Services
         public async Task RestoreBackupAsync_ValidatesZipIntegrity()
         {
             // Arrange
-            var service = new BackupService(_mockDataService, _mockSettingsService);
+            var service = new BackupService(_mockDataService, _mockSettingsService, new DataMigrationService([new V1ToV2Migrator()]));
             var corruptedZipPath = Path.Combine(_testBackupDir, "backup_corrupted.zip");
             File.WriteAllText(corruptedZipPath, "This is not a valid ZIP file");
 
@@ -182,7 +183,7 @@ namespace Finanzuebersicht.Tests.Services
         public async Task RestoreBackupAsync_DetectsMissingRequiredFiles()
         {
             // Arrange
-            var service = new BackupService(_mockDataService, _mockSettingsService);
+            var service = new BackupService(_mockDataService, _mockSettingsService, new DataMigrationService([new V1ToV2Migrator()]));
             var incompleteZipPath = Path.Combine(_testBackupDir, "backup_incomplete.zip");
 
             // Create incomplete ZIP (missing files)
@@ -208,7 +209,7 @@ namespace Finanzuebersicht.Tests.Services
         public async Task RestoreBackupAsync_ValidatesSchemaVersion()
         {
             // Arrange
-            var service = new BackupService(_mockDataService, _mockSettingsService);
+            var service = new BackupService(_mockDataService, _mockSettingsService, new DataMigrationService([new V1ToV2Migrator()]));
             var wrongVersionZipPath = Path.Combine(_testBackupDir, "backup_wrongversion.zip");
 
             // Create backup with wrong schema version
@@ -241,7 +242,7 @@ namespace Finanzuebersicht.Tests.Services
         public async Task ExportAsCSVAsync_CreatesValidCsvStream()
         {
             // Arrange
-            var service = new BackupService(_mockDataService, _mockSettingsService);
+            var service = new BackupService(_mockDataService, _mockSettingsService, new DataMigrationService([new V1ToV2Migrator()]));
             var categories = new[] { new Category { Id = "1", Name = "Lebensmittel", Icon = "🛒", Color = "#000" } };
             var transactions = new[] {
                 new Transaction { Id = "t1", Titel = "Supermarkt", Betrag = 50.50m, Datum = new DateTime(2026, 3, 11), 
@@ -270,7 +271,7 @@ namespace Finanzuebersicht.Tests.Services
         public async Task ExportAsCSVAsync_EscapesCsvSpecialCharacters()
         {
             // Arrange
-            var service = new BackupService(_mockDataService, _mockSettingsService);
+            var service = new BackupService(_mockDataService, _mockSettingsService, new DataMigrationService([new V1ToV2Migrator()]));
             var categories = new[] { new Category { Id = "1", Name = "Test", Icon = "🏠", Color = "#000" } };
             var transactions = new[] {
                 new Transaction { Id = "t1", Titel = "Titel \"mit Anführungszeichen\"", Betrag = 100m, 
@@ -295,7 +296,7 @@ namespace Finanzuebersicht.Tests.Services
         public async Task DeleteBackupAsync_RemovesBackupFile()
         {
             // Arrange
-            var service = new BackupService(_mockDataService, _mockSettingsService);
+            var service = new BackupService(_mockDataService, _mockSettingsService, new DataMigrationService([new V1ToV2Migrator()]));
             _mockDataService.SetCategories(new[] { new Category { Id = "1", Name = "Test", Icon = "🏠", Color = "#000" } });
             var metadata = await service.CreateBackupAsync(_testBackupDir);
             var zipPath = Path.Combine(_testBackupDir, metadata.FileName);
