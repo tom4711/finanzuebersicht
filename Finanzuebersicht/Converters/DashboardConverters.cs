@@ -130,8 +130,10 @@ public class TrendColorConverter : IValueConverter
 {
     public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
         => value is true
-            ? Color.FromArgb("#34C759")   // positiver Trend → grün
-            : Color.FromArgb("#FF3B30");  // negativer Trend → rot
+            ? ColorResourceHelper.GetThemeColor("Einnahme", "EinnahmeDark",
+                Color.FromArgb("#34C759"), Color.FromArgb("#30D158"))
+            : ColorResourceHelper.GetThemeColor("Ausgabe", "AusgabeDark",
+                Color.FromArgb("#FF3B30"), Color.FromArgb("#FF453A"));
 
     public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
         => throw new NotImplementedException();

@@ -8,7 +8,8 @@ namespace Finanzuebersicht.Charts;
 
 /// <summary>
 /// Zeichnet ein Balkendiagramm für den 12-Monats-Verlauf mit MAUI Graphics.
-/// Unterstützt Forecast-Balken (gestrichelt) und Budget-Referenzlinie.
+/// Unterstützt einen semi-transparenten Forecast-Balken mit "~"-Kennzeichnung
+/// und eine Budget-Referenzlinie.
 /// </summary>
 public class BarChartDrawable : IDrawable
 {
@@ -16,16 +17,17 @@ public class BarChartDrawable : IDrawable
         ["J", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"];
 
     private static Color BarColor =>
-        ColorResourceHelper.GetThemeColor("Primary", "Primary",
+        ColorResourceHelper.GetThemeColor("Primary", "PrimaryDark",
             Color.FromArgb("#007AFF"), Color.FromArgb("#0A84FF"));
 
     private static Color BarColorForecast =>
-        ColorResourceHelper.GetThemeColor("Primary", "Primary",
+        ColorResourceHelper.GetThemeColor("Primary", "PrimaryDark",
             Color.FromArgb("#007AFF"), Color.FromArgb("#0A84FF"))
         .WithAlpha(0.35f);
 
     private static Color HighlightColor =>
-        Color.FromArgb("#FF3B30");
+        ColorResourceHelper.GetThemeColor("Ausgabe", "AusgabeDark",
+            Color.FromArgb("#FF3B30"), Color.FromArgb("#FF453A"));
 
     private static Color TextColor =>
         ColorResourceHelper.GetThemeColor("Gray600", "Gray400",
@@ -65,9 +67,11 @@ public class BarChartDrawable : IDrawable
         float chartWidth = dirtyRect.Width - paddingLeft - paddingRight;
         float chartHeight = dirtyRect.Height - paddingTop - paddingBottom;
 
-        // Max-Wert berücksichtigt Forecast und Budget für korrekte Skalierung
+        // Max-Wert: Forecast nur einberechnen wenn er tatsächlich gezeichnet wird
         decimal maxVal = Months.Count > 0 ? Months.Max(m => m.Total) : 0;
-        if (ForecastMonth > 0) maxVal = Math.Max(maxVal, ForecastValue);
+        var forecastMonthActual = Months.FirstOrDefault(m => m.Month == ForecastMonth)?.Total ?? 0;
+        bool showForecast = ForecastMonth > 0 && ForecastValue > 0 && forecastMonthActual == 0;
+        if (showForecast) maxVal = Math.Max(maxVal, ForecastValue);
         if (MonthlyBudgetTotal > 0) maxVal = Math.Max(maxVal, MonthlyBudgetTotal);
         if (maxVal <= 0) maxVal = 1;
 
@@ -96,7 +100,7 @@ public class BarChartDrawable : IDrawable
         for (int i = 0; i < 12; i++)
         {
             var month = Months.FirstOrDefault(m => m.Month == i + 1);
-            bool isForecast = (i + 1) == ForecastMonth && ForecastValue > 0 && (month?.Total ?? 0) == 0;
+            bool isForecast = showForecast && (i + 1) == ForecastMonth;
             decimal value = isForecast ? ForecastValue : (month?.Total ?? 0);
 
             float x = paddingLeft + i * barWidth + barSpacing / 2;

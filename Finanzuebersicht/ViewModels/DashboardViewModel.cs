@@ -179,7 +179,9 @@ public partial class DashboardViewModel : MonthNavigationViewModel
         JahrMonate = data.Monate;
         JahrKategorien = new ObservableCollection<CategorySummary>(data.Kategorien);
 
-        // Monatliches Gesamtbudget für Budget-Referenzlinie im Bar-Chart
+        // Summe der Default-Kategorie-Budgets (monat=null, jahr=null) als Referenzlinie
+        // Hinweis: Monat- oder jahresspezifische Budget-Overrides werden bewusst nicht einberechnet,
+        // da die Linie einen stabilen Jahres-Richtwert darstellen soll.
         var budgets = await _budgetRepository.GetBudgetsAsync();
         JahrBudgetTotal = budgets
             .Where(b => b.Monat == null && b.Jahr == null && b.Betrag > 0)

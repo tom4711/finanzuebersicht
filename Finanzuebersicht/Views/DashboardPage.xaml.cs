@@ -25,6 +25,9 @@ public partial class DashboardPage : ContentPage
         _monthDonut.Items = _vm.KategorieAusgaben;
         _yearBar.Months = _vm.JahrMonate;
         _yearBar.CurrentMonth = _vm.IsYearView ? 0 : _vm.AktuellerMonat.Month;
+        _yearBar.MonthlyBudgetTotal = _vm.JahrBudgetTotal;
+        _yearBar.ForecastMonth = _vm.ForecastBarMonth;
+        _yearBar.ForecastValue = _vm.ForecastBarValue;
         _yearDonut.Items = _vm.JahrKategorien;
 
         _vm.PropertyChanged += OnViewModelPropertyChanged;
