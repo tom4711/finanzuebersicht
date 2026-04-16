@@ -96,7 +96,7 @@ public class BarChartDrawable : IDrawable
         for (int i = 0; i < 12; i++)
         {
             var month = Months.FirstOrDefault(m => m.Month == i + 1);
-            bool isForecast = (i + 1) == ForecastMonth && month == null;
+            bool isForecast = (i + 1) == ForecastMonth && ForecastValue > 0 && (month?.Total ?? 0) == 0;
             decimal value = isForecast ? ForecastValue : (month?.Total ?? 0);
 
             float x = paddingLeft + i * barWidth + barSpacing / 2;
