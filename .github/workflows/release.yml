@@ -1,0 +1,142 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v[0-9]*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag (e.g. v1.0.0)'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  build-maccatalyst:
+    name: Build macOS (Mac Catalyst)
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.inputs.tag || github.ref }}
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: '10.0.100'
+
+      - name: Install .NET MAUI workloads
+        run: dotnet workload install maui-maccatalyst maui-ios --skip-manifest-update
+
+      - name: Restore dependencies
+        run: dotnet restore Finanzuebersicht/Finanzuebersicht.csproj
+
+      - name: Build Mac Catalyst (unsigned)
+        run: |
+          cd Finanzuebersicht
+          dotnet build -f net10.0-maccatalyst \
+            -c Debug \
+            -p:ValidateXcodeVersion=false \
+            -p:CodesignKey="" \
+            -p:CodesignProvision="" \
+            -p:MtouchLink=SdkOnly \
+            -p:UseInterpreter=true \
+            -p:EnableILLink=false
+
+      - name: Resolve tag name
+        id: tag
+        shell: bash
+        run: |
+          TAG="${{ github.event.inputs.tag || github.ref_name }}"
+          echo "name=${TAG}" >> "$GITHUB_OUTPUT"
+
+      - name: Pack macOS artifact
+        shell: bash
+        run: |
+          cd Finanzuebersicht/bin/Debug
+          zip -r "../../Finanzuebersicht-${{ steps.tag.outputs.name }}-maccatalyst.zip" net10.0-maccatalyst
+
+      - name: Upload macOS package
+        uses: actions/upload-artifact@v7
+        with:
+          name: release-maccatalyst
+          path: Finanzuebersicht/Finanzuebersicht-${{ steps.tag.outputs.name }}-maccatalyst.zip
+          if-no-files-found: error
+          retention-days: 30
+
+  build-windows:
+    name: Build Windows
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.inputs.tag || github.ref }}
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: '10.0.100'
+
+      - name: Install .NET MAUI workloads
+        run: dotnet workload install maui-windows maui-ios maui-maccatalyst --skip-manifest-update
+
+      - name: Restore dependencies
+        run: dotnet restore Finanzuebersicht/Finanzuebersicht.csproj
+
+      - name: Build Windows
+        run: |
+          cd Finanzuebersicht
+          dotnet build -f net10.0-windows10.0.19041.0 -c Release
+
+      - name: Resolve tag name
+        id: tag
+        shell: pwsh
+        run: |
+          $tag = if ("${{ github.event.inputs.tag }}") { "${{ github.event.inputs.tag }}" } else { "${{ github.ref_name }}" }
+          echo "name=$tag" >> $env:GITHUB_OUTPUT
+
+      - name: Pack Windows artifact
+        shell: pwsh
+        run: |
+          Compress-Archive -Path "Finanzuebersicht/bin/Release/net10.0-windows10.0.19041.0/*" `
+            -DestinationPath "Finanzuebersicht/Finanzuebersicht-${{ steps.tag.outputs.name }}-windows.zip" -Force
+
+      - name: Upload Windows package
+        uses: actions/upload-artifact@v7
+        with:
+          name: release-windows
+          path: Finanzuebersicht/Finanzuebersicht-${{ steps.tag.outputs.name }}-windows.zip
+          if-no-files-found: error
+          retention-days: 30
+
+  publish-release:
+    name: Attach artifacts to GitHub Release
+    runs-on: ubuntu-latest
+    needs: [build-maccatalyst, build-windows]
+    steps:
+      - name: Resolve tag name
+        id: tag
+        shell: bash
+        run: |
+          TAG="${{ github.event.inputs.tag || github.ref_name }}"
+          echo "name=${TAG}" >> "$GITHUB_OUTPUT"
+
+      - name: Download packaged artifacts
+        uses: actions/download-artifact@v8
+        with:
+          path: dist
+
+      - name: Attach artifacts to release
+        uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ steps.tag.outputs.name }}
+          allowUpdates: true
+          omitBody: true
+          omitName: true
+          prerelease: false
+          artifacts: "dist/**/*.zip"
