@@ -12,6 +12,7 @@ public partial class DashboardViewModel : MonthNavigationViewModel
     private readonly LoadDashboardYearUseCase _loadDashboardYearUseCase;
     private readonly LoadForecastUseCase _loadForecastUseCase;
     private readonly IBudgetRepository _budgetRepository;
+    private readonly IReportingService _reportingService;
     private readonly IClock _clock;
 
     // --- Monatsansicht ---
@@ -92,6 +93,7 @@ public partial class DashboardViewModel : MonthNavigationViewModel
         LoadDashboardYearUseCase loadDashboardYearUseCase,
         LoadForecastUseCase loadForecastUseCase,
         IBudgetRepository budgetRepository,
+        IReportingService reportingService,
         IClock? clock = null) : base(clock)
     {
         _clock = clock ?? SystemClock.Instance;
@@ -100,6 +102,7 @@ public partial class DashboardViewModel : MonthNavigationViewModel
         _loadDashboardYearUseCase = loadDashboardYearUseCase;
         _loadForecastUseCase = loadForecastUseCase;
         _budgetRepository = budgetRepository;
+        _reportingService = reportingService;
         UpdateJahrAnzeige();
     }
 
@@ -138,12 +141,12 @@ public partial class DashboardViewModel : MonthNavigationViewModel
         KategorieAusgaben = new ObservableCollection<CategorySummary>(data.KategorieAusgaben);
         KategorieEinnahmen = new ObservableCollection<CategorySummary>(data.KategorieEinnahmen);
 
-        // Vormonatsvergleich für Trend-Indikator
+        // Vormonatsvergleich: nur Gesamt-Ausgaben via ReportingService (keine Kategorien nötig)
         var prevMonth = AktuellerMonat.AddMonths(-1);
-        var prevData = await _loadDashboardMonthUseCase.ExecuteAsync(prevMonth, _clock.Today);
-        if (prevData.GesamtAusgaben > 0)
+        var prevSummary = await _reportingService.GetMonthSummaryAsync(prevMonth.Year, prevMonth.Month);
+        if (prevSummary.Total > 0)
         {
-            var pct = (GesamtAusgaben - prevData.GesamtAusgaben) / prevData.GesamtAusgaben * 100;
+            var pct = (GesamtAusgaben - prevSummary.Total) / prevSummary.Total * 100;
             TrendProzent = pct;
             TrendPositiv = pct < 0; // weniger Ausgaben = positiv (grün)
             TrendText = pct >= 0
@@ -153,6 +156,7 @@ public partial class DashboardViewModel : MonthNavigationViewModel
         else
         {
             TrendProzent = null;
+            TrendPositiv = false;
             TrendText = string.Empty;
         }
 

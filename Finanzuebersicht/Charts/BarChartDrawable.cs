@@ -1,8 +1,10 @@
 using Finanzuebersicht.Converters;
 using Finanzuebersicht.Models;
+using Microsoft.Maui.Controls;
 using Microsoft.Maui.Graphics;
 using System.Collections.Generic;
 using System.Linq;
+using MauiApplication = Microsoft.Maui.Controls.Application;
 
 namespace Finanzuebersicht.Charts;
 
@@ -16,30 +18,34 @@ public class BarChartDrawable : IDrawable
     private static readonly string[] MonthLabels =
         ["J", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"];
 
-    private static Color BarColor =>
-        ColorResourceHelper.GetThemeColor("Primary", "PrimaryDark",
+    // Theme-Farben werden pro Draw gecacht und nur bei Theme-Wechsel neu aufgelöst
+    private static AppTheme _cachedTheme = AppTheme.Unspecified;
+    private static Color _cachedBarColor = Color.FromArgb("#007AFF");
+    private static Color _cachedBarColorForecast = Color.FromArgb("#007AFF").WithAlpha(0.35f);
+    private static Color _cachedHighlightColor = Color.FromArgb("#FF3B30");
+    private static Color _cachedTextColor = Color.FromArgb("#8E8E93");
+    private static Color _cachedGridColor = Color.FromArgb("#E5E5EA");
+    private static Color _cachedBudgetLineColor = Color.FromArgb("#AEAEB2");
+
+    private static void EnsureThemeColors()
+    {
+        var currentTheme = MauiApplication.Current?.RequestedTheme ?? AppTheme.Unspecified;
+        if (currentTheme == _cachedTheme) return;
+
+        var barColor = ColorResourceHelper.GetThemeColor("Primary", "PrimaryDark",
             Color.FromArgb("#007AFF"), Color.FromArgb("#0A84FF"));
-
-    private static Color BarColorForecast =>
-        ColorResourceHelper.GetThemeColor("Primary", "PrimaryDark",
-            Color.FromArgb("#007AFF"), Color.FromArgb("#0A84FF"))
-        .WithAlpha(0.35f);
-
-    private static Color HighlightColor =>
-        ColorResourceHelper.GetThemeColor("Ausgabe", "AusgabeDark",
+        _cachedBarColor = barColor;
+        _cachedBarColorForecast = barColor.WithAlpha(0.35f);
+        _cachedHighlightColor = ColorResourceHelper.GetThemeColor("Ausgabe", "AusgabeDark",
             Color.FromArgb("#FF3B30"), Color.FromArgb("#FF453A"));
-
-    private static Color TextColor =>
-        ColorResourceHelper.GetThemeColor("Gray600", "Gray400",
+        _cachedTextColor = ColorResourceHelper.GetThemeColor("Gray600", "Gray400",
             Color.FromArgb("#8E8E93"), Color.FromArgb("#AEAEB2"));
-
-    private static Color GridColor =>
-        ColorResourceHelper.GetThemeColor("Gray200", "Gray700",
+        _cachedGridColor = ColorResourceHelper.GetThemeColor("Gray200", "Gray700",
             Color.FromArgb("#E5E5EA"), Color.FromArgb("#3A3A3C"));
-
-    private static Color BudgetLineColor =>
-        ColorResourceHelper.GetThemeColor("Gray500", "Gray400",
+        _cachedBudgetLineColor = ColorResourceHelper.GetThemeColor("Gray500", "Gray400",
             Color.FromArgb("#AEAEB2"), Color.FromArgb("#636366"));
+        _cachedTheme = currentTheme;
+    }
 
     public IReadOnlyList<MonthSummary> Months { get; set; } = [];
     public int CurrentMonth { get; set; } = Finanzuebersicht.Core.Services.SystemClock.Instance.Today.Month;
@@ -50,13 +56,16 @@ public class BarChartDrawable : IDrawable
     /// <summary>Forecast-Betrag für den Forecast-Balken.</summary>
     public decimal ForecastValue { get; set; }
 
-    /// <summary>Monatliches Gesamtbudget als horizontale Referenzlinie, 0 = keine Linie.</summary>
+    /// <summary>Monatliches Default-Gesamtbudget als horizontale Referenzlinie, 0 = keine Linie.</summary>
     public decimal MonthlyBudgetTotal { get; set; }
 
     public void Draw(ICanvas canvas, RectF dirtyRect)
     {
-        if (Months.Count == 0 && ForecastMonth == 0) return;
+        bool hasForecastOverlay = ForecastMonth > 0 && ForecastValue > 0;
+        bool hasBudgetOverlay = MonthlyBudgetTotal > 0;
+        if (Months.Count == 0 && !hasForecastOverlay && !hasBudgetOverlay) return;
 
+        EnsureThemeColors();
         canvas.Antialias = true;
 
         float paddingLeft = 8f;
@@ -70,7 +79,7 @@ public class BarChartDrawable : IDrawable
         // Max-Wert: Forecast nur einberechnen wenn er tatsächlich gezeichnet wird
         decimal maxVal = Months.Count > 0 ? Months.Max(m => m.Total) : 0;
         var forecastMonthActual = Months.FirstOrDefault(m => m.Month == ForecastMonth)?.Total ?? 0;
-        bool showForecast = ForecastMonth > 0 && ForecastValue > 0 && forecastMonthActual == 0;
+        bool showForecast = hasForecastOverlay && forecastMonthActual == 0;
         if (showForecast) maxVal = Math.Max(maxVal, ForecastValue);
         if (MonthlyBudgetTotal > 0) maxVal = Math.Max(maxVal, MonthlyBudgetTotal);
         if (maxVal <= 0) maxVal = 1;
@@ -81,7 +90,7 @@ public class BarChartDrawable : IDrawable
         float baseY = paddingTop + chartHeight;
 
         // Horizontale Basislinie
-        canvas.StrokeColor = GridColor;
+        canvas.StrokeColor = _cachedGridColor;
         canvas.StrokeSize = 1f;
         canvas.StrokeDashPattern = null;
         canvas.DrawLine(paddingLeft, baseY, paddingLeft + chartWidth, baseY);
@@ -90,7 +99,7 @@ public class BarChartDrawable : IDrawable
         if (MonthlyBudgetTotal > 0)
         {
             float budgetY = paddingTop + chartHeight * (1f - (float)((double)MonthlyBudgetTotal / (double)maxVal));
-            canvas.StrokeColor = BudgetLineColor;
+            canvas.StrokeColor = _cachedBudgetLineColor;
             canvas.StrokeSize = 1.5f;
             canvas.StrokeDashPattern = [4f, 4f];
             canvas.DrawLine(paddingLeft, budgetY, paddingLeft + chartWidth, budgetY);
@@ -113,18 +122,18 @@ public class BarChartDrawable : IDrawable
                 var rect = new RectF(x, y, actualBarWidth, barHeight);
 
                 if (isForecast)
-                    canvas.FillColor = BarColorForecast;
+                    canvas.FillColor = _cachedBarColorForecast;
                 else if (isCurrent)
-                    canvas.FillColor = HighlightColor;
+                    canvas.FillColor = _cachedHighlightColor;
                 else
-                    canvas.FillColor = BarColor;
+                    canvas.FillColor = _cachedBarColor;
 
                 canvas.FillRoundedRectangle(rect, 3);
 
                 // Forecast-Tilde-Symbol oben
                 if (isForecast)
                 {
-                    canvas.FontColor = BarColor;
+                    canvas.FontColor = _cachedBarColor;
                     canvas.FontSize = 9f;
                     canvas.DrawString("~", x, y - 13, actualBarWidth, 13,
                         HorizontalAlignment.Center, VerticalAlignment.Bottom);
@@ -132,7 +141,7 @@ public class BarChartDrawable : IDrawable
             }
 
             // Monatskürzel
-            canvas.FontColor = isCurrent ? HighlightColor : TextColor;
+            canvas.FontColor = isCurrent ? _cachedHighlightColor : _cachedTextColor;
             canvas.FontSize = 10f;
             canvas.DrawString(MonthLabels[i],
                 x, baseY + 3, actualBarWidth, paddingBottom - 4,
