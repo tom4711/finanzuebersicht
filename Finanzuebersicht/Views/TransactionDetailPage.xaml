@@ -29,7 +29,7 @@
                 <Entry Text="{Binding BetragText}" Placeholder="{loc:Translate Hint_Betrag}"
                        Keyboard="Numeric" FontSize="28" FontAttributes="Bold"
                        HorizontalTextAlignment="Center"
-                       SemanticProperties.Hint="{loc:Translate Hint_Betrag}" />
+                       SemanticProperties.Hint="{loc:Translate A11y_HintBetrag}" />
             </VerticalStackLayout>
 
             <!-- Titel -->
@@ -37,7 +37,7 @@
                 <Label Text="{loc:Translate Lbl_Titel}" FontSize="13" TextColor="Gray" />
                 <Entry Text="{Binding Titel}" Placeholder="{loc:Translate Hint_Beschreibung}"
                        FontSize="16"
-                       SemanticProperties.Hint="{loc:Translate Hint_Beschreibung}" />
+                       SemanticProperties.Hint="{loc:Translate A11y_HintTitel}" />
             </VerticalStackLayout>
 
             <!-- Verwendungszweck -->

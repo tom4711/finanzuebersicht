@@ -206,4 +206,7 @@ public static class ResourceKeys
     public const string A11y_BudgetBalken = nameof(A11y_BudgetBalken);
     public const string A11y_SparZielBalken = nameof(A11y_SparZielBalken);
     public const string A11y_Einstellungen = nameof(A11y_Einstellungen);
+    public const string A11y_HintBetrag = nameof(A11y_HintBetrag);
+    public const string A11y_HintTitel = nameof(A11y_HintTitel);
+    public const string A11y_HintBudget = nameof(A11y_HintBudget);
 }
