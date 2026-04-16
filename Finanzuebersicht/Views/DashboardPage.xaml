@@ -63,6 +63,7 @@
                         <Button Grid.Column="0" Text="{loc:Translate Btn_Prev}" FontSize="28"
                             BackgroundColor="Transparent" TextColor="#007AFF"
                             Command="{Binding PreviousMonthCommand}"
+                            SemanticProperties.Description="{loc:Translate A11y_VorherigerMonat}"
                             WidthRequest="44" />
                     <VerticalStackLayout Grid.Column="1" HorizontalOptions="Center" VerticalOptions="Center">
                         <Label Text="{Binding MonatAnzeige}"
@@ -75,6 +76,7 @@
                         <Button Grid.Column="2" Text="{loc:Translate Btn_Next}" FontSize="28"
                             BackgroundColor="Transparent" TextColor="#007AFF"
                             Command="{Binding NextMonthCommand}"
+                            SemanticProperties.Description="{loc:Translate A11y_NaechsterMonat}"
                             WidthRequest="44" />
                 </Grid>
 
@@ -120,6 +122,7 @@
                 <!-- Ausgaben nach Kategorie -->
                   <Label Text="{loc:Translate Lbl_AusgabenNachKategorie}" FontSize="18" FontAttributes="Bold"
                       Margin="0,8,0,0"
+                      SemanticProperties.HeadingLevel="Level2"
                       IsVisible="{Binding KategorieAusgaben, Converter={StaticResource CountToBool}}" />
 
                 <!-- Donut-Diagramm Monatsausgaben -->
@@ -151,6 +154,7 @@
                                         Progress="{Binding BudgetAusgeschoepft, Converter={StaticResource ProzentToWidth}}"
                                         ProgressColor="{Binding IstUeberBudget, Converter={StaticResource BudgetProgressColor}}"
                                         BackgroundColor="{AppThemeBinding Light=#E5E5EA, Dark=#3A3A3C}"
+                                        SemanticProperties.Description="{loc:Translate A11y_BudgetBalken}"
                                         VerticalOptions="Center" />
                                     <!-- Über Budget: rote Warnung mit Überschreitungsbetrag -->
                                     <Grid ColumnDefinitions="Auto, *, Auto, Auto"
@@ -187,6 +191,7 @@
                 <!-- Einnahmen nach Kategorie -->
                   <Label Text="{loc:Translate Lbl_EinnahmenNachKategorie}" FontSize="18" FontAttributes="Bold"
                       Margin="0,8,0,0"
+                      SemanticProperties.HeadingLevel="Level2"
                       IsVisible="{Binding KategorieEinnahmen, Converter={StaticResource CountToBool}}" />
 
                 <CollectionView ItemsSource="{Binding KategorieEinnahmen}"
@@ -242,6 +247,7 @@
                         <Button Grid.Column="0" Text="{loc:Translate Btn_Prev}" FontSize="28"
                             BackgroundColor="Transparent" TextColor="#007AFF"
                             Command="{Binding PreviousYearCommand}"
+                            SemanticProperties.Description="{loc:Translate A11y_VorherigesJahr}"
                             WidthRequest="44" />
                     <Label Grid.Column="1" Text="{Binding JahrAnzeige}"
                            FontSize="20" FontAttributes="Bold"
@@ -249,6 +255,7 @@
                         <Button Grid.Column="2" Text="{loc:Translate Btn_Next}" FontSize="28"
                             BackgroundColor="Transparent" TextColor="#007AFF"
                             Command="{Binding NextYearCommand}"
+                            SemanticProperties.Description="{loc:Translate A11y_NaechstesJahr}"
                             WidthRequest="44" />
                 </Grid>
 
@@ -265,6 +272,7 @@
                 <!-- Balkendiagramm Monatsvergleich -->
                   <Label Text="{loc:Translate Lbl_AusgabenProMonat}" FontSize="18" FontAttributes="Bold"
                       Margin="0,8,0,0"
+                      SemanticProperties.HeadingLevel="Level2"
                       IsVisible="{Binding JahrMonate, Converter={StaticResource CountToBool}}" />
 
                 <GraphicsView x:Name="YearBarChart"
@@ -275,6 +283,7 @@
                 <!-- Kategorien im Jahr -->
                   <Label Text="{loc:Translate Lbl_AusgabenNachKategorie}" FontSize="18" FontAttributes="Bold"
                       Margin="0,8,0,0"
+                      SemanticProperties.HeadingLevel="Level2"
                       IsVisible="{Binding JahrKategorien, Converter={StaticResource CountToBool}}" />
 
                 <!-- Donut-Diagramm Jahreskategorien -->

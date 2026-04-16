@@ -23,6 +23,7 @@
                 <Button Grid.Column="0" Text="{loc:Translate Btn_Prev}" FontSize="28"
                     BackgroundColor="Transparent" TextColor="#007AFF"
                     Command="{Binding PreviousMonthCommand}"
+                    SemanticProperties.Description="{loc:Translate A11y_VorherigerMonat}"
                     WidthRequest="44" />
             <Label Grid.Column="1" Text="{Binding MonatAnzeige}"
                    FontSize="18" FontAttributes="Bold"
@@ -30,6 +31,7 @@
                 <Button Grid.Column="2" Text="{loc:Translate Btn_Next}" FontSize="28"
                     BackgroundColor="Transparent" TextColor="#007AFF"
                     Command="{Binding NextMonthCommand}"
+                    SemanticProperties.Description="{loc:Translate A11y_NaechsterMonat}"
                     WidthRequest="44" />
         </Grid>
 
@@ -121,6 +123,7 @@
                     CornerRadius="28"
                     WidthRequest="56" HeightRequest="56"
                     HorizontalOptions="End" VerticalOptions="End"
+                    SemanticProperties.Description="{loc:Translate A11y_TransaktionHinzufuegen}"
                     Shadow="{Shadow Brush='#40000000', Offset='0,4', Radius=8}"
                     Command="{Binding GoToDetailCommand}" />
         </Grid>

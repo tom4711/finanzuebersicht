@@ -193,4 +193,17 @@ public static class ResourceKeys
     public const string Empty_KeineSparZiele = nameof(Empty_KeineSparZiele);
     public const string Btn_NeuesZiel = nameof(Btn_NeuesZiel);
     public const string Btn_ZielHinzufuegen = nameof(Btn_ZielHinzufuegen);
+
+    // Accessibility
+    public const string A11y_VorherigerMonat = nameof(A11y_VorherigerMonat);
+    public const string A11y_NaechsterMonat = nameof(A11y_NaechsterMonat);
+    public const string A11y_VorherigesJahr = nameof(A11y_VorherigesJahr);
+    public const string A11y_NaechstesJahr = nameof(A11y_NaechstesJahr);
+    public const string A11y_TransaktionHinzufuegen = nameof(A11y_TransaktionHinzufuegen);
+    public const string A11y_KategorieHinzufuegen = nameof(A11y_KategorieHinzufuegen);
+    public const string A11y_SparZielHinzufuegen = nameof(A11y_SparZielHinzufuegen);
+    public const string A11y_DauerauftragHinzufuegen = nameof(A11y_DauerauftragHinzufuegen);
+    public const string A11y_BudgetBalken = nameof(A11y_BudgetBalken);
+    public const string A11y_SparZielBalken = nameof(A11y_SparZielBalken);
+    public const string A11y_Einstellungen = nameof(A11y_Einstellungen);
 }

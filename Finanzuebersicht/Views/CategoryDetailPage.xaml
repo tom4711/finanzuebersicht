@@ -78,7 +78,8 @@
             <VerticalStackLayout Spacing="4">
                 <Label Text="{loc:Translate Lbl_MonatlichesBudget}" FontSize="13" TextColor="Gray" />
                 <Entry Text="{Binding MonthlyBudgetText}" Keyboard="Numeric"
-                       Placeholder="{loc:Translate Hint_BudgetOptional}" FontSize="16" />
+                       Placeholder="{loc:Translate Hint_BudgetOptional}" FontSize="16"
+                       SemanticProperties.Hint="{loc:Translate Hint_BudgetNull}" />
                 <Label Text="{loc:Translate Hint_BudgetNull}" FontSize="11" TextColor="Gray" />
             </VerticalStackLayout>
 

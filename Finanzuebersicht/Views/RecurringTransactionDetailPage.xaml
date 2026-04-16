@@ -34,7 +34,8 @@
                 <Label Text="{loc:Translate Lbl_Betrag}" FontSize="13" TextColor="Gray" />
                   <Entry Text="{Binding BetragText}" Placeholder="{loc:Translate Hint_Betrag}"
                        Keyboard="Numeric" FontSize="28" FontAttributes="Bold"
-                       HorizontalTextAlignment="Center" />
+                       HorizontalTextAlignment="Center"
+                       SemanticProperties.Hint="{loc:Translate Hint_Betrag}" />
             </VerticalStackLayout>
 
             <!-- Titel -->
