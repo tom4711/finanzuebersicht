@@ -194,12 +194,14 @@ namespace Finanzuebersicht.Core.Services
                 var categories = DeserializeFile<List<object>>(archiveData, "categories.json");
                 var transactions = DeserializeFile<List<object>>(archiveData, "transactions.json");
                 var recurring = DeserializeFile<List<object>>(archiveData, "recurring.json");
+                var budgets = DeserializeFile<List<object>>(archiveData, "budgets.json");
+                var sparziele = DeserializeFile<List<object>>(archiveData, "sparziele.json");
 
-                if (categories == null || transactions == null || recurring == null)
+                if (categories == null || transactions == null || recurring == null || budgets == null || sparziele == null)
                     return new RestoreResult { Success = false, ErrorMessage = "ZIP-Datei ist beschädigt oder unvollständig" };
 
                 // Atomare Restore mit Rollback-Capability
-                var restoreSuccess = await AtomicRestoreAsync(categories, transactions, recurring, archiveData.Metadata);
+                var restoreSuccess = await AtomicRestoreAsync(categories, transactions, recurring, budgets, sparziele, archiveData.Metadata);
 
                 if (!restoreSuccess)
                     return new RestoreResult { Success = false, ErrorMessage = "Fehler beim Speichern der wiederhergestellten Daten" };
@@ -230,7 +232,7 @@ namespace Finanzuebersicht.Core.Services
         /// <summary>
         /// Führt atomare Wiederherstellung mit Validierung durch.
         /// </summary>
-        private async Task<bool> AtomicRestoreAsync<T>(List<T> categories, List<T> transactions, List<T> recurring, BackupMetadata metadata)
+        private async Task<bool> AtomicRestoreAsync<T>(List<T> categories, List<T> transactions, List<T> recurring, List<T> budgets, List<T> sparziele, BackupMetadata metadata)
             where T : class
         {
             try
@@ -240,14 +242,14 @@ namespace Finanzuebersicht.Core.Services
                 // Vorläufig: Serielle Operationen mit Fehlerbehandlung.
 
                 // Validiere, dass Daten nicht null sind
-                if (categories == null || transactions == null || recurring == null)
+                if (categories == null || transactions == null || recurring == null || budgets == null || sparziele == null)
                 {
                     _logger?.LogError("Restore-Daten sind null");
                     return false;
                 }
 
-                _logger?.LogInformation("Starte atomare Wiederherstellung mit {CatCount} Kategorien, {TxnCount} Transaktionen, {RecCount} Daueraufträgen",
-                    categories.Count, transactions.Count, recurring.Count);
+                _logger?.LogInformation("Starte atomare Wiederherstellung mit {CatCount} Kategorien, {TxnCount} Transaktionen, {RecCount} Daueraufträgen, {BudCount} Budgets, {SparCount} Sparzielen",
+                    categories.Count, transactions.Count, recurring.Count, budgets.Count, sparziele.Count);
 
                 // TODO: Implementiere Transaktions-Wrapper für echte Atomarität
                 // Für MVP: Die Operationen sind idempotent, daher ist Rollback durch erneute
@@ -391,9 +393,9 @@ namespace Finanzuebersicht.Core.Services
                         };
                     }
 
-                    // Validiere Metadaten-Schema
+                    // Validiere Metadaten-Schema: ältere Versionen werden migriert, neuere abgelehnt
                     var metadata = ReadJsonFromZip<BackupMetadata>(zipArchive, BackupMetadataFileName);
-                    if (metadata?.SchemaVersion != CurrentSchemaVersion)
+                    if (metadata == null || metadata.SchemaVersion > CurrentSchemaVersion)
                     {
                         return new RestoreResult
                         {
