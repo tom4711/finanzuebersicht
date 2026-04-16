@@ -198,4 +198,17 @@ Bitte starte die App neu.</value></data>
   <data name="Empty_KeineSparZiele" xml:space="preserve"><value>Noch keine Sparziele angelegt</value></data>
   <data name="Btn_NeuesZiel" xml:space="preserve"><value>+ Neues Ziel</value></data>
   <data name="Btn_ZielHinzufuegen" xml:space="preserve"><value>Ziel hinzufügen</value></data>
+  <data name="A11y_VorherigerMonat" xml:space="preserve"><value>Vorheriger Monat</value></data>
+  <data name="A11y_NaechsterMonat" xml:space="preserve"><value>Nächster Monat</value></data>
+  <data name="A11y_VorherigesJahr" xml:space="preserve"><value>Vorheriges Jahr</value></data>
+  <data name="A11y_NaechstesJahr" xml:space="preserve"><value>Nächstes Jahr</value></data>
+  <data name="A11y_TransaktionHinzufuegen" xml:space="preserve"><value>Neue Transaktion hinzufügen</value></data>
+  <data name="A11y_KategorieHinzufuegen" xml:space="preserve"><value>Neue Kategorie hinzufügen</value></data>
+  <data name="A11y_SparZielHinzufuegen" xml:space="preserve"><value>Neues Sparziel hinzufügen</value></data>
+  <data name="A11y_DauerauftragHinzufuegen" xml:space="preserve"><value>Neuen Dauerauftrag hinzufügen</value></data>
+  <data name="A11y_BudgetBalken" xml:space="preserve"><value>Budget-Fortschrittsbalken für Kategorie</value></data>
+  <data name="A11y_SparZielBalken" xml:space="preserve"><value>Sparziel-Fortschrittsbalken</value></data>
+  <data name="A11y_HintBetrag" xml:space="preserve"><value>Betrag eingeben, z. B. 12,50</value></data>
+  <data name="A11y_HintTitel" xml:space="preserve"><value>Kurze Beschreibung der Transaktion</value></data>
+  <data name="A11y_HintBudget" xml:space="preserve"><value>Leer lassen für kein Budgetlimit</value></data>
 </root>

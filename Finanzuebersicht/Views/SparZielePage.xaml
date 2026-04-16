@@ -67,7 +67,8 @@
                                             </Grid>
                                             <ProgressBar Progress="{Binding FortschrittDecimal}"
                                                          ProgressColor="#34C759"
-                                                         BackgroundColor="{AppThemeBinding Light=#E5E5EA, Dark=#3A3A3C}" />
+                                                         BackgroundColor="{AppThemeBinding Light=#E5E5EA, Dark=#3A3A3C}"
+                                                         SemanticProperties.Description="{loc:Translate A11y_SparZielBalken}" />
                                         </VerticalStackLayout>
 
                                         <!-- Löschen-Button -->
@@ -161,6 +162,7 @@
                 WidthRequest="56" HeightRequest="56"
                 HorizontalOptions="End" VerticalOptions="End"
                 Margin="0,0,20,20"
+                SemanticProperties.Description="{loc:Translate A11y_SparZielHinzufuegen}"
                 Shadow="{Shadow Brush='#40000000', Offset='0,4', Radius=8}"
                 Command="{Binding ToggleAddFormCommand}" />
     </Grid>

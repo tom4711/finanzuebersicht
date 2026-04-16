@@ -198,4 +198,17 @@ Please restart the app.</value></data>
   <data name="Empty_KeineSparZiele" xml:space="preserve"><value>No savings goals yet</value></data>
   <data name="Btn_NeuesZiel" xml:space="preserve"><value>+ New Goal</value></data>
   <data name="Btn_ZielHinzufuegen" xml:space="preserve"><value>Add Goal</value></data>
+  <data name="A11y_VorherigerMonat" xml:space="preserve"><value>Previous month</value></data>
+  <data name="A11y_NaechsterMonat" xml:space="preserve"><value>Next month</value></data>
+  <data name="A11y_VorherigesJahr" xml:space="preserve"><value>Previous year</value></data>
+  <data name="A11y_NaechstesJahr" xml:space="preserve"><value>Next year</value></data>
+  <data name="A11y_TransaktionHinzufuegen" xml:space="preserve"><value>Add new transaction</value></data>
+  <data name="A11y_KategorieHinzufuegen" xml:space="preserve"><value>Add new category</value></data>
+  <data name="A11y_SparZielHinzufuegen" xml:space="preserve"><value>Add new savings goal</value></data>
+  <data name="A11y_DauerauftragHinzufuegen" xml:space="preserve"><value>Add new recurring transaction</value></data>
+  <data name="A11y_BudgetBalken" xml:space="preserve"><value>Category budget progress</value></data>
+  <data name="A11y_SparZielBalken" xml:space="preserve"><value>Savings goal progress</value></data>
+  <data name="A11y_HintBetrag" xml:space="preserve"><value>Enter amount, e.g. 12.50</value></data>
+  <data name="A11y_HintTitel" xml:space="preserve"><value>Short description of the transaction</value></data>
+  <data name="A11y_HintBudget" xml:space="preserve"><value>Leave empty for no budget limit</value></data>
 </root>
