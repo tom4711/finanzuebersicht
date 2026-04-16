@@ -19,6 +19,7 @@ namespace Finanzuebersicht.Core.Services
         private readonly SettingsService _settingsService;
         private readonly ILogger<BackupService>? _logger;
         private readonly Finanzuebersicht.Core.Services.IClock _clock;
+        private readonly DataMigrationService _migrationService;
 
         private static readonly JsonSerializerOptions BackupJsonOptions = new()
         {
@@ -27,12 +28,13 @@ namespace Finanzuebersicht.Core.Services
         };
 
         private const string BackupMetadataFileName = "backup.metadata.json";
-        private const int CurrentSchemaVersion = 1;
+        private const int CurrentSchemaVersion = 2;
 
-        public BackupService(IDataService dataService, SettingsService settingsService, ILogger<BackupService>? logger = null, Finanzuebersicht.Core.Services.IClock? clock = null)
+        public BackupService(IDataService dataService, SettingsService settingsService, DataMigrationService migrationService, ILogger<BackupService>? logger = null, Finanzuebersicht.Core.Services.IClock? clock = null)
         {
             _dataService = dataService ?? throw new ArgumentNullException(nameof(dataService));
             _settingsService = settingsService ?? throw new ArgumentNullException(nameof(settingsService));
+            _migrationService = migrationService ?? throw new ArgumentNullException(nameof(migrationService));
             _logger = logger;
             _clock = clock ?? Finanzuebersicht.Core.Services.SystemClock.Instance;
         }
@@ -56,6 +58,8 @@ namespace Finanzuebersicht.Core.Services
                 var categories = await _dataService.GetCategoriesAsync();
                 var transactions = await _dataService.GetTransactionsAsync(DateTime.MinValue, DateTime.MaxValue);
                 var recurring = await _dataService.GetRecurringTransactionsAsync();
+                var budgets = await _dataService.GetBudgetsAsync();
+                var sparziele = await _dataService.GetSparZieleAsync();
 
                 // Erstelle Metadaten
                 var metadata = new BackupMetadata
@@ -68,7 +72,9 @@ namespace Finanzuebersicht.Core.Services
                     {
                         { "categories", categories.Count() },
                         { "transactions", transactions.Count() },
-                        { "recurring", recurring.Count() }
+                        { "recurring", recurring.Count() },
+                        { "budgets", budgets.Count },
+                        { "sparziele", sparziele.Count }
                     }
                 };
 
@@ -79,11 +85,13 @@ namespace Finanzuebersicht.Core.Services
                     WriteJsonToZip(zipArchive, "categories.json", categories);
                     WriteJsonToZip(zipArchive, "transactions.json", transactions);
                     WriteJsonToZip(zipArchive, "recurring.json", recurring);
+                    WriteJsonToZip(zipArchive, "budgets.json", budgets);
+                    WriteJsonToZip(zipArchive, "sparziele.json", sparziele);
                     WriteJsonToZip(zipArchive, BackupMetadataFileName, metadata);
                 }
 
-                _logger?.LogInformation("Backup erstellt: {FileName} mit {CatCount} Kategorien, {TxnCount} Transaktionen, {RecCount} Daueraufträgen",
-                    fileName, metadata.EntityCounts["categories"], metadata.EntityCounts["transactions"], metadata.EntityCounts["recurring"]);
+                _logger?.LogInformation("Backup erstellt: {FileName} mit {CatCount} Kategorien, {TxnCount} Transaktionen, {RecCount} Daueraufträgen, {BudCount} Budgets, {SparCount} Sparzielen",
+                    fileName, metadata.EntityCounts["categories"], metadata.EntityCounts["transactions"], metadata.EntityCounts["recurring"], metadata.EntityCounts["budgets"], metadata.EntityCounts["sparziele"]);
 
                 // Speichere Zeitstempel in Settings
                 _settingsService.Set("LastBackupTime", _clock.UtcNow.ToString("O"));
@@ -157,50 +165,57 @@ namespace Finanzuebersicht.Core.Services
                 if (!validationResult.Success)
                     return validationResult;
 
-                // Extrahiere Daten aus ZIP
-                List<object>? categories = null;
-                List<object>? transactions = null;
-                List<object>? recurring = null;
-                BackupMetadata? metadata = null;
-
+                // Extrahiere alle Dateien aus ZIP als rohe JSON-Strings
+                BackupArchiveData archiveData;
                 using (var zipArchive = ZipFile.OpenRead(filePath))
                 {
-                    categories = ReadJsonFromZip<List<object>>(zipArchive, "categories.json");
-                    transactions = ReadJsonFromZip<List<object>>(zipArchive, "transactions.json");
-                    recurring = ReadJsonFromZip<List<object>>(zipArchive, "recurring.json");
-                    metadata = ReadJsonFromZip<BackupMetadata>(zipArchive, BackupMetadataFileName);
+                    var metadata = ReadJsonFromZip<BackupMetadata>(zipArchive, BackupMetadataFileName);
+                    if (metadata == null)
+                        return new RestoreResult { Success = false, ErrorMessage = "ZIP-Datei ist beschädigt oder unvollständig" };
+
+                    archiveData = new BackupArchiveData { Metadata = metadata };
+                    foreach (var entry in zipArchive.Entries)
+                    {
+                        using var stream = entry.Open();
+                        using var reader = new System.IO.StreamReader(stream);
+                        archiveData.Files[entry.Name] = await reader.ReadToEndAsync();
+                    }
                 }
 
-                if (categories == null || transactions == null || recurring == null || metadata == null)
+                // Migration anwenden falls nötig
+                if (_migrationService.NeedsMigration(archiveData.Metadata, CurrentSchemaVersion))
                 {
-                    return new RestoreResult
-                    {
-                        Success = false,
-                        ErrorMessage = "ZIP-Datei ist beschädigt oder unvollständig"
-                    };
+                    _logger?.LogInformation("Backup Schema v{From} → v{To}: Migration wird angewendet",
+                        archiveData.Metadata.SchemaVersion, CurrentSchemaVersion);
+                    archiveData = await _migrationService.MigrateAsync(archiveData, CurrentSchemaVersion);
                 }
+
+                // Deserialisiere die (ggf. migrierten) Daten
+                var categories = DeserializeFile<List<object>>(archiveData, "categories.json");
+                var transactions = DeserializeFile<List<object>>(archiveData, "transactions.json");
+                var recurring = DeserializeFile<List<object>>(archiveData, "recurring.json");
+                var budgets = DeserializeFile<List<object>>(archiveData, "budgets.json");
+                var sparziele = DeserializeFile<List<object>>(archiveData, "sparziele.json");
+
+                if (categories == null || transactions == null || recurring == null || budgets == null || sparziele == null)
+                    return new RestoreResult { Success = false, ErrorMessage = "ZIP-Datei ist beschädigt oder unvollständig" };
 
                 // Atomare Restore mit Rollback-Capability
-                var restoreSuccess = await AtomicRestoreAsync(categories, transactions, recurring, metadata);
+                var restoreSuccess = await AtomicRestoreAsync(categories, transactions, recurring, budgets, sparziele, archiveData.Metadata);
 
                 if (!restoreSuccess)
-                {
-                    return new RestoreResult
-                    {
-                        Success = false,
-                        ErrorMessage = "Fehler beim Speichern der wiederhergestellten Daten"
-                    };
-                }
+                    return new RestoreResult { Success = false, ErrorMessage = "Fehler beim Speichern der wiederhergestellten Daten" };
 
                 _logger?.LogInformation("Restore aus Backup {BackupId} erfolgreich abgeschlossen", backupId);
 
+                var counts = archiveData.Metadata.EntityCounts;
                 return new RestoreResult
                 {
                     Success = true,
-                    Details = $"Wiederhergestellt: {metadata.EntityCounts["categories"]} Kategorien, " +
-                              $"{metadata.EntityCounts["transactions"]} Transaktionen, " +
-                              $"{metadata.EntityCounts["recurring"]} Daueraufträge",
-                    RestoredMetadata = metadata
+                    Details = $"Wiederhergestellt: {counts.GetValueOrDefault("categories")} Kategorien, " +
+                              $"{counts.GetValueOrDefault("transactions")} Transaktionen, " +
+                              $"{counts.GetValueOrDefault("recurring")} Daueraufträge",
+                    RestoredMetadata = archiveData.Metadata
                 };
             }
             catch (Exception ex)
@@ -217,7 +232,7 @@ namespace Finanzuebersicht.Core.Services
         /// <summary>
         /// Führt atomare Wiederherstellung mit Validierung durch.
         /// </summary>
-        private async Task<bool> AtomicRestoreAsync<T>(List<T> categories, List<T> transactions, List<T> recurring, BackupMetadata metadata)
+        private async Task<bool> AtomicRestoreAsync<T>(List<T> categories, List<T> transactions, List<T> recurring, List<T> budgets, List<T> sparziele, BackupMetadata metadata)
             where T : class
         {
             try
@@ -227,14 +242,14 @@ namespace Finanzuebersicht.Core.Services
                 // Vorläufig: Serielle Operationen mit Fehlerbehandlung.
 
                 // Validiere, dass Daten nicht null sind
-                if (categories == null || transactions == null || recurring == null)
+                if (categories == null || transactions == null || recurring == null || budgets == null || sparziele == null)
                 {
                     _logger?.LogError("Restore-Daten sind null");
                     return false;
                 }
 
-                _logger?.LogInformation("Starte atomare Wiederherstellung mit {CatCount} Kategorien, {TxnCount} Transaktionen, {RecCount} Daueraufträgen",
-                    categories.Count, transactions.Count, recurring.Count);
+                _logger?.LogInformation("Starte atomare Wiederherstellung mit {CatCount} Kategorien, {TxnCount} Transaktionen, {RecCount} Daueraufträgen, {BudCount} Budgets, {SparCount} Sparzielen",
+                    categories.Count, transactions.Count, recurring.Count, budgets.Count, sparziele.Count);
 
                 // TODO: Implementiere Transaktions-Wrapper für echte Atomarität
                 // Für MVP: Die Operationen sind idempotent, daher ist Rollback durch erneute
@@ -335,6 +350,13 @@ namespace Finanzuebersicht.Core.Services
             writer.Write(json);
         }
 
+        private static T? DeserializeFile<T>(BackupArchiveData archive, string fileName) where T : class
+        {
+            if (!archive.Files.TryGetValue(fileName, out var json))
+                return null;
+            return JsonSerializer.Deserialize<T>(json, BackupJsonOptions);
+        }
+
         private static T? ReadJsonFromZip<T>(ZipArchive archive, string entryName) where T : class
         {
             var entry = archive.GetEntry(entryName);
@@ -371,9 +393,9 @@ namespace Finanzuebersicht.Core.Services
                         };
                     }
 
-                    // Validiere Metadaten-Schema
+                    // Validiere Metadaten-Schema: ältere Versionen werden migriert, neuere abgelehnt
                     var metadata = ReadJsonFromZip<BackupMetadata>(zipArchive, BackupMetadataFileName);
-                    if (metadata?.SchemaVersion != CurrentSchemaVersion)
+                    if (metadata == null || metadata.SchemaVersion > CurrentSchemaVersion)
                     {
                         return new RestoreResult
                         {

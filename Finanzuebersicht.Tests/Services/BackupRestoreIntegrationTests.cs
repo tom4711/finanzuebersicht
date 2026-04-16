@@ -1,5 +1,6 @@
 using Xunit;
 using Finanzuebersicht.Core.Services;
+using Finanzuebersicht.Core.Services.Migrations;
 using Finanzuebersicht.Models;
 using Finanzuebersicht.Services;
 using System.IO.Compression;
@@ -42,7 +43,7 @@ namespace Finanzuebersicht.Tests.Services
         public async Task FullBackupRestoreCycle_PreserveAllData()
         {
             // Arrange
-            var service = new BackupService(_mockDataService, _mockSettingsService);
+            var service = new BackupService(_mockDataService, _mockSettingsService, new DataMigrationService([new V1ToV2Migrator()]));
             var backupPath = Path.Combine(_testDir, "backups");
 
             // Setup data
@@ -100,7 +101,7 @@ namespace Finanzuebersicht.Tests.Services
         public async Task MultipleBackups_ListsInCorrectOrder()
         {
             // Arrange
-            var service = new BackupService(_mockDataService, _mockSettingsService);
+            var service = new BackupService(_mockDataService, _mockSettingsService, new DataMigrationService([new V1ToV2Migrator()]));
             var backupPath = Path.Combine(_testDir, "backups");
             var categories = new[] { new Category { Id = "1", Name = "Test", Icon = "🏠", Color = "#000" } };
             _mockDataService.SetCategories(categories);
@@ -124,7 +125,7 @@ namespace Finanzuebersicht.Tests.Services
         public async Task BackupWithEmptyDatabase_CreatesValidBackup()
         {
             // Arrange
-            var service = new BackupService(_mockDataService, _mockSettingsService);
+            var service = new BackupService(_mockDataService, _mockSettingsService, new DataMigrationService([new V1ToV2Migrator()]));
             var backupPath = Path.Combine(_testDir, "backups");
             // No data set
 
@@ -142,7 +143,7 @@ namespace Finanzuebersicht.Tests.Services
         public async Task DeleteBackup_RemovesBackupFile()
         {
             // Arrange
-            var service = new BackupService(_mockDataService, _mockSettingsService);
+            var service = new BackupService(_mockDataService, _mockSettingsService, new DataMigrationService([new V1ToV2Migrator()]));
             var backupPath = Path.Combine(_testDir, "backups");
             var category = new Category { Id = "1", Name = "Test", Icon = "🏠", Color = "#000" };
             _mockDataService.SetCategories(new[] { category });
@@ -162,7 +163,7 @@ namespace Finanzuebersicht.Tests.Services
         public async Task ExportAsCSV_ContainsAllTransactionData()
         {
             // Arrange
-            var service = new BackupService(_mockDataService, _mockSettingsService);
+            var service = new BackupService(_mockDataService, _mockSettingsService, new DataMigrationService([new V1ToV2Migrator()]));
             var categories = new[]
             {
                 new Category { Id = "c1", Name = "Food", Icon = "🍕", Color = "#FF0000" }
@@ -202,7 +203,7 @@ namespace Finanzuebersicht.Tests.Services
         public async Task BackupSettings_PersistsBackupMetadata()
         {
             // Arrange
-            var service = new BackupService(_mockDataService, _mockSettingsService);
+            var service = new BackupService(_mockDataService, _mockSettingsService, new DataMigrationService([new V1ToV2Migrator()]));
             var backupPath = Path.Combine(_testDir, "backups");
             _mockDataService.SetCategories(new[] { new Category { Id = "1", Name = "Test", Icon = "🏠", Color = "#000" } });
 
@@ -225,7 +226,7 @@ namespace Finanzuebersicht.Tests.Services
         public async Task RestoreNonexistentBackup_ReturnsFailed()
         {
             // Arrange
-            var service = new BackupService(_mockDataService, _mockSettingsService);
+            var service = new BackupService(_mockDataService, _mockSettingsService, new DataMigrationService([new V1ToV2Migrator()]));
             var backupPath = Path.Combine(_testDir, "backups");
 
             // Act
