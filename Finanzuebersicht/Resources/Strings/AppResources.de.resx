@@ -208,7 +208,6 @@ Bitte starte die App neu.</value></data>
   <data name="A11y_DauerauftragHinzufuegen" xml:space="preserve"><value>Neuen Dauerauftrag hinzufügen</value></data>
   <data name="A11y_BudgetBalken" xml:space="preserve"><value>Budget-Fortschrittsbalken für Kategorie</value></data>
   <data name="A11y_SparZielBalken" xml:space="preserve"><value>Sparziel-Fortschrittsbalken</value></data>
-  <data name="A11y_Einstellungen" xml:space="preserve"><value>Einstellungen öffnen</value></data>
   <data name="A11y_HintBetrag" xml:space="preserve"><value>Betrag eingeben, z. B. 12,50</value></data>
   <data name="A11y_HintTitel" xml:space="preserve"><value>Kurze Beschreibung der Transaktion</value></data>
   <data name="A11y_HintBudget" xml:space="preserve"><value>Leer lassen für kein Budgetlimit</value></data>

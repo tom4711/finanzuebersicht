@@ -208,7 +208,6 @@ Please restart the app.</value></data>
   <data name="A11y_DauerauftragHinzufuegen" xml:space="preserve"><value>Add new recurring transaction</value></data>
   <data name="A11y_BudgetBalken" xml:space="preserve"><value>Category budget progress</value></data>
   <data name="A11y_SparZielBalken" xml:space="preserve"><value>Savings goal progress</value></data>
-  <data name="A11y_Einstellungen" xml:space="preserve"><value>Open settings</value></data>
   <data name="A11y_HintBetrag" xml:space="preserve"><value>Enter amount, e.g. 12.50</value></data>
   <data name="A11y_HintTitel" xml:space="preserve"><value>Short description of the transaction</value></data>
   <data name="A11y_HintBudget" xml:space="preserve"><value>Leave empty for no budget limit</value></data>
