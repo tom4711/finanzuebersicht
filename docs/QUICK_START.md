@@ -49,7 +49,7 @@ dotnet test Finanzuebersicht.Tests
 
 ## Key Resources
 
-- **Localization:** `Finanzuebersicht/Resources/Strings/AppResources.resx` (German), `AppResources.en.resx` (English)
+- **Localization:** `Finanzuebersicht/Resources/Strings/AppResources.resx` (German), `AppResources.de.resx`
 - **Colors:** `Finanzuebersicht/Resources/Styles/Colors.xaml`
 - **Architecture:** MVVM with CommunityToolkit.Mvvm
 - **Data:** JSON via `LocalDataService` (persisted locally)
@@ -60,6 +60,17 @@ dotnet test Finanzuebersicht.Tests
 - **DI:** Register all services in `MauiProgram.cs`
 - **Localization:** German (default) + English support
 - **Data Persistence:** JSON files locally; CloudKit available but not maintained
+- **Backup:** ZIP-based with schema versioning and automatic migration (`DataMigrationService`)
+
+## Features
+
+- Dashboard with monthly summary, charts and trend indicator
+- Transactions, recurring transactions (Daueraufträge), categories
+- Monthly budgets per category with progress tracking
+- Savings goals (Sparziele) with progress bar
+- Backup & Restore with automatic schema migration
+- Accessibility / VoiceOver support
+- Dark Mode, German & English UI
 
 ## Development Conventions
 
