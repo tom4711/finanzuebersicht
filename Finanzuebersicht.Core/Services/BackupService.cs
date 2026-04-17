@@ -202,7 +202,7 @@ namespace Finanzuebersicht.Core.Services
                     return new RestoreResult { Success = false, ErrorMessage = "ZIP-Datei ist beschädigt oder unvollständig" };
 
                 // Atomare Restore mit Rollback-Capability
-                var restoreSuccess = await AtomicRestoreAsync(categories, transactions, recurring, budgets, sparziele, archiveData.Metadata);
+                var restoreSuccess = await AtomicRestoreAsync(categories, transactions, recurring, budgets, sparziele);
 
                 if (!restoreSuccess)
                     return new RestoreResult { Success = false, ErrorMessage = "Fehler beim Speichern der wiederhergestellten Daten" };
@@ -231,9 +231,6 @@ namespace Finanzuebersicht.Core.Services
         }
 
         /// <summary>
-        /// Führt atomare Wiederherstellung mit Validierung durch.
-        /// </summary>
-        /// <summary>
         /// Stellt alle Daten aus dem Backup wieder her: löscht vorhandene Daten und schreibt Backup-Daten zurück.
         /// </summary>
         private async Task<bool> AtomicRestoreAsync(
@@ -241,8 +238,7 @@ namespace Finanzuebersicht.Core.Services
             List<Transaction> transactions,
             List<RecurringTransaction> recurring,
             List<CategoryBudget> budgets,
-            List<SparZiel> sparziele,
-            BackupMetadata metadata)
+            List<SparZiel> sparziele)
         {
             try
             {

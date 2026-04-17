@@ -69,11 +69,11 @@ public partial class RecurringTransactionsViewModel(
             await _deleteRecurringTransactionUseCase.ExecuteAsync(dauerauftrag.Id);
             Dauerauftraege.Remove(dauerauftrag);
         }
-        catch
+        catch (Exception ex)
         {
             await _dialogService.ShowAlertAsync(
                 _loc.GetString(ResourceKeys.Err_Titel),
-                _loc.GetString(ResourceKeys.Err_SpeichernFehlgeschlagen, dauerauftrag.Titel),
+                _loc.GetString(ResourceKeys.Err_SpeichernFehlgeschlagen, ex.Message),
                 _loc.GetString(ResourceKeys.Btn_OK));
         }
     }

@@ -77,6 +77,8 @@ namespace Finanzuebersicht.Tests.Services
             _mockDataService.SetCategories(originalCategories);
             _mockDataService.SetTransactions(originalTransactions);
             _mockDataService.SetRecurring(originalRecurring);
+            _mockDataService.SetBudgets([new CategoryBudget { Id = "b1", KategorieId = "c1", Betrag = 300m }]);
+            _mockDataService.SetSparZiele([new SparZiel { Id = "s1", Titel = "Urlaub", ZielBetrag = 2000m }]);
 
             // Act 1: Create backup
             var backup = await service.CreateBackupAsync(backupPath);
@@ -86,12 +88,16 @@ namespace Finanzuebersicht.Tests.Services
             Assert.Equal(2, backup.EntityCounts["categories"]);
             Assert.Equal(2, backup.EntityCounts["transactions"]);
             Assert.Equal(1, backup.EntityCounts["recurring"]);
+            Assert.Equal(1, backup.EntityCounts["budgets"]);
+            Assert.Equal(1, backup.EntityCounts["sparziele"]);
             Assert.True(File.Exists(Path.Combine(backupPath, backup.FileName)));
 
             // Act 2: Restore backup — clear state first to verify data is re-saved
             _mockDataService.SetCategories([]);
             _mockDataService.SetTransactions([]);
             _mockDataService.SetRecurring([]);
+            _mockDataService.SetBudgets([]);
+            _mockDataService.SetSparZiele([]);
 
             var restoreResult = await service.RestoreBackupAsync(backupPath, backup.Id);
 
@@ -103,13 +109,19 @@ namespace Finanzuebersicht.Tests.Services
             var restoredCategories = await _mockDataService.GetCategoriesAsync();
             var restoredTransactions = await _mockDataService.GetTransactionsAsync(DateTime.MinValue, DateTime.MaxValue);
             var restoredRecurring = await _mockDataService.GetRecurringTransactionsAsync();
+            var restoredBudgets = await _mockDataService.GetBudgetsAsync();
+            var restoredSparziele = await _mockDataService.GetSparZieleAsync();
 
             Assert.Equal(2, restoredCategories.Count);
             Assert.Equal(2, restoredTransactions.Count);
             Assert.Single(restoredRecurring);
+            Assert.Single(restoredBudgets);
+            Assert.Single(restoredSparziele);
             Assert.Contains(restoredCategories, c => c.Id == "c1" && c.Name == "Groceries");
             Assert.Contains(restoredTransactions, t => t.Id == "t1" && t.Betrag == 50.5m);
             Assert.Contains(restoredRecurring, r => r.Id == "r1" && r.Titel == "Rent");
+            Assert.Contains(restoredBudgets, b => b.Id == "b1" && b.Betrag == 300m);
+            Assert.Contains(restoredSparziele, s => s.Id == "s1" && s.Titel == "Urlaub");
         }
 
         [Fact]
@@ -264,6 +276,8 @@ namespace Finanzuebersicht.Tests.Services
             public void SetCategories(IEnumerable<Category> categories) => _categories = categories.ToList();
             public void SetTransactions(IEnumerable<Transaction> transactions) => _transactions = transactions.ToList();
             public void SetRecurring(IEnumerable<RecurringTransaction> recurring) => _recurring = recurring.ToList();
+            public void SetBudgets(IEnumerable<CategoryBudget> budgets) => _budgets = budgets.ToList();
+            public void SetSparZiele(IEnumerable<SparZiel> sparziele) => _sparziele = sparziele.ToList();
 
             public Task<List<Category>> GetCategoriesAsync() => Task.FromResult(_categories.ToList());
             public Task SaveCategoryAsync(Category category)
@@ -320,7 +334,7 @@ namespace Finanzuebersicht.Tests.Services
                 if (idx >= 0) _sparziele[idx] = sparZiel; else _sparziele.Add(sparZiel);
                 return Task.CompletedTask;
             }
-            public Task DeleteSparZielAsync(string id) => Task.CompletedTask;
+            public Task DeleteSparZielAsync(string id) { _sparziele.RemoveAll(s => s.Id == id); return Task.CompletedTask; }
         }
 
         private class MockSettingsService : SettingsService
