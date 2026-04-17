@@ -86,6 +86,7 @@
   <data name="Err_TitelErforderlich" xml:space="preserve"><value>Title is required</value></data>
   <data name="Err_KategorieErforderlich" xml:space="preserve"><value>Category is required</value></data>
   <data name="Err_SpeichernFehlgeschlagen" xml:space="preserve"><value>Error saving: {0}</value></data>
+  <data name="Err_LoeschenFehlgeschlagen" xml:space="preserve"><value>Error deleting: {0}</value></data>
   <data name="Err_OrdnerNichtWaehlbar" xml:space="preserve"><value>Folder could not be selected: {0}</value></data>
 
   <!-- Confirmation Dialogs -->

@@ -232,6 +232,7 @@ namespace Finanzuebersicht.Core.Services
 
         /// <summary>
         /// Stellt alle Daten aus dem Backup wieder her: löscht vorhandene Daten und schreibt Backup-Daten zurück.
+        /// Bei einem Fehler wird ein Rollback auf den vorherigen Zustand durchgeführt.
         /// </summary>
         private async Task<bool> AtomicRestoreAsync(
             List<Category> categories,
@@ -240,26 +241,24 @@ namespace Finanzuebersicht.Core.Services
             List<CategoryBudget> budgets,
             List<SparZiel> sparziele)
         {
+            // Snapshot des aktuellen Zustands laden (für Rollback)
+            var snapshotCategories = await _dataService.GetCategoriesAsync();
+            var snapshotTransactions = await _dataService.GetTransactionsAsync(DateTime.MinValue, DateTime.MaxValue);
+            var snapshotRecurring = await _dataService.GetRecurringTransactionsAsync();
+            var snapshotBudgets = await _dataService.GetBudgetsAsync();
+            var snapshotSparziele = await _dataService.GetSparZieleAsync();
+
             try
             {
                 _logger?.LogInformation("Starte Wiederherstellung: {CatCount} Kategorien, {TxnCount} Transaktionen, {RecCount} Daueraufträge, {BudCount} Budgets, {SparCount} Sparziele",
                     categories.Count, transactions.Count, recurring.Count, budgets.Count, sparziele.Count);
 
                 // Vorhandene Daten löschen
-                var existingCategories = await _dataService.GetCategoriesAsync();
-                foreach (var c in existingCategories) await _dataService.DeleteCategoryAsync(c.Id);
-
-                var existingTransactions = await _dataService.GetTransactionsAsync(DateTime.MinValue, DateTime.MaxValue);
-                foreach (var t in existingTransactions) await _dataService.DeleteTransactionAsync(t.Id);
-
-                var existingRecurring = await _dataService.GetRecurringTransactionsAsync();
-                foreach (var r in existingRecurring) await _dataService.DeleteRecurringTransactionAsync(r.Id);
-
-                var existingBudgets = await _dataService.GetBudgetsAsync();
-                foreach (var b in existingBudgets) await _dataService.DeleteBudgetAsync(b.Id);
-
-                var existingSparziele = await _dataService.GetSparZieleAsync();
-                foreach (var s in existingSparziele) await _dataService.DeleteSparZielAsync(s.Id);
+                foreach (var c in snapshotCategories) await _dataService.DeleteCategoryAsync(c.Id);
+                foreach (var t in snapshotTransactions) await _dataService.DeleteTransactionAsync(t.Id);
+                foreach (var r in snapshotRecurring) await _dataService.DeleteRecurringTransactionAsync(r.Id);
+                foreach (var b in snapshotBudgets) await _dataService.DeleteBudgetAsync(b.Id);
+                foreach (var s in snapshotSparziele) await _dataService.DeleteSparZielAsync(s.Id);
 
                 // Backup-Daten speichern
                 foreach (var c in categories) await _dataService.SaveCategoryAsync(c);
@@ -272,8 +271,47 @@ namespace Finanzuebersicht.Core.Services
             }
             catch (Exception ex)
             {
-                _logger?.LogError(ex, "Fehler bei der Wiederherstellung");
+                _logger?.LogError(ex, "Fehler bei der Wiederherstellung – starte Rollback");
+                await RollbackAsync(snapshotCategories, snapshotTransactions, snapshotRecurring, snapshotBudgets, snapshotSparziele);
                 return false;
+            }
+        }
+
+        private async Task RollbackAsync(
+            List<Category> categories,
+            List<Transaction> transactions,
+            List<RecurringTransaction> recurring,
+            List<CategoryBudget> budgets,
+            List<SparZiel> sparziele)
+        {
+            try
+            {
+                var currentCategories = await _dataService.GetCategoriesAsync();
+                foreach (var c in currentCategories) await _dataService.DeleteCategoryAsync(c.Id);
+
+                var currentTransactions = await _dataService.GetTransactionsAsync(DateTime.MinValue, DateTime.MaxValue);
+                foreach (var t in currentTransactions) await _dataService.DeleteTransactionAsync(t.Id);
+
+                var currentRecurring = await _dataService.GetRecurringTransactionsAsync();
+                foreach (var r in currentRecurring) await _dataService.DeleteRecurringTransactionAsync(r.Id);
+
+                var currentBudgets = await _dataService.GetBudgetsAsync();
+                foreach (var b in currentBudgets) await _dataService.DeleteBudgetAsync(b.Id);
+
+                var currentSparziele = await _dataService.GetSparZieleAsync();
+                foreach (var s in currentSparziele) await _dataService.DeleteSparZielAsync(s.Id);
+
+                foreach (var c in categories) await _dataService.SaveCategoryAsync(c);
+                foreach (var t in transactions) await _dataService.SaveTransactionAsync(t);
+                foreach (var r in recurring) await _dataService.SaveRecurringTransactionAsync(r);
+                foreach (var b in budgets) await _dataService.SaveBudgetAsync(b);
+                foreach (var s in sparziele) await _dataService.SaveSparZielAsync(s);
+
+                _logger?.LogInformation("Rollback erfolgreich abgeschlossen");
+            }
+            catch (Exception rollbackEx)
+            {
+                _logger?.LogCritical(rollbackEx, "Rollback fehlgeschlagen – Datenzustand ist möglicherweise inkonsistent");
             }
         }
 

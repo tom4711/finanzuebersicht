@@ -73,7 +73,7 @@ public partial class RecurringTransactionsViewModel(
         {
             await _dialogService.ShowAlertAsync(
                 _loc.GetString(ResourceKeys.Err_Titel),
-                _loc.GetString(ResourceKeys.Err_SpeichernFehlgeschlagen, ex.Message),
+                _loc.GetString(ResourceKeys.Err_LoeschenFehlgeschlagen, ex.Message),
                 _loc.GetString(ResourceKeys.Btn_OK));
         }
     }

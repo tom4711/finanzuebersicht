@@ -86,6 +86,7 @@
   <data name="Err_TitelErforderlich" xml:space="preserve"><value>Titel ist erforderlich</value></data>
   <data name="Err_KategorieErforderlich" xml:space="preserve"><value>Kategorie ist erforderlich</value></data>
   <data name="Err_SpeichernFehlgeschlagen" xml:space="preserve"><value>Fehler beim Speichern: {0}</value></data>
+  <data name="Err_LoeschenFehlgeschlagen" xml:space="preserve"><value>Fehler beim Löschen: {0}</value></data>
   <data name="Err_OrdnerNichtWaehlbar" xml:space="preserve"><value>Ordner konnte nicht gewählt werden: {0}</value></data>
 
   <!-- Confirmation Dialogs -->

@@ -86,6 +86,7 @@ public static class ResourceKeys
     public const string Err_TitelErforderlich = nameof(Err_TitelErforderlich);
     public const string Err_KategorieErforderlich = nameof(Err_KategorieErforderlich);
     public const string Err_SpeichernFehlgeschlagen = nameof(Err_SpeichernFehlgeschlagen);
+    public const string Err_LoeschenFehlgeschlagen = nameof(Err_LoeschenFehlgeschlagen);
     public const string Err_OrdnerNichtWaehlbar = nameof(Err_OrdnerNichtWaehlbar);
 
     // Confirmation Dialogs

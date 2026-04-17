@@ -79,7 +79,7 @@ public partial class TransactionsViewModel(
             try { Finanzuebersicht.Core.Services.FileLogger.Append("TransactionsViewModel", $"DeleteTransaktion failed for {transaktion.Id}", ex); } catch { }
             await _dialogService.ShowAlertAsync(
                 _loc.GetString(Finanzuebersicht.Resources.Strings.ResourceKeys.Err_Titel),
-                _loc.GetString(Finanzuebersicht.Resources.Strings.ResourceKeys.Err_SpeichernFehlgeschlagen, ex.Message),
+                _loc.GetString(Finanzuebersicht.Resources.Strings.ResourceKeys.Err_LoeschenFehlgeschlagen, ex.Message),
                 _loc.GetString(Finanzuebersicht.Resources.Strings.ResourceKeys.Btn_OK));
         }
     }
