@@ -64,8 +64,18 @@ public partial class RecurringTransactionsViewModel(
 
         if (!bestaetigt) return;
 
-        await _deleteRecurringTransactionUseCase.ExecuteAsync(dauerauftrag.Id);
-        Dauerauftraege.Remove(dauerauftrag);
+        try
+        {
+            await _deleteRecurringTransactionUseCase.ExecuteAsync(dauerauftrag.Id);
+            Dauerauftraege.Remove(dauerauftrag);
+        }
+        catch (Exception ex)
+        {
+            await _dialogService.ShowAlertAsync(
+                _loc.GetString(ResourceKeys.Err_Titel),
+                _loc.GetString(ResourceKeys.Err_LoeschenFehlgeschlagen, ex.Message),
+                _loc.GetString(ResourceKeys.Btn_OK));
+        }
     }
 
     [RelayCommand]

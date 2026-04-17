@@ -62,18 +62,25 @@ public partial class TransactionsViewModel(
     [RelayCommand]
     private async Task DeleteTransaktion(Transaction transaktion)
     {
-        await _deleteTransactionUseCase.ExecuteAsync(transaktion.Id);
-        foreach (var gruppe in TransaktionsGruppen)
+        try
         {
-            if (gruppe.Remove(transaktion))
+            await _deleteTransactionUseCase.ExecuteAsync(transaktion.Id);
+            var gruppe = TransaktionsGruppen.FirstOrDefault(g => g.Contains(transaktion));
+            if (gruppe != null)
             {
+                gruppe.Remove(transaktion);
                 if (gruppe.Count == 0)
-                {
                     TransaktionsGruppen.Remove(gruppe);
-                }
-
-                break;
             }
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "DeleteTransaktion failed for transaction {Id}", transaktion.Id);
+            try { Finanzuebersicht.Core.Services.FileLogger.Append("TransactionsViewModel", $"DeleteTransaktion failed for {transaktion.Id}", ex); } catch { }
+            await _dialogService.ShowAlertAsync(
+                _loc.GetString(Finanzuebersicht.Resources.Strings.ResourceKeys.Err_Titel),
+                _loc.GetString(Finanzuebersicht.Resources.Strings.ResourceKeys.Err_LoeschenFehlgeschlagen, ex.Message),
+                _loc.GetString(Finanzuebersicht.Resources.Strings.ResourceKeys.Btn_OK));
         }
     }
 

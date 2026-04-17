@@ -7,6 +7,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Finanzuebersicht.Services;
+using Finanzuebersicht.Models;
 
 namespace Finanzuebersicht.Core.Services
 {
@@ -190,18 +191,18 @@ namespace Finanzuebersicht.Core.Services
                     archiveData = await _migrationService.MigrateAsync(archiveData, CurrentSchemaVersion);
                 }
 
-                // Deserialisiere die (ggf. migrierten) Daten
-                var categories = DeserializeFile<List<object>>(archiveData, "categories.json");
-                var transactions = DeserializeFile<List<object>>(archiveData, "transactions.json");
-                var recurring = DeserializeFile<List<object>>(archiveData, "recurring.json");
-                var budgets = DeserializeFile<List<object>>(archiveData, "budgets.json");
-                var sparziele = DeserializeFile<List<object>>(archiveData, "sparziele.json");
+                // Deserialisiere die (ggf. migrierten) Daten in konkrete Typen
+                var categories = DeserializeFile<List<Category>>(archiveData, "categories.json");
+                var transactions = DeserializeFile<List<Transaction>>(archiveData, "transactions.json");
+                var recurring = DeserializeFile<List<RecurringTransaction>>(archiveData, "recurring.json");
+                var budgets = DeserializeFile<List<CategoryBudget>>(archiveData, "budgets.json");
+                var sparziele = DeserializeFile<List<SparZiel>>(archiveData, "sparziele.json");
 
                 if (categories == null || transactions == null || recurring == null || budgets == null || sparziele == null)
                     return new RestoreResult { Success = false, ErrorMessage = "ZIP-Datei ist beschädigt oder unvollständig" };
 
                 // Atomare Restore mit Rollback-Capability
-                var restoreSuccess = await AtomicRestoreAsync(categories, transactions, recurring, budgets, sparziele, archiveData.Metadata);
+                var restoreSuccess = await AtomicRestoreAsync(categories, transactions, recurring, budgets, sparziele);
 
                 if (!restoreSuccess)
                     return new RestoreResult { Success = false, ErrorMessage = "Fehler beim Speichern der wiederhergestellten Daten" };
@@ -230,37 +231,87 @@ namespace Finanzuebersicht.Core.Services
         }
 
         /// <summary>
-        /// Führt atomare Wiederherstellung mit Validierung durch.
+        /// Stellt alle Daten aus dem Backup wieder her: löscht vorhandene Daten und schreibt Backup-Daten zurück.
+        /// Bei einem Fehler wird ein Rollback auf den vorherigen Zustand durchgeführt.
         /// </summary>
-        private async Task<bool> AtomicRestoreAsync<T>(List<T> categories, List<T> transactions, List<T> recurring, List<T> budgets, List<T> sparziele, BackupMetadata metadata)
-            where T : class
+        private async Task<bool> AtomicRestoreAsync(
+            List<Category> categories,
+            List<Transaction> transactions,
+            List<RecurringTransaction> recurring,
+            List<CategoryBudget> budgets,
+            List<SparZiel> sparziele)
         {
+            // Snapshot des aktuellen Zustands laden (für Rollback)
+            var snapshotCategories = await _dataService.GetCategoriesAsync();
+            var snapshotTransactions = await _dataService.GetTransactionsAsync(DateTime.MinValue, DateTime.MaxValue);
+            var snapshotRecurring = await _dataService.GetRecurringTransactionsAsync();
+            var snapshotBudgets = await _dataService.GetBudgetsAsync();
+            var snapshotSparziele = await _dataService.GetSparZieleAsync();
+
             try
             {
-                // Hinweis: Diese Implementierung nutzt die vorhandenen Save-Methoden.
-                // Für echte Atomarität würde man eine Transaktions-Wrapper-Schicht benötigen.
-                // Vorläufig: Serielle Operationen mit Fehlerbehandlung.
-
-                // Validiere, dass Daten nicht null sind
-                if (categories == null || transactions == null || recurring == null || budgets == null || sparziele == null)
-                {
-                    _logger?.LogError("Restore-Daten sind null");
-                    return false;
-                }
-
-                _logger?.LogInformation("Starte atomare Wiederherstellung mit {CatCount} Kategorien, {TxnCount} Transaktionen, {RecCount} Daueraufträgen, {BudCount} Budgets, {SparCount} Sparzielen",
+                _logger?.LogInformation("Starte Wiederherstellung: {CatCount} Kategorien, {TxnCount} Transaktionen, {RecCount} Daueraufträge, {BudCount} Budgets, {SparCount} Sparziele",
                     categories.Count, transactions.Count, recurring.Count, budgets.Count, sparziele.Count);
 
-                // TODO: Implementiere Transaktions-Wrapper für echte Atomarität
-                // Für MVP: Die Operationen sind idempotent, daher ist Rollback durch erneute
-                // Wiederherstellung eines früheren Backups möglich.
+                // Vorhandene Daten löschen
+                foreach (var c in snapshotCategories) await _dataService.DeleteCategoryAsync(c.Id);
+                foreach (var t in snapshotTransactions) await _dataService.DeleteTransactionAsync(t.Id);
+                foreach (var r in snapshotRecurring) await _dataService.DeleteRecurringTransactionAsync(r.Id);
+                foreach (var b in snapshotBudgets) await _dataService.DeleteBudgetAsync(b.Id);
+                foreach (var s in snapshotSparziele) await _dataService.DeleteSparZielAsync(s.Id);
+
+                // Backup-Daten speichern
+                foreach (var c in categories) await _dataService.SaveCategoryAsync(c);
+                foreach (var t in transactions) await _dataService.SaveTransactionAsync(t);
+                foreach (var r in recurring) await _dataService.SaveRecurringTransactionAsync(r);
+                foreach (var b in budgets) await _dataService.SaveBudgetAsync(b);
+                foreach (var s in sparziele) await _dataService.SaveSparZielAsync(s);
 
                 return true;
             }
             catch (Exception ex)
             {
-                _logger?.LogError(ex, "Fehler bei atomarer Wiederherstellung");
+                _logger?.LogError(ex, "Fehler bei der Wiederherstellung – starte Rollback");
+                await RollbackAsync(snapshotCategories, snapshotTransactions, snapshotRecurring, snapshotBudgets, snapshotSparziele);
                 return false;
+            }
+        }
+
+        private async Task RollbackAsync(
+            List<Category> categories,
+            List<Transaction> transactions,
+            List<RecurringTransaction> recurring,
+            List<CategoryBudget> budgets,
+            List<SparZiel> sparziele)
+        {
+            try
+            {
+                var currentCategories = await _dataService.GetCategoriesAsync();
+                foreach (var c in currentCategories) await _dataService.DeleteCategoryAsync(c.Id);
+
+                var currentTransactions = await _dataService.GetTransactionsAsync(DateTime.MinValue, DateTime.MaxValue);
+                foreach (var t in currentTransactions) await _dataService.DeleteTransactionAsync(t.Id);
+
+                var currentRecurring = await _dataService.GetRecurringTransactionsAsync();
+                foreach (var r in currentRecurring) await _dataService.DeleteRecurringTransactionAsync(r.Id);
+
+                var currentBudgets = await _dataService.GetBudgetsAsync();
+                foreach (var b in currentBudgets) await _dataService.DeleteBudgetAsync(b.Id);
+
+                var currentSparziele = await _dataService.GetSparZieleAsync();
+                foreach (var s in currentSparziele) await _dataService.DeleteSparZielAsync(s.Id);
+
+                foreach (var c in categories) await _dataService.SaveCategoryAsync(c);
+                foreach (var t in transactions) await _dataService.SaveTransactionAsync(t);
+                foreach (var r in recurring) await _dataService.SaveRecurringTransactionAsync(r);
+                foreach (var b in budgets) await _dataService.SaveBudgetAsync(b);
+                foreach (var s in sparziele) await _dataService.SaveSparZielAsync(s);
+
+                _logger?.LogInformation("Rollback erfolgreich abgeschlossen");
+            }
+            catch (Exception rollbackEx)
+            {
+                _logger?.LogCritical(rollbackEx, "Rollback fehlgeschlagen – Datenzustand ist möglicherweise inkonsistent");
             }
         }
 

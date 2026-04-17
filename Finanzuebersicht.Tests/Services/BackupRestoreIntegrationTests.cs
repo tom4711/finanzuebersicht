@@ -77,6 +77,8 @@ namespace Finanzuebersicht.Tests.Services
             _mockDataService.SetCategories(originalCategories);
             _mockDataService.SetTransactions(originalTransactions);
             _mockDataService.SetRecurring(originalRecurring);
+            _mockDataService.SetBudgets([new CategoryBudget { Id = "b1", KategorieId = "c1", Betrag = 300m }]);
+            _mockDataService.SetSparZiele([new SparZiel { Id = "s1", Titel = "Urlaub", ZielBetrag = 2000m }]);
 
             // Act 1: Create backup
             var backup = await service.CreateBackupAsync(backupPath);
@@ -86,15 +88,40 @@ namespace Finanzuebersicht.Tests.Services
             Assert.Equal(2, backup.EntityCounts["categories"]);
             Assert.Equal(2, backup.EntityCounts["transactions"]);
             Assert.Equal(1, backup.EntityCounts["recurring"]);
+            Assert.Equal(1, backup.EntityCounts["budgets"]);
+            Assert.Equal(1, backup.EntityCounts["sparziele"]);
             Assert.True(File.Exists(Path.Combine(backupPath, backup.FileName)));
 
-            // Act 2: Restore backup
+            // Act 2: Restore backup — clear state first to verify data is re-saved
+            _mockDataService.SetCategories([]);
+            _mockDataService.SetTransactions([]);
+            _mockDataService.SetRecurring([]);
+            _mockDataService.SetBudgets([]);
+            _mockDataService.SetSparZiele([]);
+
             var restoreResult = await service.RestoreBackupAsync(backupPath, backup.Id);
 
-            // Assert 2: Restore successful
+            // Assert 2: Restore successful and data actually written back
             Assert.True(restoreResult.Success, restoreResult.ErrorMessage);
             Assert.NotNull(restoreResult.RestoredMetadata);
             Assert.Equal(backup.Id, restoreResult.RestoredMetadata.Id);
+
+            var restoredCategories = await _mockDataService.GetCategoriesAsync();
+            var restoredTransactions = await _mockDataService.GetTransactionsAsync(DateTime.MinValue, DateTime.MaxValue);
+            var restoredRecurring = await _mockDataService.GetRecurringTransactionsAsync();
+            var restoredBudgets = await _mockDataService.GetBudgetsAsync();
+            var restoredSparziele = await _mockDataService.GetSparZieleAsync();
+
+            Assert.Equal(2, restoredCategories.Count);
+            Assert.Equal(2, restoredTransactions.Count);
+            Assert.Single(restoredRecurring);
+            Assert.Single(restoredBudgets);
+            Assert.Single(restoredSparziele);
+            Assert.Contains(restoredCategories, c => c.Id == "c1" && c.Name == "Groceries");
+            Assert.Contains(restoredTransactions, t => t.Id == "t1" && t.Betrag == 50.5m);
+            Assert.Contains(restoredRecurring, r => r.Id == "r1" && r.Titel == "Rent");
+            Assert.Contains(restoredBudgets, b => b.Id == "b1" && b.Betrag == 300m);
+            Assert.Contains(restoredSparziele, s => s.Id == "s1" && s.Titel == "Urlaub");
         }
 
         [Fact]
@@ -243,42 +270,71 @@ namespace Finanzuebersicht.Tests.Services
             private List<Category> _categories = [];
             private List<Transaction> _transactions = [];
             private List<RecurringTransaction> _recurring = [];
+            private List<CategoryBudget> _budgets = [];
+            private List<SparZiel> _sparziele = [];
 
             public void SetCategories(IEnumerable<Category> categories) => _categories = categories.ToList();
             public void SetTransactions(IEnumerable<Transaction> transactions) => _transactions = transactions.ToList();
             public void SetRecurring(IEnumerable<RecurringTransaction> recurring) => _recurring = recurring.ToList();
+            public void SetBudgets(IEnumerable<CategoryBudget> budgets) => _budgets = budgets.ToList();
+            public void SetSparZiele(IEnumerable<SparZiel> sparziele) => _sparziele = sparziele.ToList();
 
-            public Task<List<Category>> GetCategoriesAsync() => Task.FromResult(_categories);
-            public Task SaveCategoryAsync(Category category) => Task.CompletedTask;
-            public Task DeleteCategoryAsync(string id) => Task.CompletedTask;
+            public Task<List<Category>> GetCategoriesAsync() => Task.FromResult(_categories.ToList());
+            public Task SaveCategoryAsync(Category category)
+            {
+                var idx = _categories.FindIndex(c => c.Id == category.Id);
+                if (idx >= 0) _categories[idx] = category; else _categories.Add(category);
+                return Task.CompletedTask;
+            }
+            public Task DeleteCategoryAsync(string id) { _categories.RemoveAll(c => c.Id == id); return Task.CompletedTask; }
 
             public Task<List<Transaction>> GetTransactionsAsync(DateTime vonDatum, DateTime bisDatum)
                 => Task.FromResult(_transactions.Where(t => t.Datum >= vonDatum && t.Datum <= bisDatum).ToList());
-            public Task SaveTransactionAsync(Transaction transaction) => Task.CompletedTask;
-            public Task DeleteTransactionAsync(string id) => Task.CompletedTask;
+            public Task SaveTransactionAsync(Transaction transaction)
+            {
+                var idx = _transactions.FindIndex(t => t.Id == transaction.Id);
+                if (idx >= 0) _transactions[idx] = transaction; else _transactions.Add(transaction);
+                return Task.CompletedTask;
+            }
+            public Task DeleteTransactionAsync(string id) { _transactions.RemoveAll(t => t.Id == id); return Task.CompletedTask; }
             public Task<Category?> GetMostCommonCategoryForPayeeAsync(
                 string payee,
                 double confidenceThreshold = 0.5,
                 CancellationToken cancellationToken = default)
                 => Task.FromResult<Category?>(null);
 
-            public Task<List<RecurringTransaction>> GetRecurringTransactionsAsync() => Task.FromResult(_recurring);
-            public Task SaveRecurringTransactionAsync(RecurringTransaction recurring) => Task.CompletedTask;
-            public Task DeleteRecurringTransactionAsync(string id) => Task.CompletedTask;
+            public Task<List<RecurringTransaction>> GetRecurringTransactionsAsync() => Task.FromResult(_recurring.ToList());
+            public Task SaveRecurringTransactionAsync(RecurringTransaction recurring)
+            {
+                var idx = _recurring.FindIndex(r => r.Id == recurring.Id);
+                if (idx >= 0) _recurring[idx] = recurring; else _recurring.Add(recurring);
+                return Task.CompletedTask;
+            }
+            public Task DeleteRecurringTransactionAsync(string id) { _recurring.RemoveAll(r => r.Id == id); return Task.CompletedTask; }
 
             public Task GeneratePendingRecurringTransactionsAsync() => Task.CompletedTask;
 
             public Task<YearSummary> GetYearSummaryAsync(int year) => Task.FromResult(new YearSummary());
             public Task<MonthSummary> GetMonthSummaryAsync(int year, int month) => Task.FromResult(new MonthSummary());
 
-            public Task<List<CategoryBudget>> GetBudgetsAsync() => Task.FromResult(new List<CategoryBudget>());
-            public Task SaveBudgetAsync(CategoryBudget budget) => Task.CompletedTask;
-            public Task DeleteBudgetAsync(string id) => Task.CompletedTask;
+            public Task<List<CategoryBudget>> GetBudgetsAsync() => Task.FromResult(_budgets.ToList());
+            public Task SaveBudgetAsync(CategoryBudget budget)
+            {
+                var idx = _budgets.FindIndex(b => b.Id == budget.Id);
+                if (idx >= 0) _budgets[idx] = budget; else _budgets.Add(budget);
+                return Task.CompletedTask;
+            }
+            public Task DeleteBudgetAsync(string id) { _budgets.RemoveAll(b => b.Id == id); return Task.CompletedTask; }
             public Task<CategoryBudget?> GetBudgetForCategoryAsync(string kategorieId, int year, int month) => Task.FromResult<CategoryBudget?>(null);
 
-            public Task<List<SparZiel>> GetSparZieleAsync() => Task.FromResult(new List<SparZiel>());
-            public Task SaveSparZielAsync(SparZiel sparZiel) => Task.CompletedTask;
-            public Task DeleteSparZielAsync(string id) => Task.CompletedTask;
+            public Task<List<SparZiel>> GetSparZieleAsync() => Task.FromResult(_sparziele.ToList());
+            public Task SaveSparZielAsync(SparZiel sparZiel)
+            {
+                var idx = _sparziele.FindIndex(s => s.Id == sparZiel.Id);
+                if (idx >= 0) _sparziele[idx] = sparZiel; else _sparziele.Add(sparZiel);
+                return Task.CompletedTask;
+            }
+            public Task DeleteSparZielAsync(string id) { _sparziele.RemoveAll(s => s.Id == id); return Task.CompletedTask; }
         }
 
         private class MockSettingsService : SettingsService
