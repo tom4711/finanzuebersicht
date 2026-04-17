@@ -16,7 +16,7 @@
 
 ---
 
-## 🔧 v1.1 — Qualität & Performance *(geplant)*
+## 🔧 v1.1 — Qualität & Performance *(geplant)* · [Milestone](https://github.com/tom4711/finanzuebersicht/milestone/5)
 
 Fokus: Code-Qualität, technische Schulden abbauen, Performance verbessern.
 
@@ -29,7 +29,7 @@ Fokus: Code-Qualität, technische Schulden abbauen, Performance verbessern.
 
 ---
 
-## 📊 v1.2 — Export & Auswertungen *(geplant)*
+## 📊 v1.2 — Export & Auswertungen *(geplant)* · [Milestone](https://github.com/tom4711/finanzuebersicht/milestone/6)
 
 Fokus: Erweiterte Exportmöglichkeiten für Steuern und Analysen.
 
@@ -39,7 +39,7 @@ Fokus: Erweiterte Exportmöglichkeiten für Steuern und Analysen.
 
 ---
 
-## 🔐 v2.0 — Sicherheit & Multi-Account *(geplant)*
+## 🔐 v2.0 — Sicherheit & Multi-Account *(geplant)* · [Milestone](https://github.com/tom4711/finanzuebersicht/milestone/7)
 
 Fokus: Größere Architekturänderungen – eigener Release-Zyklus.
 
