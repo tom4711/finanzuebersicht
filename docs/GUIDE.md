@@ -68,8 +68,11 @@ version.json                       ← Nerdbank.GitVersioning config
 Directory.Build.props              ← Shared MSBuild properties
 
 Finanzuebersicht.Core/             ← Shared library (net10.0)
-├── Models/                        ← Transaction, Category, RecurringTransaction, etc.
-└── Services/                      ← IDataService, LocalDataService, SettingsService
+├── Models/                        ← Transaction, Category, RecurringTransaction, CategoryBudget, SparZiel, etc.
+└── Services/                      ← IDataService, LocalDataService, SettingsService, BackupService, DataMigrationService
+
+Finanzuebersicht.Application/      ← Use Cases / Application Layer (net10.0)
+Finanzuebersicht.Infrastructure/   ← DI-Registrierung, Infrastrukturdienste (net10.0)
 
 Finanzuebersicht/                  ← MAUI app (net10.0-ios, net10.0-maccatalyst)
 ├── MauiProgram.cs
@@ -78,12 +81,12 @@ Finanzuebersicht/                  ← MAUI app (net10.0-ios, net10.0-maccatalys
 ├── ViewModels/                    ← DashboardVM, TransactionsVM, SettingsVM, etc.
 ├── Views/                         ← XAML pages
 ├── Converters/                    ← Value converters for UI
-├── Resources/Strings/             ← AppResources.resx (+ .en.resx)
+├── Resources/Strings/             ← AppResources.resx (+ .de.resx)
 ├── Resources/Styles/              ← Colors.xaml, Styles.xaml
 └── Platforms/                     ← iOS, MacCatalyst
 
 Finanzuebersicht.Tests/            ← xUnit tests (net10.0)
-└── Services/                      ← LocalDataService, InitializationService tests
+└── Services/                      ← BackupService, DataMigrationService, InitializationService tests
 ```
 
 ## 7. Entwicklungs-Konventionen
@@ -133,9 +136,20 @@ Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>
 ## 9. Backup & Restore
 
 Nutzer können in den Einstellungen:
-- ✅ Backup erstellen (Export zu Ordner)
+- ✅ Backup erstellen (ZIP-Export mit allen Daten inkl. Budgets & Sparziele)
+- ✅ Backup wiederherstellen mit automatischer Schema-Migration
 - ✅ CSV-Import durchführen (mit Auto-Kategorisierung)
-- ✅ Daten exportieren
+
+### Schema-Versionierung
+
+Backups sind versioniert (`SchemaVersion` in den Metadaten). Der `DataMigrationService` migriert ältere Backups beim Restore automatisch auf die aktuelle Version:
+
+| Version | Inhalt |
+|---------|--------|
+| v1 | categories, transactions, recurring |
+| v2 | + budgets, sparziele |
+
+Neue Migratoren können als `IDataMigrator`-Implementierungen in DI registriert werden.
 
 ## 10. Versionierung
 
@@ -158,8 +172,10 @@ nbgv set-version <new-version>
 
 ## 11. CI/CD
 
-- **Quick Checks:** Unit Tests, Linter auf Ubuntu (schnell, billig)
-- **Full MAUI Build:** Nur für PRs gegen `main` und `main`-Pushes
+- **Quick Checks:** Unit Tests auf Ubuntu (schnell, günstig) — bei jedem Branch-Push
+- **Full MAUI Build:** Nur für PRs gegen `main` und `main`-Pushes (macOS-Runner)
+- **Pre-Release:** Bei jedem `main`-Push → automatisches Beta-Release mit Artifacts (macOS + Windows)
+- **Release:** Bei Tag-Push `v*` oder manuellem Trigger → Artifacts werden an GitHub Release angehängt
 - **Explizit triggern:** Label `run-maui` zur PR hinzufügen oder manuell via Actions starten
 
 ## 12. Fragen & Mitwirken

@@ -6,6 +6,7 @@
 
 [![CI](https://github.com/tom4711/finanzuebersicht/actions/workflows/ci.yml/badge.svg)](https://github.com/tom4711/finanzuebersicht/actions/workflows/ci.yml)
 [![Pre-Release](https://github.com/tom4711/finanzuebersicht/actions/workflows/prerelease.yml/badge.svg)](https://github.com/tom4711/finanzuebersicht/actions/workflows/prerelease.yml)
+[![Release](https://github.com/tom4711/finanzuebersicht/actions/workflows/release.yml/badge.svg)](https://github.com/tom4711/finanzuebersicht/actions/workflows/release.yml)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
 [![.NET 10](https://img.shields.io/badge/.NET-10-blueviolet)](https://dotnet.microsoft.com/download)
 
@@ -17,10 +18,14 @@ Kurz: .NET 10 + MAUI, Multi-Language UI (Deutsch & Englisch), MVVM-Architektur.
 
 ## Kern-Features
 
-- Dashboard mit Monatsübersicht
+- Dashboard mit Monatsübersicht und Trend-Indikator
 - Transaktionen anlegen, editieren und filtern
 - Wiederkehrende Buchungen (Daueraufträge)
 - Kategorien mit Icon und Farbe
+- **Monatsbudgets** pro Kategorie mit Fortschrittsanzeige
+- **Sparziele** mit Fortschrittsbalken
+- **Backup & Restore** mit automatischer Schema-Migration (v1 → v2+)
+- Accessibility / VoiceOver-Unterstützung (iOS & macOS)
 - Dark Mode Unterstützung
 - Multi-Language Support (Deutsch & Englisch)
 
@@ -93,23 +98,15 @@ See [Quick Start (docs/QUICK_START.md)](docs/QUICK_START.md) for a concise guide
 ## Versionierung & CI
 
 - Nerdbank.GitVersioning (`version.json`) steuert Versionsnummern
-- CI / Pre-Release Workflows in `.github/workflows/`
+- CI / Pre-Release / Release Workflows in `.github/workflows/`
 
 Full MAUI build (macCatalyst)
 
 - Quick checks (unit tests, linters) werden bei Push auf Branches ausgeführt (ubuntu runner) — das spart macOS-Runner-Minuten.
 - Der vollständige MAUI macCatalyst-Build läuft für Pull Requests gegen `main` und für `main`-Pushes. Dadurch werden macOS-Ressourcen nur bei echten Integrationsprüfungen verwendet.
+- **Pre-Release:** Bei jedem Push auf `main` wird automatisch ein Beta-Release mit Artifacts erstellt.
+- **Release:** Bei Tag-Push (`v*`) oder manuellem Trigger werden Build-Artifacts (macOS + Windows) an das GitHub Release gehängt.
 - Um einen vollständigen MAUI-Build für einen PR explizit anzustoßen, füge das Label `run-maui` zur PR hinzu oder starte den Workflow manuell über Actions → "CI - Split quick and full" → Run workflow.
-- Wenn du lokal einen vollständigen Build machen willst, installiere die Workloads und baue mit:
-
-```bash
-# Workloads installieren (macOS)
-dotnet workload install maui
-# Mac Catalyst build
-dotnet build Finanzuebersicht/Finanzuebersicht.csproj -f net10.0-maccatalyst
-```
-
-Hinweis: Die CI-Strategie reduziert Kosten und macht Fehler (z. B. missing workloads oder MAUI-spezifische Probleme) früher sichtbar in PRs, bevor sie in main gemerged werden.
 
 ## Mitmachen
 
