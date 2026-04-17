@@ -92,6 +92,7 @@ See [Quick Start (docs/QUICK_START.md)](docs/QUICK_START.md) for a concise guide
 
 ## Dokumentation
 
+- Roadmap & geplante Features: [docs/ROADMAP.md](docs/ROADMAP.md)
 - Kategorisierungs-Regeln: [docs/CATEGORIZATION_RULES.md](docs/CATEGORIZATION_RULES.md)
 - (Einige alte Docs wurden entfernt oder zusammengeführt.)
 
