@@ -62,18 +62,28 @@ public partial class TransactionsViewModel(
     [RelayCommand]
     private async Task DeleteTransaktion(Transaction transaktion)
     {
-        await _deleteTransactionUseCase.ExecuteAsync(transaktion.Id);
-        foreach (var gruppe in TransaktionsGruppen)
+        try
         {
-            if (gruppe.Remove(transaktion))
+            await _deleteTransactionUseCase.ExecuteAsync(transaktion.Id);
+            foreach (var gruppe in TransaktionsGruppen)
             {
-                if (gruppe.Count == 0)
+                if (gruppe.Remove(transaktion))
                 {
-                    TransaktionsGruppen.Remove(gruppe);
-                }
+                    if (gruppe.Count == 0)
+                    {
+                        TransaktionsGruppen.Remove(gruppe);
+                    }
 
-                break;
+                    break;
+                }
             }
+        }
+        catch
+        {
+            await _dialogService.ShowAlertAsync(
+                _loc.GetString(Finanzuebersicht.Resources.Strings.ResourceKeys.Err_Titel),
+                _loc.GetString(Finanzuebersicht.Resources.Strings.ResourceKeys.Err_SpeichernFehlgeschlagen, transaktion.Titel),
+                _loc.GetString(Finanzuebersicht.Resources.Strings.ResourceKeys.Btn_OK));
         }
     }
 

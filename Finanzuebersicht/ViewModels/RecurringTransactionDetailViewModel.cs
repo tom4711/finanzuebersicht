@@ -8,6 +8,7 @@ using Finanzuebersicht.Application.UseCases.RecurringTransactions;
 using Finanzuebersicht.Models;
 using Finanzuebersicht.Services;
 using Finanzuebersicht.Views;
+using Finanzuebersicht.Resources.Strings;
 
 namespace Finanzuebersicht.ViewModels;
 
@@ -19,6 +20,8 @@ public partial class RecurringTransactionDetailViewModel(
     RemoveRecurringExceptionUseCase removeRecurringExceptionUseCase,
     ITransactionValidationService validationService,
     INavigationService navigationService,
+    IDialogService dialogService,
+    ILocalizationService localizationService,
     ILogger<RecurringTransactionDetailViewModel>? logger = null,
     Finanzuebersicht.Core.Services.IClock? clock = null) : ObservableObject
 {
@@ -29,6 +32,8 @@ public partial class RecurringTransactionDetailViewModel(
     private readonly ITransactionValidationService _validationService = validationService;
     private RecurringTransaction? _existing;
     private readonly INavigationService _navigationService = navigationService;
+    private readonly IDialogService _dialogService = dialogService;
+    private readonly ILocalizationService _loc = localizationService;
     private readonly ILogger<RecurringTransactionDetailViewModel>? _logger = logger;
     private readonly Finanzuebersicht.Core.Services.IClock _clock = clock ?? Finanzuebersicht.Core.Services.SystemClock.Instance;
 
@@ -138,8 +143,22 @@ public partial class RecurringTransactionDetailViewModel(
                 SelectedKategorie != null,
                 System.Globalization.CultureInfo.CurrentCulture,
                 out var betrag,
-                out _))
+                out var error))
+        {
+            var message = error switch
+            {
+                TransactionInputError.InvalidAmountFormat => _loc.GetString(ResourceKeys.Err_UngueltigerBetrag),
+                TransactionInputError.AmountMustBePositive => _loc.GetString(ResourceKeys.Err_BetragGroesserNull),
+                TransactionInputError.TitleRequired => _loc.GetString(ResourceKeys.Err_TitelErforderlich),
+                TransactionInputError.CategoryRequired => _loc.GetString(ResourceKeys.Err_KategorieErforderlich),
+                _ => _loc.GetString(ResourceKeys.Err_UngueltigerBetrag)
+            };
+            await _dialogService.ShowAlertAsync(
+                _loc.GetString(ResourceKeys.Err_Titel),
+                message,
+                _loc.GetString(ResourceKeys.Btn_OK));
             return;
+        }
 
         // parse numeric text fields (Entry bindings)
         if (!int.TryParse(IntervalFactorText, out var parsedFactor) || parsedFactor <= 0)
