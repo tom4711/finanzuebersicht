@@ -57,8 +57,9 @@ public abstract class JsonDataStoreBase : IDisposable
     }
 
     /// <summary>
-    /// Atomically replaces the entire collection in the JSON file with the given items.
-    /// O(1) I/O regardless of collection size — use for bulk restore operations.
+    /// Replaces the entire collection in the JSON file with the given items.
+    /// Thread-safe via <see cref="StoreLock"/>. One file write regardless of collection size —
+    /// use for bulk restore operations instead of individual Save/Delete calls.
     /// </summary>
     protected async Task ReplaceAllAsync<T>(string path, IEnumerable<T> items)
     {
