@@ -1,6 +1,6 @@
 using Finanzuebersicht.Models;
 
-namespace Finanzuebersicht.Core.Services;
+namespace Finanzuebersicht.Services;
 
 /// <summary>
 /// Plugin interface for transaction categorization strategies.

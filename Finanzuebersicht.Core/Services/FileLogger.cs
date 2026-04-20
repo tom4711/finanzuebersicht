@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 
-namespace Finanzuebersicht.Core.Services
+namespace Finanzuebersicht.Services
 {
     public static class FileLogger
     {
@@ -16,7 +16,7 @@ namespace Finanzuebersicht.Core.Services
                 lock (_lock)
                 {
                     Directory.CreateDirectory(LogDir);
-                    var ts = Finanzuebersicht.Core.Services.SystemClock.Instance.UtcNow.ToString("o");
+                    var ts = Finanzuebersicht.Services.SystemClock.Instance.UtcNow.ToString("o");
                     var line = $"[{ts}] {tag}: {message}";
                     if (ex != null)
                         line += Environment.NewLine + ex.ToString();

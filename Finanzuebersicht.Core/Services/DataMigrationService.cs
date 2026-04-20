@@ -1,4 +1,4 @@
-namespace Finanzuebersicht.Core.Services;
+namespace Finanzuebersicht.Services;
 
 /// <summary>
 /// Verkettet Migrations-Schritte um ein Backup beliebiger Version

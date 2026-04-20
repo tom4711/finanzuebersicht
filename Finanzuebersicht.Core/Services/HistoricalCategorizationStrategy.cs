@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 using Finanzuebersicht.Models;
 using Finanzuebersicht.Services;
 
-namespace Finanzuebersicht.Core.Services;
+namespace Finanzuebersicht.Services;
 
 /// <summary>
 /// Categorizes transactions based on historical categorization patterns.

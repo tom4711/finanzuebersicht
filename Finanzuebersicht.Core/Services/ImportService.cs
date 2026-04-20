@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 using Finanzuebersicht.Models;
 using Finanzuebersicht.Services;
 
-namespace Finanzuebersicht.Core.Services
+namespace Finanzuebersicht.Services
 {
     public class ImportService(
         IEnumerable<IStatementParser> parsers,
@@ -166,7 +166,7 @@ namespace Finanzuebersicht.Core.Services
                                     try
                                     {
                                         var categories = await _categoryRepository.GetCategoriesAsync().ConfigureAwait(false);
-                                        var unclassifiedCategory = categories?.FirstOrDefault(c => c.SystemKey == Finanzuebersicht.Core.Constants.SystemCategoryKeys.Unkategorisiert || c.Name == "Unkategorisiert");
+                                        var unclassifiedCategory = categories?.FirstOrDefault(c => c.SystemKey == Finanzuebersicht.Constants.SystemCategoryKeys.Unkategorisiert || c.Name == "Unkategorisiert");
                                         if (unclassifiedCategory == null)
                                         {
                                             unclassifiedCategory = new Finanzuebersicht.Models.Category
@@ -175,7 +175,7 @@ namespace Finanzuebersicht.Core.Services
                                                 Icon = "❓",
                                                 Color = "#A2845E",
                                                 Typ = Finanzuebersicht.Models.TransactionType.Ausgabe,
-                                                SystemKey = Finanzuebersicht.Core.Constants.SystemCategoryKeys.Unkategorisiert
+                                                SystemKey = Finanzuebersicht.Constants.SystemCategoryKeys.Unkategorisiert
                                             };
                                             await _categoryRepository.SaveCategoryAsync(unclassifiedCategory).ConfigureAwait(false);
                                             try { FileLogger.Append("ImportService", "created default 'Unkategorisiert' category"); } catch { }

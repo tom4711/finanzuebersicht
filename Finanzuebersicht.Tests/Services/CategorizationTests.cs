@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 using NSubstitute;
 using Xunit;
 using Microsoft.Extensions.Logging;
-using Finanzuebersicht.Core.Services;
-using Finanzuebersicht.Models;
 using Finanzuebersicht.Services;
+using Finanzuebersicht.Models;
 
 namespace Finanzuebersicht.Tests.Services
 {
@@ -23,8 +22,8 @@ namespace Finanzuebersicht.Tests.Services
             var categories = new List<Category>
             {
                 new Category { Id = "1", Name = "Groceries" },
-                new Category { Id = "2", Name = "Transport", SystemKey = Finanzuebersicht.Core.Constants.SystemCategoryKeys.Transport },
-                new Category { Id = "3", Name = "Unkategorisiert", SystemKey = Finanzuebersicht.Core.Constants.SystemCategoryKeys.Unkategorisiert }
+                new Category { Id = "2", Name = "Transport", SystemKey = Finanzuebersicht.Constants.SystemCategoryKeys.Transport },
+                new Category { Id = "3", Name = "Unkategorisiert", SystemKey = Finanzuebersicht.Constants.SystemCategoryKeys.Unkategorisiert }
             };
 
             var dto = new TransactionDto { Zahlungsempfaenger = "REWE Supermarket" };
@@ -59,7 +58,7 @@ namespace Finanzuebersicht.Tests.Services
             var categories = new List<Category>
             {
                 new Category { Id = "1", Name = "Groceries" },
-                new Category { Id = "2", Name = "Unkategorisiert", SystemKey = Finanzuebersicht.Core.Constants.SystemCategoryKeys.Unkategorisiert }
+                new Category { Id = "2", Name = "Unkategorisiert", SystemKey = Finanzuebersicht.Constants.SystemCategoryKeys.Unkategorisiert }
             };
 
             var dto = new TransactionDto { Zahlungsempfaenger = "Unknown Store" };
@@ -88,7 +87,7 @@ namespace Finanzuebersicht.Tests.Services
             var categories = new List<Category>
             {
                 new Category { Id = "1", Name = "Transport" },
-                new Category { Id = "2", Name = "Unkategorisiert", SystemKey = Finanzuebersicht.Core.Constants.SystemCategoryKeys.Unkategorisiert }
+                new Category { Id = "2", Name = "Unkategorisiert", SystemKey = Finanzuebersicht.Constants.SystemCategoryKeys.Unkategorisiert }
             };
 
             var dto = new TransactionDto { Zahlungsempfaenger = "DB Bahn" };
@@ -252,7 +251,7 @@ namespace Finanzuebersicht.Tests.Services
             var categories = new List<Category>
             {
                 category,
-                new Category { Id = "2", Name = "Unkategorisiert", SystemKey = Finanzuebersicht.Core.Constants.SystemCategoryKeys.Unkategorisiert }
+                new Category { Id = "2", Name = "Unkategorisiert", SystemKey = Finanzuebersicht.Constants.SystemCategoryKeys.Unkategorisiert }
             };
 
             var dto = new TransactionDto { Zahlungsempfaenger = "REWE" };

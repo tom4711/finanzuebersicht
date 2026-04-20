@@ -16,7 +16,7 @@ public class DeleteCategoryUseCaseTests
         categoryRepository.GetCategoriesAsync().Returns(new List<Category>
         {
             new() { Id = "cat-delete", Name = "Zu löschen" },
-            new() { Id = "cat-default", Name = "Sonstiges", SystemKey = Finanzuebersicht.Core.Constants.SystemCategoryKeys.Sonstiges }
+            new() { Id = "cat-default", Name = "Sonstiges", SystemKey = Finanzuebersicht.Constants.SystemCategoryKeys.Sonstiges }
         });
         transactionRepository.GetTransactionsAsync(DateTime.MinValue, DateTime.MaxValue).Returns(new List<Transaction>
         {
@@ -61,7 +61,7 @@ public class DeleteCategoryUseCaseTests
         await sut.ExecuteAsync("cat-delete");
 
         await categoryRepository.Received(1).SaveCategoryAsync(
-            Arg.Is<Category>(c => c.SystemKey == Finanzuebersicht.Core.Constants.SystemCategoryKeys.Sonstiges));
+            Arg.Is<Category>(c => c.SystemKey == Finanzuebersicht.Constants.SystemCategoryKeys.Sonstiges));
         await transactionRepository.Received(1).SaveTransactionAsync(Arg.Any<Transaction>());
         await categoryRepository.Received(1).DeleteCategoryAsync("cat-delete");
     }

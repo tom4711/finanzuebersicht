@@ -3,7 +3,6 @@ using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Finanzuebersicht.Core.Services;
 using Finanzuebersicht.Services;
 using Finanzuebersicht.Resources.Strings;
 
@@ -17,7 +16,7 @@ public partial class SettingsViewModel : ObservableObject
     private readonly ILocalizationService _loc;
     private readonly IDialogService _dialogService;
     private readonly IBackupService? _backupService;
-    private readonly Finanzuebersicht.Core.Services.IClock _clock;
+    private readonly Finanzuebersicht.Services.IClock _clock;
 
 
     [ObservableProperty]
@@ -44,7 +43,7 @@ public partial class SettingsViewModel : ObservableObject
         IDialogService dialogService,
         IBackupService? backupService = null,
         ILogger<SettingsViewModel>? logger = null,
-        Finanzuebersicht.Core.Services.IClock? clock = null)
+        Finanzuebersicht.Services.IClock? clock = null)
     {
         _settings = settings;
         _themeService = themeService;
@@ -52,7 +51,7 @@ public partial class SettingsViewModel : ObservableObject
         _loc = localizationService;
         _dialogService = dialogService;
         _backupService = backupService;
-        _clock = clock ?? Finanzuebersicht.Core.Services.SystemClock.Instance;
+        _clock = clock ?? Finanzuebersicht.Services.SystemClock.Instance;
 
         // Version aus Assembly-Metadaten lesen (von Nerdbank.GitVersioning gesetzt)
         var asm = Assembly.GetExecutingAssembly();

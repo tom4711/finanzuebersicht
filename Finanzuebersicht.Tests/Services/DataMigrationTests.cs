@@ -1,5 +1,5 @@
-using Finanzuebersicht.Core.Services;
-using Finanzuebersicht.Core.Services.Migrations;
+using Finanzuebersicht.Services;
+using Finanzuebersicht.Services.Migrations;
 
 namespace Finanzuebersicht.Tests.Services;
 

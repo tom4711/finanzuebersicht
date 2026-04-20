@@ -1,7 +1,6 @@
 using Xunit;
-using Finanzuebersicht.Core.Services;
-using Finanzuebersicht.Models;
 using Finanzuebersicht.Services;
+using Finanzuebersicht.Models;
 using Finanzuebersicht.Application.UseCases.Categories;
 
 namespace Finanzuebersicht.Tests.Services
@@ -33,7 +32,7 @@ namespace Finanzuebersicht.Tests.Services
                 Icon = "📦",
                 Color = "#A2845E",
                 Typ = TransactionType.Ausgabe,
-                SystemKey = Finanzuebersicht.Core.Constants.SystemCategoryKeys.Sonstiges
+                SystemKey = Finanzuebersicht.Constants.SystemCategoryKeys.Sonstiges
             };
 
             await dataService.SaveCategoryAsync(groceriesCategory);
@@ -106,7 +105,7 @@ namespace Finanzuebersicht.Tests.Services
                 Icon = "📦",
                 Color = "#A2845E",
                 Typ = TransactionType.Ausgabe,
-                SystemKey = Finanzuebersicht.Core.Constants.SystemCategoryKeys.Sonstiges
+                SystemKey = Finanzuebersicht.Constants.SystemCategoryKeys.Sonstiges
             };
 
             await dataService.SaveCategoryAsync(utilitiesCategory);
@@ -178,7 +177,7 @@ namespace Finanzuebersicht.Tests.Services
 
             // Assert - fallback was created
             var categories = await dataService.GetCategoriesAsync();
-            var fallback = categories.FirstOrDefault(c => c.SystemKey == Finanzuebersicht.Core.Constants.SystemCategoryKeys.Sonstiges);
+            var fallback = categories.FirstOrDefault(c => c.SystemKey == Finanzuebersicht.Constants.SystemCategoryKeys.Sonstiges);
             
             Assert.NotNull(fallback);
             
@@ -212,7 +211,7 @@ namespace Finanzuebersicht.Tests.Services
                 Icon = "📦",
                 Color = "#A2845E",
                 Typ = TransactionType.Ausgabe,
-                SystemKey = Finanzuebersicht.Core.Constants.SystemCategoryKeys.Sonstiges
+                SystemKey = Finanzuebersicht.Constants.SystemCategoryKeys.Sonstiges
             };
 
             await dataService.SaveCategoryAsync(entertainmentCategory);

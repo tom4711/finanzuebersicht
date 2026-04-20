@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 using Finanzuebersicht.Services;
 using Finanzuebersicht.Models;
 
-namespace Finanzuebersicht.Core.Services
+namespace Finanzuebersicht.Services
 {
     /// <summary>
     /// Implementierung des Backup- und Restore-Services mit Versionierung und Validierung.
@@ -19,7 +19,7 @@ namespace Finanzuebersicht.Core.Services
         private readonly IDataService _dataService;
         private readonly SettingsService _settingsService;
         private readonly ILogger<BackupService>? _logger;
-        private readonly Finanzuebersicht.Core.Services.IClock _clock;
+        private readonly Finanzuebersicht.Services.IClock _clock;
         private readonly DataMigrationService _migrationService;
 
         private static readonly JsonSerializerOptions BackupJsonOptions = new()
@@ -31,13 +31,13 @@ namespace Finanzuebersicht.Core.Services
         private const string BackupMetadataFileName = "backup.metadata.json";
         private const int CurrentSchemaVersion = 2;
 
-        public BackupService(IDataService dataService, SettingsService settingsService, DataMigrationService migrationService, ILogger<BackupService>? logger = null, Finanzuebersicht.Core.Services.IClock? clock = null)
+        public BackupService(IDataService dataService, SettingsService settingsService, DataMigrationService migrationService, ILogger<BackupService>? logger = null, Finanzuebersicht.Services.IClock? clock = null)
         {
             _dataService = dataService ?? throw new ArgumentNullException(nameof(dataService));
             _settingsService = settingsService ?? throw new ArgumentNullException(nameof(settingsService));
             _migrationService = migrationService ?? throw new ArgumentNullException(nameof(migrationService));
             _logger = logger;
-            _clock = clock ?? Finanzuebersicht.Core.Services.SystemClock.Instance;
+            _clock = clock ?? Finanzuebersicht.Services.SystemClock.Instance;
         }
 
         /// <summary>

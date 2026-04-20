@@ -7,7 +7,7 @@ using Finanzuebersicht.Services;
 using Xunit;
 using NSubstitute;
 
-namespace Finanzuebersicht.Tests.Core.Services;
+namespace Finanzuebersicht.Tests.Services;
 
 public class RecurringGenerationServiceTests
 {

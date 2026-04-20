@@ -48,7 +48,7 @@ public class BarChartDrawable : IDrawable
     }
 
     public IReadOnlyList<MonthSummary> Months { get; set; } = [];
-    public int CurrentMonth { get; set; } = Finanzuebersicht.Core.Services.SystemClock.Instance.Today.Month;
+    public int CurrentMonth { get; set; } = Finanzuebersicht.Services.SystemClock.Instance.Today.Month;
 
     /// <summary>Monat (1–12) für den Forecast-Balken, 0 = kein Forecast.</summary>
     public int ForecastMonth { get; set; }

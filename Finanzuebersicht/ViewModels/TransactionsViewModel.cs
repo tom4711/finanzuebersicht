@@ -8,7 +8,7 @@ using Finanzuebersicht.Views;
 using Microsoft.Maui.Storage;
 using System.Linq;
 using Microsoft.Extensions.Logging;
-using Finanzuebersicht.Core.Services;
+using Finanzuebersicht.Services;
 
 namespace Finanzuebersicht.ViewModels;
 
@@ -76,7 +76,7 @@ public partial class TransactionsViewModel(
         catch (Exception ex)
         {
             _logger?.LogError(ex, "DeleteTransaktion failed for transaction {Id}", transaktion.Id);
-            try { Finanzuebersicht.Core.Services.FileLogger.Append("TransactionsViewModel", $"DeleteTransaktion failed for {transaktion.Id}", ex); } catch { }
+            try { Finanzuebersicht.Services.FileLogger.Append("TransactionsViewModel", $"DeleteTransaktion failed for {transaktion.Id}", ex); } catch { }
             await _dialogService.ShowAlertAsync(
                 _loc.GetString(Finanzuebersicht.Resources.Strings.ResourceKeys.Err_Titel),
                 _loc.GetString(Finanzuebersicht.Resources.Strings.ResourceKeys.Err_LoeschenFehlgeschlagen, ex.Message),
@@ -90,7 +90,7 @@ public partial class TransactionsViewModel(
         try
         {
             _logger?.LogDebug("GoToDetail called for transaction {Id}", transaktion?.Id ?? "(new)");
-            try { Finanzuebersicht.Core.Services.FileLogger.Append("TransactionsViewModel", $"GoToDetail called for {transaktion?.Id ?? "(new)"}"); } catch { }
+            try { Finanzuebersicht.Services.FileLogger.Append("TransactionsViewModel", $"GoToDetail called for {transaktion?.Id ?? "(new)"}"); } catch { }
 
             var parameter = new Dictionary<string, object>();
             if (transaktion != null)
@@ -101,7 +101,7 @@ public partial class TransactionsViewModel(
             if (_navigationService == null)
             {
                 _logger?.LogError("GoToDetail: navigation service is null");
-                try { Finanzuebersicht.Core.Services.FileLogger.Append("TransactionsViewModel", "navigation service is null"); } catch { }
+                try { Finanzuebersicht.Services.FileLogger.Append("TransactionsViewModel", "navigation service is null"); } catch { }
                 return;
             }
 
@@ -110,7 +110,7 @@ public partial class TransactionsViewModel(
         catch (Exception ex)
         {
             _logger?.LogError(ex, "GoToDetail failed");
-            try { Finanzuebersicht.Core.Services.FileLogger.Append("TransactionsViewModel", "GoToDetail failed", ex); } catch { }
+            try { Finanzuebersicht.Services.FileLogger.Append("TransactionsViewModel", "GoToDetail failed", ex); } catch { }
         }
     }
 
@@ -131,7 +131,7 @@ public partial class TransactionsViewModel(
             else
             {
                 _logger?.LogError("ImportCsv: DialogService is null while handling missing ImportService");
-                try { Finanzuebersicht.Core.Services.FileLogger.Append("TransactionsViewModel", "ImportCsv: DialogService is null while handling missing ImportService"); } catch { }
+                try { Finanzuebersicht.Services.FileLogger.Append("TransactionsViewModel", "ImportCsv: DialogService is null while handling missing ImportService"); } catch { }
             }
 
             return;
@@ -157,7 +157,7 @@ public partial class TransactionsViewModel(
             else
             {
                 _logger?.LogError("ImportCsv: DialogService is null after successful import");
-                try { Finanzuebersicht.Core.Services.FileLogger.Append("TransactionsViewModel", "ImportCsv: DialogService is null after successful import"); } catch { }
+                try { Finanzuebersicht.Services.FileLogger.Append("TransactionsViewModel", "ImportCsv: DialogService is null after successful import"); } catch { }
             }
 
             await LoadTransaktionen();

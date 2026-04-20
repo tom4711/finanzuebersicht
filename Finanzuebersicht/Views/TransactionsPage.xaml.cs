@@ -13,14 +13,14 @@ public partial class TransactionsPage : ContentPage
         if (viewModel == null)
         {
             logger?.LogError("TransactionsPage: injected TransactionsViewModel is null. DI may have failed.");
-            try { Finanzuebersicht.Core.Services.FileLogger.Append("TransactionsPage", "injected TransactionsViewModel is null"); } catch { }
+            try { Finanzuebersicht.Services.FileLogger.Append("TransactionsPage", "injected TransactionsViewModel is null"); } catch { }
             // avoid creating types from other layers here — leave BindingContext empty to prevent further NREs
             BindingContext = new object();
         }
         else
         {
             logger?.LogDebug("TransactionsPage: TransactionsViewModel injected successfully");
-            try { Finanzuebersicht.Core.Services.FileLogger.Append("TransactionsPage", "TransactionsViewModel injected successfully"); } catch { }
+            try { Finanzuebersicht.Services.FileLogger.Append("TransactionsPage", "TransactionsViewModel injected successfully"); } catch { }
             BindingContext = viewModel;
         }
     }
@@ -38,7 +38,7 @@ public partial class TransactionsPage : ContentPage
         try
         {
             var selected = e.CurrentSelection?.FirstOrDefault() as Finanzuebersicht.Models.Transaction;
-            try { Finanzuebersicht.Core.Services.FileLogger.Append("TransactionsPage", $"OnSelectionChanged selected={(selected?.Id ?? "(null)")}"); } catch { }
+            try { Finanzuebersicht.Services.FileLogger.Append("TransactionsPage", $"OnSelectionChanged selected={(selected?.Id ?? "(null)")}"); } catch { }
 
             if (BindingContext is TransactionsViewModel vm)
             {
@@ -52,7 +52,7 @@ public partial class TransactionsPage : ContentPage
         }
         catch (Exception ex)
         {
-            try { Finanzuebersicht.Core.Services.FileLogger.Append("TransactionsPage", "OnSelectionChanged failed", ex); } catch { }
+            try { Finanzuebersicht.Services.FileLogger.Append("TransactionsPage", "OnSelectionChanged failed", ex); } catch { }
         }
     }
 }

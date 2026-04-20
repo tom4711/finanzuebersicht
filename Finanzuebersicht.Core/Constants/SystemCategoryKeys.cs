@@ -1,4 +1,4 @@
-namespace Finanzuebersicht.Core.Constants
+namespace Finanzuebersicht.Constants
 {
     /// <summary>
     /// Zentrale Schlüssel für System- und Fallback-Kategorien zur Vermeidung von Magic Strings.

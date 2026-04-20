@@ -2,7 +2,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Xunit;
-using Finanzuebersicht.Core.Services;
+using Finanzuebersicht.Services;
 
 namespace Finanzuebersicht.Tests.Services
 {
