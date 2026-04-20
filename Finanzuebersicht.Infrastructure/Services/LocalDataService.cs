@@ -1,5 +1,4 @@
 using Finanzuebersicht.Models;
-using Finanzuebersicht.Services;
 
 namespace Finanzuebersicht.Services;
 
