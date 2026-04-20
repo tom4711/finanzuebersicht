@@ -1,5 +1,3 @@
-using Finanzuebersicht.Services;
-
 namespace Finanzuebersicht.Services.Migrations;
 
 /// <summary>
