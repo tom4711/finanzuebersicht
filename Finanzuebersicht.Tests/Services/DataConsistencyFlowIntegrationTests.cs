@@ -293,6 +293,13 @@ namespace Finanzuebersicht.Tests.Services
                 return Task.CompletedTask;
             }
 
+            public Task ReplaceAllCategoriesAsync(IEnumerable<Category> categories)
+            {
+                _categories.Clear();
+                _categories.AddRange(categories);
+                return Task.CompletedTask;
+            }
+
             // ITransactionRepository
             public Task<List<Transaction>> GetTransactionsAsync(DateTime vonDatum, DateTime bisDatum) =>
                 Task.FromResult(_transactions
@@ -312,6 +319,13 @@ namespace Finanzuebersicht.Tests.Services
             public Task DeleteTransactionAsync(string id)
             {
                 _transactions.RemoveAll(t => t.Id == id);
+                return Task.CompletedTask;
+            }
+
+            public Task ReplaceAllTransactionsAsync(IEnumerable<Transaction> transactions)
+            {
+                _transactions.Clear();
+                _transactions.AddRange(transactions);
                 return Task.CompletedTask;
             }
 
@@ -341,6 +355,13 @@ namespace Finanzuebersicht.Tests.Services
                 return Task.CompletedTask;
             }
 
+            public Task ReplaceAllRecurringTransactionsAsync(IEnumerable<RecurringTransaction> recurring)
+            {
+                _recurring.Clear();
+                _recurring.AddRange(recurring);
+                return Task.CompletedTask;
+            }
+
             // IRecurringGenerationService
             public Task GeneratePendingRecurringTransactionsAsync() =>
                 Task.CompletedTask;
@@ -357,11 +378,13 @@ namespace Finanzuebersicht.Tests.Services
             public Task SaveBudgetAsync(CategoryBudget budget) => Task.CompletedTask;
             public Task DeleteBudgetAsync(string id) => Task.CompletedTask;
             public Task<CategoryBudget?> GetBudgetForCategoryAsync(string kategorieId, int year, int month) => Task.FromResult<CategoryBudget?>(null);
+            public Task ReplaceAllBudgetsAsync(IEnumerable<CategoryBudget> budgets) => Task.CompletedTask;
 
             // ISparZielRepository
             public Task<List<SparZiel>> GetSparZieleAsync() => Task.FromResult(new List<SparZiel>());
             public Task SaveSparZielAsync(SparZiel sparZiel) => Task.CompletedTask;
             public Task DeleteSparZielAsync(string id) => Task.CompletedTask;
+            public Task ReplaceAllSparZieleAsync(IEnumerable<SparZiel> sparziele) => Task.CompletedTask;
         }
     }
 }

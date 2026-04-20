@@ -62,4 +62,7 @@ public class RecurringStore : JsonDataStoreBase, IRecurringTransactionRepository
             StoreLock.Release();
         }
     }
+
+    public Task ReplaceAllRecurringTransactionsAsync(IEnumerable<RecurringTransaction> recurring)
+        => ReplaceAllAsync(RecurringFile, recurring);
 }

@@ -43,6 +43,9 @@ public class BudgetStore : JsonDataStoreBase, IBudgetRepository
         finally { StoreLock.Release(); }
     }
 
+    public Task ReplaceAllBudgetsAsync(IEnumerable<CategoryBudget> budgets)
+        => ReplaceAllAsync(BudgetsFile, budgets);
+
     public async Task<CategoryBudget?> GetBudgetForCategoryAsync(string kategorieId, int year, int month)
     {
         var budgets = await GetBudgetsAsync();

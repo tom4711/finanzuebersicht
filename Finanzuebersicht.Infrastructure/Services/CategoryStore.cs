@@ -62,4 +62,7 @@ public class CategoryStore : JsonDataStoreBase, ICategoryRepository
             StoreLock.Release();
         }
     }
+
+    public Task ReplaceAllCategoriesAsync(IEnumerable<Category> categories)
+        => ReplaceAllAsync(CategoriesFile, categories);
 }

@@ -231,7 +231,7 @@ namespace Finanzuebersicht.Core.Services
         }
 
         /// <summary>
-        /// Stellt alle Daten aus dem Backup wieder her: löscht vorhandene Daten und schreibt Backup-Daten zurück.
+        /// Stellt alle Daten aus dem Backup wieder her in je einem einzigen Schreibvorgang pro Entity-Typ.
         /// Bei einem Fehler wird ein Rollback auf den vorherigen Zustand durchgeführt.
         /// </summary>
         private async Task<bool> AtomicRestoreAsync(
@@ -253,19 +253,11 @@ namespace Finanzuebersicht.Core.Services
                 _logger?.LogInformation("Starte Wiederherstellung: {CatCount} Kategorien, {TxnCount} Transaktionen, {RecCount} Daueraufträge, {BudCount} Budgets, {SparCount} Sparziele",
                     categories.Count, transactions.Count, recurring.Count, budgets.Count, sparziele.Count);
 
-                // Vorhandene Daten löschen
-                foreach (var c in snapshotCategories) await _dataService.DeleteCategoryAsync(c.Id);
-                foreach (var t in snapshotTransactions) await _dataService.DeleteTransactionAsync(t.Id);
-                foreach (var r in snapshotRecurring) await _dataService.DeleteRecurringTransactionAsync(r.Id);
-                foreach (var b in snapshotBudgets) await _dataService.DeleteBudgetAsync(b.Id);
-                foreach (var s in snapshotSparziele) await _dataService.DeleteSparZielAsync(s.Id);
-
-                // Backup-Daten speichern
-                foreach (var c in categories) await _dataService.SaveCategoryAsync(c);
-                foreach (var t in transactions) await _dataService.SaveTransactionAsync(t);
-                foreach (var r in recurring) await _dataService.SaveRecurringTransactionAsync(r);
-                foreach (var b in budgets) await _dataService.SaveBudgetAsync(b);
-                foreach (var s in sparziele) await _dataService.SaveSparZielAsync(s);
+                await _dataService.ReplaceAllCategoriesAsync(categories);
+                await _dataService.ReplaceAllTransactionsAsync(transactions);
+                await _dataService.ReplaceAllRecurringTransactionsAsync(recurring);
+                await _dataService.ReplaceAllBudgetsAsync(budgets);
+                await _dataService.ReplaceAllSparZieleAsync(sparziele);
 
                 return true;
             }
@@ -286,26 +278,11 @@ namespace Finanzuebersicht.Core.Services
         {
             try
             {
-                var currentCategories = await _dataService.GetCategoriesAsync();
-                foreach (var c in currentCategories) await _dataService.DeleteCategoryAsync(c.Id);
-
-                var currentTransactions = await _dataService.GetTransactionsAsync(DateTime.MinValue, DateTime.MaxValue);
-                foreach (var t in currentTransactions) await _dataService.DeleteTransactionAsync(t.Id);
-
-                var currentRecurring = await _dataService.GetRecurringTransactionsAsync();
-                foreach (var r in currentRecurring) await _dataService.DeleteRecurringTransactionAsync(r.Id);
-
-                var currentBudgets = await _dataService.GetBudgetsAsync();
-                foreach (var b in currentBudgets) await _dataService.DeleteBudgetAsync(b.Id);
-
-                var currentSparziele = await _dataService.GetSparZieleAsync();
-                foreach (var s in currentSparziele) await _dataService.DeleteSparZielAsync(s.Id);
-
-                foreach (var c in categories) await _dataService.SaveCategoryAsync(c);
-                foreach (var t in transactions) await _dataService.SaveTransactionAsync(t);
-                foreach (var r in recurring) await _dataService.SaveRecurringTransactionAsync(r);
-                foreach (var b in budgets) await _dataService.SaveBudgetAsync(b);
-                foreach (var s in sparziele) await _dataService.SaveSparZielAsync(s);
+                await _dataService.ReplaceAllCategoriesAsync(categories);
+                await _dataService.ReplaceAllTransactionsAsync(transactions);
+                await _dataService.ReplaceAllRecurringTransactionsAsync(recurring);
+                await _dataService.ReplaceAllBudgetsAsync(budgets);
+                await _dataService.ReplaceAllSparZieleAsync(sparziele);
 
                 _logger?.LogInformation("Rollback erfolgreich abgeschlossen");
             }

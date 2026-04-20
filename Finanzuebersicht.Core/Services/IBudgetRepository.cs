@@ -8,4 +8,5 @@ public interface IBudgetRepository
     Task SaveBudgetAsync(CategoryBudget budget);
     Task DeleteBudgetAsync(string id);
     Task<CategoryBudget?> GetBudgetForCategoryAsync(string kategorieId, int year, int month);
+    Task ReplaceAllBudgetsAsync(IEnumerable<CategoryBudget> budgets);
 }
