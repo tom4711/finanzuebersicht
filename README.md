@@ -105,19 +105,19 @@ Full MAUI build (macCatalyst)
 
 - Quick checks (unit tests, linters) werden bei Push auf Branches ausgeführt (ubuntu runner) — das spart macOS-Runner-Minuten.
 - Der vollständige MAUI macCatalyst-Build läuft für Pull Requests gegen `main` und für `main`-Pushes. Dadurch werden macOS-Ressourcen nur bei echten Integrationsprüfungen verwendet.
-- **Pre-Release:** Bei jedem Push auf `main` wird automatisch ein Beta-Release mit Artifacts erstellt.
+- **Pre-Release:** Manuell via Actions → "Pre-Release" → Run workflow mit gewünschtem Tag (z.B. `v1.2.0-beta.1`).
 - **Release:** Bei Tag-Push (`v*`) oder manuellem Trigger werden Build-Artifacts (macOS + Windows) an das GitHub Release gehängt.
 - Um einen vollständigen MAUI-Build für einen PR explizit anzustoßen, füge das Label `run-maui` zur PR hinzu oder starte den Workflow manuell über Actions → "CI - Split quick and full" → Run workflow.
 
 ## Mitmachen
 
-Bitte arbeite auf Feature-Branches und eröffne Pull Requests gegen `main`:
+Arbeite auf Feature-Branches und öffne Pull Requests gegen **`develop`**:
 
 ```bash
 git checkout -b feature/mein-feature
 ```
 
-`main` ist geschützt; PRs werden geprüft bevor gemerged wird.
+Wenn ein Milestone fertig ist, wird `develop` per PR in `main` gemerged. `main` ist geschützt und immer release-ready.
 
 ## Lizenz
 

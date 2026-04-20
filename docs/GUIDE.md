@@ -108,9 +108,17 @@ Finanzuebersicht.Tests/            ← xUnit tests (net10.0)
 
 ### Git-Workflow
 
-- **Branch:** Arbeite auf `feature/*`, `fix/*` oder `chore/*`, nicht auf `main`
+- **Branch:** Arbeite auf `feature/*`, `fix/*` oder `chore/*` – Basis ist immer `develop`
 - **Commit:** Gitmoji + Conventional Commits (siehe [.github/copilot-instructions.md](../.github/copilot-instructions.md))
-- **PR:** Erstelle Pull Request gegen `main`; `main` ist geschützt
+- **PR:** Erstelle Pull Request gegen `develop`; `main` ist geschützt und nur für Releases
+
+**Branch-Strategie:**
+
+```
+feature/* → develop  (PR, für laufende Entwicklung)
+develop   → main     (PR, wenn ein Milestone abgeschlossen ist)
+main      → v1.x-Tag (löst release.yml aus)
+```
 
 Beispiel-Commit:
 
@@ -172,11 +180,10 @@ nbgv set-version <new-version>
 
 ## 11. CI/CD
 
-- **Quick Checks:** Unit Tests auf Ubuntu (schnell, günstig) — bei jedem Branch-Push
+- **Quick Checks:** Unit Tests auf Ubuntu (schnell, günstig) — bei jedem Push auf `develop`, `main`, `feature/*` und PRs
 - **Full MAUI Build:** Nur für PRs gegen `main` und `main`-Pushes (macOS-Runner)
-- **Pre-Release:** Bei jedem `main`-Push → automatisches Beta-Release mit Artifacts (macOS + Windows)
+- **Pre-Release:** Manuell über Actions → "Pre-Release" → Run workflow (Tag z.B. `v1.2.0-beta.1`)
 - **Release:** Bei Tag-Push `v*` oder manuellem Trigger → Artifacts werden an GitHub Release angehängt
-- **Explizit triggern:** Label `run-maui` zur PR hinzufügen oder manuell via Actions starten
 
 ## 12. Fragen & Mitwirken
 
