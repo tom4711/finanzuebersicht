@@ -28,6 +28,9 @@ public class DataServiceFacade(
     public Task DeleteCategoryAsync(string id)
         => _categoryRepository.DeleteCategoryAsync(id);
 
+    public Task ReplaceAllCategoriesAsync(IEnumerable<Category> categories)
+        => _categoryRepository.ReplaceAllCategoriesAsync(categories);
+
     public Task<List<Transaction>> GetTransactionsAsync(DateTime vonDatum, DateTime bisDatum)
         => _transactionRepository.GetTransactionsAsync(vonDatum, bisDatum);
 
@@ -37,6 +40,9 @@ public class DataServiceFacade(
     public Task DeleteTransactionAsync(string id)
         => _transactionRepository.DeleteTransactionAsync(id);
 
+    public Task ReplaceAllTransactionsAsync(IEnumerable<Transaction> transactions)
+        => _transactionRepository.ReplaceAllTransactionsAsync(transactions);
+
     public Task<List<RecurringTransaction>> GetRecurringTransactionsAsync()
         => _recurringRepository.GetRecurringTransactionsAsync();
 
@@ -45,6 +51,9 @@ public class DataServiceFacade(
 
     public Task DeleteRecurringTransactionAsync(string id)
         => _recurringRepository.DeleteRecurringTransactionAsync(id);
+
+    public Task ReplaceAllRecurringTransactionsAsync(IEnumerable<RecurringTransaction> recurring)
+        => _recurringRepository.ReplaceAllRecurringTransactionsAsync(recurring);
 
     public Task GeneratePendingRecurringTransactionsAsync()
         => _recurringGenerationService.GeneratePendingRecurringTransactionsAsync();
@@ -73,6 +82,9 @@ public class DataServiceFacade(
     public Task<CategoryBudget?> GetBudgetForCategoryAsync(string kategorieId, int year, int month)
         => _budgetRepository.GetBudgetForCategoryAsync(kategorieId, year, month);
 
+    public Task ReplaceAllBudgetsAsync(IEnumerable<CategoryBudget> budgets)
+        => _budgetRepository.ReplaceAllBudgetsAsync(budgets);
+
     public Task<List<SparZiel>> GetSparZieleAsync()
         => _sparZielRepository.GetSparZieleAsync();
 
@@ -81,4 +93,7 @@ public class DataServiceFacade(
 
     public Task DeleteSparZielAsync(string id)
         => _sparZielRepository.DeleteSparZielAsync(id);
+
+    public Task ReplaceAllSparZieleAsync(IEnumerable<SparZiel> sparziele)
+        => _sparZielRepository.ReplaceAllSparZieleAsync(sparziele);
 }

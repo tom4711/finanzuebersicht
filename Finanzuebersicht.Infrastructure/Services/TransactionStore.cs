@@ -71,6 +71,9 @@ public class TransactionStore : JsonDataStoreBase, ITransactionRepository
         }
     }
 
+    public Task ReplaceAllTransactionsAsync(IEnumerable<Transaction> transactions)
+        => ReplaceAllAsync(TransactionsFile, transactions);
+
     /// <summary>
     /// Finds the most common category for a given payee name (case-insensitive).
     /// Only considers non-Unkategorisiert categories with a confidence threshold.

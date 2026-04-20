@@ -73,6 +73,9 @@ public class LocalDataService : IDataService, IDisposable
     public async Task DeleteCategoryAsync(string id)
         => await _categoryStore.DeleteCategoryAsync(id);
 
+    public Task ReplaceAllCategoriesAsync(IEnumerable<Category> categories)
+        => _categoryStore.ReplaceAllCategoriesAsync(categories);
+
     #endregion
 
     #region ITransactionRepository delegation
@@ -85,6 +88,9 @@ public class LocalDataService : IDataService, IDisposable
 
     public async Task DeleteTransactionAsync(string id)
         => await _transactionStore.DeleteTransactionAsync(id);
+
+    public Task ReplaceAllTransactionsAsync(IEnumerable<Transaction> transactions)
+        => _transactionStore.ReplaceAllTransactionsAsync(transactions);
 
     public async Task<Category?> GetMostCommonCategoryForPayeeAsync(
         string payee,
@@ -104,6 +110,9 @@ public class LocalDataService : IDataService, IDisposable
 
     public async Task DeleteRecurringTransactionAsync(string id)
         => await _recurringStore.DeleteRecurringTransactionAsync(id);
+
+    public Task ReplaceAllRecurringTransactionsAsync(IEnumerable<RecurringTransaction> recurring)
+        => _recurringStore.ReplaceAllRecurringTransactionsAsync(recurring);
 
     #endregion
 
@@ -131,6 +140,8 @@ public class LocalDataService : IDataService, IDisposable
     public Task DeleteBudgetAsync(string id) => _budgetStore.DeleteBudgetAsync(id);
     public Task<CategoryBudget?> GetBudgetForCategoryAsync(string kategorieId, int year, int month)
         => _budgetStore.GetBudgetForCategoryAsync(kategorieId, year, month);
+    public Task ReplaceAllBudgetsAsync(IEnumerable<CategoryBudget> budgets)
+        => _budgetStore.ReplaceAllBudgetsAsync(budgets);
 
     #endregion
 
@@ -139,6 +150,8 @@ public class LocalDataService : IDataService, IDisposable
     public Task<List<SparZiel>> GetSparZieleAsync() => _sparZielStore.GetSparZieleAsync();
     public Task SaveSparZielAsync(SparZiel sparZiel) => _sparZielStore.SaveSparZielAsync(sparZiel);
     public Task DeleteSparZielAsync(string id) => _sparZielStore.DeleteSparZielAsync(id);
+    public Task ReplaceAllSparZieleAsync(IEnumerable<SparZiel> sparziele)
+        => _sparZielStore.ReplaceAllSparZieleAsync(sparziele);
 
     #endregion
 

@@ -42,4 +42,7 @@ public class SparZielStore : JsonDataStoreBase, ISparZielRepository
         }
         finally { StoreLock.Release(); }
     }
+
+    public Task ReplaceAllSparZieleAsync(IEnumerable<SparZiel> sparziele)
+        => ReplaceAllAsync(SparZieleFile, sparziele);
 }

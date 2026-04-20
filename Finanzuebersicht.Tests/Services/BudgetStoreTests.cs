@@ -123,4 +123,36 @@ public class BudgetStoreTests : IDisposable
 
         Assert.Null(result);
     }
+
+    [Fact]
+    public async Task ReplaceAll_ReplacesExistingBudgetsWithNewList()
+    {
+        var existing = new CategoryBudget { KategorieId = "cat-old", Betrag = 100m };
+        await _store.SaveBudgetAsync(existing);
+
+        var newBudgets = new List<CategoryBudget>
+        {
+            new() { KategorieId = "cat-a", Betrag = 200m },
+            new() { KategorieId = "cat-b", Betrag = 300m },
+        };
+
+        await _store.ReplaceAllBudgetsAsync(newBudgets);
+
+        var result = await _store.GetBudgetsAsync();
+        Assert.Equal(2, result.Count);
+        Assert.All(result, b => Assert.Contains(b.KategorieId, new[] { "cat-a", "cat-b" }));
+        Assert.DoesNotContain(result, b => b.KategorieId == "cat-old");
+    }
+
+    [Fact]
+    public async Task ReplaceAll_WithEmptyList_ClearsAllBudgets()
+    {
+        await _store.SaveBudgetAsync(new CategoryBudget { KategorieId = "cat-1", Betrag = 100m });
+        await _store.SaveBudgetAsync(new CategoryBudget { KategorieId = "cat-2", Betrag = 200m });
+
+        await _store.ReplaceAllBudgetsAsync([]);
+
+        var result = await _store.GetBudgetsAsync();
+        Assert.Empty(result);
+    }
 }

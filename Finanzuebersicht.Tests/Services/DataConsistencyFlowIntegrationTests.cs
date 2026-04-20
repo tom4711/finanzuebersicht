@@ -272,6 +272,8 @@ namespace Finanzuebersicht.Tests.Services
             private readonly List<Category> _categories = [];
             private readonly List<Transaction> _transactions = [];
             private readonly List<RecurringTransaction> _recurring = [];
+            private readonly List<CategoryBudget> _budgets = [];
+            private readonly List<SparZiel> _sparziele = [];
 
             // ICategoryRepository
             public Task<List<Category>> GetCategoriesAsync() =>
@@ -290,6 +292,13 @@ namespace Finanzuebersicht.Tests.Services
             public Task DeleteCategoryAsync(string id)
             {
                 _categories.RemoveAll(c => c.Id == id);
+                return Task.CompletedTask;
+            }
+
+            public Task ReplaceAllCategoriesAsync(IEnumerable<Category> categories)
+            {
+                _categories.Clear();
+                _categories.AddRange(categories);
                 return Task.CompletedTask;
             }
 
@@ -312,6 +321,13 @@ namespace Finanzuebersicht.Tests.Services
             public Task DeleteTransactionAsync(string id)
             {
                 _transactions.RemoveAll(t => t.Id == id);
+                return Task.CompletedTask;
+            }
+
+            public Task ReplaceAllTransactionsAsync(IEnumerable<Transaction> transactions)
+            {
+                _transactions.Clear();
+                _transactions.AddRange(transactions);
                 return Task.CompletedTask;
             }
 
@@ -341,6 +357,13 @@ namespace Finanzuebersicht.Tests.Services
                 return Task.CompletedTask;
             }
 
+            public Task ReplaceAllRecurringTransactionsAsync(IEnumerable<RecurringTransaction> recurring)
+            {
+                _recurring.Clear();
+                _recurring.AddRange(recurring);
+                return Task.CompletedTask;
+            }
+
             // IRecurringGenerationService
             public Task GeneratePendingRecurringTransactionsAsync() =>
                 Task.CompletedTask;
@@ -353,15 +376,27 @@ namespace Finanzuebersicht.Tests.Services
                 Task.FromResult(new MonthSummary());
 
             // IBudgetRepository
-            public Task<List<CategoryBudget>> GetBudgetsAsync() => Task.FromResult(new List<CategoryBudget>());
-            public Task SaveBudgetAsync(CategoryBudget budget) => Task.CompletedTask;
-            public Task DeleteBudgetAsync(string id) => Task.CompletedTask;
+            public Task<List<CategoryBudget>> GetBudgetsAsync() => Task.FromResult(new List<CategoryBudget>(_budgets));
+            public Task SaveBudgetAsync(CategoryBudget budget)
+            {
+                var idx = _budgets.FindIndex(b => b.Id == budget.Id);
+                if (idx >= 0) _budgets[idx] = budget; else _budgets.Add(budget);
+                return Task.CompletedTask;
+            }
+            public Task DeleteBudgetAsync(string id) { _budgets.RemoveAll(b => b.Id == id); return Task.CompletedTask; }
             public Task<CategoryBudget?> GetBudgetForCategoryAsync(string kategorieId, int year, int month) => Task.FromResult<CategoryBudget?>(null);
+            public Task ReplaceAllBudgetsAsync(IEnumerable<CategoryBudget> budgets) { _budgets.Clear(); _budgets.AddRange(budgets); return Task.CompletedTask; }
 
             // ISparZielRepository
-            public Task<List<SparZiel>> GetSparZieleAsync() => Task.FromResult(new List<SparZiel>());
-            public Task SaveSparZielAsync(SparZiel sparZiel) => Task.CompletedTask;
-            public Task DeleteSparZielAsync(string id) => Task.CompletedTask;
+            public Task<List<SparZiel>> GetSparZieleAsync() => Task.FromResult(new List<SparZiel>(_sparziele));
+            public Task SaveSparZielAsync(SparZiel sparZiel)
+            {
+                var idx = _sparziele.FindIndex(s => s.Id == sparZiel.Id);
+                if (idx >= 0) _sparziele[idx] = sparZiel; else _sparziele.Add(sparZiel);
+                return Task.CompletedTask;
+            }
+            public Task DeleteSparZielAsync(string id) { _sparziele.RemoveAll(s => s.Id == id); return Task.CompletedTask; }
+            public Task ReplaceAllSparZieleAsync(IEnumerable<SparZiel> sparziele) { _sparziele.Clear(); _sparziele.AddRange(sparziele); return Task.CompletedTask; }
         }
     }
 }

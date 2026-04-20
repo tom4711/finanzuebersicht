@@ -56,6 +56,24 @@ public abstract class JsonDataStoreBase : IDisposable
         await File.WriteAllTextAsync(path, json);
     }
 
+    /// <summary>
+    /// Replaces the entire collection in the JSON file with the given items.
+    /// Thread-safe via <see cref="StoreLock"/>. One file write regardless of collection size —
+    /// use for bulk restore operations instead of individual Save/Delete calls.
+    /// </summary>
+    protected async Task ReplaceAllAsync<T>(string path, IEnumerable<T> items)
+    {
+        await StoreLock.WaitAsync();
+        try
+        {
+            await SaveAsync(path, [..items]);
+        }
+        finally
+        {
+            StoreLock.Release();
+        }
+    }
+
     public virtual void Dispose()
     {
         StoreLock.Dispose();

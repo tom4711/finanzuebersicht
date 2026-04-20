@@ -287,6 +287,7 @@ namespace Finanzuebersicht.Tests.Services
                 return Task.CompletedTask;
             }
             public Task DeleteCategoryAsync(string id) { _categories.RemoveAll(c => c.Id == id); return Task.CompletedTask; }
+            public Task ReplaceAllCategoriesAsync(IEnumerable<Category> categories) { _categories = categories.ToList(); return Task.CompletedTask; }
 
             public Task<List<Transaction>> GetTransactionsAsync(DateTime vonDatum, DateTime bisDatum)
                 => Task.FromResult(_transactions.Where(t => t.Datum >= vonDatum && t.Datum <= bisDatum).ToList());
@@ -297,6 +298,7 @@ namespace Finanzuebersicht.Tests.Services
                 return Task.CompletedTask;
             }
             public Task DeleteTransactionAsync(string id) { _transactions.RemoveAll(t => t.Id == id); return Task.CompletedTask; }
+            public Task ReplaceAllTransactionsAsync(IEnumerable<Transaction> transactions) { _transactions = transactions.ToList(); return Task.CompletedTask; }
             public Task<Category?> GetMostCommonCategoryForPayeeAsync(
                 string payee,
                 double confidenceThreshold = 0.5,
@@ -311,6 +313,7 @@ namespace Finanzuebersicht.Tests.Services
                 return Task.CompletedTask;
             }
             public Task DeleteRecurringTransactionAsync(string id) { _recurring.RemoveAll(r => r.Id == id); return Task.CompletedTask; }
+            public Task ReplaceAllRecurringTransactionsAsync(IEnumerable<RecurringTransaction> recurring) { _recurring = recurring.ToList(); return Task.CompletedTask; }
 
             public Task GeneratePendingRecurringTransactionsAsync() => Task.CompletedTask;
 
@@ -326,6 +329,7 @@ namespace Finanzuebersicht.Tests.Services
             }
             public Task DeleteBudgetAsync(string id) { _budgets.RemoveAll(b => b.Id == id); return Task.CompletedTask; }
             public Task<CategoryBudget?> GetBudgetForCategoryAsync(string kategorieId, int year, int month) => Task.FromResult<CategoryBudget?>(null);
+            public Task ReplaceAllBudgetsAsync(IEnumerable<CategoryBudget> budgets) { _budgets = budgets.ToList(); return Task.CompletedTask; }
 
             public Task<List<SparZiel>> GetSparZieleAsync() => Task.FromResult(_sparziele.ToList());
             public Task SaveSparZielAsync(SparZiel sparZiel)
@@ -335,6 +339,7 @@ namespace Finanzuebersicht.Tests.Services
                 return Task.CompletedTask;
             }
             public Task DeleteSparZielAsync(string id) { _sparziele.RemoveAll(s => s.Id == id); return Task.CompletedTask; }
+            public Task ReplaceAllSparZieleAsync(IEnumerable<SparZiel> sparziele) { _sparziele = sparziele.ToList(); return Task.CompletedTask; }
         }
 
         private class MockSettingsService : SettingsService
