@@ -4,7 +4,7 @@ using CommunityToolkit.Mvvm.Input;
 using Finanzuebersicht.Application.UseCases.Dashboard;
 using Finanzuebersicht.Models;
 using Finanzuebersicht.Services;
-using Finanzuebersicht.Core.Services;
+using Finanzuebersicht.Services;
 namespace Finanzuebersicht.ViewModels;
 public partial class DashboardViewModel : MonthNavigationViewModel
 {

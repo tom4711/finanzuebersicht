@@ -18,7 +18,7 @@ public partial class TransactionDetailViewModel(
     INavigationService navigationService,
     IDialogService dialogService,
     ILogger<TransactionDetailViewModel>? logger = null,
-    Finanzuebersicht.Core.Services.IClock? clock = null) : ObservableObject
+    Finanzuebersicht.Services.IClock? clock = null) : ObservableObject
 {
     private readonly SaveTransactionDetailUseCase _saveTransactionDetailUseCase = saveTransactionDetailUseCase;
     private readonly LoadTransactionDetailDataUseCase _loadTransactionDetailDataUseCase = loadTransactionDetailDataUseCase;
@@ -28,7 +28,7 @@ public partial class TransactionDetailViewModel(
     private readonly INavigationService _navigationService = navigationService;
     private readonly IDialogService _dialogService = dialogService;
     private readonly ILogger<TransactionDetailViewModel>? _logger = logger;
-    private readonly Finanzuebersicht.Core.Services.IClock _clock = clock ?? Finanzuebersicht.Core.Services.SystemClock.Instance;
+    private readonly Finanzuebersicht.Services.IClock _clock = clock ?? Finanzuebersicht.Services.SystemClock.Instance;
 
     [ObservableProperty]
     private string betragText = string.Empty;
@@ -40,7 +40,7 @@ public partial class TransactionDetailViewModel(
     private string verwendungszweck = string.Empty;
 
     [ObservableProperty]
-    private DateTime datum = Finanzuebersicht.Core.Services.SystemClock.Instance.Today;
+    private DateTime datum = Finanzuebersicht.Services.SystemClock.Instance.Today;
 
     [ObservableProperty]
     private Category? selectedKategorie;

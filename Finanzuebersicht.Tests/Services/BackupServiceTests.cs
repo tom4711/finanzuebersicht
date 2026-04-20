@@ -1,8 +1,7 @@
 using Xunit;
-using Finanzuebersicht.Core.Services;
-using Finanzuebersicht.Core.Services.Migrations;
-using Finanzuebersicht.Models;
 using Finanzuebersicht.Services;
+using Finanzuebersicht.Services.Migrations;
+using Finanzuebersicht.Models;
 using System.IO.Compression;
 using System.Text.Json;
 

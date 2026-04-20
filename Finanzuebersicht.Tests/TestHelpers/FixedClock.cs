@@ -1,5 +1,5 @@
 using System;
-using Finanzuebersicht.Core.Services;
+using Finanzuebersicht.Services;
 
 namespace Finanzuebersicht.Tests.TestHelpers
 {

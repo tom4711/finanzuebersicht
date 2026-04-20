@@ -14,9 +14,9 @@ public abstract partial class MonthNavigationViewModel : ObservableObject
 
     public DateTime AktuellerMonat { get; private set; }
 
-    protected MonthNavigationViewModel(Finanzuebersicht.Core.Services.IClock? clock = null)
+    protected MonthNavigationViewModel(Finanzuebersicht.Services.IClock? clock = null)
     {
-        var c = clock ?? Finanzuebersicht.Core.Services.SystemClock.Instance;
+        var c = clock ?? Finanzuebersicht.Services.SystemClock.Instance;
         AktuellerMonat = new(c.Today.Year, c.Today.Month, 1);
         UpdateMonatAnzeige();
     }

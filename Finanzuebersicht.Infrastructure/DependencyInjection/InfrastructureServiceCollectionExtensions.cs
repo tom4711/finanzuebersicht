@@ -53,7 +53,7 @@ public static class InfrastructureServiceCollectionExtensions
                 sp.GetRequiredService<RecurringStore>(),
                 sp.GetRequiredService<BudgetStore>(),
                 sp.GetRequiredService<SparZielStore>(),
-                sp.GetRequiredService<Finanzuebersicht.Core.Services.IClock>()));
+                sp.GetRequiredService<Finanzuebersicht.Services.IClock>()));
 
         // Expose the LocalDataService instance via the repository interfaces it implements
         services.AddSingleton<ICategoryRepository>(sp => sp.GetRequiredService<LocalDataService>());

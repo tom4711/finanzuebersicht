@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace Finanzuebersicht.Core.Services
+namespace Finanzuebersicht.Services
 {
     /// <summary>
     /// Service für Backup-, Restore- und Export-Operationen.

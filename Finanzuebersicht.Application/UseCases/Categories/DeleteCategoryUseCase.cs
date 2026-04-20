@@ -19,7 +19,7 @@ public class DeleteCategoryUseCase(
             return;
 
         var fallbackCategory = categories
-            .FirstOrDefault(c => c.SystemKey == Finanzuebersicht.Core.Constants.SystemCategoryKeys.Sonstiges && c.Id != categoryId)
+            .FirstOrDefault(c => c.SystemKey == Finanzuebersicht.Constants.SystemCategoryKeys.Sonstiges && c.Id != categoryId)
             ?? categories.FirstOrDefault(c => c.Id != categoryId);
 
         if (fallbackCategory == null)
@@ -30,7 +30,7 @@ public class DeleteCategoryUseCase(
                 Icon = "📦",
                 Color = "#A2845E",
                 Typ = TransactionType.Ausgabe,
-                SystemKey = Finanzuebersicht.Core.Constants.SystemCategoryKeys.Sonstiges
+                SystemKey = Finanzuebersicht.Constants.SystemCategoryKeys.Sonstiges
             };
 
             await _categoryRepository.SaveCategoryAsync(fallbackCategory);

@@ -1,6 +1,6 @@
 using System.Linq;
 using Finanzuebersicht.Models;
-using Finanzuebersicht.Core.Constants;
+using Finanzuebersicht.Constants;
 using Microsoft.Extensions.Logging;
 
 namespace Finanzuebersicht.Services;

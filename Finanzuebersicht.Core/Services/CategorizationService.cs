@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Finanzuebersicht.Models;
 
-namespace Finanzuebersicht.Core.Services;
+namespace Finanzuebersicht.Services;
 
 /// <summary>
 /// Orchestrates transaction categorization using pluggable strategies.
@@ -34,7 +34,7 @@ public class CategorizationService(
         ArgumentNullException.ThrowIfNull(availableCategories);
 
         var categories = availableCategories.ToList();
-        var uncategorizedCategory = categories.FirstOrDefault(c => c.SystemKey == Finanzuebersicht.Core.Constants.SystemCategoryKeys.Unkategorisiert)
+        var uncategorizedCategory = categories.FirstOrDefault(c => c.SystemKey == Finanzuebersicht.Constants.SystemCategoryKeys.Unkategorisiert)
             ?? categories.FirstOrDefault(c => c.Name == "Unkategorisiert");
 
         // Execute strategies in priority order

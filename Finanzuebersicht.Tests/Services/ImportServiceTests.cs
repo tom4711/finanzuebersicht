@@ -1,7 +1,6 @@
-using Finanzuebersicht.Core.Services;
+using Finanzuebersicht.Services;
 using Finanzuebersicht.Models;
 using Microsoft.Extensions.Logging;
-using Finanzuebersicht.Services;
 
 namespace Finanzuebersicht.Tests.Services
 {

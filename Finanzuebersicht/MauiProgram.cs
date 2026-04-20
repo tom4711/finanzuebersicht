@@ -9,7 +9,7 @@ using Finanzuebersicht.Services;
 using Finanzuebersicht.ViewModels;
 using Finanzuebersicht.Views;
 using Microsoft.Extensions.Logging;
-using Finanzuebersicht.Core.Services;
+using Finanzuebersicht.Services;
 
 namespace Finanzuebersicht;
 
@@ -38,7 +38,7 @@ public static class MauiProgram
 		// Services
 		builder.Services.AddSingleton<SettingsService>();
 		// Clock for testable current time
-		builder.Services.AddSingleton<Finanzuebersicht.Core.Services.IClock, Finanzuebersicht.Core.Services.SystemClock>();
+		builder.Services.AddSingleton<Finanzuebersicht.Services.IClock, Finanzuebersicht.Services.SystemClock>();
 		builder.Services.AddInfrastructureServices();
 		builder.Services.AddSingleton<IRecurringGenerationService, RecurringGenerationService>();
 		builder.Services.AddSingleton<IReportingService, ReportingService>();
@@ -46,7 +46,7 @@ public static class MauiProgram
 		builder.Services.AddSingleton<IForecastService, ForecastService>();
 		builder.Services.AddSingleton<ITransactionValidationService, TransactionValidationService>();
 		builder.Services.AddSingleton<IBackupService, BackupService>();
-		builder.Services.AddSingleton<IDataMigrator, Finanzuebersicht.Core.Services.Migrations.V1ToV2Migrator>();
+		builder.Services.AddSingleton<IDataMigrator, Finanzuebersicht.Services.Migrations.V1ToV2Migrator>();
 		builder.Services.AddSingleton<DataMigrationService>(sp =>
 			new DataMigrationService(sp.GetServices<IDataMigrator>()));
 		// Import/parsers

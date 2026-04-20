@@ -6,6 +6,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Finanzuebersicht.Application.UseCases.Dashboard;
 using Finanzuebersicht.Models;
+using Finanzuebersicht.Services;
 
 namespace Finanzuebersicht.ViewModels
 {
@@ -14,11 +15,11 @@ namespace Finanzuebersicht.ViewModels
         private readonly LoadDashboardYearUseCase _loadDashboardYearUseCase;
         private readonly ILogger<YearOverviewViewModel>? _logger;
 
-        public YearOverviewViewModel(LoadDashboardYearUseCase loadDashboardYearUseCase, Microsoft.Extensions.Logging.ILogger<YearOverviewViewModel>? logger = null, Finanzuebersicht.Core.Services.IClock? clock = null)
+        public YearOverviewViewModel(LoadDashboardYearUseCase loadDashboardYearUseCase, Microsoft.Extensions.Logging.ILogger<YearOverviewViewModel>? logger = null, IClock? clock = null)
         {
             _loadDashboardYearUseCase = loadDashboardYearUseCase;
             _logger = logger;
-            var c = clock ?? Finanzuebersicht.Core.Services.SystemClock.Instance;
+            var c = clock ?? SystemClock.Instance;
             Year = c.Now.Year;
             Categories = new ObservableCollection<CategorySummary>();
         }

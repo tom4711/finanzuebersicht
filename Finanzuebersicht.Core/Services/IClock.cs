@@ -1,6 +1,6 @@
 using System;
 
-namespace Finanzuebersicht.Core.Services
+namespace Finanzuebersicht.Services
 {
     public interface IClock
     {

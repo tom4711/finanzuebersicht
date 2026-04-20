@@ -5,17 +5,17 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 
-namespace Finanzuebersicht.Core.Services
+namespace Finanzuebersicht.Services
 {
     public class DkbCsvParser : IStatementParser
     {
         private readonly ILogger<DkbCsvParser>? _logger;
-        private readonly Finanzuebersicht.Core.Services.IClock _clock;
+        private readonly Finanzuebersicht.Services.IClock _clock;
 
-        public DkbCsvParser(ILogger<DkbCsvParser>? logger = null, Finanzuebersicht.Core.Services.IClock? clock = null)
+        public DkbCsvParser(ILogger<DkbCsvParser>? logger = null, Finanzuebersicht.Services.IClock? clock = null)
         {
             _logger = logger;
-            _clock = clock ?? Finanzuebersicht.Core.Services.SystemClock.Instance;
+            _clock = clock ?? Finanzuebersicht.Services.SystemClock.Instance;
         }
 
         public IEnumerable<TransactionDto> Parse(Stream csvStream)

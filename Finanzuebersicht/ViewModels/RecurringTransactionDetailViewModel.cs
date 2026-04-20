@@ -23,7 +23,7 @@ public partial class RecurringTransactionDetailViewModel(
     IDialogService dialogService,
     ILocalizationService localizationService,
     ILogger<RecurringTransactionDetailViewModel>? logger = null,
-    Finanzuebersicht.Core.Services.IClock? clock = null) : ObservableObject
+    Finanzuebersicht.Services.IClock? clock = null) : ObservableObject
 {
     private readonly SaveRecurringTransactionDetailUseCase _saveRecurringTransactionDetailUseCase = saveRecurringTransactionDetailUseCase;
     private readonly LoadRecurringTransactionDetailDataUseCase _loadRecurringTransactionDetailDataUseCase = loadRecurringTransactionDetailDataUseCase;
@@ -35,7 +35,7 @@ public partial class RecurringTransactionDetailViewModel(
     private readonly IDialogService _dialogService = dialogService;
     private readonly ILocalizationService _loc = localizationService;
     private readonly ILogger<RecurringTransactionDetailViewModel>? _logger = logger;
-    private readonly Finanzuebersicht.Core.Services.IClock _clock = clock ?? Finanzuebersicht.Core.Services.SystemClock.Instance;
+    private readonly Finanzuebersicht.Services.IClock _clock = clock ?? Finanzuebersicht.Services.SystemClock.Instance;
 
     [ObservableProperty]
     private string betragText = string.Empty;
@@ -50,7 +50,7 @@ public partial class RecurringTransactionDetailViewModel(
     private TransactionType typ = TransactionType.Ausgabe;
 
     [ObservableProperty]
-    private DateTime startdatum = Finanzuebersicht.Core.Services.SystemClock.Instance.Today;
+    private DateTime startdatum = Finanzuebersicht.Services.SystemClock.Instance.Today;
 
     [ObservableProperty]
     private DateTime? enddatum;
@@ -59,7 +59,7 @@ public partial class RecurringTransactionDetailViewModel(
     private bool hatEnddatum;
 
     [ObservableProperty]
-    private DateTime enddatumWert = Finanzuebersicht.Core.Services.SystemClock.Instance.Today.AddYears(1);
+    private DateTime enddatumWert = Finanzuebersicht.Services.SystemClock.Instance.Today.AddYears(1);
 
     [ObservableProperty]
     private bool aktiv = true;

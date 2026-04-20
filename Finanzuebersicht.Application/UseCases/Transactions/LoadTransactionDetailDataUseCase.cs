@@ -14,7 +14,7 @@ public class LoadTransactionDetailDataUseCase(ICategoryRepository categoryReposi
             ? null
             : categories.FirstOrDefault(c => c.Id == selectedCategoryId);
 
-        selectedCategory ??= categories.FirstOrDefault(c => c.SystemKey == Finanzuebersicht.Core.Constants.SystemCategoryKeys.Sonstiges)
+        selectedCategory ??= categories.FirstOrDefault(c => c.SystemKey == Finanzuebersicht.Constants.SystemCategoryKeys.Sonstiges)
             ?? categories.FirstOrDefault();
 
         return new TransactionDetailData
