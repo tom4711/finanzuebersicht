@@ -4,7 +4,6 @@ using Microsoft.Extensions.Logging;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Finanzuebersicht.Services;
-using Finanzuebersicht.Services;
 using Finanzuebersicht.Resources.Strings;
 
 namespace Finanzuebersicht.ViewModels;

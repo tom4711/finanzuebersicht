@@ -9,7 +9,6 @@ using Finanzuebersicht.Services;
 using Finanzuebersicht.ViewModels;
 using Finanzuebersicht.Views;
 using Microsoft.Extensions.Logging;
-using Finanzuebersicht.Services;
 
 namespace Finanzuebersicht;
 
@@ -51,7 +50,7 @@ public static class MauiProgram
 			new DataMigrationService(sp.GetServices<IDataMigrator>()));
 		// Import/parsers
 		// register parser explicitly using DI extension to avoid ambiguous CommunityToolkit overloads
-			Microsoft.Extensions.DependencyInjection.ServiceCollectionServiceExtensions.AddSingleton<IStatementParser, DkbCsvParser>(builder.Services);
+		Microsoft.Extensions.DependencyInjection.ServiceCollectionServiceExtensions.AddSingleton<IStatementParser, DkbCsvParser>(builder.Services);
 		builder.Services.AddSingleton<ImportService>();
 		// Categorization strategies
 		Microsoft.Extensions.DependencyInjection.ServiceCollectionServiceExtensions.AddSingleton<ICategorizationStrategy, KeywordCategorizationStrategy>(builder.Services);
