@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using Microsoft.Extensions.Logging;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -20,7 +21,7 @@ namespace Finanzuebersicht.ViewModels
             _logger = logger;
             var c = clock ?? Finanzuebersicht.Core.Services.SystemClock.Instance;
             Year = c.Now.Year;
-            Categories = new List<CategorySummary>();
+            Categories = new ObservableCollection<CategorySummary>();
         }
 
         [ObservableProperty]
@@ -30,7 +31,7 @@ namespace Finanzuebersicht.ViewModels
         private decimal yearTotal;
 
         [ObservableProperty]
-        private List<CategorySummary> categories;
+        private ObservableCollection<CategorySummary> categories;
 
         [RelayCommand]
         private async Task LoadAsync()
@@ -43,13 +44,13 @@ namespace Finanzuebersicht.ViewModels
                     try
                     {
                         YearTotal = data.GesamtAusgaben;
-                        Categories = data.Kategorien;
+                        Categories = new ObservableCollection<CategorySummary>(data.Kategorien);
                     }
                     catch (Exception ex)
                     {
                         _logger?.LogError(ex, "LoadAsync MainThread error");
                         YearTotal = 0;
-                        Categories = new List<CategorySummary>();
+                        Categories = new ObservableCollection<CategorySummary>();
                     }
                 });
             }
@@ -59,7 +60,7 @@ namespace Finanzuebersicht.ViewModels
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
                     YearTotal = 0;
-                    Categories = new List<CategorySummary>();
+                    Categories = new ObservableCollection<CategorySummary>();
                 });
             }
         }
