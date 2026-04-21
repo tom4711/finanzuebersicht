@@ -3,6 +3,8 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Finanzuebersicht.Application.UseCases.SparZiele;
 using Finanzuebersicht.Models;
+using Finanzuebersicht.Resources.Strings;
+using Finanzuebersicht.Services;
 
 namespace Finanzuebersicht.ViewModels;
 
@@ -11,6 +13,8 @@ public partial class SparZieleViewModel : ObservableObject
     private readonly LoadSparZieleUseCase _loadUseCase;
     private readonly SaveSparZielUseCase _saveUseCase;
     private readonly DeleteSparZielUseCase _deleteUseCase;
+    private readonly IDialogService _dialogService;
+    private readonly ILocalizationService _loc;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsEmpty))]
@@ -42,11 +46,15 @@ public partial class SparZieleViewModel : ObservableObject
     public SparZieleViewModel(
         LoadSparZieleUseCase loadUseCase,
         SaveSparZielUseCase saveUseCase,
-        DeleteSparZielUseCase deleteUseCase)
+        DeleteSparZielUseCase deleteUseCase,
+        IDialogService dialogService,
+        ILocalizationService localizationService)
     {
         _loadUseCase = loadUseCase;
         _saveUseCase = saveUseCase;
         _deleteUseCase = deleteUseCase;
+        _dialogService = dialogService;
+        _loc = localizationService;
     }
 
     [RelayCommand]
@@ -78,20 +86,53 @@ public partial class SparZieleViewModel : ObservableObject
     [RelayCommand]
     private async Task SaveNewSparZiel()
     {
-        if (string.IsNullOrWhiteSpace(NeuerTitel) || NeuesZielBetrag <= 0) return;
-
-        var ziel = new SparZiel
+        if (string.IsNullOrWhiteSpace(NeuerTitel))
         {
-            Titel = NeuerTitel,
-            Icon = NeuerIcon,
-            ZielBetrag = NeuesZielBetrag,
-            AktuellerBetrag = NeuerAktuellerBetrag,
-            Faelligkeitsdatum = NeueFaelligkeit
-        };
+            await _dialogService.ShowAlertAsync(
+                _loc.GetString(ResourceKeys.Err_Titel),
+                _loc.GetString(ResourceKeys.Err_TitelErforderlich),
+                _loc.GetString(ResourceKeys.Btn_OK));
+            return;
+        }
+        if (NeuesZielBetrag <= 0)
+        {
+            await _dialogService.ShowAlertAsync(
+                _loc.GetString(ResourceKeys.Err_Titel),
+                _loc.GetString(ResourceKeys.Err_BetragGroesserNull),
+                _loc.GetString(ResourceKeys.Btn_OK));
+            return;
+        }
+        if (NeuerAktuellerBetrag < 0)
+        {
+            await _dialogService.ShowAlertAsync(
+                _loc.GetString(ResourceKeys.Err_Titel),
+                _loc.GetString(ResourceKeys.Err_UngueltigerBetrag),
+                _loc.GetString(ResourceKeys.Btn_OK));
+            return;
+        }
 
-        await _saveUseCase.ExecuteAsync(ziel);
-        ShowAddForm = false;
-        await LoadSparZieleCommand.ExecuteAsync(null);
+        try
+        {
+            var ziel = new SparZiel
+            {
+                Titel = NeuerTitel,
+                Icon = string.IsNullOrWhiteSpace(NeuerIcon) ? "🎯" : NeuerIcon,
+                ZielBetrag = NeuesZielBetrag,
+                AktuellerBetrag = NeuerAktuellerBetrag,
+                Faelligkeitsdatum = NeueFaelligkeit
+            };
+
+            await _saveUseCase.ExecuteAsync(ziel);
+            ShowAddForm = false;
+            await LoadSparZieleCommand.ExecuteAsync(null);
+        }
+        catch (Exception ex)
+        {
+            await _dialogService.ShowAlertAsync(
+                _loc.GetString(ResourceKeys.Err_Titel),
+                _loc.GetString(ResourceKeys.Err_SpeichernFehlgeschlagen, ex.Message),
+                _loc.GetString(ResourceKeys.Btn_OK));
+        }
     }
 
     [RelayCommand]

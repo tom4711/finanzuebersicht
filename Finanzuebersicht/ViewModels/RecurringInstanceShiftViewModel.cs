@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Finanzuebersicht.Application.UseCases.RecurringTransactions;
+using Finanzuebersicht.Resources.Strings;
 using Finanzuebersicht.Services;
 using Finanzuebersicht.Models;
 using System.Globalization;
@@ -12,10 +13,14 @@ namespace Finanzuebersicht.ViewModels;
 public partial class RecurringInstanceShiftViewModel(
     ShiftRecurringInstanceUseCase shiftRecurringInstanceUseCase,
     INavigationService navigationService,
+    IDialogService dialogService,
+    ILocalizationService localizationService,
     Finanzuebersicht.Services.IClock? clock = null) : ObservableObject
 {
     private readonly ShiftRecurringInstanceUseCase _shiftRecurringInstanceUseCase = shiftRecurringInstanceUseCase;
     private readonly INavigationService _navigationService = navigationService;
+    private readonly IDialogService _dialogService = dialogService;
+    private readonly ILocalizationService _loc = localizationService;
     private readonly Finanzuebersicht.Services.IClock _clock = clock ?? Finanzuebersicht.Services.SystemClock.Instance;
 
     [ObservableProperty]
@@ -39,8 +44,18 @@ public partial class RecurringInstanceShiftViewModel(
     private async Task Save()
     {
         if (string.IsNullOrEmpty(RecurringId)) return;
-        await _shiftRecurringInstanceUseCase.ExecuteAsync(RecurringId, InstanceDate.Date, NewDate.Date, Note);
-        await _navigationService.GoBackAsync();
+        try
+        {
+            await _shiftRecurringInstanceUseCase.ExecuteAsync(RecurringId, InstanceDate.Date, NewDate.Date, Note);
+            await _navigationService.GoBackAsync();
+        }
+        catch (Exception ex)
+        {
+            await _dialogService.ShowAlertAsync(
+                _loc.GetString(ResourceKeys.Err_Titel),
+                _loc.GetString(ResourceKeys.Err_SpeichernFehlgeschlagen, ex.Message),
+                _loc.GetString(ResourceKeys.Btn_OK));
+        }
     }
 
     [RelayCommand]
