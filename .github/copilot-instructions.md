@@ -78,12 +78,13 @@ Automatic **SemVer** via **Nerdbank.GitVersioning** (`version.json` in repo root
 
 ## Git Branching Strategy
 
-**`main` is protected** — no direct commits to `main`.
+**`main` is protected** — no direct commits to `main`. It is always release-ready.
 
-All changes go through feature/fix branches and are merged via Pull Request:
+All feature development targets `develop`. When a milestone is complete, `develop` is merged into `main` via PR, then tagged to trigger a release.
 
 ```
-main              ← stable, release-ready
+main              ← stable, release-ready (merge from develop when milestone complete)
+develop           ← integration branch for ongoing work
 ├── feature/*     ← new features (e.g., feature/cloud-sync)
 ├── fix/*         ← bug fixes (e.g., fix/dark-mode-contrast)
 ├── chore/*       ← tooling, deps, config (e.g., chore/update-packages)
@@ -91,10 +92,10 @@ main              ← stable, release-ready
 ```
 
 **Workflow:**
-1. Create branch from `main`: `git checkout -b feature/<name>`
+1. Create branch from `develop`: `git checkout develop && git checkout -b feature/<name>`
 2. Make changes, commit following conventions below
-3. Push branch and create Pull Request
-4. Merge to `main` (squash or merge commit)
+3. Push branch and create Pull Request targeting `develop`
+4. When milestone is complete: PR `develop` → `main`, then tag to release
 
 **Branch naming:** `<type>/<short-description>` in kebab-case (English)
 
