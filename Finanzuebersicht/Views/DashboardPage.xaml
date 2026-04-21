@@ -279,11 +279,11 @@
                   <Label Text="{loc:Translate Lbl_AusgabenProMonat}" FontSize="18" FontAttributes="Bold"
                       Margin="0,8,0,0"
                       SemanticProperties.HeadingLevel="Level2"
-                      IsVisible="{Binding JahrMonate, Converter={StaticResource CountToBool}}" />
+                      IsVisible="{Binding HasYearData}" />
 
                 <GraphicsView x:Name="YearBarChart"
                               HeightRequest="150"
-                              IsVisible="{Binding JahrMonate, Converter={StaticResource CountToBool}}"
+                              IsVisible="{Binding HasYearData}"
                               Margin="0,4,0,8" />
 
                 <!-- Kategorien im Jahr -->

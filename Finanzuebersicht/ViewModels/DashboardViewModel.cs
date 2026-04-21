@@ -69,14 +69,13 @@ public partial class DashboardViewModel : MonthNavigationViewModel
     private string jahrAnzeige = string.Empty;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasYearData))]
     private decimal jahrGesamtAusgaben;
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(HasYearData))]
     private ObservableCollection<CategorySummary> jahrKategorien = [];
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(HasYearData))]
     private List<MonthSummary> jahrMonate = [];
 
     // --- Allgemein ---
@@ -92,7 +91,7 @@ public partial class DashboardViewModel : MonthNavigationViewModel
 
     public bool HasMonthData => KategorieAusgaben.Count > 0 || KategorieEinnahmen.Count > 0;
 
-    public bool HasYearData => JahrMonate.Count > 0 || JahrKategorien.Count > 0;
+    public bool HasYearData => JahrGesamtAusgaben > 0;
 
     private int _aktuellesJahr;
 
