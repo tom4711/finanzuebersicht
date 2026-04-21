@@ -8,7 +8,9 @@ public class TransactionTypToColorConverter : IValueConverter
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
         if (value is TransactionType typ)
-            return typ == TransactionType.Einnahme ? Color.FromArgb("#34C759") : Color.FromArgb("#FF3B30");
+            return typ == TransactionType.Einnahme
+                ? ColorResourceHelper.GetColor("Einnahme", Color.FromArgb("#34C759"))
+                : ColorResourceHelper.GetColor("Ausgabe", Color.FromArgb("#FF3B30"));
 
         return Colors.Gray;
     }

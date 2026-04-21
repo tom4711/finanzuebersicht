@@ -46,7 +46,7 @@
                                             <VerticalStackLayout Grid.Column="2" HorizontalOptions="End">
                                                 <Label Text="{Binding SparZiel.AktuellerBetrag, Converter={StaticResource Currency}}"
                                                        FontSize="15" FontAttributes="Bold"
-                                                       TextColor="#34C759" HorizontalTextAlignment="End" />
+                                                       TextColor="{AppThemeBinding Light={StaticResource Einnahme}, Dark={StaticResource EinnahmeDark}}" HorizontalTextAlignment="End" />
                                                 <Label Text="{Binding SparZiel.ZielBetrag, Converter={StaticResource Currency}}"
                                                        FontSize="12" HorizontalTextAlignment="End"
                                                        TextColor="{AppThemeBinding Light=#8E8E93, Dark=#636366}" />
@@ -66,7 +66,7 @@
                                                        TextColor="{AppThemeBinding Light=#8E8E93, Dark=#636366}" />
                                             </Grid>
                                             <ProgressBar Progress="{Binding FortschrittDecimal}"
-                                                         ProgressColor="#34C759"
+                                                         ProgressColor="{StaticResource Einnahme}"
                                                          BackgroundColor="{AppThemeBinding Light=#E5E5EA, Dark=#3A3A3C}"
                                                          SemanticProperties.Description="{loc:Translate A11y_SparZielBalken}" />
                                         </VerticalStackLayout>
@@ -74,7 +74,7 @@
                                         <!-- Löschen-Button -->
                                         <Button Text="{loc:Translate Btn_Loeschen}"
                                                 FontSize="13"
-                                                BackgroundColor="#FF3B30"
+                                                BackgroundColor="{AppThemeBinding Light={StaticResource Ausgabe}, Dark={StaticResource AusgabeDark}}"
                                                 TextColor="White"
                                                 CornerRadius="8"
                                                 HeightRequest="36"
@@ -90,7 +90,7 @@
 
                     <!-- Formular: Neues Ziel -->
                     <Border StrokeShape="RoundRectangle 12"
-                            Stroke="{AppThemeBinding Light=#007AFF, Dark=#0A84FF}"
+                            Stroke="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
                             BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1C1C1E}"
                             Padding="16"
                             IsVisible="{Binding ShowAddForm}">
@@ -141,7 +141,7 @@
                                         Command="{Binding ToggleAddFormCommand}" />
                                 <Button Grid.Column="1"
                                         Text="{loc:Translate Btn_ZielHinzufuegen}"
-                                        BackgroundColor="#007AFF"
+                                        BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
                                         TextColor="White"
                                         CornerRadius="10" HeightRequest="44"
                                         Command="{Binding SaveNewSparZielCommand}" />
@@ -157,7 +157,7 @@
         <!-- FAB: Neues Ziel -->
         <Button Text="{loc:Translate Btn_Hinzufuegen}"
                 FontSize="28" TextColor="White"
-                BackgroundColor="#007AFF"
+                BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
                 CornerRadius="28"
                 WidthRequest="56" HeightRequest="56"
                 HorizontalOptions="End" VerticalOptions="End"

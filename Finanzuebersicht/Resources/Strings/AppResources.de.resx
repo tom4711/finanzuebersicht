@@ -43,6 +43,7 @@
   <data name="Lbl_AusgabenNachKategorie" xml:space="preserve"><value>Ausgaben nach Kategorie</value></data>
   <data name="Lbl_EinnahmenNachKategorie" xml:space="preserve"><value>Einnahmen nach Kategorie</value></data>
   <data name="Lbl_Jahresausgaben" xml:space="preserve"><value>Jahresausgaben</value></data>
+  <data name="Lbl_JahressummeColon" xml:space="preserve"><value>Jahresbetrag:</value></data>
   <data name="Lbl_AusgabenProMonat" xml:space="preserve"><value>Ausgaben pro Monat</value></data>
   <data name="Lbl_Darstellung" xml:space="preserve"><value>Darstellung</value></data>
   <data name="Lbl_Speicherort" xml:space="preserve"><value>Speicherort</value></data>
@@ -97,6 +98,8 @@
   <data name="Dlg_KategorieLoeschenFrage" xml:space="preserve"><value>"{0}" wirklich löschen?</value></data>
   <data name="Dlg_DauerauftragLoeschen" xml:space="preserve"><value>Dauerauftrag löschen</value></data>
   <data name="Dlg_DauerauftragLoeschenFrage" xml:space="preserve"><value>"{0}" wirklich löschen?</value></data>
+  <data name="Dlg_TransaktionLoeschen" xml:space="preserve"><value>Transaktion löschen</value></data>
+  <data name="Dlg_TransaktionLoeschenFrage" xml:space="preserve"><value>"{0}" wirklich löschen?</value></data>
 
   <!-- Settings Messages -->
   <data name="Stn_UngueltigerOrdner" xml:space="preserve"><value>Ungültiger Ordner</value></data>

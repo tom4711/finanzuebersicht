@@ -14,9 +14,11 @@ public class TypButtonColorConverter : IValueConverter
                 : typ == TransactionType.Ausgabe;
 
             if (isMatch)
-                return paramStr == "Einnahme" ? Color.FromArgb("#34C759") : Color.FromArgb("#FF3B30");
+                return paramStr == "Einnahme"
+                    ? ColorResourceHelper.GetColor("Einnahme", Color.FromArgb("#34C759"))
+                    : ColorResourceHelper.GetColor("Ausgabe", Color.FromArgb("#FF3B30"));
 
-            return Color.FromArgb("#C7C7CC");
+            return ColorResourceHelper.GetColor("Gray400", Color.FromArgb("#C7C7CC"));
         }
 
         return Colors.Gray;
