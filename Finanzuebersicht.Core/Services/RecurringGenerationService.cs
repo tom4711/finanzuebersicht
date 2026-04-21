@@ -31,6 +31,7 @@ public class RecurringGenerationService(
                 _logger?.LogWarning(
                     "RecurringTransaction {Id} ('{Titel}') has LetzteAusfuehrung {Date} in the future. Skipping.",
                     recurring.Id, recurring.Titel, recurring.LetzteAusfuehrung.Value.Date);
+                try { FileLogger.Append("RecurringGeneration", $"Skipped '{recurring.Titel}' ({recurring.Id}): LetzteAusfuehrung {recurring.LetzteAusfuehrung.Value.Date:yyyy-MM-dd} is in the future."); } catch { }
                 continue;
             }
 
@@ -89,6 +90,7 @@ public class RecurringGenerationService(
                     "RecurringTransaction {Id} ('{Titel}') hit the {Limit}-instance limit. " +
                     "Oldest pending instance: {PendingDate}. Remaining instances will be generated on next run.",
                     recurring.Id, recurring.Titel, MaxInstancesPerRun, candidate.Date);
+                try { FileLogger.Append("RecurringGeneration", $"Limit of {MaxInstancesPerRun} hit for '{recurring.Titel}' ({recurring.Id}). Oldest pending: {candidate.Date:yyyy-MM-dd}."); } catch { }
             }
 
             await _recurringRepository.SaveRecurringTransactionAsync(recurring);

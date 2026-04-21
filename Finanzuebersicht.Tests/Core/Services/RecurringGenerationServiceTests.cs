@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Finanzuebersicht.Models;
 using Finanzuebersicht.Services;
+using Finanzuebersicht.Tests.TestHelpers;
 using Xunit;
 using NSubstitute;
 
@@ -171,5 +172,71 @@ public class RecurringGenerationServiceTests
         Assert.Contains(saved, t => t.Datum.Date == shifted.Date && t.DauerauftragId == recurring.Id);
         await recurringRepository.Received(1).SaveRecurringTransactionAsync(Arg.Is<RecurringTransaction>(r => r.LetzteAusfuehrung.HasValue));
     }
-}
 
+    [Fact]
+    public async Task FutureLetzteAusfuehrung_SkipsRecurringAndDoesNotSave()
+    {
+        var recurringRepository = Substitute.For<IRecurringTransactionRepository>();
+        var transactionRepository = Substitute.For<ITransactionRepository>();
+        var clock = new FixedClock(new DateTime(2024, 6, 1));
+
+        var recurring = new RecurringTransaction
+        {
+            Id = Guid.NewGuid().ToString(),
+            Titel = "Future Guard",
+            Betrag = 50m,
+            Typ = TransactionType.Ausgabe,
+            Startdatum = new DateTime(2024, 1, 1),
+            LetzteAusfuehrung = new DateTime(2024, 12, 31), // in the future relative to clock
+            Aktiv = true,
+            KategorieId = "cat-1",
+            Interval = RecurrenceInterval.Monthly,
+            IntervalFactor = 1
+        };
+
+        recurringRepository.GetRecurringTransactionsAsync().Returns(new List<RecurringTransaction> { recurring });
+
+        var service = new RecurringGenerationService(recurringRepository, transactionRepository, clock);
+        await service.GeneratePendingRecurringTransactionsAsync();
+
+        await transactionRepository.DidNotReceive().SaveTransactionAsync(Arg.Any<Transaction>());
+        await recurringRepository.DidNotReceive().SaveRecurringTransactionAsync(Arg.Any<RecurringTransaction>());
+    }
+
+    [Fact]
+    public async Task MaxInstancesPerRun_StopsAtLimitAndSavesState()
+    {
+        var recurringRepository = Substitute.For<IRecurringTransactionRepository>();
+        var transactionRepository = Substitute.For<ITransactionRepository>();
+        // Start far enough back that more than 500 daily instances would be pending
+        var clock = new FixedClock(new DateTime(2024, 6, 1));
+        var start = new DateTime(2022, 1, 1); // ~880 days ago → 880 daily instances pending
+
+        var recurring = new RecurringTransaction
+        {
+            Id = Guid.NewGuid().ToString(),
+            Titel = "Daily Limit Test",
+            Betrag = 1m,
+            Typ = TransactionType.Ausgabe,
+            Startdatum = start,
+            Aktiv = true,
+            KategorieId = "cat-1",
+            Interval = RecurrenceInterval.Daily,
+            IntervalFactor = 1
+        };
+
+        recurringRepository.GetRecurringTransactionsAsync().Returns(new List<RecurringTransaction> { recurring });
+
+        var saved = new List<Transaction>();
+        transactionRepository.When(x => x.SaveTransactionAsync(Arg.Any<Transaction>()))
+            .Do(call => saved.Add(call.Arg<Transaction>()));
+
+        var service = new RecurringGenerationService(recurringRepository, transactionRepository, clock);
+        await service.GeneratePendingRecurringTransactionsAsync();
+
+        Assert.Equal(500, saved.Count);
+        // LetzteAusfuehrung must be updated to the last generated instance
+        await recurringRepository.Received(1).SaveRecurringTransactionAsync(
+            Arg.Is<RecurringTransaction>(r => r.LetzteAusfuehrung.HasValue));
+    }
+}
