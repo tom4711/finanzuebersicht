@@ -31,7 +31,10 @@ namespace Finanzuebersicht.ViewModels
         private decimal yearTotal;
 
         [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(HasData))]
         private ObservableCollection<CategorySummary> categories;
+
+        public bool HasData => Categories.Count > 0;
 
         [RelayCommand]
         private async Task LoadAsync()

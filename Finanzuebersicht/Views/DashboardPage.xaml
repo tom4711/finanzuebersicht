@@ -237,6 +237,12 @@
                     </Grid>
                 </Border>
 
+                <!-- Empty State Monatsansicht -->
+                <Label Text="{loc:Translate Empty_KeineDashboardDaten}"
+                       FontSize="15" TextColor="Gray"
+                       HorizontalTextAlignment="Center" Margin="0,24,0,0"
+                       IsVisible="{Binding HasMonthData, Converter={StaticResource InvertBool}}" />
+
                 </VerticalStackLayout>
 
                 <!-- Jahresansicht -->
@@ -273,11 +279,11 @@
                   <Label Text="{loc:Translate Lbl_AusgabenProMonat}" FontSize="18" FontAttributes="Bold"
                       Margin="0,8,0,0"
                       SemanticProperties.HeadingLevel="Level2"
-                      IsVisible="{Binding JahrMonate, Converter={StaticResource CountToBool}}" />
+                      IsVisible="{Binding HasYearData}" />
 
                 <GraphicsView x:Name="YearBarChart"
                               HeightRequest="150"
-                              IsVisible="{Binding JahrMonate, Converter={StaticResource CountToBool}}"
+                              IsVisible="{Binding HasYearData}"
                               Margin="0,4,0,8" />
 
                 <!-- Kategorien im Jahr -->
@@ -317,6 +323,12 @@
                         </DataTemplate>
                     </BindableLayout.ItemTemplate>
                 </VerticalStackLayout>
+
+                <!-- Empty State Jahresansicht -->
+                <Label Text="{loc:Translate Empty_KeineJahresDaten}"
+                       FontSize="15" TextColor="Gray"
+                       HorizontalTextAlignment="Center" Margin="0,24,0,0"
+                       IsVisible="{Binding HasYearData, Converter={StaticResource InvertBool}}" />
 
                 </VerticalStackLayout>
 
