@@ -18,6 +18,7 @@ public partial class DashboardViewModel : MonthNavigationViewModel
     private readonly IBudgetRepository _budgetRepository;
     private readonly IReportingService _reportingService;
     private readonly ILocalizationService _loc;
+    private readonly INavigationService _navigationService;
     private readonly IClock _clock;
 
     // --- Monatsansicht ---
@@ -105,7 +106,9 @@ public partial class DashboardViewModel : MonthNavigationViewModel
 
     public bool HasDueItems => DueRecurringCount > 0;
 
-    public string DueRecurringText => _loc.GetString(ResourceKeys.Lbl_DauerauftraegeFaellig, DueRecurringCount);
+    public string DueRecurringText => DueRecurringCount == 1
+        ? _loc.GetString(ResourceKeys.Lbl_DauerauftraegeFaellig_Singular, DueRecurringCount)
+        : _loc.GetString(ResourceKeys.Lbl_DauerauftraegeFaellig, DueRecurringCount);
 
     private int _aktuellesJahr;
 
@@ -117,6 +120,7 @@ public partial class DashboardViewModel : MonthNavigationViewModel
         IBudgetRepository budgetRepository,
         IReportingService reportingService,
         ILocalizationService localizationService,
+        INavigationService navigationService,
         IClock? clock = null) : base(clock)
     {
         _clock = clock ?? SystemClock.Instance;
@@ -128,6 +132,7 @@ public partial class DashboardViewModel : MonthNavigationViewModel
         _budgetRepository = budgetRepository;
         _reportingService = reportingService;
         _loc = localizationService;
+        _navigationService = navigationService;
         UpdateJahrAnzeige();
     }
 
@@ -293,6 +298,6 @@ public partial class DashboardViewModel : MonthNavigationViewModel
     [RelayCommand]
     private async Task NavigateToDauerauftraege()
     {
-        await Shell.Current.GoToAsync("//RecurringTransactionsPage");
+        await _navigationService.GoToAsync("//RecurringTransactionsPage");
     }
 }

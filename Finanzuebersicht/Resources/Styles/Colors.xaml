@@ -13,6 +13,13 @@
     <Color x:Key="Warning">#FF9500</Color>
     <Color x:Key="WarningDark">#FF9F0A</Color>
 
+    <!-- Reminder Banner (fällige Daueraufträge) -->
+    <Color x:Key="ReminderBannerBorder">#FFD60A</Color>
+    <Color x:Key="ReminderBannerBackground">#FFFBE6</Color>
+    <Color x:Key="ReminderBannerBackgroundDark">#3A3200</Color>
+    <Color x:Key="ReminderBannerText">#7D6000</Color>
+    <Color x:Key="ReminderBannerTextDark">#FFD60A</Color>
+
     <!-- Hintergrund -->
     <Color x:Key="PageBackground">#F2F2F7</Color>
     <Color x:Key="PageBackgroundDark">#1C1C1E</Color>
