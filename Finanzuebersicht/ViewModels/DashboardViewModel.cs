@@ -1,8 +1,11 @@
 using System.Collections.ObjectModel;
+using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Finanzuebersicht.Application.UseCases.Dashboard;
+using Finanzuebersicht.Application.UseCases.RecurringTransactions;
 using Finanzuebersicht.Models;
+using Finanzuebersicht.Resources.Strings;
 using Finanzuebersicht.Services;
 
 namespace Finanzuebersicht.ViewModels;
@@ -11,8 +14,11 @@ public partial class DashboardViewModel : MonthNavigationViewModel
     private readonly LoadDashboardMonthUseCase _loadDashboardMonthUseCase;
     private readonly LoadDashboardYearUseCase _loadDashboardYearUseCase;
     private readonly LoadForecastUseCase _loadForecastUseCase;
+    private readonly GetDueRecurringWithHintsUseCase _getDueRecurringUseCase;
     private readonly IBudgetRepository _budgetRepository;
     private readonly IReportingService _reportingService;
+    private readonly ILocalizationService _loc;
+    private readonly INavigationService _navigationService;
     private readonly IClock _clock;
 
     // --- Monatsansicht ---
@@ -93,14 +99,28 @@ public partial class DashboardViewModel : MonthNavigationViewModel
 
     public bool HasYearData => JahrGesamtAusgaben > 0;
 
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasDueItems))]
+    [NotifyPropertyChangedFor(nameof(DueRecurringText))]
+    private int dueRecurringCount;
+
+    public bool HasDueItems => DueRecurringCount > 0;
+
+    public string DueRecurringText => DueRecurringCount == 1
+        ? _loc.GetString(ResourceKeys.Lbl_DauerauftraegeFaellig_Singular, DueRecurringCount)
+        : _loc.GetString(ResourceKeys.Lbl_DauerauftraegeFaellig, DueRecurringCount);
+
     private int _aktuellesJahr;
 
     public DashboardViewModel(
         LoadDashboardMonthUseCase loadDashboardMonthUseCase,
         LoadDashboardYearUseCase loadDashboardYearUseCase,
         LoadForecastUseCase loadForecastUseCase,
+        GetDueRecurringWithHintsUseCase getDueRecurringUseCase,
         IBudgetRepository budgetRepository,
         IReportingService reportingService,
+        ILocalizationService localizationService,
+        INavigationService navigationService,
         IClock? clock = null) : base(clock)
     {
         _clock = clock ?? SystemClock.Instance;
@@ -108,8 +128,11 @@ public partial class DashboardViewModel : MonthNavigationViewModel
         _loadDashboardMonthUseCase = loadDashboardMonthUseCase;
         _loadDashboardYearUseCase = loadDashboardYearUseCase;
         _loadForecastUseCase = loadForecastUseCase;
+        _getDueRecurringUseCase = getDueRecurringUseCase;
         _budgetRepository = budgetRepository;
         _reportingService = reportingService;
+        _loc = localizationService;
+        _navigationService = navigationService;
         UpdateJahrAnzeige();
     }
 
@@ -130,6 +153,7 @@ public partial class DashboardViewModel : MonthNavigationViewModel
             {
                 await LadeJahrAsync();
             }
+            await LadeFaelligeDauerauftraegeAsync();
         }
         finally
         {
@@ -263,5 +287,17 @@ public partial class DashboardViewModel : MonthNavigationViewModel
         JahrAnzeige = _aktuellesJahr.ToString();
         NextYearCommand.NotifyCanExecuteChanged();
         PreviousYearCommand.NotifyCanExecuteChanged();
+    }
+
+    private async Task LadeFaelligeDauerauftraegeAsync()
+    {
+        var items = await _getDueRecurringUseCase.ExecuteAsync(_clock.Today);
+        DueRecurringCount = items.Count(i => i.Hint != null);
+    }
+
+    [RelayCommand]
+    private async Task NavigateToDauerauftraege()
+    {
+        await _navigationService.GoToAsync("//RecurringTransactionsPage");
     }
 }

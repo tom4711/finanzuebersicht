@@ -192,6 +192,8 @@ Bitte starte die App neu.</value></data>
   <data name="Lbl_Fortschritt" xml:space="preserve"><value>Fortschritt</value></data>
   <data name="Lbl_Forecast" xml:space="preserve"><value>Prognose</value></data>
   <data name="Lbl_ForecastNaechsterMonat" xml:space="preserve"><value>Erwarteter nächster Monat (Ø 3M)</value></data>
+  <data name="Lbl_DauerauftraegeFaellig" xml:space="preserve"><value>🔔 {0} Daueraufträge bald fällig</value></data>
+  <data name="Lbl_DauerauftraegeFaellig_Singular" xml:space="preserve"><value>🔔 {0} Dauerauftrag bald fällig</value></data>
   <data name="Lbl_BudgetVon" xml:space="preserve"><value>von {0}</value></data>
   <data name="Lbl_Von" xml:space="preserve"><value>von</value></data>
   <data name="Lbl_UeberBudget" xml:space="preserve"><value>über Budget</value></data>
@@ -211,6 +213,7 @@ Bitte starte die App neu.</value></data>
   <data name="A11y_DauerauftragHinzufuegen" xml:space="preserve"><value>Neuen Dauerauftrag hinzufügen</value></data>
   <data name="A11y_BudgetBalken" xml:space="preserve"><value>Budget-Fortschrittsbalken für Kategorie</value></data>
   <data name="A11y_SparZielBalken" xml:space="preserve"><value>Sparziel-Fortschrittsbalken</value></data>
+  <data name="A11y_DauerauftraegeBannerHint" xml:space="preserve"><value>Öffnet den Tab Daueraufträge</value></data>
   <data name="A11y_HintBetrag" xml:space="preserve"><value>Betrag eingeben, z. B. 12,50</value></data>
   <data name="A11y_HintTitel" xml:space="preserve"><value>Kurze Beschreibung der Transaktion</value></data>
   <data name="A11y_HintBudget" xml:space="preserve"><value>Leer lassen für kein Budgetlimit</value></data>

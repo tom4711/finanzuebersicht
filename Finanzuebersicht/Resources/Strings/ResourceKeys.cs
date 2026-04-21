@@ -187,6 +187,8 @@ public static class ResourceKeys
     public const string Lbl_Fortschritt = nameof(Lbl_Fortschritt);
     public const string Lbl_Forecast = nameof(Lbl_Forecast);
     public const string Lbl_ForecastNaechsterMonat = nameof(Lbl_ForecastNaechsterMonat);
+    public const string Lbl_DauerauftraegeFaellig = nameof(Lbl_DauerauftraegeFaellig);
+    public const string Lbl_DauerauftraegeFaellig_Singular = nameof(Lbl_DauerauftraegeFaellig_Singular);
     public const string Lbl_BudgetVon = nameof(Lbl_BudgetVon);
     public const string Lbl_Von = nameof(Lbl_Von);
     public const string Lbl_UeberBudget = nameof(Lbl_UeberBudget);
@@ -208,6 +210,7 @@ public static class ResourceKeys
     public const string A11y_DauerauftragHinzufuegen = nameof(A11y_DauerauftragHinzufuegen);
     public const string A11y_BudgetBalken = nameof(A11y_BudgetBalken);
     public const string A11y_SparZielBalken = nameof(A11y_SparZielBalken);
+    public const string A11y_DauerauftraegeBannerHint = nameof(A11y_DauerauftraegeBannerHint);
     public const string A11y_HintBetrag = nameof(A11y_HintBetrag);
     public const string A11y_HintTitel = nameof(A11y_HintTitel);
     public const string A11y_HintBudget = nameof(A11y_HintBudget);

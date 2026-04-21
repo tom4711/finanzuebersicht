@@ -28,6 +28,29 @@
         <ScrollView>
             <VerticalStackLayout Spacing="16" Padding="16">
 
+                <!-- Fällige Daueraufträge Widget -->
+                <Border StrokeShape="RoundRectangle 12"
+                        Stroke="{StaticResource ReminderBannerBorder}"
+                        BackgroundColor="{AppThemeBinding Light={StaticResource ReminderBannerBackground}, Dark={StaticResource ReminderBannerBackgroundDark}}"
+                        Padding="12,10"
+                        IsVisible="{Binding HasDueItems}"
+                        SemanticProperties.Description="{Binding DueRecurringText}"
+                        SemanticProperties.Hint="{loc:Translate A11y_DauerauftraegeBannerHint}">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding NavigateToDauerauftraegeCommand}" />
+                    </Border.GestureRecognizers>
+                    <Grid ColumnDefinitions="*, Auto">
+                        <Label Grid.Column="0"
+                               Text="{Binding DueRecurringText}"
+                               FontSize="14" VerticalTextAlignment="Center"
+                               TextColor="{AppThemeBinding Light={StaticResource ReminderBannerText}, Dark={StaticResource ReminderBannerTextDark}}" />
+                        <Label Grid.Column="1" Text="›" FontSize="20" FontAttributes="Bold"
+                               VerticalTextAlignment="Center"
+                               AutomationProperties.IsInAccessibleTree="False"
+                               TextColor="{AppThemeBinding Light={StaticResource ReminderBannerText}, Dark={StaticResource ReminderBannerTextDark}}" />
+                    </Grid>
+                </Border>
+
                 <!-- Ansicht-Umschalter -->
                 <Border StrokeShape="RoundRectangle 10" Stroke="#E5E5EA"
                         BackgroundColor="#F2F2F7" Padding="2">

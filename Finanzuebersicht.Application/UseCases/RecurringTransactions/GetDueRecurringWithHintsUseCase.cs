@@ -67,7 +67,7 @@ public class GetDueRecurringWithHintsUseCase
         var reference = referenceDate.Date;
         var start = recurring.Startdatum.Date;
 
-        if (reference < start)
+        if (reference < start.AddDays(-recurring.ReminderDaysBefore))
         {
             return false;
         }
