@@ -123,16 +123,19 @@ public partial class SparZieleViewModel : ObservableObject
             };
 
             await _saveUseCase.ExecuteAsync(ziel);
-            ShowAddForm = false;
-            await LoadSparZieleCommand.ExecuteAsync(null);
         }
         catch (Exception ex)
         {
+            System.Diagnostics.Debug.WriteLine($"SaveNewSparZiel failed: {ex}");
             await _dialogService.ShowAlertAsync(
                 _loc.GetString(ResourceKeys.Err_Titel),
-                _loc.GetString(ResourceKeys.Err_SpeichernFehlgeschlagen, ex.Message),
+                _loc.GetString(ResourceKeys.Err_SpeichernFehlgeschlagen),
                 _loc.GetString(ResourceKeys.Btn_OK));
+            return;
         }
+
+        ShowAddForm = false;
+        await LoadSparZieleCommand.ExecuteAsync(null);
     }
 
     [RelayCommand]

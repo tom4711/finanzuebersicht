@@ -47,15 +47,18 @@ public partial class RecurringInstanceShiftViewModel(
         try
         {
             await _shiftRecurringInstanceUseCase.ExecuteAsync(RecurringId, InstanceDate.Date, NewDate.Date, Note);
-            await _navigationService.GoBackAsync();
         }
         catch (Exception ex)
         {
+            System.Diagnostics.Debug.WriteLine($"Error while shifting recurring instance: {ex}");
             await _dialogService.ShowAlertAsync(
                 _loc.GetString(ResourceKeys.Err_Titel),
-                _loc.GetString(ResourceKeys.Err_SpeichernFehlgeschlagen, ex.Message),
+                _loc.GetString(ResourceKeys.Err_SpeichernFehlgeschlagen),
                 _loc.GetString(ResourceKeys.Btn_OK));
+            return;
         }
+
+        await _navigationService.GoBackAsync();
     }
 
     [RelayCommand]
