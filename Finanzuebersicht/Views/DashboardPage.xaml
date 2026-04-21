@@ -237,6 +237,12 @@
                     </Grid>
                 </Border>
 
+                <!-- Empty State Monatsansicht -->
+                <Label Text="{loc:Translate Empty_KeineDashboardDaten}"
+                       FontSize="15" TextColor="Gray"
+                       HorizontalTextAlignment="Center" Margin="0,24,0,0"
+                       IsVisible="{Binding HasMonthData, Converter={StaticResource InvertBool}}" />
+
                 </VerticalStackLayout>
 
                 <!-- Jahresansicht -->
@@ -317,6 +323,12 @@
                         </DataTemplate>
                     </BindableLayout.ItemTemplate>
                 </VerticalStackLayout>
+
+                <!-- Empty State Jahresansicht -->
+                <Label Text="{loc:Translate Empty_KeineJahresDaten}"
+                       FontSize="15" TextColor="Gray"
+                       HorizontalTextAlignment="Center" Margin="0,24,0,0"
+                       IsVisible="{Binding HasYearData, Converter={StaticResource InvertBool}}" />
 
                 </VerticalStackLayout>
 

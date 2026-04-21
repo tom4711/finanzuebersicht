@@ -78,6 +78,8 @@
   <data name="Empty_KeineKategorien" xml:space="preserve"><value>Keine Kategorien vorhanden</value></data>
   <data name="Empty_KeineDauerauftraege" xml:space="preserve"><value>Keine Daueraufträge vorhanden</value></data>
   <data name="Empty_KeineTransaktionen" xml:space="preserve"><value>Keine Transaktionen in diesem Monat</value></data>
+  <data name="Empty_KeineDashboardDaten" xml:space="preserve"><value>Keine Daten für diesen Zeitraum</value></data>
+  <data name="Empty_KeineJahresDaten" xml:space="preserve"><value>Keine Daten für dieses Jahr</value></data>
 
   <!-- Error Messages -->
   <data name="Err_Titel" xml:space="preserve"><value>Fehler</value></data>

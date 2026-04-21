@@ -27,9 +27,11 @@ public partial class DashboardViewModel : MonthNavigationViewModel
     private decimal bilanz;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasMonthData))]
     private ObservableCollection<CategorySummary> kategorieAusgaben = [];
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasMonthData))]
     private ObservableCollection<CategorySummary> kategorieEinnahmen = [];
 
     [ObservableProperty]
@@ -70,9 +72,11 @@ public partial class DashboardViewModel : MonthNavigationViewModel
     private decimal jahrGesamtAusgaben;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasYearData))]
     private ObservableCollection<CategorySummary> jahrKategorien = [];
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasYearData))]
     private List<MonthSummary> jahrMonate = [];
 
     // --- Allgemein ---
@@ -85,6 +89,10 @@ public partial class DashboardViewModel : MonthNavigationViewModel
     private bool isMonthView = true;
 
     public bool IsYearView => !IsMonthView;
+
+    public bool HasMonthData => KategorieAusgaben.Count > 0 || KategorieEinnahmen.Count > 0;
+
+    public bool HasYearData => JahrMonate.Count > 0 || JahrKategorien.Count > 0;
 
     private int _aktuellesJahr;
 
@@ -231,7 +239,7 @@ public partial class DashboardViewModel : MonthNavigationViewModel
         await LoadDashboard();
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanGoNextYear))]
     private async Task NextYear()
     {
         _aktuellesJahr++;
@@ -239,7 +247,7 @@ public partial class DashboardViewModel : MonthNavigationViewModel
         await LoadDashboard();
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanGoPreviousYear))]
     private async Task PreviousYear()
     {
         _aktuellesJahr--;
@@ -247,8 +255,14 @@ public partial class DashboardViewModel : MonthNavigationViewModel
         await LoadDashboard();
     }
 
+    private bool CanGoNextYear() => _aktuellesJahr < _clock.Today.Year;
+
+    private bool CanGoPreviousYear() => _aktuellesJahr > _clock.Today.Year - 30;
+
     private void UpdateJahrAnzeige()
     {
         JahrAnzeige = _aktuellesJahr.ToString();
+        NextYearCommand.NotifyCanExecuteChanged();
+        PreviousYearCommand.NotifyCanExecuteChanged();
     }
 }

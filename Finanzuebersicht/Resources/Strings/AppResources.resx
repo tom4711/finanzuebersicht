@@ -78,6 +78,8 @@
   <data name="Empty_KeineKategorien" xml:space="preserve"><value>No categories available</value></data>
   <data name="Empty_KeineDauerauftraege" xml:space="preserve"><value>No recurring transactions available</value></data>
   <data name="Empty_KeineTransaktionen" xml:space="preserve"><value>No transactions this month</value></data>
+  <data name="Empty_KeineDashboardDaten" xml:space="preserve"><value>No data for this period</value></data>
+  <data name="Empty_KeineJahresDaten" xml:space="preserve"><value>No data for this year</value></data>
 
   <!-- Error Messages -->
   <data name="Err_Titel" xml:space="preserve"><value>Error</value></data>

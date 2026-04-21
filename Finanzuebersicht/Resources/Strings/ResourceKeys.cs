@@ -78,6 +78,8 @@ public static class ResourceKeys
     public const string Empty_KeineKategorien = nameof(Empty_KeineKategorien);
     public const string Empty_KeineDauerauftraege = nameof(Empty_KeineDauerauftraege);
     public const string Empty_KeineTransaktionen = nameof(Empty_KeineTransaktionen);
+    public const string Empty_KeineDashboardDaten = nameof(Empty_KeineDashboardDaten);
+    public const string Empty_KeineJahresDaten = nameof(Empty_KeineJahresDaten);
 
     // Error Messages
     public const string Err_Titel = nameof(Err_Titel);
