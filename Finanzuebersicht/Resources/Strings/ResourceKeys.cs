@@ -78,6 +78,7 @@ public static class ResourceKeys
     public const string Empty_KeineKategorien = nameof(Empty_KeineKategorien);
     public const string Empty_KeineDauerauftraege = nameof(Empty_KeineDauerauftraege);
     public const string Empty_KeineTransaktionen = nameof(Empty_KeineTransaktionen);
+    public const string Empty_KeineSuchergebnisse = nameof(Empty_KeineSuchergebnisse);
     public const string Empty_KeineDashboardDaten = nameof(Empty_KeineDashboardDaten);
     public const string Empty_KeineJahresDaten = nameof(Empty_KeineJahresDaten);
 
@@ -167,6 +168,7 @@ public static class ResourceKeys
     public const string Msg_BackupRestoreTitle = nameof(Msg_BackupRestoreTitle);
     public const string Msg_BackupRestoreDesc = nameof(Msg_BackupRestoreDesc);
     public const string Btn_Import = nameof(Btn_Import);
+    public const string Btn_FilterZuruecksetzen = nameof(Btn_FilterZuruecksetzen);
     public const string Title_ShiftInstance = nameof(Title_ShiftInstance);
 
     // Additional common buttons / app info
@@ -187,6 +189,13 @@ public static class ResourceKeys
     public const string Lbl_Fortschritt = nameof(Lbl_Fortschritt);
     public const string Lbl_Forecast = nameof(Lbl_Forecast);
     public const string Lbl_ForecastNaechsterMonat = nameof(Lbl_ForecastNaechsterMonat);
+    public const string Lbl_SuchergebnisseAnzahl = nameof(Lbl_SuchergebnisseAnzahl);
+    public const string Lbl_AlleKategorien = nameof(Lbl_AlleKategorien);
+    public const string Lbl_AlleTypen = nameof(Lbl_AlleTypen);
+    public const string Lbl_VonDatum = nameof(Lbl_VonDatum);
+    public const string Lbl_BisDatum = nameof(Lbl_BisDatum);
+    public const string Hint_SucheTransaktionen = nameof(Hint_SucheTransaktionen);
+    public const string A11y_FilterUmschalten = nameof(A11y_FilterUmschalten);
     public const string Lbl_DauerauftraegeFaellig = nameof(Lbl_DauerauftraegeFaellig);
     public const string Lbl_DauerauftraegeFaellig_Singular = nameof(Lbl_DauerauftraegeFaellig_Singular);
     public const string Lbl_BudgetVon = nameof(Lbl_BudgetVon);

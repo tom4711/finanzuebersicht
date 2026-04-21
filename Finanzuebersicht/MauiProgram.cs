@@ -75,6 +75,7 @@ public static class MauiProgram
 		builder.Services.AddTransient<LoadTransactionDetailDataUseCase>();
 		builder.Services.AddTransient<DeleteTransactionUseCase>();
 		builder.Services.AddTransient<LoadTransactionsMonthUseCase>();
+		builder.Services.AddTransient<SearchTransactionsUseCase>();
 		builder.Services.AddTransient<SaveRecurringTransactionDetailUseCase>();
 		builder.Services.AddTransient<SaveTransactionDetailUseCase>();
 		builder.Services.AddSingleton<InitializationService>();
