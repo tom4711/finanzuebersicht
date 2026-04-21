@@ -28,6 +28,26 @@
         <ScrollView>
             <VerticalStackLayout Spacing="16" Padding="16">
 
+                <!-- Fällige Daueraufträge Widget -->
+                <Border StrokeShape="RoundRectangle 12"
+                        Stroke="{AppThemeBinding Light=#FFD60A, Dark=#FFD60A}"
+                        BackgroundColor="{AppThemeBinding Light=#FFFBE6, Dark=#3A3200}"
+                        Padding="12,10"
+                        IsVisible="{Binding HasDueItems}">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding NavigateToDauerauftraegeCommand}" />
+                    </Border.GestureRecognizers>
+                    <Grid ColumnDefinitions="*, Auto">
+                        <Label Grid.Column="0"
+                               Text="{Binding DueRecurringText}"
+                               FontSize="14" VerticalTextAlignment="Center"
+                               TextColor="{AppThemeBinding Light=#7D6000, Dark=#FFD60A}" />
+                        <Label Grid.Column="1" Text="›" FontSize="20" FontAttributes="Bold"
+                               VerticalTextAlignment="Center"
+                               TextColor="{AppThemeBinding Light=#7D6000, Dark=#FFD60A}" />
+                    </Grid>
+                </Border>
+
                 <!-- Ansicht-Umschalter -->
                 <Border StrokeShape="RoundRectangle 10" Stroke="#E5E5EA"
                         BackgroundColor="#F2F2F7" Padding="2">

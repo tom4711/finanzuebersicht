@@ -187,6 +187,7 @@ public static class ResourceKeys
     public const string Lbl_Fortschritt = nameof(Lbl_Fortschritt);
     public const string Lbl_Forecast = nameof(Lbl_Forecast);
     public const string Lbl_ForecastNaechsterMonat = nameof(Lbl_ForecastNaechsterMonat);
+    public const string Lbl_DauerauftraegeFaellig = nameof(Lbl_DauerauftraegeFaellig);
     public const string Lbl_BudgetVon = nameof(Lbl_BudgetVon);
     public const string Lbl_Von = nameof(Lbl_Von);
     public const string Lbl_UeberBudget = nameof(Lbl_UeberBudget);

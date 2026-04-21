@@ -192,6 +192,7 @@ Bitte starte die App neu.</value></data>
   <data name="Lbl_Fortschritt" xml:space="preserve"><value>Fortschritt</value></data>
   <data name="Lbl_Forecast" xml:space="preserve"><value>Prognose</value></data>
   <data name="Lbl_ForecastNaechsterMonat" xml:space="preserve"><value>Erwarteter nächster Monat (Ø 3M)</value></data>
+  <data name="Lbl_DauerauftraegeFaellig" xml:space="preserve"><value>🔔 {0} Dauerauftrag/Aufträge bald fällig</value></data>
   <data name="Lbl_BudgetVon" xml:space="preserve"><value>von {0}</value></data>
   <data name="Lbl_Von" xml:space="preserve"><value>von</value></data>
   <data name="Lbl_UeberBudget" xml:space="preserve"><value>über Budget</value></data>

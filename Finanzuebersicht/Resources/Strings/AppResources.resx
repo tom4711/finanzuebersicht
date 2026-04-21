@@ -192,6 +192,7 @@ Please restart the app.</value></data>
   <data name="Lbl_Fortschritt" xml:space="preserve"><value>Progress</value></data>
   <data name="Lbl_Forecast" xml:space="preserve"><value>Forecast</value></data>
   <data name="Lbl_ForecastNaechsterMonat" xml:space="preserve"><value>Expected next month (Ø 3M)</value></data>
+  <data name="Lbl_DauerauftraegeFaellig" xml:space="preserve"><value>🔔 {0} recurring transaction(s) due soon</value></data>
   <data name="Lbl_BudgetVon" xml:space="preserve"><value>of {0}</value></data>
   <data name="Lbl_Von" xml:space="preserve"><value>of</value></data>
   <data name="Lbl_UeberBudget" xml:space="preserve"><value>over budget</value></data>
