@@ -1,15 +1,18 @@
 using Finanzuebersicht.Models;
+using Microsoft.Extensions.Logging;
 
 namespace Finanzuebersicht.Services;
 
 public class RecurringGenerationService(
     IRecurringTransactionRepository recurringRepository,
     ITransactionRepository transactionRepository,
-    Finanzuebersicht.Services.IClock? clock = null) : IRecurringGenerationService
+    Finanzuebersicht.Services.IClock? clock = null,
+    ILogger<RecurringGenerationService>? logger = null) : IRecurringGenerationService
 {
     private readonly IRecurringTransactionRepository _recurringRepository = recurringRepository;
     private readonly ITransactionRepository _transactionRepository = transactionRepository;
     private readonly Finanzuebersicht.Services.IClock _clock = clock ?? Finanzuebersicht.Services.SystemClock.Instance;
+    private readonly ILogger<RecurringGenerationService>? _logger = logger;
     private const int MaxInstancesPerRun = 500;
 
     public async Task GeneratePendingRecurringTransactionsAsync()
@@ -21,6 +24,15 @@ public class RecurringGenerationService(
         {
             if (recurring.Enddatum.HasValue && recurring.Enddatum.Value < today)
                 continue;
+
+            // Guard against corrupted future LetzteAusfuehrung
+            if (recurring.LetzteAusfuehrung.HasValue && recurring.LetzteAusfuehrung.Value.Date > today)
+            {
+                _logger?.LogWarning(
+                    "RecurringTransaction {Id} ('{Titel}') has LetzteAusfuehrung {Date} in the future. Skipping.",
+                    recurring.Id, recurring.Titel, recurring.LetzteAusfuehrung.Value.Date);
+                continue;
+            }
 
             var generatedCount = 0;
 
@@ -68,6 +80,15 @@ public class RecurringGenerationService(
                 // mark this instance as last executed (use the template instance date)
                 recurring.LetzteAusfuehrung = candidate;
                 candidate = GetNextInstance(recurring, candidate);
+            }
+
+            // Warn if the limit was hit and instances are still pending
+            if (generatedCount == MaxInstancesPerRun && candidate <= today)
+            {
+                _logger?.LogWarning(
+                    "RecurringTransaction {Id} ('{Titel}') hit the {Limit}-instance limit. " +
+                    "Oldest pending instance: {PendingDate}. Remaining instances will be generated on next run.",
+                    recurring.Id, recurring.Titel, MaxInstancesPerRun, candidate.Date);
             }
 
             await _recurringRepository.SaveRecurringTransactionAsync(recurring);
