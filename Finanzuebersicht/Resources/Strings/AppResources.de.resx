@@ -200,7 +200,7 @@ Bitte starte die App neu.</value></data>
   <data name="Lbl_VonDatum" xml:space="preserve"><value>Von</value></data>
   <data name="Lbl_BisDatum" xml:space="preserve"><value>Bis</value></data>
   <data name="Hint_SucheTransaktionen" xml:space="preserve"><value>Transaktionen suchen…</value></data>
-  <data name="Lbl_ForecastNaechsterMonat" xml:space="preserve"><value>Erwarteter nächster Monat (Ø 3M)</value></data>
+  <data name="A11y_FilterUmschalten" xml:space="preserve"><value>Filter umschalten</value></data>
   <data name="Lbl_DauerauftraegeFaellig" xml:space="preserve"><value>🔔 {0} Daueraufträge bald fällig</value></data>
   <data name="Lbl_DauerauftraegeFaellig_Singular" xml:space="preserve"><value>🔔 {0} Dauerauftrag bald fällig</value></data>
   <data name="Lbl_BudgetVon" xml:space="preserve"><value>von {0}</value></data>

@@ -3,7 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:Finanzuebersicht.ViewModels"
              xmlns:models="clr-namespace:Finanzuebersicht.Models"
-             xmlns:appModels="clr-namespace:Finanzuebersicht.Models;assembly=Finanzuebersicht.Core"
              xmlns:conv="clr-namespace:Finanzuebersicht.Converters"
              xmlns:loc="clr-namespace:Finanzuebersicht.Extensions"
              x:Class="Finanzuebersicht.Views.TransactionsPage"
@@ -15,7 +14,6 @@
         <conv:BetragDisplayConverter x:Key="BetragDisplay" />
         <conv:KategorieIdToIconConverter x:Key="KategorieIdToIcon" />
         <conv:InvertBoolConverter x:Key="InvertBool" />
-        <conv:CountToBoolConverter x:Key="CountToBool" />
     </ContentPage.Resources>
 
     <Grid RowDefinitions="Auto, Auto, Auto, *">
@@ -26,19 +24,26 @@
                        Text="{Binding SearchText}"
                        Placeholder="{loc:Translate Hint_SucheTransaktionen}"
                        CancelButtonColor="#007AFF" />
-            <Border Grid.Column="1"
-                    StrokeShape="RoundRectangle 10"
-                    BackgroundColor="{Binding IsFilterActive, Converter={StaticResource InvertBool}, ConverterParameter='{AppThemeBinding Light=#007AFF, Dark=#0A84FF}'}"
-                    Stroke="Transparent"
+            <Button Grid.Column="1"
+                    Text="⚙"
+                    FontSize="20"
+                    Command="{Binding ToggleFilterPanelCommand}"
+                    BackgroundColor="Transparent"
+                    TextColor="{AppThemeBinding Light=#007AFF, Dark=#0A84FF}"
+                    BorderWidth="0"
+                    CornerRadius="10"
+                    Padding="0"
                     WidthRequest="44" HeightRequest="44"
-                    VerticalOptions="Center">
-                <Border.GestureRecognizers>
-                    <TapGestureRecognizer Command="{Binding ToggleFilterPanelCommand}" />
-                </Border.GestureRecognizers>
-                <Label Text="⚙" FontSize="20"
-                       HorizontalOptions="Center" VerticalOptions="Center"
-                       TextColor="{AppThemeBinding Light=#007AFF, Dark=#0A84FF}" />
-            </Border>
+                    VerticalOptions="Center"
+                    SemanticProperties.Description="{loc:Translate A11y_FilterUmschalten}"
+                    AutomationProperties.Name="{loc:Translate A11y_FilterUmschalten}">
+                <Button.Triggers>
+                    <DataTrigger TargetType="Button" Binding="{Binding IsFilterActive}" Value="True">
+                        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=#007AFF, Dark=#0A84FF}" />
+                        <Setter Property="TextColor" Value="White" />
+                    </DataTrigger>
+                </Button.Triggers>
+            </Button>
         </Grid>
 
         <!-- Row 1: Monatsnavigation (nur im Monatsmodus sichtbar) -->
@@ -85,14 +90,9 @@
                     <Label Grid.Column="0" Text="{loc:Translate Lbl_AlleTypen}"
                            FontSize="13" TextColor="Gray" VerticalTextAlignment="Center" />
                     <Picker Grid.Column="1"
+                            ItemsSource="{Binding TypFilterItems}"
                             SelectedIndex="{Binding SelectedTypIndex}"
-                            FontSize="14">
-                        <Picker.Items>
-                            <x:String>Alle</x:String>
-                            <x:String>Einnahmen</x:String>
-                            <x:String>Ausgaben</x:String>
-                        </Picker.Items>
-                    </Picker>
+                            FontSize="14" />
                 </Grid>
 
                 <!-- Datum-Filter aktivieren -->

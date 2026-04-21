@@ -34,6 +34,7 @@ public partial class TransactionsViewModel(
     private readonly ILogger<TransactionsViewModel> _logger = logger;
 
     private CancellationTokenSource? _searchDebounce;
+    private int _searchVersion;
 
     // --- Monatsansicht ---
 
@@ -82,6 +83,8 @@ public partial class TransactionsViewModel(
     private ObservableCollection<TransactionGroup> searchErgebnisGruppen = [];
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasSearchResults))]
+    [NotifyPropertyChangedFor(nameof(SearchCountText))]
     private int totalSearchCount;
 
     [ObservableProperty]
@@ -99,6 +102,13 @@ public partial class TransactionsViewModel(
     public bool HasSearchResults => SearchErgebnisGruppen.Count > 0;
 
     public string SearchCountText => _loc.GetString(ResourceKeys.Lbl_SuchergebnisseAnzahl, TotalSearchCount);
+
+    public string[] TypFilterItems =>
+    [
+        _loc.GetString(ResourceKeys.Lbl_AlleTypen),
+        _loc.GetString(ResourceKeys.Lbl_Einnahmen),
+        _loc.GetString(ResourceKeys.Lbl_Ausgaben)
+    ];
 
     // --- Picker-Hilfsfelder ---
 
@@ -171,15 +181,16 @@ public partial class TransactionsViewModel(
         _searchDebounce?.Cancel();
         _searchDebounce = new CancellationTokenSource();
         var token = _searchDebounce.Token;
+        var version = Interlocked.Increment(ref _searchVersion);
         Task.Run(async () =>
         {
             await Task.Delay(300, token);
             if (!token.IsCancellationRequested)
-                await MainThread.InvokeOnMainThreadAsync(ExecuteSearchAsync);
+                await MainThread.InvokeOnMainThreadAsync(() => ExecuteSearchAsync(version));
         }, token);
     }
 
-    private async Task ExecuteSearchAsync()
+    private async Task ExecuteSearchAsync(int version = -1)
     {
         if (!IsSearchActive)
         {
@@ -197,13 +208,15 @@ public partial class TransactionsViewModel(
                 VonDatum: VonDatum,
                 BisDatum: BisDatum);
             var result = await _searchTransactionsUseCase.ExecuteAsync(query);
+            if (version >= 0 && version != _searchVersion) return;
             SearchErgebnisGruppen = new ObservableCollection<TransactionGroup>(result.Gruppen);
             TotalSearchCount = result.TotalCount;
             Converters.KategorieIdToIconConverter.SetCache(result.IconMap);
         }
         finally
         {
-            IsLoading = false;
+            if (version < 0 || version == _searchVersion)
+                IsLoading = false;
         }
     }
 

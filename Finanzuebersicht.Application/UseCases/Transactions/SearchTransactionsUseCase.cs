@@ -32,6 +32,9 @@ public class SearchTransactionsUseCase(
         var von = query.VonDatum ?? DateTime.MinValue;
         var bis = query.BisDatum ?? DateTime.MaxValue;
 
+        if (von > bis)
+            (von, bis) = (bis, von);
+
         var alle = await _transactionRepository.GetTransactionsAsync(von, bis);
 
         var gefiltert = alle.AsEnumerable();
