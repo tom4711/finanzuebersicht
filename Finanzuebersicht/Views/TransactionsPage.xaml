@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:Finanzuebersicht.ViewModels"
              xmlns:models="clr-namespace:Finanzuebersicht.Models"
+             xmlns:appModels="clr-namespace:Finanzuebersicht.Models;assembly=Finanzuebersicht.Core"
              xmlns:conv="clr-namespace:Finanzuebersicht.Converters"
              xmlns:loc="clr-namespace:Finanzuebersicht.Extensions"
              x:Class="Finanzuebersicht.Views.TransactionsPage"
@@ -13,14 +14,38 @@
         <conv:TransactionTypToColorConverter x:Key="TypToColor" />
         <conv:BetragDisplayConverter x:Key="BetragDisplay" />
         <conv:KategorieIdToIconConverter x:Key="KategorieIdToIcon" />
+        <conv:InvertBoolConverter x:Key="InvertBool" />
+        <conv:CountToBoolConverter x:Key="CountToBool" />
     </ContentPage.Resources>
 
-    <Grid RowDefinitions="Auto, *">
+    <Grid RowDefinitions="Auto, Auto, Auto, *">
 
-        <!-- Monatsnavigation -->
-        <Grid Grid.Row="0" ColumnDefinitions="Auto, *, Auto"
-              Padding="16,12">
-                <Button Grid.Column="0" Text="{loc:Translate Btn_Prev}" FontSize="28"
+        <!-- Row 0: Suchleiste + Filter-Button -->
+        <Grid Grid.Row="0" ColumnDefinitions="*, Auto" Padding="12,8,12,4" ColumnSpacing="8">
+            <SearchBar Grid.Column="0"
+                       Text="{Binding SearchText}"
+                       Placeholder="{loc:Translate Hint_SucheTransaktionen}"
+                       CancelButtonColor="#007AFF" />
+            <Border Grid.Column="1"
+                    StrokeShape="RoundRectangle 10"
+                    BackgroundColor="{Binding IsFilterActive, Converter={StaticResource InvertBool}, ConverterParameter='{AppThemeBinding Light=#007AFF, Dark=#0A84FF}'}"
+                    Stroke="Transparent"
+                    WidthRequest="44" HeightRequest="44"
+                    VerticalOptions="Center">
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding ToggleFilterPanelCommand}" />
+                </Border.GestureRecognizers>
+                <Label Text="⚙" FontSize="20"
+                       HorizontalOptions="Center" VerticalOptions="Center"
+                       TextColor="{AppThemeBinding Light=#007AFF, Dark=#0A84FF}" />
+            </Border>
+        </Grid>
+
+        <!-- Row 1: Monatsnavigation (nur im Monatsmodus sichtbar) -->
+        <Grid Grid.Row="1" ColumnDefinitions="Auto, *, Auto"
+              Padding="16,4"
+              IsVisible="{Binding IsMonthMode}">
+            <Button Grid.Column="0" Text="{loc:Translate Btn_Prev}" FontSize="28"
                     BackgroundColor="Transparent" TextColor="#007AFF"
                     Command="{Binding PreviousMonthCommand}"
                     SemanticProperties.Description="{loc:Translate A11y_VorherigerMonat}"
@@ -28,96 +53,214 @@
             <Label Grid.Column="1" Text="{Binding MonatAnzeige}"
                    FontSize="18" FontAttributes="Bold"
                    HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
-                <Button Grid.Column="2" Text="{loc:Translate Btn_Next}" FontSize="28"
+            <Button Grid.Column="2" Text="{loc:Translate Btn_Next}" FontSize="28"
                     BackgroundColor="Transparent" TextColor="#007AFF"
                     Command="{Binding NextMonthCommand}"
                     SemanticProperties.Description="{loc:Translate A11y_NaechsterMonat}"
                     WidthRequest="44" />
         </Grid>
 
-        <!-- Transaktionsliste -->
-        <RefreshView Grid.Row="1"
-                     Command="{Binding LoadTransaktionenCommand}"
-                     IsRefreshing="{Binding IsLoading}">
-            <CollectionView ItemsSource="{Binding TransaktionsGruppen}"
-                            IsGrouped="True"
-                            SelectionMode="None">
+        <!-- Row 2: Filter-Panel (collapsible) -->
+        <Border Grid.Row="2"
+                StrokeShape="RoundRectangle 0"
+                Stroke="Transparent"
+                BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray900}}"
+                Padding="12,8"
+                IsVisible="{Binding IsFilterPanelOpen}">
+            <VerticalStackLayout Spacing="10">
 
-                <CollectionView.EmptyView>
-                    <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Padding="20">
-                        <Label Text="{loc:Translate Empty_KeineTransaktionen}"
-                               FontSize="16" HorizontalTextAlignment="Center" TextColor="Gray" />
-                    </VerticalStackLayout>
-                </CollectionView.EmptyView>
+                <!-- Kategorie-Filter -->
+                <Grid ColumnDefinitions="80, *" ColumnSpacing="8">
+                    <Label Grid.Column="0" Text="{loc:Translate Lbl_AlleKategorien}"
+                           FontSize="13" TextColor="Gray" VerticalTextAlignment="Center" />
+                    <Picker Grid.Column="1"
+                            ItemsSource="{Binding AvailableKategorien}"
+                            ItemDisplayBinding="{Binding DisplayName}"
+                            SelectedItem="{Binding SelectedKategorieFilterItem}"
+                            FontSize="14" />
+                </Grid>
 
-                <CollectionView.GroupHeaderTemplate>
-                    <DataTemplate x:DataType="models:TransactionGroup">
-                        <Label Text="{Binding DatumFormatiert}"
-                               FontSize="14" TextColor="Gray"
-                               Padding="16,12,16,4" />
-                    </DataTemplate>
-                </CollectionView.GroupHeaderTemplate>
+                <!-- Typ-Filter -->
+                <Grid ColumnDefinitions="80, *" ColumnSpacing="8">
+                    <Label Grid.Column="0" Text="{loc:Translate Lbl_AlleTypen}"
+                           FontSize="13" TextColor="Gray" VerticalTextAlignment="Center" />
+                    <Picker Grid.Column="1"
+                            SelectedIndex="{Binding SelectedTypIndex}"
+                            FontSize="14">
+                        <Picker.Items>
+                            <x:String>Alle</x:String>
+                            <x:String>Einnahmen</x:String>
+                            <x:String>Ausgaben</x:String>
+                        </Picker.Items>
+                    </Picker>
+                </Grid>
 
-                <CollectionView.ItemTemplate>
-                    <DataTemplate x:DataType="models:Transaction">
-                        <SwipeView>
-                            <SwipeView.RightItems>
-                                <SwipeItems>
-                                    <SwipeItem Text="{loc:Translate Btn_Loeschen}"
-                                               BackgroundColor="#FF3B30"
-                                               Command="{Binding Source={RelativeSource AncestorType={x:Type vm:TransactionsViewModel}}, Path=DeleteTransaktionCommand}"
-                                               CommandParameter="{Binding .}" />
-                                </SwipeItems>
-                            </SwipeView.RightItems>
+                <!-- Datum-Filter aktivieren -->
+                <Grid ColumnDefinitions="*, Auto" ColumnSpacing="8">
+                    <Label Grid.Column="0" Text="{loc:Translate Lbl_VonDatum}"
+                           FontSize="13" TextColor="Gray" VerticalTextAlignment="Center" />
+                    <Switch Grid.Column="1" IsToggled="{Binding IsDateFilterEnabled}" />
+                </Grid>
 
+                <!-- Datum Von/Bis (nur wenn aktiviert) -->
+                <Grid ColumnDefinitions="80, *, 40, *" ColumnSpacing="8"
+                      IsVisible="{Binding IsDateFilterEnabled}">
+                    <Label Grid.Column="0" Text="{loc:Translate Lbl_VonDatum}"
+                           FontSize="13" TextColor="Gray" VerticalTextAlignment="Center" />
+                    <DatePicker Grid.Column="1"
+                                Date="{Binding VonDatumPicker}"
+                                Format="dd.MM.yyyy" FontSize="14" />
+                    <Label Grid.Column="2" Text="{loc:Translate Lbl_BisDatum}"
+                           FontSize="13" TextColor="Gray" VerticalTextAlignment="Center" />
+                    <DatePicker Grid.Column="3"
+                                Date="{Binding BisDatumPicker}"
+                                Format="dd.MM.yyyy" FontSize="14" />
+                </Grid>
+
+                <!-- Filter zurücksetzen -->
+                <Button Text="{loc:Translate Btn_FilterZuruecksetzen}"
+                        FontSize="13" TextColor="#FF3B30"
+                        BackgroundColor="Transparent"
+                        HorizontalOptions="Start"
+                        IsVisible="{Binding IsFilterActive}"
+                        Command="{Binding ClearSearchCommand}" />
+            </VerticalStackLayout>
+        </Border>
+
+        <!-- Row 3: Content -->
+        <Grid Grid.Row="3">
+
+            <!-- Monatsansicht (normal) -->
+            <RefreshView Command="{Binding LoadTransaktionenCommand}"
+                         IsRefreshing="{Binding IsLoading}"
+                         IsVisible="{Binding IsMonthMode}">
+                <CollectionView ItemsSource="{Binding TransaktionsGruppen}"
+                                IsGrouped="True"
+                                SelectionMode="None">
+                    <CollectionView.EmptyView>
+                        <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Padding="20">
+                            <Label Text="{loc:Translate Empty_KeineTransaktionen}"
+                                   FontSize="16" HorizontalTextAlignment="Center" TextColor="Gray" />
+                        </VerticalStackLayout>
+                    </CollectionView.EmptyView>
+                    <CollectionView.GroupHeaderTemplate>
+                        <DataTemplate x:DataType="models:TransactionGroup">
+                            <Label Text="{Binding DatumFormatiert}"
+                                   FontSize="14" TextColor="Gray"
+                                   Padding="16,12,16,4" />
+                        </DataTemplate>
+                    </CollectionView.GroupHeaderTemplate>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="models:Transaction">
+                            <SwipeView>
+                                <SwipeView.RightItems>
+                                    <SwipeItems>
+                                        <SwipeItem Text="{loc:Translate Btn_Loeschen}"
+                                                   BackgroundColor="#FF3B30"
+                                                   Command="{Binding Source={RelativeSource AncestorType={x:Type vm:TransactionsViewModel}}, Path=DeleteTransaktionCommand}"
+                                                   CommandParameter="{Binding .}" />
+                                    </SwipeItems>
+                                </SwipeView.RightItems>
+                                <Grid ColumnDefinitions="44, *, Auto" Padding="16,10" ColumnSpacing="12">
+                                    <Grid.GestureRecognizers>
+                                        <TapGestureRecognizer
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:TransactionsViewModel}}, Path=GoToDetailCommand}"
+                                            CommandParameter="{Binding .}" />
+                                    </Grid.GestureRecognizers>
+                                    <Border Grid.Column="0"
+                                            BackgroundColor="{AppThemeBinding Light=#F2F2F7, Dark=#3A3A3C}"
+                                            StrokeShape="RoundRectangle 10" Stroke="Transparent"
+                                            WidthRequest="40" HeightRequest="40"
+                                            HorizontalOptions="Center" VerticalOptions="Center">
+                                        <Label Text="{Binding KategorieId, Converter={StaticResource KategorieIdToIcon}}" FontSize="18"
+                                               HorizontalOptions="Center" VerticalOptions="Center" />
+                                    </Border>
+                                    <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                                        <Label Text="{Binding Titel}" FontSize="16" FontAttributes="Bold"
+                                               LineBreakMode="TailTruncation" />
+                                        <Label Text="{Binding Verwendungszweck}" FontSize="12" TextColor="Gray"
+                                               LineBreakMode="TailTruncation" />
+                                    </VerticalStackLayout>
+                                    <Label Grid.Column="2"
+                                           Text="{Binding ., Converter={StaticResource BetragDisplay}}"
+                                           TextColor="{Binding Typ, Converter={StaticResource TypToColor}}"
+                                           FontSize="16" FontAttributes="Bold"
+                                           VerticalTextAlignment="Center" />
+                                </Grid>
+                            </SwipeView>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </RefreshView>
+
+            <!-- Suchergebnisse -->
+            <VerticalStackLayout IsVisible="{Binding IsSearchActive}" Spacing="0">
+
+                <!-- Ergebnis-Anzahl -->
+                <Label Padding="16,8,16,4"
+                       FontSize="13" TextColor="Gray"
+                       IsVisible="{Binding HasSearchResults}"
+                       Text="{Binding SearchCountText}" />
+
+                <!-- Keine Ergebnisse -->
+                <Label Text="{loc:Translate Empty_KeineSuchergebnisse}"
+                       FontSize="16" HorizontalTextAlignment="Center" TextColor="Gray"
+                       Margin="0,40,0,0"
+                       IsVisible="{Binding HasSearchResults, Converter={StaticResource InvertBool}}" />
+
+                <CollectionView ItemsSource="{Binding SearchErgebnisGruppen}"
+                                IsGrouped="True"
+                                SelectionMode="None"
+                                IsVisible="{Binding HasSearchResults}">
+                    <CollectionView.GroupHeaderTemplate>
+                        <DataTemplate x:DataType="models:TransactionGroup">
+                            <Label Text="{Binding DatumFormatiert}"
+                                   FontSize="14" TextColor="Gray" FontAttributes="Bold"
+                                   Padding="16,12,16,4" />
+                        </DataTemplate>
+                    </CollectionView.GroupHeaderTemplate>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="models:Transaction">
                             <Grid ColumnDefinitions="44, *, Auto" Padding="16,10" ColumnSpacing="12">
                                 <Grid.GestureRecognizers>
                                     <TapGestureRecognizer
                                         Command="{Binding Source={RelativeSource AncestorType={x:Type vm:TransactionsViewModel}}, Path=GoToDetailCommand}"
                                         CommandParameter="{Binding .}" />
                                 </Grid.GestureRecognizers>
-
                                 <Border Grid.Column="0"
                                         BackgroundColor="{AppThemeBinding Light=#F2F2F7, Dark=#3A3A3C}"
-                                        StrokeShape="RoundRectangle 10"
-                                        Stroke="Transparent"
+                                        StrokeShape="RoundRectangle 10" Stroke="Transparent"
                                         WidthRequest="40" HeightRequest="40"
                                         HorizontalOptions="Center" VerticalOptions="Center">
                                     <Label Text="{Binding KategorieId, Converter={StaticResource KategorieIdToIcon}}" FontSize="18"
                                            HorizontalOptions="Center" VerticalOptions="Center" />
                                 </Border>
-
                                 <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
-                                    <Label Text="{Binding Titel}"
-                                           FontSize="16" FontAttributes="Bold"
+                                    <Label Text="{Binding Titel}" FontSize="16" FontAttributes="Bold"
                                            LineBreakMode="TailTruncation" />
-                                    <Label Text="{Binding Verwendungszweck}"
-                                           FontSize="12" TextColor="Gray"
+                                    <Label Text="{Binding Verwendungszweck}" FontSize="12" TextColor="Gray"
                                            LineBreakMode="TailTruncation" />
                                 </VerticalStackLayout>
-
                                 <Label Grid.Column="2"
                                        Text="{Binding ., Converter={StaticResource BetragDisplay}}"
                                        TextColor="{Binding Typ, Converter={StaticResource TypToColor}}"
                                        FontSize="16" FontAttributes="Bold"
                                        VerticalTextAlignment="Center" />
                             </Grid>
-                        </SwipeView>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
-        </RefreshView>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </VerticalStackLayout>
 
-        <!-- Buttons: FAB + Import -->
-        <Grid Grid.Row="1" HorizontalOptions="Fill" VerticalOptions="End" Padding="20,0,20,20">
-                <!-- Import Button -->
-                <Button Text="{loc:Translate Btn_Import}" FontSize="14" TextColor="#007AFF"
+        </Grid>
+
+        <!-- FABs (immer sichtbar, über Row 3) -->
+        <Grid Grid.Row="3" HorizontalOptions="Fill" VerticalOptions="End" Padding="20,0,20,20">
+            <Button Text="{loc:Translate Btn_Import}" FontSize="14" TextColor="#007AFF"
                     BackgroundColor="Transparent"
                     HorizontalOptions="Start" VerticalOptions="End"
                     Command="{Binding ImportCsvCommand}" />
-            
-            <!-- FAB -->
-                <Button Text="{loc:Translate Btn_Hinzufuegen}"
+            <Button Text="{loc:Translate Btn_Hinzufuegen}"
                     FontSize="28" TextColor="White"
                     BackgroundColor="#007AFF"
                     CornerRadius="28"
@@ -127,5 +270,6 @@
                     Shadow="{Shadow Brush='#40000000', Offset='0,4', Radius=8}"
                     Command="{Binding GoToDetailCommand}" />
         </Grid>
+
     </Grid>
 </ContentPage>

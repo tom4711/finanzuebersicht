@@ -78,6 +78,7 @@
   <data name="Empty_KeineKategorien" xml:space="preserve"><value>No categories available</value></data>
   <data name="Empty_KeineDauerauftraege" xml:space="preserve"><value>No recurring transactions available</value></data>
   <data name="Empty_KeineTransaktionen" xml:space="preserve"><value>No transactions this month</value></data>
+  <data name="Empty_KeineSuchergebnisse" xml:space="preserve"><value>No transactions found</value></data>
   <data name="Empty_KeineDashboardDaten" xml:space="preserve"><value>No data for this period</value></data>
   <data name="Empty_KeineJahresDaten" xml:space="preserve"><value>No data for this year</value></data>
 
@@ -174,6 +175,7 @@ Please restart the app.</value></data>
   <data name="Msg_BackupRestoreTitle" xml:space="preserve"><value>Backup &amp; Restore</value></data>
   <data name="Msg_BackupRestoreDesc" xml:space="preserve"><value>Create backups of your data and restore when needed.</value></data>
   <data name="Btn_Import" xml:space="preserve"><value>Import</value></data>
+  <data name="Btn_FilterZuruecksetzen" xml:space="preserve"><value>Clear filter</value></data>
   <data name="Title_ShiftInstance" xml:space="preserve"><value>Shift instance</value></data>
   <data name="Btn_Hinzufuegen" xml:space="preserve"><value>+</value></data>
   <data name="Btn_Prev" xml:space="preserve"><value>‹</value></data>
@@ -192,6 +194,12 @@ Please restart the app.</value></data>
   <data name="Lbl_Fortschritt" xml:space="preserve"><value>Progress</value></data>
   <data name="Lbl_Forecast" xml:space="preserve"><value>Forecast</value></data>
   <data name="Lbl_ForecastNaechsterMonat" xml:space="preserve"><value>Expected next month (Ø 3M)</value></data>
+  <data name="Lbl_SuchergebnisseAnzahl" xml:space="preserve"><value>{0} result(s)</value></data>
+  <data name="Lbl_AlleKategorien" xml:space="preserve"><value>All categories</value></data>
+  <data name="Lbl_AlleTypen" xml:space="preserve"><value>All types</value></data>
+  <data name="Lbl_VonDatum" xml:space="preserve"><value>From</value></data>
+  <data name="Lbl_BisDatum" xml:space="preserve"><value>To</value></data>
+  <data name="Hint_SucheTransaktionen" xml:space="preserve"><value>Search transactions…</value></data>
   <data name="Lbl_DauerauftraegeFaellig" xml:space="preserve"><value>🔔 {0} recurring transactions due soon</value></data>
   <data name="Lbl_DauerauftraegeFaellig_Singular" xml:space="preserve"><value>🔔 {0} recurring transaction due soon</value></data>
   <data name="Lbl_BudgetVon" xml:space="preserve"><value>of {0}</value></data>

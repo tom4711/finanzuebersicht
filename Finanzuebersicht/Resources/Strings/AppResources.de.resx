@@ -78,6 +78,7 @@
   <data name="Empty_KeineKategorien" xml:space="preserve"><value>Keine Kategorien vorhanden</value></data>
   <data name="Empty_KeineDauerauftraege" xml:space="preserve"><value>Keine Daueraufträge vorhanden</value></data>
   <data name="Empty_KeineTransaktionen" xml:space="preserve"><value>Keine Transaktionen in diesem Monat</value></data>
+  <data name="Empty_KeineSuchergebnisse" xml:space="preserve"><value>Keine Transaktionen gefunden</value></data>
   <data name="Empty_KeineDashboardDaten" xml:space="preserve"><value>Keine Daten für diesen Zeitraum</value></data>
   <data name="Empty_KeineJahresDaten" xml:space="preserve"><value>Keine Daten für dieses Jahr</value></data>
 
@@ -174,6 +175,7 @@ Bitte starte die App neu.</value></data>
   <data name="Msg_BackupRestoreTitle" xml:space="preserve"><value>Sicherung &amp; Wiederherstellung</value></data>
   <data name="Msg_BackupRestoreDesc" xml:space="preserve"><value>Erstelle Sicherungen deiner Daten und stelle sie bei Bedarf wieder her.</value></data>
   <data name="Btn_Import" xml:space="preserve"><value>Import</value></data>
+  <data name="Btn_FilterZuruecksetzen" xml:space="preserve"><value>Filter zurücksetzen</value></data>
   <data name="Title_ShiftInstance" xml:space="preserve"><value>Instanz verschieben</value></data>
   <data name="Btn_Hinzufuegen" xml:space="preserve"><value>+</value></data>
   <data name="Btn_Prev" xml:space="preserve"><value>‹</value></data>
@@ -191,6 +193,13 @@ Bitte starte die App neu.</value></data>
   <data name="Lbl_Faelligkeit" xml:space="preserve"><value>Fälligkeit</value></data>
   <data name="Lbl_Fortschritt" xml:space="preserve"><value>Fortschritt</value></data>
   <data name="Lbl_Forecast" xml:space="preserve"><value>Prognose</value></data>
+  <data name="Lbl_ForecastNaechsterMonat" xml:space="preserve"><value>Erwarteter nächster Monat (Ø 3M)</value></data>
+  <data name="Lbl_SuchergebnisseAnzahl" xml:space="preserve"><value>{0} Ergebnis(se)</value></data>
+  <data name="Lbl_AlleKategorien" xml:space="preserve"><value>Alle Kategorien</value></data>
+  <data name="Lbl_AlleTypen" xml:space="preserve"><value>Alle Typen</value></data>
+  <data name="Lbl_VonDatum" xml:space="preserve"><value>Von</value></data>
+  <data name="Lbl_BisDatum" xml:space="preserve"><value>Bis</value></data>
+  <data name="Hint_SucheTransaktionen" xml:space="preserve"><value>Transaktionen suchen…</value></data>
   <data name="Lbl_ForecastNaechsterMonat" xml:space="preserve"><value>Erwarteter nächster Monat (Ø 3M)</value></data>
   <data name="Lbl_DauerauftraegeFaellig" xml:space="preserve"><value>🔔 {0} Daueraufträge bald fällig</value></data>
   <data name="Lbl_DauerauftraegeFaellig_Singular" xml:space="preserve"><value>🔔 {0} Dauerauftrag bald fällig</value></data>

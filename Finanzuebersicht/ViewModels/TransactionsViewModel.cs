@@ -3,31 +3,39 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Finanzuebersicht.Application.UseCases.Transactions;
 using Finanzuebersicht.Models;
+using Finanzuebersicht.Resources.Strings;
 using Finanzuebersicht.Services;
 using Finanzuebersicht.Views;
 using Microsoft.Maui.Storage;
 using System.Linq;
 using Microsoft.Extensions.Logging;
-using Finanzuebersicht.Services;
 
 namespace Finanzuebersicht.ViewModels;
 
 public partial class TransactionsViewModel(
     DeleteTransactionUseCase deleteTransactionUseCase,
     LoadTransactionsMonthUseCase loadTransactionsMonthUseCase,
+    SearchTransactionsUseCase searchTransactionsUseCase,
     INavigationService navigationService,
     ImportService importService,
     IDialogService dialogService,
     ILocalizationService localizationService,
+    ICategoryRepository categoryRepository,
     ILogger<TransactionsViewModel> logger) : MonthNavigationViewModel
 {
     private readonly DeleteTransactionUseCase _deleteTransactionUseCase = deleteTransactionUseCase;
     private readonly LoadTransactionsMonthUseCase _loadTransactionsMonthUseCase = loadTransactionsMonthUseCase;
+    private readonly SearchTransactionsUseCase _searchTransactionsUseCase = searchTransactionsUseCase;
     private readonly INavigationService _navigationService = navigationService;
     private readonly ImportService _importService = importService;
     private readonly IDialogService _dialogService = dialogService;
     private readonly ILocalizationService _loc = localizationService;
+    private readonly ICategoryRepository _categoryRepository = categoryRepository;
     private readonly ILogger<TransactionsViewModel> _logger = logger;
+
+    private CancellationTokenSource? _searchDebounce;
+
+    // --- Monatsansicht ---
 
     [ObservableProperty]
     private ObservableCollection<TransactionGroup> transaktionsGruppen = [];
@@ -35,7 +43,205 @@ public partial class TransactionsViewModel(
     [ObservableProperty]
     private bool isLoading;
 
+    // --- Suche & Filter ---
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsSearchActive))]
+    [NotifyPropertyChangedFor(nameof(IsMonthMode))]
+    private string searchText = string.Empty;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsFilterActive))]
+    [NotifyPropertyChangedFor(nameof(IsSearchActive))]
+    [NotifyPropertyChangedFor(nameof(IsMonthMode))]
+    private string? selectedKategorieId = null;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsFilterActive))]
+    [NotifyPropertyChangedFor(nameof(IsSearchActive))]
+    [NotifyPropertyChangedFor(nameof(IsMonthMode))]
+    private TransactionTypeFilter selectedTypFilter = TransactionTypeFilter.Alle;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsFilterActive))]
+    [NotifyPropertyChangedFor(nameof(IsSearchActive))]
+    [NotifyPropertyChangedFor(nameof(IsMonthMode))]
+    private DateTime? vonDatum = null;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsFilterActive))]
+    [NotifyPropertyChangedFor(nameof(IsSearchActive))]
+    [NotifyPropertyChangedFor(nameof(IsMonthMode))]
+    private DateTime? bisDatum = null;
+
+    [ObservableProperty]
+    private bool isFilterPanelOpen;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasSearchResults))]
+    private ObservableCollection<TransactionGroup> searchErgebnisGruppen = [];
+
+    [ObservableProperty]
+    private int totalSearchCount;
+
+    [ObservableProperty]
+    private ObservableCollection<KategorieFilterItem> availableKategorien = [];
+
+    public bool IsFilterActive =>
+        SelectedKategorieId != null ||
+        SelectedTypFilter != TransactionTypeFilter.Alle ||
+        IsDateFilterEnabled;
+
+    public bool IsSearchActive => !string.IsNullOrWhiteSpace(SearchText) || IsFilterActive;
+
+    public bool IsMonthMode => !IsSearchActive;
+
+    public bool HasSearchResults => SearchErgebnisGruppen.Count > 0;
+
+    public string SearchCountText => _loc.GetString(ResourceKeys.Lbl_SuchergebnisseAnzahl, TotalSearchCount);
+
+    // --- Picker-Hilfsfelder ---
+
+    [ObservableProperty]
+    private KategorieFilterItem? selectedKategorieFilterItem;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsFilterActive))]
+    [NotifyPropertyChangedFor(nameof(IsSearchActive))]
+    [NotifyPropertyChangedFor(nameof(IsMonthMode))]
+    private bool isDateFilterEnabled;
+
+    [ObservableProperty]
+    private DateTime vonDatumPicker = new DateTime(DateTime.Today.Year, 1, 1);
+
+    [ObservableProperty]
+    private DateTime bisDatumPicker = DateTime.Today;
+
+    // Typ-Filter als Index (0=Alle, 1=Einnahmen, 2=Ausgaben) für Picker
+    private int _selectedTypIndex;
+    public int SelectedTypIndex
+    {
+        get => _selectedTypIndex;
+        set
+        {
+            if (SetProperty(ref _selectedTypIndex, value))
+            {
+                SelectedTypFilter = value switch
+                {
+                    1 => TransactionTypeFilter.Einnahme,
+                    2 => TransactionTypeFilter.Ausgabe,
+                    _ => TransactionTypeFilter.Alle
+                };
+            }
+        }
+    }
+
+    partial void OnSelectedKategorieFilterItemChanged(KategorieFilterItem? value)
+    {
+        SelectedKategorieId = value?.Id;
+    }
+
+    partial void OnIsDateFilterEnabledChanged(bool value)
+    {
+        VonDatum = value ? VonDatumPicker : null;
+        BisDatum = value ? BisDatumPicker : null;
+        TriggerSearchDebounced();
+    }
+
+    partial void OnVonDatumPickerChanged(DateTime value)
+    {
+        if (IsDateFilterEnabled) VonDatum = value;
+    }
+
+    partial void OnBisDatumPickerChanged(DateTime value)
+    {
+        if (IsDateFilterEnabled) BisDatum = value;
+    }
+
     protected override async Task OnMonthChangedAsync() => await LoadTransaktionen();
+
+    partial void OnSearchTextChanged(string value) => TriggerSearchDebounced();
+    partial void OnSelectedKategorieIdChanged(string? value) => TriggerSearchDebounced();
+    partial void OnSelectedTypFilterChanged(TransactionTypeFilter value) => TriggerSearchDebounced();
+    partial void OnVonDatumChanged(DateTime? value) => TriggerSearchDebounced();
+    partial void OnBisDatumChanged(DateTime? value) => TriggerSearchDebounced();
+
+    private void TriggerSearchDebounced()
+    {
+        _searchDebounce?.Cancel();
+        _searchDebounce = new CancellationTokenSource();
+        var token = _searchDebounce.Token;
+        Task.Run(async () =>
+        {
+            await Task.Delay(300, token);
+            if (!token.IsCancellationRequested)
+                await MainThread.InvokeOnMainThreadAsync(ExecuteSearchAsync);
+        }, token);
+    }
+
+    private async Task ExecuteSearchAsync()
+    {
+        if (!IsSearchActive)
+        {
+            SearchErgebnisGruppen = [];
+            TotalSearchCount = 0;
+            return;
+        }
+        IsLoading = true;
+        try
+        {
+            var query = new SearchTransactionsQuery(
+                SearchText: SearchText.Trim(),
+                KategorieId: SelectedKategorieId,
+                Typ: SelectedTypFilter,
+                VonDatum: VonDatum,
+                BisDatum: BisDatum);
+            var result = await _searchTransactionsUseCase.ExecuteAsync(query);
+            SearchErgebnisGruppen = new ObservableCollection<TransactionGroup>(result.Gruppen);
+            TotalSearchCount = result.TotalCount;
+            Converters.KategorieIdToIconConverter.SetCache(result.IconMap);
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    [RelayCommand]
+    private void ToggleFilterPanel() => IsFilterPanelOpen = !IsFilterPanelOpen;
+
+    [RelayCommand]
+    private async Task ClearSearch()
+    {
+        _searchDebounce?.Cancel();
+        SearchText = string.Empty;
+        SelectedKategorieId = null;
+        SelectedKategorieFilterItem = AvailableKategorien.FirstOrDefault();
+        SelectedTypFilter = TransactionTypeFilter.Alle;
+        SelectedTypIndex = 0;
+        IsDateFilterEnabled = false;
+        VonDatumPicker = new DateTime(DateTime.Today.Year, 1, 1);
+        BisDatumPicker = DateTime.Today;
+        VonDatum = null;
+        BisDatum = null;
+        IsFilterPanelOpen = false;
+        SearchErgebnisGruppen = [];
+        TotalSearchCount = 0;
+        await LoadTransaktionen();
+    }
+
+    private async Task LoadKategorienAsync()
+    {
+        var kategorien = await _categoryRepository.GetCategoriesAsync();
+        var items = new ObservableCollection<KategorieFilterItem>
+        {
+            new(null, _loc.GetString(ResourceKeys.Lbl_AlleKategorien))
+        };
+        foreach (var k in kategorien.OrderBy(k => k.Name))
+            items.Add(new KategorieFilterItem(k.Id, $"{k.Icon} {k.Name}"));
+        AvailableKategorien = items;
+        SelectedKategorieFilterItem = items[0];
+    }
 
     [RelayCommand]
     private async Task LoadTransaktionen()
@@ -52,6 +258,9 @@ public partial class TransactionsViewModel(
             var data = await _loadTransactionsMonthUseCase.ExecuteAsync(AktuellerMonat);
             TransaktionsGruppen = new ObservableCollection<TransactionGroup>(data.Gruppen);
             Converters.KategorieIdToIconConverter.SetCache(data.IconMap);
+
+            if (AvailableKategorien.Count == 0)
+                await LoadKategorienAsync();
         }
         finally
         {
