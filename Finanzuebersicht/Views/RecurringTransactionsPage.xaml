@@ -35,7 +35,7 @@
                         <SwipeView.LeftItems>
                             <SwipeItems>
                                 <SwipeItem Text="{loc:Translate Btn_AktivInaktiv}"
-                                           BackgroundColor="#FF9500"
+                                           BackgroundColor="{AppThemeBinding Light={StaticResource Warning}, Dark={StaticResource WarningDark}}"
                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:RecurringTransactionsViewModel}}, Path=ToggleAktivCommand}"
                                            CommandParameter="{Binding .}" />
                             </SwipeItems>
@@ -43,7 +43,7 @@
                         <SwipeView.RightItems>
                             <SwipeItems>
                                 <SwipeItem Text="{loc:Translate Btn_Loeschen}"
-                                           BackgroundColor="#FF3B30"
+                                           BackgroundColor="{AppThemeBinding Light={StaticResource Ausgabe}, Dark={StaticResource AusgabeDark}}"
                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:RecurringTransactionsViewModel}}, Path=DeleteDauerauftragCommand}"
                                            CommandParameter="{Binding .}" />
                             </SwipeItems>
@@ -101,7 +101,7 @@
         <!-- FAB -->
         <Button Text="{loc:Translate Btn_Hinzufuegen}"
             FontSize="28" TextColor="White"
-            BackgroundColor="#007AFF"
+            BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
             CornerRadius="28"
             WidthRequest="56" HeightRequest="56"
             HorizontalOptions="End" VerticalOptions="End"

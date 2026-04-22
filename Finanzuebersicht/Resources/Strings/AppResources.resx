@@ -43,6 +43,7 @@
   <data name="Lbl_AusgabenNachKategorie" xml:space="preserve"><value>Expenses by Category</value></data>
   <data name="Lbl_EinnahmenNachKategorie" xml:space="preserve"><value>Income by Category</value></data>
   <data name="Lbl_Jahresausgaben" xml:space="preserve"><value>Annual Expenses</value></data>
+  <data name="Lbl_JahressummeColon" xml:space="preserve"><value>Annual Total:</value></data>
   <data name="Lbl_AusgabenProMonat" xml:space="preserve"><value>Expenses per Month</value></data>
   <data name="Lbl_Darstellung" xml:space="preserve"><value>Appearance</value></data>
   <data name="Lbl_Speicherort" xml:space="preserve"><value>Data Storage</value></data>
@@ -97,6 +98,8 @@
   <data name="Dlg_KategorieLoeschenFrage" xml:space="preserve"><value>Really delete "{0}"?</value></data>
   <data name="Dlg_DauerauftragLoeschen" xml:space="preserve"><value>Delete Recurring Transaction</value></data>
   <data name="Dlg_DauerauftragLoeschenFrage" xml:space="preserve"><value>Really delete "{0}"?</value></data>
+  <data name="Dlg_TransaktionLoeschen" xml:space="preserve"><value>Delete Transaction</value></data>
+  <data name="Dlg_TransaktionLoeschenFrage" xml:space="preserve"><value>Really delete "{0}"?</value></data>
 
   <!-- Settings Messages -->
   <data name="Stn_UngueltigerOrdner" xml:space="preserve"><value>Invalid Folder</value></data>

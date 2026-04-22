@@ -60,6 +60,7 @@ public partial class SparZieleViewModel : ObservableObject
     [RelayCommand]
     private async Task LoadSparZiele()
     {
+        if (IsLoading) return;
         IsLoading = true;
         try
         {

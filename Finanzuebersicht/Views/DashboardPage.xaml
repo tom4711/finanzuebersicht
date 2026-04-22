@@ -84,7 +84,7 @@
                 <!-- Monatsnavigation -->
                 <Grid ColumnDefinitions="Auto, *, Auto">
                         <Button Grid.Column="0" Text="{loc:Translate Btn_Prev}" FontSize="28"
-                            BackgroundColor="Transparent" TextColor="#007AFF"
+                            BackgroundColor="Transparent" TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
                             Command="{Binding PreviousMonthCommand}"
                             SemanticProperties.Description="{loc:Translate A11y_VorherigerMonat}"
                             WidthRequest="44" />
@@ -97,7 +97,7 @@
                                IsVisible="{Binding IstPrognose}" />
                     </VerticalStackLayout>
                         <Button Grid.Column="2" Text="{loc:Translate Btn_Next}" FontSize="28"
-                            BackgroundColor="Transparent" TextColor="#007AFF"
+                            BackgroundColor="Transparent" TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
                             Command="{Binding NextMonthCommand}"
                             SemanticProperties.Description="{loc:Translate A11y_NaechsterMonat}"
                             WidthRequest="44" />
@@ -110,9 +110,9 @@
                     <Border Grid.Column="0" StrokeShape="RoundRectangle 12"
                             Stroke="Transparent" BackgroundColor="#E8F8ED" Padding="12">
                         <VerticalStackLayout Spacing="4">
-                            <Label Text="{loc:Translate Lbl_Einnahmen}" FontSize="11" TextColor="#34C759" />
+                            <Label Text="{loc:Translate Lbl_Einnahmen}" FontSize="11" TextColor="{AppThemeBinding Light={StaticResource Einnahme}, Dark={StaticResource EinnahmeDark}}" />
                             <Label Text="{Binding GesamtEinnahmen, Converter={StaticResource Currency}}"
-                                   FontSize="15" FontAttributes="Bold" TextColor="#34C759" />
+                                   FontSize="15" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource Einnahme}, Dark={StaticResource EinnahmeDark}}" />
                         </VerticalStackLayout>
                     </Border>
 
@@ -120,9 +120,9 @@
                     <Border Grid.Column="1" StrokeShape="RoundRectangle 12"
                             Stroke="Transparent" BackgroundColor="#FDECEA" Padding="12">
                         <VerticalStackLayout Spacing="4">
-                            <Label Text="{loc:Translate Lbl_Ausgaben}" FontSize="11" TextColor="#FF3B30" />
+                            <Label Text="{loc:Translate Lbl_Ausgaben}" FontSize="11" TextColor="{AppThemeBinding Light={StaticResource Ausgabe}, Dark={StaticResource AusgabeDark}}" />
                             <Label Text="{Binding GesamtAusgaben, Converter={StaticResource Currency}}"
-                                   FontSize="15" FontAttributes="Bold" TextColor="#FF3B30" />
+                                   FontSize="15" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource Ausgabe}, Dark={StaticResource AusgabeDark}}" />
                             <Label Text="{Binding TrendText}"
                                    FontSize="11" FontAttributes="Bold"
                                    IsVisible="{Binding TrendText, Converter={StaticResource StringToBool}}"
@@ -169,7 +169,7 @@
                                     <Label Grid.Column="2"
                                            Text="{Binding Total, Converter={StaticResource Currency}}"
                                            FontSize="15" FontAttributes="Bold"
-                                           TextColor="#FF3B30" VerticalTextAlignment="Center" />
+                                           TextColor="{AppThemeBinding Light={StaticResource Ausgabe}, Dark={StaticResource AusgabeDark}}" VerticalTextAlignment="Center" />
                                 </Grid>
                                 <!-- Budget-Fortschrittsbalken -->
                                 <VerticalStackLayout IsVisible="{Binding HatBudget}" Spacing="2">
@@ -186,14 +186,14 @@
                                                VerticalTextAlignment="Center" />
                                         <Label Grid.Column="1"
                                                Text="{loc:Translate Lbl_UeberBudget}"
-                                               FontSize="11" TextColor="#FF3B30"
+                                               FontSize="11" TextColor="{AppThemeBinding Light={StaticResource Ausgabe}, Dark={StaticResource AusgabeDark}}"
                                                VerticalTextAlignment="Center" Margin="3,0,0,0" />
                                         <Label Grid.Column="2" Text="+" FontSize="11"
-                                               TextColor="#FF3B30" FontAttributes="Bold"
+                                               TextColor="{AppThemeBinding Light={StaticResource Ausgabe}, Dark={StaticResource AusgabeDark}}" FontAttributes="Bold"
                                                VerticalTextAlignment="Center" />
                                         <Label Grid.Column="3"
                                                Text="{Binding BudgetAbweichung, Converter={StaticResource Currency}}"
-                                               FontSize="11" TextColor="#FF3B30" FontAttributes="Bold"
+                                               FontSize="11" TextColor="{AppThemeBinding Light={StaticResource Ausgabe}, Dark={StaticResource AusgabeDark}}" FontAttributes="Bold"
                                                VerticalTextAlignment="Center" />
                                     </Grid>
                                     <!-- Im Budget: Budget-Betrag rechts -->
@@ -232,7 +232,7 @@
                                     <Label Grid.Column="2"
                                            Text="{Binding Total, Converter={StaticResource Currency}}"
                                            FontSize="15" FontAttributes="Bold"
-                                           TextColor="#34C759" VerticalTextAlignment="Center" />
+                                           TextColor="{AppThemeBinding Light={StaticResource Einnahme}, Dark={StaticResource EinnahmeDark}}" VerticalTextAlignment="Center" />
                                 </Grid>
                             </VerticalStackLayout>
                         </DataTemplate>
@@ -255,7 +255,7 @@
                         <Label Grid.Column="1"
                                Text="{Binding ForecastTotal, Converter={StaticResource Currency}}"
                                FontSize="15" FontAttributes="Bold"
-                               TextColor="{AppThemeBinding Light=#FF9500, Dark=#FF9F0A}"
+                               TextColor="{AppThemeBinding Light={StaticResource Warning}, Dark={StaticResource WarningDark}}"
                                VerticalTextAlignment="Center" />
                     </Grid>
                 </Border>
@@ -274,7 +274,7 @@
                 <!-- Jahresnavigation -->
                 <Grid ColumnDefinitions="Auto, *, Auto">
                         <Button Grid.Column="0" Text="{loc:Translate Btn_Prev}" FontSize="28"
-                            BackgroundColor="Transparent" TextColor="#007AFF"
+                            BackgroundColor="Transparent" TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
                             Command="{Binding PreviousYearCommand}"
                             SemanticProperties.Description="{loc:Translate A11y_VorherigesJahr}"
                             WidthRequest="44" />
@@ -282,7 +282,7 @@
                            FontSize="20" FontAttributes="Bold"
                            HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
                         <Button Grid.Column="2" Text="{loc:Translate Btn_Next}" FontSize="28"
-                            BackgroundColor="Transparent" TextColor="#007AFF"
+                            BackgroundColor="Transparent" TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
                             Command="{Binding NextYearCommand}"
                             SemanticProperties.Description="{loc:Translate A11y_NaechstesJahr}"
                             WidthRequest="44" />
@@ -292,9 +292,9 @@
                 <Border StrokeShape="RoundRectangle 12" Stroke="Transparent"
                         BackgroundColor="#FDECEA" Padding="12">
                     <VerticalStackLayout Spacing="4">
-                        <Label Text="{loc:Translate Lbl_Jahresausgaben}" FontSize="11" TextColor="#FF3B30" />
+                        <Label Text="{loc:Translate Lbl_Jahresausgaben}" FontSize="11" TextColor="{AppThemeBinding Light={StaticResource Ausgabe}, Dark={StaticResource AusgabeDark}}" />
                         <Label Text="{Binding JahrGesamtAusgaben, Converter={StaticResource Currency}}"
-                               FontSize="20" FontAttributes="Bold" TextColor="#FF3B30" />
+                               FontSize="20" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource Ausgabe}, Dark={StaticResource AusgabeDark}}" />
                     </VerticalStackLayout>
                 </Border>
 
@@ -336,7 +336,7 @@
                                     <Label Grid.Column="2"
                                            Text="{Binding Total, Converter={StaticResource Currency}}"
                                            FontSize="15" FontAttributes="Bold"
-                                           TextColor="#FF3B30" VerticalTextAlignment="Center" />
+                                           TextColor="{AppThemeBinding Light={StaticResource Ausgabe}, Dark={StaticResource AusgabeDark}}" VerticalTextAlignment="Center" />
                                     <Label Grid.Column="3"
                                            Text="{Binding PercentageDisplay}"
                                            FontSize="13" TextColor="Gray"

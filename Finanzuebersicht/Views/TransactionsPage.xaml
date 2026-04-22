@@ -14,6 +14,38 @@
         <conv:BetragDisplayConverter x:Key="BetragDisplay" />
         <conv:KategorieIdToIconConverter x:Key="KategorieIdToIcon" />
         <conv:InvertBoolConverter x:Key="InvertBool" />
+
+        <!-- Shared transaction row layout (tap-only, no swipe).
+             Reused in search results. Month view uses same structure
+             wrapped in SwipeView (see CollectionView below). -->
+        <DataTemplate x:Key="TransactionRowTemplate" x:DataType="models:Transaction">
+            <Grid ColumnDefinitions="44, *, Auto" Padding="16,10" ColumnSpacing="12">
+                <Grid.GestureRecognizers>
+                    <TapGestureRecognizer
+                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:TransactionsViewModel}}, Path=GoToDetailCommand}"
+                        CommandParameter="{Binding .}" />
+                </Grid.GestureRecognizers>
+                <Border Grid.Column="0"
+                        BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray900}}"
+                        StrokeShape="RoundRectangle 10" Stroke="Transparent"
+                        WidthRequest="40" HeightRequest="40"
+                        HorizontalOptions="Center" VerticalOptions="Center">
+                    <Label Text="{Binding KategorieId, Converter={StaticResource KategorieIdToIcon}}" FontSize="18"
+                           HorizontalOptions="Center" VerticalOptions="Center" />
+                </Border>
+                <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                    <Label Text="{Binding Titel}" FontSize="16" FontAttributes="Bold"
+                           LineBreakMode="TailTruncation" />
+                    <Label Text="{Binding Verwendungszweck}" FontSize="12" TextColor="Gray"
+                           LineBreakMode="TailTruncation" />
+                </VerticalStackLayout>
+                <Label Grid.Column="2"
+                       Text="{Binding ., Converter={StaticResource BetragDisplay}}"
+                       TextColor="{Binding Typ, Converter={StaticResource TypToColor}}"
+                       FontSize="16" FontAttributes="Bold"
+                       VerticalTextAlignment="Center" />
+            </Grid>
+        </DataTemplate>
     </ContentPage.Resources>
 
     <Grid RowDefinitions="Auto, Auto, Auto, *">
@@ -23,13 +55,13 @@
             <SearchBar Grid.Column="0"
                        Text="{Binding SearchText}"
                        Placeholder="{loc:Translate Hint_SucheTransaktionen}"
-                       CancelButtonColor="#007AFF" />
+                       CancelButtonColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
             <Button Grid.Column="1"
                     Text="⚙"
                     FontSize="20"
                     Command="{Binding ToggleFilterPanelCommand}"
                     BackgroundColor="Transparent"
-                    TextColor="{AppThemeBinding Light=#007AFF, Dark=#0A84FF}"
+                    TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
                     BorderWidth="0"
                     CornerRadius="10"
                     Padding="0"
@@ -39,7 +71,7 @@
                     AutomationProperties.Name="{loc:Translate A11y_FilterUmschalten}">
                 <Button.Triggers>
                     <DataTrigger TargetType="Button" Binding="{Binding IsFilterActive}" Value="True">
-                        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=#007AFF, Dark=#0A84FF}" />
+                        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
                         <Setter Property="TextColor" Value="White" />
                     </DataTrigger>
                 </Button.Triggers>
@@ -51,7 +83,7 @@
               Padding="16,4"
               IsVisible="{Binding IsMonthMode}">
             <Button Grid.Column="0" Text="{loc:Translate Btn_Prev}" FontSize="28"
-                    BackgroundColor="Transparent" TextColor="#007AFF"
+                    BackgroundColor="Transparent" TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
                     Command="{Binding PreviousMonthCommand}"
                     SemanticProperties.Description="{loc:Translate A11y_VorherigerMonat}"
                     WidthRequest="44" />
@@ -59,7 +91,7 @@
                    FontSize="18" FontAttributes="Bold"
                    HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
             <Button Grid.Column="2" Text="{loc:Translate Btn_Next}" FontSize="28"
-                    BackgroundColor="Transparent" TextColor="#007AFF"
+                    BackgroundColor="Transparent" TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
                     Command="{Binding NextMonthCommand}"
                     SemanticProperties.Description="{loc:Translate A11y_NaechsterMonat}"
                     WidthRequest="44" />
@@ -119,7 +151,7 @@
 
                 <!-- Filter zurücksetzen -->
                 <Button Text="{loc:Translate Btn_FilterZuruecksetzen}"
-                        FontSize="13" TextColor="#FF3B30"
+                        FontSize="13" TextColor="{AppThemeBinding Light={StaticResource Ausgabe}, Dark={StaticResource AusgabeDark}}"
                         BackgroundColor="Transparent"
                         HorizontalOptions="Start"
                         IsVisible="{Binding IsFilterActive}"
@@ -156,7 +188,7 @@
                                 <SwipeView.RightItems>
                                     <SwipeItems>
                                         <SwipeItem Text="{loc:Translate Btn_Loeschen}"
-                                                   BackgroundColor="#FF3B30"
+                                                   BackgroundColor="{AppThemeBinding Light={StaticResource Ausgabe}, Dark={StaticResource AusgabeDark}}"
                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:TransactionsViewModel}}, Path=DeleteTransaktionCommand}"
                                                    CommandParameter="{Binding .}" />
                                     </SwipeItems>
@@ -168,7 +200,7 @@
                                             CommandParameter="{Binding .}" />
                                     </Grid.GestureRecognizers>
                                     <Border Grid.Column="0"
-                                            BackgroundColor="{AppThemeBinding Light=#F2F2F7, Dark=#3A3A3C}"
+                                            BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray900}}"
                                             StrokeShape="RoundRectangle 10" Stroke="Transparent"
                                             WidthRequest="40" HeightRequest="40"
                                             HorizontalOptions="Center" VerticalOptions="Center">
@@ -211,7 +243,8 @@
                 <CollectionView ItemsSource="{Binding SearchErgebnisGruppen}"
                                 IsGrouped="True"
                                 SelectionMode="None"
-                                IsVisible="{Binding HasSearchResults}">
+                                IsVisible="{Binding HasSearchResults}"
+                                ItemTemplate="{StaticResource TransactionRowTemplate}">
                     <CollectionView.GroupHeaderTemplate>
                         <DataTemplate x:DataType="models:TransactionGroup">
                             <Label Text="{Binding DatumFormatiert}"
@@ -219,36 +252,6 @@
                                    Padding="16,12,16,4" />
                         </DataTemplate>
                     </CollectionView.GroupHeaderTemplate>
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate x:DataType="models:Transaction">
-                            <Grid ColumnDefinitions="44, *, Auto" Padding="16,10" ColumnSpacing="12">
-                                <Grid.GestureRecognizers>
-                                    <TapGestureRecognizer
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:TransactionsViewModel}}, Path=GoToDetailCommand}"
-                                        CommandParameter="{Binding .}" />
-                                </Grid.GestureRecognizers>
-                                <Border Grid.Column="0"
-                                        BackgroundColor="{AppThemeBinding Light=#F2F2F7, Dark=#3A3A3C}"
-                                        StrokeShape="RoundRectangle 10" Stroke="Transparent"
-                                        WidthRequest="40" HeightRequest="40"
-                                        HorizontalOptions="Center" VerticalOptions="Center">
-                                    <Label Text="{Binding KategorieId, Converter={StaticResource KategorieIdToIcon}}" FontSize="18"
-                                           HorizontalOptions="Center" VerticalOptions="Center" />
-                                </Border>
-                                <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
-                                    <Label Text="{Binding Titel}" FontSize="16" FontAttributes="Bold"
-                                           LineBreakMode="TailTruncation" />
-                                    <Label Text="{Binding Verwendungszweck}" FontSize="12" TextColor="Gray"
-                                           LineBreakMode="TailTruncation" />
-                                </VerticalStackLayout>
-                                <Label Grid.Column="2"
-                                       Text="{Binding ., Converter={StaticResource BetragDisplay}}"
-                                       TextColor="{Binding Typ, Converter={StaticResource TypToColor}}"
-                                       FontSize="16" FontAttributes="Bold"
-                                       VerticalTextAlignment="Center" />
-                            </Grid>
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
                 </CollectionView>
             </VerticalStackLayout>
 
@@ -256,13 +259,13 @@
 
         <!-- FABs (immer sichtbar, über Row 3) -->
         <Grid Grid.Row="3" HorizontalOptions="Fill" VerticalOptions="End" Padding="20,0,20,20">
-            <Button Text="{loc:Translate Btn_Import}" FontSize="14" TextColor="#007AFF"
+            <Button Text="{loc:Translate Btn_Import}" FontSize="14" TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
                     BackgroundColor="Transparent"
                     HorizontalOptions="Start" VerticalOptions="End"
                     Command="{Binding ImportCsvCommand}" />
             <Button Text="{loc:Translate Btn_Hinzufuegen}"
                     FontSize="28" TextColor="White"
-                    BackgroundColor="#007AFF"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
                     CornerRadius="28"
                     WidthRequest="56" HeightRequest="56"
                     HorizontalOptions="End" VerticalOptions="End"

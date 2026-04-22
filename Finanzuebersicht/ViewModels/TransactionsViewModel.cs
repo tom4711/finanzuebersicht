@@ -36,6 +36,15 @@ public partial class TransactionsViewModel(
     private CancellationTokenSource? _searchDebounce;
     private int _searchVersion;
 
+    private void LogError(string context, Exception? ex = null)
+    {
+        if (ex != null)
+            _logger?.LogError(ex, "TransactionsViewModel: {Context}", context);
+        else
+            _logger?.LogError("TransactionsViewModel: {Context}", context);
+        try { FileLogger.Append("TransactionsViewModel", context, ex); } catch { }
+    }
+
     // --- Monatsansicht ---
 
     [ObservableProperty]
@@ -259,11 +268,7 @@ public partial class TransactionsViewModel(
     [RelayCommand]
     private async Task LoadTransaktionen()
     {
-        if (IsLoading)
-        {
-            return;
-        }
-
+        if (IsLoading) return;
         IsLoading = true;
 
         try
@@ -284,6 +289,12 @@ public partial class TransactionsViewModel(
     [RelayCommand]
     private async Task DeleteTransaktion(Transaction transaktion)
     {
+        var confirm = await _dialogService.ShowConfirmationAsync(
+            _loc.GetString(ResourceKeys.Dlg_TransaktionLoeschen),
+            _loc.GetString(ResourceKeys.Dlg_TransaktionLoeschenFrage, transaktion.Titel),
+            _loc.GetString(ResourceKeys.Btn_Ja), _loc.GetString(ResourceKeys.Btn_Nein));
+        if (!confirm) return;
+
         try
         {
             await _deleteTransactionUseCase.ExecuteAsync(transaktion.Id);
@@ -297,12 +308,11 @@ public partial class TransactionsViewModel(
         }
         catch (Exception ex)
         {
-            _logger?.LogError(ex, "DeleteTransaktion failed for transaction {Id}", transaktion.Id);
-            try { Finanzuebersicht.Services.FileLogger.Append("TransactionsViewModel", $"DeleteTransaktion failed for {transaktion.Id}", ex); } catch { }
+            LogError($"DeleteTransaktion failed for {transaktion.Id}", ex);
             await _dialogService.ShowAlertAsync(
-                _loc.GetString(Finanzuebersicht.Resources.Strings.ResourceKeys.Err_Titel),
-                _loc.GetString(Finanzuebersicht.Resources.Strings.ResourceKeys.Err_LoeschenFehlgeschlagen, ex.Message),
-                _loc.GetString(Finanzuebersicht.Resources.Strings.ResourceKeys.Btn_OK));
+                _loc.GetString(ResourceKeys.Err_Titel),
+                _loc.GetString(ResourceKeys.Err_LoeschenFehlgeschlagen, ex.Message),
+                _loc.GetString(ResourceKeys.Btn_OK));
         }
     }
 
@@ -312,7 +322,6 @@ public partial class TransactionsViewModel(
         try
         {
             _logger?.LogDebug("GoToDetail called for transaction {Id}", transaktion?.Id ?? "(new)");
-            try { Finanzuebersicht.Services.FileLogger.Append("TransactionsViewModel", $"GoToDetail called for {transaktion?.Id ?? "(new)"}"); } catch { }
 
             var parameter = new Dictionary<string, object>();
             if (transaktion != null)
@@ -322,8 +331,7 @@ public partial class TransactionsViewModel(
 
             if (_navigationService == null)
             {
-                _logger?.LogError("GoToDetail: navigation service is null");
-                try { Finanzuebersicht.Services.FileLogger.Append("TransactionsViewModel", "navigation service is null"); } catch { }
+                LogError("GoToDetail: navigation service is null");
                 return;
             }
 
@@ -331,8 +339,7 @@ public partial class TransactionsViewModel(
         }
         catch (Exception ex)
         {
-            _logger?.LogError(ex, "GoToDetail failed");
-            try { Finanzuebersicht.Services.FileLogger.Append("TransactionsViewModel", "GoToDetail failed", ex); } catch { }
+            LogError("GoToDetail failed", ex);
         }
     }
 
@@ -352,8 +359,7 @@ public partial class TransactionsViewModel(
             }
             else
             {
-                _logger?.LogError("ImportCsv: DialogService is null while handling missing ImportService");
-                try { Finanzuebersicht.Services.FileLogger.Append("TransactionsViewModel", "ImportCsv: DialogService is null while handling missing ImportService"); } catch { }
+                LogError("ImportCsv: DialogService is null while handling missing ImportService");
             }
 
             return;
@@ -378,8 +384,7 @@ public partial class TransactionsViewModel(
             }
             else
             {
-                _logger?.LogError("ImportCsv: DialogService is null after successful import");
-                try { Finanzuebersicht.Services.FileLogger.Append("TransactionsViewModel", "ImportCsv: DialogService is null after successful import"); } catch { }
+                LogError("ImportCsv: DialogService is null after successful import");
             }
 
             await LoadTransaktionen();
