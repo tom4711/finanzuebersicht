@@ -15,10 +15,10 @@ public class TypButtonColorConverter : IValueConverter
 
             if (isMatch)
                 return paramStr == "Einnahme"
-                    ? ColorResourceHelper.GetColor("Einnahme", Color.FromArgb("#34C759"))
-                    : ColorResourceHelper.GetColor("Ausgabe", Color.FromArgb("#FF3B30"));
+                    ? ColorResourceHelper.GetThemeColor("Einnahme", "EinnahmeDark", Color.FromArgb("#34C759"), Color.FromArgb("#30D158"))
+                    : ColorResourceHelper.GetThemeColor("Ausgabe", "AusgabeDark", Color.FromArgb("#FF3B30"), Color.FromArgb("#FF453A"));
 
-            return ColorResourceHelper.GetColor("Gray400", Color.FromArgb("#C7C7CC"));
+            return ColorResourceHelper.GetThemeColor("Gray400", "Gray700", Color.FromArgb("#C7C7CC"), Color.FromArgb("#636366"));
         }
 
         return Colors.Gray;

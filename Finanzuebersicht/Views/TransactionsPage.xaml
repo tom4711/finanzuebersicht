@@ -55,7 +55,7 @@
             <SearchBar Grid.Column="0"
                        Text="{Binding SearchText}"
                        Placeholder="{loc:Translate Hint_SucheTransaktionen}"
-                       CancelButtonColor="{StaticResource Primary}" />
+                       CancelButtonColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
             <Button Grid.Column="1"
                     Text="⚙"
                     FontSize="20"

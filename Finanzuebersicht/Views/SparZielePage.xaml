@@ -66,7 +66,7 @@
                                                        TextColor="{AppThemeBinding Light=#8E8E93, Dark=#636366}" />
                                             </Grid>
                                             <ProgressBar Progress="{Binding FortschrittDecimal}"
-                                                         ProgressColor="{StaticResource Einnahme}"
+                                                         ProgressColor="{AppThemeBinding Light={StaticResource Einnahme}, Dark={StaticResource EinnahmeDark}}"
                                                          BackgroundColor="{AppThemeBinding Light=#E5E5EA, Dark=#3A3A3C}"
                                                          SemanticProperties.Description="{loc:Translate A11y_SparZielBalken}" />
                                         </VerticalStackLayout>
