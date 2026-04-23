@@ -52,8 +52,9 @@
                 </Border>
 
                 <!-- Ansicht-Umschalter -->
-                <Border StrokeShape="RoundRectangle 10" Stroke="#E5E5EA"
-                        BackgroundColor="#F2F2F7" Padding="2">
+                <Border StrokeShape="RoundRectangle 10"
+                        Stroke="{AppThemeBinding Light=#E5E5EA, Dark=#3A3A3C}"
+                        BackgroundColor="{AppThemeBinding Light=#F2F2F7, Dark=#2C2C2E}" Padding="2">
                     <Grid ColumnDefinitions="*, *" ColumnSpacing="2">
                         <Border Grid.Column="0" StrokeShape="RoundRectangle 8" Stroke="Transparent"
                                 BackgroundColor="{Binding IsMonthView, Converter={StaticResource ToggleActiveColor}}"

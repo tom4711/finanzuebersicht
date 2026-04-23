@@ -187,16 +187,22 @@ public partial class TransactionsViewModel(
 
     private void TriggerSearchDebounced()
     {
-        _searchDebounce?.Cancel();
+        var oldCts = _searchDebounce;
         _searchDebounce = new CancellationTokenSource();
+        oldCts?.Cancel();
+        oldCts?.Dispose();
         var token = _searchDebounce.Token;
         var version = Interlocked.Increment(ref _searchVersion);
-        Task.Run(async () =>
+        _ = Task.Run(async () =>
         {
-            await Task.Delay(300, token);
-            if (!token.IsCancellationRequested)
-                await MainThread.InvokeOnMainThreadAsync(() => ExecuteSearchAsync(version));
-        }, token);
+            try
+            {
+                await Task.Delay(300, token);
+                if (!token.IsCancellationRequested)
+                    await MainThread.InvokeOnMainThreadAsync(() => ExecuteSearchAsync(version));
+            }
+            catch (TaskCanceledException) { }
+        });
     }
 
     private async Task ExecuteSearchAsync(int version = -1)
@@ -221,6 +227,17 @@ public partial class TransactionsViewModel(
             SearchErgebnisGruppen = new ObservableCollection<TransactionGroup>(result.Gruppen);
             TotalSearchCount = result.TotalCount;
             Converters.KategorieIdToIconConverter.SetCache(result.IconMap);
+        }
+        catch (Exception ex)
+        {
+            LogError(nameof(ExecuteSearchAsync), ex);
+            if (version >= 0 && version != _searchVersion) return;
+            SearchErgebnisGruppen = [];
+            TotalSearchCount = 0;
+            await _dialogService.ShowAlertAsync(
+                _loc.GetString(ResourceKeys.Err_Titel),
+                _loc.GetString(ResourceKeys.Err_SucheFehlgeschlagen),
+                _loc.GetString(ResourceKeys.Btn_OK));
         }
         finally
         {
