@@ -43,7 +43,6 @@ public static class ResourceKeys
     public const string Lbl_AusgabenNachKategorie = nameof(Lbl_AusgabenNachKategorie);
     public const string Lbl_EinnahmenNachKategorie = nameof(Lbl_EinnahmenNachKategorie);
     public const string Lbl_Jahresausgaben = nameof(Lbl_Jahresausgaben);
-    public const string Lbl_JahressummeColon = nameof(Lbl_JahressummeColon);
     public const string Lbl_AusgabenProMonat = nameof(Lbl_AusgabenProMonat);
     public const string Lbl_Darstellung = nameof(Lbl_Darstellung);
     public const string Lbl_Speicherort = nameof(Lbl_Speicherort);
@@ -92,6 +91,7 @@ public static class ResourceKeys
     public const string Err_SpeichernFehlgeschlagen = nameof(Err_SpeichernFehlgeschlagen);
     public const string Err_LoeschenFehlgeschlagen = nameof(Err_LoeschenFehlgeschlagen);
     public const string Err_OrdnerNichtWaehlbar = nameof(Err_OrdnerNichtWaehlbar);
+    public const string Err_SucheFehlgeschlagen = nameof(Err_SucheFehlgeschlagen);
 
     // Confirmation Dialogs
     public const string Dlg_KategorieLoeschen = nameof(Dlg_KategorieLoeschen);

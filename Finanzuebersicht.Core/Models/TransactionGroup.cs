@@ -4,6 +4,6 @@ public class TransactionGroup(DateTime datum, IEnumerable<Transaction> transakti
 {
     public DateTime Datum { get; } = datum;
     public string DatumFormatiert { get; } = isMonthGroup
-        ? datum.ToString("MMMM yyyy", System.Globalization.CultureInfo.GetCultureInfo("de-DE"))
-        : datum.ToString("dd. MMMM yyyy", System.Globalization.CultureInfo.GetCultureInfo("de-DE"));
+        ? datum.ToString("MMMM yyyy", System.Globalization.CultureInfo.CurrentCulture)
+        : datum.ToString("dd. MMMM yyyy", System.Globalization.CultureInfo.CurrentCulture);
 }

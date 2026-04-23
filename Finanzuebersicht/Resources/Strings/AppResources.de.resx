@@ -43,7 +43,6 @@
   <data name="Lbl_AusgabenNachKategorie" xml:space="preserve"><value>Ausgaben nach Kategorie</value></data>
   <data name="Lbl_EinnahmenNachKategorie" xml:space="preserve"><value>Einnahmen nach Kategorie</value></data>
   <data name="Lbl_Jahresausgaben" xml:space="preserve"><value>Jahresausgaben</value></data>
-  <data name="Lbl_JahressummeColon" xml:space="preserve"><value>Jahresbetrag:</value></data>
   <data name="Lbl_AusgabenProMonat" xml:space="preserve"><value>Ausgaben pro Monat</value></data>
   <data name="Lbl_Darstellung" xml:space="preserve"><value>Darstellung</value></data>
   <data name="Lbl_Speicherort" xml:space="preserve"><value>Speicherort</value></data>
@@ -92,6 +91,7 @@
   <data name="Err_SpeichernFehlgeschlagen" xml:space="preserve"><value>Fehler beim Speichern: {0}</value></data>
   <data name="Err_LoeschenFehlgeschlagen" xml:space="preserve"><value>Fehler beim Löschen: {0}</value></data>
   <data name="Err_OrdnerNichtWaehlbar" xml:space="preserve"><value>Ordner konnte nicht gewählt werden: {0}</value></data>
+  <data name="Err_SucheFehlgeschlagen" xml:space="preserve"><value>Die Suche konnte nicht abgeschlossen werden.</value></data>
 
   <!-- Confirmation Dialogs -->
   <data name="Dlg_KategorieLoeschen" xml:space="preserve"><value>Kategorie löschen</value></data>
