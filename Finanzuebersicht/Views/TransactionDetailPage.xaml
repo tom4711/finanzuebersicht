@@ -65,7 +65,7 @@
 
             <!-- Speichern -->
             <Button Text="{loc:Translate Btn_Speichern}" Command="{Binding SaveCommand}"
-                    BackgroundColor="#007AFF" TextColor="White"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" TextColor="White"
                     CornerRadius="12" HeightRequest="50"
                     FontSize="16" FontAttributes="Bold"
                     Margin="0,20,0,0" />
