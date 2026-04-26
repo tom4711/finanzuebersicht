@@ -297,6 +297,14 @@ public partial class TransactionsViewModel(
             if (AvailableKategorien.Count == 0)
                 await LoadKategorienAsync();
         }
+        catch (Exception ex)
+        {
+            LogError(nameof(LoadTransaktionen), ex);
+            await _dialogService.ShowAlertAsync(
+                _loc.GetString(ResourceKeys.Err_Titel),
+                _loc.GetString(ResourceKeys.Err_LadenFehlgeschlagen, ex.Message),
+                _loc.GetString(ResourceKeys.Btn_OK));
+        }
         finally
         {
             IsLoading = false;

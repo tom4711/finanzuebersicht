@@ -81,6 +81,8 @@ public static class ResourceKeys
     public const string Empty_KeineSuchergebnisse = nameof(Empty_KeineSuchergebnisse);
     public const string Empty_KeineDashboardDaten = nameof(Empty_KeineDashboardDaten);
     public const string Empty_KeineJahresDaten = nameof(Empty_KeineJahresDaten);
+    public const string Empty_NochKeineTransaktionen = nameof(Empty_NochKeineTransaktionen);
+    public const string Btn_ZuTransaktionen = nameof(Btn_ZuTransaktionen);
 
     // Error Messages
     public const string Err_Titel = nameof(Err_Titel);
@@ -90,6 +92,7 @@ public static class ResourceKeys
     public const string Err_KategorieErforderlich = nameof(Err_KategorieErforderlich);
     public const string Err_SpeichernFehlgeschlagen = nameof(Err_SpeichernFehlgeschlagen);
     public const string Err_LoeschenFehlgeschlagen = nameof(Err_LoeschenFehlgeschlagen);
+    public const string Err_LadenFehlgeschlagen = nameof(Err_LadenFehlgeschlagen);
     public const string Err_OrdnerNichtWaehlbar = nameof(Err_OrdnerNichtWaehlbar);
     public const string Err_SucheFehlgeschlagen = nameof(Err_SucheFehlgeschlagen);
 
@@ -100,6 +103,8 @@ public static class ResourceKeys
     public const string Dlg_DauerauftragLoeschenFrage = nameof(Dlg_DauerauftragLoeschenFrage);
     public const string Dlg_TransaktionLoeschen = nameof(Dlg_TransaktionLoeschen);
     public const string Dlg_TransaktionLoeschenFrage = nameof(Dlg_TransaktionLoeschenFrage);
+    public const string Dlg_SparZielLoeschen = nameof(Dlg_SparZielLoeschen);
+    public const string Dlg_SparZielLoeschenFrage = nameof(Dlg_SparZielLoeschenFrage);
 
     // Settings Messages
     public const string Stn_UngueltigerOrdner = nameof(Stn_UngueltigerOrdner);

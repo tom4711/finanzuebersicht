@@ -79,9 +79,11 @@ public partial class DashboardViewModel : MonthNavigationViewModel
     private decimal jahrGesamtAusgaben;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasYearData))]
     private ObservableCollection<CategorySummary> jahrKategorien = [];
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasYearData))]
     private List<MonthSummary> jahrMonate = [];
 
     // --- Allgemein ---
@@ -91,13 +93,25 @@ public partial class DashboardViewModel : MonthNavigationViewModel
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsYearView))]
+    [NotifyPropertyChangedFor(nameof(ShowMonthView))]
+    [NotifyPropertyChangedFor(nameof(ShowYearView))]
     private bool isMonthView = true;
 
     public bool IsYearView => !IsMonthView;
 
     public bool HasMonthData => KategorieAusgaben.Count > 0 || KategorieEinnahmen.Count > 0;
 
-    public bool HasYearData => JahrGesamtAusgaben > 0;
+    public bool HasYearData => JahrMonate.Count > 0 || JahrKategorien.Count > 0;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasAnyData))]
+    [NotifyPropertyChangedFor(nameof(ShowMonthView))]
+    [NotifyPropertyChangedFor(nameof(ShowYearView))]
+    private bool hasAnyDataLoaded;
+
+    public bool HasAnyData => HasAnyDataLoaded;
+    public bool ShowMonthView => HasAnyDataLoaded && IsMonthView;
+    public bool ShowYearView => HasAnyDataLoaded && IsYearView;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasDueItems))]
@@ -110,7 +124,10 @@ public partial class DashboardViewModel : MonthNavigationViewModel
         ? _loc.GetString(ResourceKeys.Lbl_DauerauftraegeFaellig_Singular, DueRecurringCount)
         : _loc.GetString(ResourceKeys.Lbl_DauerauftraegeFaellig, DueRecurringCount);
 
+    private readonly ITransactionRepository _transactionRepository;
     private int _aktuellesJahr;
+    private int _minJahr;
+    private bool _minJahrLoaded;
 
     public DashboardViewModel(
         LoadDashboardMonthUseCase loadDashboardMonthUseCase,
@@ -121,10 +138,12 @@ public partial class DashboardViewModel : MonthNavigationViewModel
         IReportingService reportingService,
         ILocalizationService localizationService,
         INavigationService navigationService,
+        ITransactionRepository transactionRepository,
         IClock? clock = null) : base(clock)
     {
         _clock = clock ?? SystemClock.Instance;
         _aktuellesJahr = _clock.Today.Year;
+        _minJahr = _clock.Today.Year - 10;
         _loadDashboardMonthUseCase = loadDashboardMonthUseCase;
         _loadDashboardYearUseCase = loadDashboardYearUseCase;
         _loadForecastUseCase = loadForecastUseCase;
@@ -133,6 +152,7 @@ public partial class DashboardViewModel : MonthNavigationViewModel
         _reportingService = reportingService;
         _loc = localizationService;
         _navigationService = navigationService;
+        _transactionRepository = transactionRepository;
         UpdateJahrAnzeige();
     }
 
@@ -145,6 +165,7 @@ public partial class DashboardViewModel : MonthNavigationViewModel
         IsLoading = true;
         try
         {
+            await EnsureMinJahrLoadedAsync();
             if (IsMonthView)
             {
                 await LadeMonatAsync();
@@ -159,6 +180,26 @@ public partial class DashboardViewModel : MonthNavigationViewModel
         {
             IsLoading = false;
         }
+    }
+
+    private async Task EnsureMinJahrLoadedAsync()
+    {
+        if (_minJahrLoaded && HasAnyDataLoaded) return;
+        _minJahrLoaded = true;
+        try
+        {
+            var all = await _transactionRepository.GetTransactionsAsync(DateTime.MinValue, DateTime.MaxValue);
+            if (all.Count > 0)
+            {
+                _minJahr = all.Min(t => t.Datum.Year);
+                HasAnyDataLoaded = true;
+            }
+        }
+        catch (Exception ex)
+        {
+            try { Finanzuebersicht.Services.FileLogger.Append("DashboardViewModel", "EnsureMinJahrLoadedAsync failed", ex); } catch { }
+        }
+        PreviousYearCommand.NotifyCanExecuteChanged();
     }
 
     private async Task LadeMonatAsync()
@@ -278,9 +319,9 @@ public partial class DashboardViewModel : MonthNavigationViewModel
         await LoadDashboard();
     }
 
-    private bool CanGoNextYear() => _aktuellesJahr < _clock.Today.Year;
+    private bool CanGoNextYear() => _aktuellesJahr < _clock.Today.Year + 1;
 
-    private bool CanGoPreviousYear() => _aktuellesJahr > _clock.Today.Year - 30;
+    private bool CanGoPreviousYear() => _aktuellesJahr > _minJahr;
 
     private void UpdateJahrAnzeige()
     {
@@ -299,5 +340,11 @@ public partial class DashboardViewModel : MonthNavigationViewModel
     private async Task NavigateToDauerauftraege()
     {
         await _navigationService.GoToAsync("//RecurringTransactionsPage");
+    }
+
+    [RelayCommand]
+    private async Task NavigateToTransaktionen()
+    {
+        await _navigationService.GoToAsync("//TransactionsPage");
     }
 }
