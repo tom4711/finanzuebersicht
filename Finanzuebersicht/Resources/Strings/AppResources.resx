@@ -90,6 +90,7 @@
   <data name="Err_KategorieErforderlich" xml:space="preserve"><value>Category is required</value></data>
   <data name="Err_SpeichernFehlgeschlagen" xml:space="preserve"><value>Error saving: {0}</value></data>
   <data name="Err_LoeschenFehlgeschlagen" xml:space="preserve"><value>Error deleting: {0}</value></data>
+  <data name="Err_LadenFehlgeschlagen" xml:space="preserve"><value>Error loading data: {0}</value></data>
   <data name="Err_OrdnerNichtWaehlbar" xml:space="preserve"><value>Folder could not be selected: {0}</value></data>
   <data name="Err_SucheFehlgeschlagen" xml:space="preserve"><value>The search could not be completed.</value></data>
 
@@ -100,6 +101,8 @@
   <data name="Dlg_DauerauftragLoeschenFrage" xml:space="preserve"><value>Really delete "{0}"?</value></data>
   <data name="Dlg_TransaktionLoeschen" xml:space="preserve"><value>Delete Transaction</value></data>
   <data name="Dlg_TransaktionLoeschenFrage" xml:space="preserve"><value>Really delete "{0}"?</value></data>
+  <data name="Dlg_SparZielLoeschen" xml:space="preserve"><value>Delete Savings Goal</value></data>
+  <data name="Dlg_SparZielLoeschenFrage" xml:space="preserve"><value>Really delete "{0}"?</value></data>
 
   <!-- Settings Messages -->
   <data name="Stn_UngueltigerOrdner" xml:space="preserve"><value>Invalid Folder</value></data>

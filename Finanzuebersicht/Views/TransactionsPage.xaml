@@ -67,8 +67,7 @@
                     Padding="0"
                     WidthRequest="44" HeightRequest="44"
                     VerticalOptions="Center"
-                    SemanticProperties.Description="{loc:Translate A11y_FilterUmschalten}"
-                    AutomationProperties.Name="{loc:Translate A11y_FilterUmschalten}">
+                    SemanticProperties.Description="{loc:Translate A11y_FilterUmschalten}">
                 <Button.Triggers>
                     <DataTrigger TargetType="Button" Binding="{Binding IsFilterActive}" Value="True">
                         <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />

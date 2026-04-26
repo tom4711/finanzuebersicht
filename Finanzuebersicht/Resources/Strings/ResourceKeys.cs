@@ -90,6 +90,7 @@ public static class ResourceKeys
     public const string Err_KategorieErforderlich = nameof(Err_KategorieErforderlich);
     public const string Err_SpeichernFehlgeschlagen = nameof(Err_SpeichernFehlgeschlagen);
     public const string Err_LoeschenFehlgeschlagen = nameof(Err_LoeschenFehlgeschlagen);
+    public const string Err_LadenFehlgeschlagen = nameof(Err_LadenFehlgeschlagen);
     public const string Err_OrdnerNichtWaehlbar = nameof(Err_OrdnerNichtWaehlbar);
     public const string Err_SucheFehlgeschlagen = nameof(Err_SucheFehlgeschlagen);
 
@@ -100,6 +101,8 @@ public static class ResourceKeys
     public const string Dlg_DauerauftragLoeschenFrage = nameof(Dlg_DauerauftragLoeschenFrage);
     public const string Dlg_TransaktionLoeschen = nameof(Dlg_TransaktionLoeschen);
     public const string Dlg_TransaktionLoeschenFrage = nameof(Dlg_TransaktionLoeschenFrage);
+    public const string Dlg_SparZielLoeschen = nameof(Dlg_SparZielLoeschen);
+    public const string Dlg_SparZielLoeschenFrage = nameof(Dlg_SparZielLoeschenFrage);
 
     // Settings Messages
     public const string Stn_UngueltigerOrdner = nameof(Stn_UngueltigerOrdner);
