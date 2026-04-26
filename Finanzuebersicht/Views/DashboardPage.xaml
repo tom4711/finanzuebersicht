@@ -54,7 +54,8 @@
                 <!-- Global Empty State – keine Transaktionen vorhanden -->
                 <VerticalStackLayout Spacing="16" HorizontalOptions="Center" Margin="0,40,0,0"
                                      IsVisible="{Binding HasAnyData, Converter={StaticResource InvertBool}}">
-                    <Label Text="📊" FontSize="56" HorizontalTextAlignment="Center" />
+                    <Label Text="📊" FontSize="56" HorizontalTextAlignment="Center"
+                           AutomationProperties.IsInAccessibleTree="False" />
                     <Label Text="{loc:Translate Empty_NochKeineTransaktionen}"
                            FontSize="17" TextColor="Gray"
                            HorizontalTextAlignment="Center" />

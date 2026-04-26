@@ -184,7 +184,7 @@ public partial class DashboardViewModel : MonthNavigationViewModel
 
     private async Task EnsureMinJahrLoadedAsync()
     {
-        if (_minJahrLoaded) return;
+        if (_minJahrLoaded && HasAnyDataLoaded) return;
         _minJahrLoaded = true;
         try
         {
