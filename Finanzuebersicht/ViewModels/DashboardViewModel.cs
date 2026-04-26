@@ -93,6 +93,8 @@ public partial class DashboardViewModel : MonthNavigationViewModel
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsYearView))]
+    [NotifyPropertyChangedFor(nameof(ShowMonthView))]
+    [NotifyPropertyChangedFor(nameof(ShowYearView))]
     private bool isMonthView = true;
 
     public bool IsYearView => !IsMonthView;
@@ -100,6 +102,16 @@ public partial class DashboardViewModel : MonthNavigationViewModel
     public bool HasMonthData => KategorieAusgaben.Count > 0 || KategorieEinnahmen.Count > 0;
 
     public bool HasYearData => JahrMonate.Count > 0 || JahrKategorien.Count > 0;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasAnyData))]
+    [NotifyPropertyChangedFor(nameof(ShowMonthView))]
+    [NotifyPropertyChangedFor(nameof(ShowYearView))]
+    private bool hasAnyDataLoaded;
+
+    public bool HasAnyData => HasAnyDataLoaded;
+    public bool ShowMonthView => HasAnyDataLoaded && IsMonthView;
+    public bool ShowYearView => HasAnyDataLoaded && IsYearView;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasDueItems))]
@@ -178,7 +190,10 @@ public partial class DashboardViewModel : MonthNavigationViewModel
         {
             var all = await _transactionRepository.GetTransactionsAsync(DateTime.MinValue, DateTime.MaxValue);
             if (all.Count > 0)
+            {
                 _minJahr = all.Min(t => t.Datum.Year);
+                HasAnyDataLoaded = true;
+            }
         }
         catch (Exception ex)
         {
@@ -325,5 +340,11 @@ public partial class DashboardViewModel : MonthNavigationViewModel
     private async Task NavigateToDauerauftraege()
     {
         await _navigationService.GoToAsync("//RecurringTransactionsPage");
+    }
+
+    [RelayCommand]
+    private async Task NavigateToTransaktionen()
+    {
+        await _navigationService.GoToAsync("//TransactionsPage");
     }
 }

@@ -50,10 +50,10 @@ public partial class RecurringInstanceShiftViewModel(
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"Error while shifting recurring instance: {ex}");
+            try { Finanzuebersicht.Services.FileLogger.Append("RecurringInstanceShiftViewModel", nameof(Save), ex); } catch { }
             await _dialogService.ShowAlertAsync(
                 _loc.GetString(ResourceKeys.Err_Titel),
-                _loc.GetString(ResourceKeys.Err_SpeichernFehlgeschlagen),
+                _loc.GetString(ResourceKeys.Err_SpeichernFehlgeschlagen, ex.Message),
                 _loc.GetString(ResourceKeys.Btn_OK));
             return;
         }
