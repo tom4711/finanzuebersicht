@@ -142,14 +142,43 @@ public partial class SparZieleViewModel : ObservableObject
     [RelayCommand]
     private async Task UpdateBetrag(SparZiel ziel)
     {
-        await _saveUseCase.ExecuteAsync(ziel);
-        await LoadSparZieleCommand.ExecuteAsync(null);
+        try
+        {
+            await _saveUseCase.ExecuteAsync(ziel);
+            await LoadSparZieleCommand.ExecuteAsync(null);
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"UpdateBetrag failed: {ex}");
+            await _dialogService.ShowAlertAsync(
+                _loc.GetString(ResourceKeys.Err_Titel),
+                _loc.GetString(ResourceKeys.Err_SpeichernFehlgeschlagen, ex.Message),
+                _loc.GetString(ResourceKeys.Btn_OK));
+        }
     }
 
     [RelayCommand]
     private async Task DeleteSparZiel(string id)
     {
-        await _deleteUseCase.ExecuteAsync(id);
-        await LoadSparZieleCommand.ExecuteAsync(null);
+        var titel = SparZiele.FirstOrDefault(z => z.SparZiel.Id == id)?.SparZiel.Titel ?? id;
+        var confirm = await _dialogService.ShowConfirmationAsync(
+            _loc.GetString(ResourceKeys.Dlg_SparZielLoeschen),
+            _loc.GetString(ResourceKeys.Dlg_SparZielLoeschenFrage, titel),
+            _loc.GetString(ResourceKeys.Btn_Ja), _loc.GetString(ResourceKeys.Btn_Nein));
+        if (!confirm) return;
+
+        try
+        {
+            await _deleteUseCase.ExecuteAsync(id);
+            await LoadSparZieleCommand.ExecuteAsync(null);
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"DeleteSparZiel failed: {ex}");
+            await _dialogService.ShowAlertAsync(
+                _loc.GetString(ResourceKeys.Err_Titel),
+                _loc.GetString(ResourceKeys.Err_LoeschenFehlgeschlagen, ex.Message),
+                _loc.GetString(ResourceKeys.Btn_OK));
+        }
     }
 }
