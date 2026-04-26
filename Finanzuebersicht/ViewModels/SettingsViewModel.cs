@@ -449,22 +449,23 @@ public partial class SettingsViewModel : ObservableObject
         try
         {
             var csvStream = await _backupService.ExportAsCSVAsync();
-            var csvData = new byte[csvStream.Length];
             csvStream.Seek(0, System.IO.SeekOrigin.Begin);
-            csvStream.Read(csvData, 0, csvData.Length);
 
-            var fileName = $"Finanzuebersicht_{_clock.Now:yyyyMMdd_HHmmss}.csv";
-            var filePath = Path.Combine(Path.GetTempPath(), fileName);
+            var fileName = $"Finanzuebersicht_Export_{_clock.Now:yyyy-MM-dd}.csv";
+            var result = await CommunityToolkit.Maui.Storage.FileSaver.Default
+                .SaveAsync(fileName, csvStream, CancellationToken.None);
 
-            File.WriteAllBytes(filePath, csvData);
-
-            await _dialogService.ShowAlertAsync(
-                _loc.GetString(ResourceKeys.Msg_CSVExportedTitle),
-                string.Format(_loc.GetString(ResourceKeys.Msg_CSVExportedBody), filePath),
-                _loc.GetString(ResourceKeys.Btn_OK));
+            if (result.IsSuccessful)
+            {
+                await _dialogService.ShowAlertAsync(
+                    _loc.GetString(ResourceKeys.Msg_CSVExportedTitle),
+                    string.Format(_loc.GetString(ResourceKeys.Msg_CSVExportedBody), result.FilePath),
+                    _loc.GetString(ResourceKeys.Btn_OK));
+            }
         }
         catch (Exception ex)
         {
+            _logger?.LogError(ex, "ExportAsCSV failed");
             await _dialogService.ShowAlertAsync(
                 _loc.GetString(ResourceKeys.Msg_CSVExportFailedTitle),
                 string.Format(_loc.GetString(ResourceKeys.Err_SpeichernFehlgeschlagen), ex.Message),
