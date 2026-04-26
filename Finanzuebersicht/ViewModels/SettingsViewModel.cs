@@ -448,7 +448,7 @@ public partial class SettingsViewModel : ObservableObject
 
         try
         {
-            var csvStream = await _backupService.ExportAsCSVAsync();
+            await using var csvStream = await _backupService.ExportAsCSVAsync();
             csvStream.Seek(0, System.IO.SeekOrigin.Begin);
 
             var fileName = $"Finanzuebersicht_Export_{_clock.Now:yyyy-MM-dd}.csv";
@@ -460,6 +460,14 @@ public partial class SettingsViewModel : ObservableObject
                 await _dialogService.ShowAlertAsync(
                     _loc.GetString(ResourceKeys.Msg_CSVExportedTitle),
                     string.Format(_loc.GetString(ResourceKeys.Msg_CSVExportedBody), result.FilePath),
+                    _loc.GetString(ResourceKeys.Btn_OK));
+            }
+            else if (result.Exception is not null and not OperationCanceledException)
+            {
+                _logger?.LogError(result.Exception, "ExportAsCSV SaveAsync failed");
+                await _dialogService.ShowAlertAsync(
+                    _loc.GetString(ResourceKeys.Msg_CSVExportFailedTitle),
+                    string.Format(_loc.GetString(ResourceKeys.Err_SpeichernFehlgeschlagen), result.Exception.Message),
                     _loc.GetString(ResourceKeys.Btn_OK));
             }
         }
