@@ -46,7 +46,7 @@
                                TextColor="{AppThemeBinding Light={StaticResource ReminderBannerText}, Dark={StaticResource ReminderBannerTextDark}}" />
                         <Label Grid.Column="1" Text="›" FontSize="20" FontAttributes="Bold"
                                VerticalTextAlignment="Center"
-                               SemanticProperties.Description=""
+                               AutomationProperties.IsInAccessibleTree="False"
                                TextColor="{AppThemeBinding Light={StaticResource ReminderBannerText}, Dark={StaticResource ReminderBannerTextDark}}" />
                     </Grid>
                 </Border>

@@ -79,9 +79,11 @@ public partial class DashboardViewModel : MonthNavigationViewModel
     private decimal jahrGesamtAusgaben;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasYearData))]
     private ObservableCollection<CategorySummary> jahrKategorien = [];
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasYearData))]
     private List<MonthSummary> jahrMonate = [];
 
     // --- Allgemein ---
@@ -178,7 +180,10 @@ public partial class DashboardViewModel : MonthNavigationViewModel
             if (all.Count > 0)
                 _minJahr = all.Min(t => t.Datum.Year);
         }
-        catch { /* Fallback auf initialen Wert */ }
+        catch (Exception ex)
+        {
+            try { Finanzuebersicht.Services.FileLogger.Append("DashboardViewModel", "EnsureMinJahrLoadedAsync failed", ex); } catch { }
+        }
         PreviousYearCommand.NotifyCanExecuteChanged();
     }
 
