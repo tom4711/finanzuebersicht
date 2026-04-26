@@ -130,7 +130,7 @@ public partial class SparZieleViewModel : ObservableObject
             try { Finanzuebersicht.Services.FileLogger.Append("SparZieleViewModel", nameof(SaveNewSparZiel), ex); } catch { }
             await _dialogService.ShowAlertAsync(
                 _loc.GetString(ResourceKeys.Err_Titel),
-                _loc.GetString(ResourceKeys.Err_SpeichernFehlgeschlagen),
+                _loc.GetString(ResourceKeys.Err_SpeichernFehlgeschlagen, ex.Message),
                 _loc.GetString(ResourceKeys.Btn_OK));
             return;
         }
