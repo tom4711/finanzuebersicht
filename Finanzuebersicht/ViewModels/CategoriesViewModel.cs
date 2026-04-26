@@ -39,6 +39,14 @@ public partial class CategoriesViewModel(
             var liste = await _loadCategoriesUseCase.ExecuteAsync();
             Kategorien = new ObservableCollection<Category>(liste);
         }
+        catch (Exception ex)
+        {
+            try { Finanzuebersicht.Services.FileLogger.Append("CategoriesViewModel", nameof(LoadKategorien), ex); } catch { }
+            await _dialogService.ShowAlertAsync(
+                _loc.GetString(ResourceKeys.Err_Titel),
+                _loc.GetString(ResourceKeys.Err_LadenFehlgeschlagen, ex.Message),
+                _loc.GetString(ResourceKeys.Btn_OK));
+        }
         finally
         {
             IsLoading = false;
@@ -54,8 +62,19 @@ public partial class CategoriesViewModel(
             _loc.GetString(ResourceKeys.Btn_Ja), _loc.GetString(ResourceKeys.Btn_Nein));
         if (!confirm) return;
 
-        await _deleteCategoryUseCase.ExecuteAsync(kategorie.Id);
-        Kategorien.Remove(kategorie);
+        try
+        {
+            await _deleteCategoryUseCase.ExecuteAsync(kategorie.Id);
+            Kategorien.Remove(kategorie);
+        }
+        catch (Exception ex)
+        {
+            try { Finanzuebersicht.Services.FileLogger.Append("CategoriesViewModel", nameof(DeleteKategorie), ex); } catch { }
+            await _dialogService.ShowAlertAsync(
+                _loc.GetString(ResourceKeys.Err_Titel),
+                _loc.GetString(ResourceKeys.Err_LoeschenFehlgeschlagen, ex.Message),
+                _loc.GetString(ResourceKeys.Btn_OK));
+        }
     }
 
     [RelayCommand]

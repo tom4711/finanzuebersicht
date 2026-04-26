@@ -41,6 +41,14 @@ public partial class RecurringTransactionsViewModel(
             var liste = await _loadRecurringTransactionsUseCase.ExecuteAsync();
             Dauerauftraege = new ObservableCollection<RecurringTransaction>(liste);
         }
+        catch (Exception ex)
+        {
+            try { Finanzuebersicht.Services.FileLogger.Append("RecurringTransactionsViewModel", nameof(LoadDauerauftraege), ex); } catch { }
+            await _dialogService.ShowAlertAsync(
+                _loc.GetString(ResourceKeys.Err_Titel),
+                _loc.GetString(ResourceKeys.Err_LadenFehlgeschlagen, ex.Message),
+                _loc.GetString(ResourceKeys.Btn_OK));
+        }
         finally
         {
             IsLoading = false;
@@ -71,6 +79,7 @@ public partial class RecurringTransactionsViewModel(
         }
         catch (Exception ex)
         {
+            try { Finanzuebersicht.Services.FileLogger.Append("RecurringTransactionsViewModel", nameof(DeleteDauerauftrag), ex); } catch { }
             await _dialogService.ShowAlertAsync(
                 _loc.GetString(ResourceKeys.Err_Titel),
                 _loc.GetString(ResourceKeys.Err_LoeschenFehlgeschlagen, ex.Message),

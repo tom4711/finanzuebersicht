@@ -127,7 +127,7 @@ public partial class SparZieleViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"SaveNewSparZiel failed: {ex}");
+            try { Finanzuebersicht.Services.FileLogger.Append("SparZieleViewModel", nameof(SaveNewSparZiel), ex); } catch { }
             await _dialogService.ShowAlertAsync(
                 _loc.GetString(ResourceKeys.Err_Titel),
                 _loc.GetString(ResourceKeys.Err_SpeichernFehlgeschlagen),
@@ -149,7 +149,7 @@ public partial class SparZieleViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"UpdateBetrag failed: {ex}");
+            try { Finanzuebersicht.Services.FileLogger.Append("SparZieleViewModel", nameof(UpdateBetrag), ex); } catch { }
             await _dialogService.ShowAlertAsync(
                 _loc.GetString(ResourceKeys.Err_Titel),
                 _loc.GetString(ResourceKeys.Err_SpeichernFehlgeschlagen, ex.Message),
@@ -174,7 +174,7 @@ public partial class SparZieleViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"DeleteSparZiel failed: {ex}");
+            try { Finanzuebersicht.Services.FileLogger.Append("SparZieleViewModel", nameof(DeleteSparZiel), ex); } catch { }
             await _dialogService.ShowAlertAsync(
                 _loc.GetString(ResourceKeys.Err_Titel),
                 _loc.GetString(ResourceKeys.Err_LoeschenFehlgeschlagen, ex.Message),

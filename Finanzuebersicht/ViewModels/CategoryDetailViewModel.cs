@@ -84,7 +84,7 @@ public partial class CategoryDetailViewModel(
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"[CategoryDetailViewModel] LoadBudgetAsync failed: {ex}");
+            try { Finanzuebersicht.Services.FileLogger.Append("CategoryDetailViewModel", nameof(LoadBudgetAsync), ex); } catch { }
         }
     }
 

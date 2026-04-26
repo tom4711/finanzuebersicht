@@ -81,6 +81,8 @@
   <data name="Empty_KeineSuchergebnisse" xml:space="preserve"><value>No transactions found</value></data>
   <data name="Empty_KeineDashboardDaten" xml:space="preserve"><value>No data for this period</value></data>
   <data name="Empty_KeineJahresDaten" xml:space="preserve"><value>No data for this year</value></data>
+  <data name="Empty_NochKeineTransaktionen" xml:space="preserve"><value>No transactions yet</value></data>
+  <data name="Btn_ZuTransaktionen" xml:space="preserve"><value>Add First Transaction</value></data>
 
   <!-- Error Messages -->
   <data name="Err_Titel" xml:space="preserve"><value>Error</value></data>
