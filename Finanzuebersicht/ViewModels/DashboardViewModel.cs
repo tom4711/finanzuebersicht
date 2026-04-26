@@ -128,6 +128,7 @@ public partial class DashboardViewModel : MonthNavigationViewModel
     private int _aktuellesJahr;
     private int _minJahr;
     private bool _minJahrLoaded;
+    private bool _foundTransactions;
 
     public DashboardViewModel(
         LoadDashboardMonthUseCase loadDashboardMonthUseCase,
@@ -175,6 +176,7 @@ public partial class DashboardViewModel : MonthNavigationViewModel
                 await LadeJahrAsync();
             }
             await LadeFaelligeDauerauftraegeAsync();
+            HasAnyDataLoaded = _foundTransactions;
         }
         finally
         {
@@ -184,7 +186,7 @@ public partial class DashboardViewModel : MonthNavigationViewModel
 
     private async Task EnsureMinJahrLoadedAsync()
     {
-        if (_minJahrLoaded && HasAnyDataLoaded) return;
+        if (_minJahrLoaded && _foundTransactions) return;
         _minJahrLoaded = true;
         try
         {
@@ -192,7 +194,11 @@ public partial class DashboardViewModel : MonthNavigationViewModel
             if (all.Count > 0)
             {
                 _minJahr = all.Min(t => t.Datum.Year);
-                HasAnyDataLoaded = true;
+                _foundTransactions = true;
+            }
+            else
+            {
+                _foundTransactions = false;
             }
         }
         catch (Exception ex)

@@ -67,11 +67,13 @@
                             CornerRadius="10" Padding="20,10" />
                 </VerticalStackLayout>
 
+                <!-- Dateninhalt (Toggle + Monats-/Jahresansicht) – nur wenn Daten vorhanden -->
+                <VerticalStackLayout Spacing="16" IsVisible="{Binding HasAnyData}">
+
                 <!-- Ansicht-Umschalter -->
                 <Border StrokeShape="RoundRectangle 10"
                         Stroke="{AppThemeBinding Light=#E5E5EA, Dark=#3A3A3C}"
-                        BackgroundColor="{AppThemeBinding Light=#F2F2F7, Dark=#2C2C2E}" Padding="2"
-                        IsVisible="{Binding HasAnyData}">
+                        BackgroundColor="{AppThemeBinding Light=#F2F2F7, Dark=#2C2C2E}" Padding="2">
                     <Grid ColumnDefinitions="*, *" ColumnSpacing="2">
                         <Border Grid.Column="0" StrokeShape="RoundRectangle 8" Stroke="Transparent"
                                 BackgroundColor="{Binding IsMonthView, Converter={StaticResource ToggleActiveColor}}"
@@ -97,7 +99,7 @@
                 </Border>
 
                 <!-- Monatsansicht -->
-                <VerticalStackLayout Spacing="16" IsVisible="{Binding ShowMonthView}">
+                <VerticalStackLayout Spacing="16" IsVisible="{Binding IsMonthView}">
 
                 <!-- Monatsnavigation -->
                 <Grid ColumnDefinitions="Auto, *, Auto">
@@ -172,9 +174,9 @@
                               IsVisible="{Binding KategorieAusgaben, Converter={StaticResource CountToBool}}"
                               Margin="0,4,0,0" />
 
-                <CollectionView ItemsSource="{Binding KategorieAusgaben}"
-                                SelectionMode="None">
-                    <CollectionView.ItemTemplate>
+                <VerticalStackLayout BindableLayout.ItemsSource="{Binding KategorieAusgaben}"
+                                     Spacing="0">
+                    <BindableLayout.ItemTemplate>
                         <DataTemplate x:DataType="models:CategorySummary">
                             <VerticalStackLayout Padding="0,6" Spacing="4">
                                 <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="10">
@@ -226,8 +228,8 @@
                                 </VerticalStackLayout>
                             </VerticalStackLayout>
                         </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                </CollectionView>
+                    </BindableLayout.ItemTemplate>
+                </VerticalStackLayout>
 
                 <!-- Einnahmen nach Kategorie -->
                   <Label Text="{loc:Translate Lbl_EinnahmenNachKategorie}" FontSize="18" FontAttributes="Bold"
@@ -235,9 +237,9 @@
                       SemanticProperties.HeadingLevel="Level2"
                       IsVisible="{Binding KategorieEinnahmen, Converter={StaticResource CountToBool}}" />
 
-                <CollectionView ItemsSource="{Binding KategorieEinnahmen}"
-                                SelectionMode="None">
-                    <CollectionView.ItemTemplate>
+                <VerticalStackLayout BindableLayout.ItemsSource="{Binding KategorieEinnahmen}"
+                                     Spacing="0">
+                    <BindableLayout.ItemTemplate>
                         <DataTemplate x:DataType="models:CategorySummary">
                             <VerticalStackLayout Padding="0,6" Spacing="4">
                                 <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="10">
@@ -254,8 +256,8 @@
                                 </Grid>
                             </VerticalStackLayout>
                         </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                </CollectionView>
+                    </BindableLayout.ItemTemplate>
+                </VerticalStackLayout>
 
                 <!-- Forecast nächster Monat -->
                 <Border StrokeShape="RoundRectangle 12"
@@ -287,7 +289,7 @@
                 </VerticalStackLayout>
 
                 <!-- Jahresansicht -->
-                <VerticalStackLayout Spacing="16" IsVisible="{Binding ShowYearView}">
+                <VerticalStackLayout Spacing="16" IsVisible="{Binding IsYearView}">
 
                 <!-- Jahresnavigation -->
                 <Grid ColumnDefinitions="Auto, *, Auto">
@@ -372,6 +374,9 @@
                        IsVisible="{Binding HasYearData, Converter={StaticResource InvertBool}}" />
 
                 </VerticalStackLayout>
+
+                </VerticalStackLayout>
+                <!-- Ende HasAnyData-Wrapper -->
 
             </VerticalStackLayout>
         </ScrollView>
