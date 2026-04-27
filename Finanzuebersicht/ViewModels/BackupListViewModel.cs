@@ -51,7 +51,8 @@ public partial class BackupListViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            try { FileLogger.Append("BackupListViewModel", "LoadBackups failed", ex); } catch { }
+            try { FileLogger.Append("BackupListViewModel", $"{nameof(LoadBackups)} failed", ex); } catch { }
+            Backups = [];
             IsEmpty = true;
         }
         finally
@@ -88,7 +89,7 @@ public partial class BackupListViewModel : ObservableObject
             {
                 await _dialogService.ShowAlertAsync(
                     _loc.GetString(ResourceKeys.Msg_RestoreFailedTitle),
-                    result.ErrorMessage ?? string.Empty,
+                    string.Format(_loc.GetString(ResourceKeys.Err_SpeichernFehlgeschlagen), result.ErrorMessage ?? string.Empty),
                     _loc.GetString(ResourceKeys.Btn_OK));
             }
         }

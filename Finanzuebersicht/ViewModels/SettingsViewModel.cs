@@ -5,6 +5,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Finanzuebersicht.Services;
 using Finanzuebersicht.Resources.Strings;
+using Finanzuebersicht.Views;
 
 namespace Finanzuebersicht.ViewModels;
 
@@ -376,7 +377,7 @@ public partial class SettingsViewModel : ObservableObject
             return;
         }
 
-        await _navigationService.GoToAsync("BackupListPage");
+        await _navigationService.GoToAsync(nameof(BackupListPage));
     }
 
     [RelayCommand]

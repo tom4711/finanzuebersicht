@@ -36,9 +36,9 @@
                                     Padding="16">
                                 <Grid ColumnDefinitions="*, Auto" RowDefinitions="Auto, Auto, Auto" RowSpacing="4">
 
-                                    <!-- Datum -->
+                                    <!-- Datum (lokale Zeit) -->
                                     <Label Grid.Row="0" Grid.Column="0"
-                                           Text="{Binding CreatedAt}"
+                                           Text="{Binding CreatedAt.LocalDateTime, StringFormat='{0:G}'}"
                                            FontSize="15" FontAttributes="Bold"
                                            TextColor="{AppThemeBinding Light=#1C1C1E, Dark=#F2F2F7}" />
 
