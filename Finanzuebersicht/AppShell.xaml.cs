@@ -18,6 +18,8 @@ public partial class AppShell : Shell
 
 	private async void OnSettingsClicked(object? sender, EventArgs e)
 	{
+		var location = Shell.Current.CurrentState.Location.ToString();
+		if (location.EndsWith(nameof(SettingsPage))) return;
 		await Shell.Current.GoToAsync(nameof(SettingsPage));
 	}
 }
