@@ -181,6 +181,13 @@ Please restart the app.</value></data>
   <data name="Btn_BackupRestore" xml:space="preserve"><value>📥 Restore</value></data>
   <data name="Btn_ExportCSV" xml:space="preserve"><value>📊 Export CSV</value></data>
   <data name="Msg_BackupRestoreTitle" xml:space="preserve"><value>Backup &amp; Restore</value></data>
+  <data name="Ttl_BackupAuswaehlen" xml:space="preserve"><value>Select Backup</value></data>
+  <data name="Lbl_BackupTransaktionen" xml:space="preserve"><value>{0} transactions, {1} categories</value></data>
+  <data name="Lbl_BackupDatum" xml:space="preserve"><value>Created: {0}</value></data>
+  <data name="Btn_BackupWiederherstellen" xml:space="preserve"><value>Restore</value></data>
+  <data name="Empty_KeineBackupsVorhanden" xml:space="preserve"><value>No backups found in the configured backup folder.</value></data>
+  <data name="Msg_BackupRestoreConfirmTitle" xml:space="preserve"><value>Restore backup</value></data>
+  <data name="Msg_BackupRestoreConfirmBody" xml:space="preserve"><value>Restore backup from {0}? All current data will be overwritten.</value></data>
   <data name="Msg_BackupRestoreDesc" xml:space="preserve"><value>Create backups of your data and restore when needed.</value></data>
   <data name="Btn_Import" xml:space="preserve"><value>Import</value></data>
   <data name="Btn_FilterZuruecksetzen" xml:space="preserve"><value>Clear filter</value></data>

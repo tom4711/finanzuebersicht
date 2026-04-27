@@ -5,6 +5,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Finanzuebersicht.Services;
 using Finanzuebersicht.Resources.Strings;
+using Finanzuebersicht.Views;
 
 namespace Finanzuebersicht.ViewModels;
 
@@ -16,6 +17,7 @@ public partial class SettingsViewModel : ObservableObject
     private readonly ILocalizationService _loc;
     private readonly IDialogService _dialogService;
     private readonly IBackupService? _backupService;
+    private readonly INavigationService _navigationService;
     private readonly Finanzuebersicht.Services.IClock _clock;
 
 
@@ -41,6 +43,7 @@ public partial class SettingsViewModel : ObservableObject
         ThemeService themeService,
         ILocalizationService localizationService,
         IDialogService dialogService,
+        INavigationService navigationService,
         IBackupService? backupService = null,
         ILogger<SettingsViewModel>? logger = null,
         Finanzuebersicht.Services.IClock? clock = null)
@@ -51,6 +54,7 @@ public partial class SettingsViewModel : ObservableObject
         _loc = localizationService;
         _dialogService = dialogService;
         _backupService = backupService;
+        _navigationService = navigationService;
         _clock = clock ?? Finanzuebersicht.Services.SystemClock.Instance;
 
         // Version aus Assembly-Metadaten lesen (von Nerdbank.GitVersioning gesetzt)
@@ -373,65 +377,7 @@ public partial class SettingsViewModel : ObservableObject
             return;
         }
 
-        try
-        {
-            var backupPath = _settings.Get("BackupPath", "");
-            if (string.IsNullOrEmpty(backupPath))
-            {
-                var dataPath = _settings.Get("DataPath", "");
-                if (string.IsNullOrEmpty(dataPath))
-                {
-                    dataPath = AppPaths.GetDefaultDataDir();
-                }
-
-                backupPath = Path.Combine(dataPath, "backups");
-            }
-
-            var backups = (await _backupService.ListBackupsAsync(backupPath)).ToList();
-            if (!backups.Any())
-            {
-                await _dialogService.ShowAlertAsync(
-                    _loc.GetString(ResourceKeys.Msg_NoBackupsTitle),
-                    _loc.GetString(ResourceKeys.Msg_NoBackupsDesc),
-                    _loc.GetString(ResourceKeys.Btn_OK));
-                return;
-            }
-
-            // Hier könnten wir zu einer separaten Restore-Dialog-Page navigieren
-            // Für nun: Informationen anzeigen
-            var newestBackup = backups.First();
-            var confirmed = await _dialogService.ShowConfirmationAsync(
-                _loc.GetString(ResourceKeys.Msg_RestoreConfirmTitle),
-                string.Format(_loc.GetString(ResourceKeys.Msg_RestoreConfirmBody), newestBackup.CreatedAt.ToString("g"), newestBackup.EntityCounts["transactions"]),
-                _loc.GetString(ResourceKeys.Btn_Ja),
-                _loc.GetString(ResourceKeys.Btn_Abbrechen));
-
-            if (confirmed)
-            {
-                var result = await _backupService.RestoreBackupAsync(backupPath, newestBackup.Id);
-                if (result.Success)
-                {
-                    await _dialogService.ShowAlertAsync(
-                        _loc.GetString(ResourceKeys.Msg_RestoreSuccessTitle),
-                        _loc.GetString(ResourceKeys.Msg_RestoreSuccessDesc),
-                        _loc.GetString(ResourceKeys.Btn_OK));
-                }
-                else
-                {
-                    await _dialogService.ShowAlertAsync(
-                        _loc.GetString(ResourceKeys.Msg_RestoreFailedTitle),
-                        string.Format(_loc.GetString(ResourceKeys.Err_SpeichernFehlgeschlagen), result.ErrorMessage),
-                        _loc.GetString(ResourceKeys.Btn_OK));
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            await _dialogService.ShowAlertAsync(
-                _loc.GetString(ResourceKeys.Err_Titel),
-                string.Format(_loc.GetString(ResourceKeys.Err_SpeichernFehlgeschlagen), ex.Message),
-                _loc.GetString(ResourceKeys.Btn_OK));
-        }
+        await _navigationService.GoToAsync(nameof(BackupListPage));
     }
 
     [RelayCommand]
