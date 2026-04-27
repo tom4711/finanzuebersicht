@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Finanzuebersicht.ViewModels"
+             xmlns:models="clr-namespace:Finanzuebersicht.Services;assembly=Finanzuebersicht.Core"
+             xmlns:loc="clr-namespace:Finanzuebersicht.Extensions"
+             xmlns:conv="clr-namespace:Finanzuebersicht.Converters"
+             x:Class="Finanzuebersicht.Views.BackupListPage"
+             x:DataType="vm:BackupListViewModel"
+             Title="{loc:Translate Ttl_BackupAuswaehlen}">
+
+    <ContentPage.Resources>
+        <conv:InvertBoolConverter x:Key="InvertBool" />
+    </ContentPage.Resources>
+
+    <RefreshView Command="{Binding LoadBackupsCommand}"
+                 IsRefreshing="{Binding IsLoading}">
+        <ScrollView>
+            <VerticalStackLayout Spacing="12" Padding="16">
+
+                <!-- Leerer Zustand -->
+                <Label Text="{loc:Translate Empty_KeineBackupsVorhanden}"
+                       FontSize="15" TextColor="{AppThemeBinding Light=#8E8E93, Dark=#636366}"
+                       HorizontalTextAlignment="Center"
+                       Margin="0,40,0,0"
+                       IsVisible="{Binding IsEmpty}" />
+
+                <!-- Backup-Liste -->
+                <VerticalStackLayout BindableLayout.ItemsSource="{Binding Backups}" Spacing="12"
+                                     IsVisible="{Binding IsEmpty, Converter={StaticResource InvertBool}}">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="models:BackupMetadata">
+                            <Border StrokeShape="RoundRectangle 12"
+                                    Stroke="{AppThemeBinding Light=#E5E5EA, Dark=#3A3A3C}"
+                                    BackgroundColor="{AppThemeBinding Light=White, Dark=#1C1C1E}"
+                                    Padding="16">
+                                <Grid ColumnDefinitions="*, Auto" RowDefinitions="Auto, Auto, Auto" RowSpacing="4">
+
+                                    <!-- Datum (lokale Zeit) -->
+                                    <Label Grid.Row="0" Grid.Column="0"
+                                           Text="{Binding CreatedAt, StringFormat='{0:G}'}"
+                                           FontSize="15" FontAttributes="Bold"
+                                           TextColor="{AppThemeBinding Light=#1C1C1E, Dark=#F2F2F7}" />
+
+                                    <!-- Dateiname -->
+                                    <Label Grid.Row="1" Grid.Column="0"
+                                           Text="{Binding FileName}"
+                                           FontSize="12"
+                                           TextColor="{AppThemeBinding Light=#8E8E93, Dark=#636366}" />
+
+                                    <!-- Restore-Button -->
+                                    <Button Grid.Row="0" Grid.Column="1" Grid.RowSpan="3"
+                                            Text="{loc:Translate Btn_BackupWiederherstellen}"
+                                            FontSize="13"
+                                            BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                                            TextColor="White"
+                                            CornerRadius="8"
+                                            Padding="12,8"
+                                            VerticalOptions="Center"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:BackupListViewModel}}, Path=RestoreBackupCommand}"
+                                            CommandParameter="{Binding .}" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </VerticalStackLayout>
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </RefreshView>
+
+</ContentPage>

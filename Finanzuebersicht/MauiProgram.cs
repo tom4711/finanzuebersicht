@@ -98,6 +98,7 @@ public static class MauiProgram
         builder.Services.AddTransient<RecurringInstanceShiftViewModel>();
 		builder.Services.AddTransient<SettingsViewModel>();
 		builder.Services.AddTransient<SparZieleViewModel>();
+		builder.Services.AddTransient<BackupListViewModel>();
 
 		// Pages
 		builder.Services.AddTransient<DashboardPage>();
@@ -110,6 +111,7 @@ public static class MauiProgram
 		builder.Services.AddTransient<CategoryDetailPage>();
 		builder.Services.AddTransient<SettingsPage>();
 		builder.Services.AddTransient<SparZielePage>();
+		builder.Services.AddTransient<BackupListPage>();
 
 #if DEBUG
 		builder.Logging.AddDebug();
