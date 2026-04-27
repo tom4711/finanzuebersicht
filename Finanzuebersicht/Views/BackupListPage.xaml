@@ -38,7 +38,7 @@
 
                                     <!-- Datum (lokale Zeit) -->
                                     <Label Grid.Row="0" Grid.Column="0"
-                                           Text="{Binding CreatedAt.LocalDateTime, StringFormat='{0:G}'}"
+                                           Text="{Binding CreatedAt, StringFormat='{0:G}'}"
                                            FontSize="15" FontAttributes="Bold"
                                            TextColor="{AppThemeBinding Light=#1C1C1E, Dark=#F2F2F7}" />
 
