@@ -4,9 +4,14 @@
              xmlns:vm="clr-namespace:Finanzuebersicht.ViewModels"
              xmlns:models="clr-namespace:Finanzuebersicht.Services;assembly=Finanzuebersicht.Core"
              xmlns:loc="clr-namespace:Finanzuebersicht.Extensions"
+             xmlns:conv="clr-namespace:Finanzuebersicht.Converters"
              x:Class="Finanzuebersicht.Views.BackupListPage"
              x:DataType="vm:BackupListViewModel"
              Title="{loc:Translate Ttl_BackupAuswaehlen}">
+
+    <ContentPage.Resources>
+        <conv:InvertBoolConverter x:Key="InvertBool" />
+    </ContentPage.Resources>
 
     <RefreshView Command="{Binding LoadBackupsCommand}"
                  IsRefreshing="{Binding IsLoading}">
