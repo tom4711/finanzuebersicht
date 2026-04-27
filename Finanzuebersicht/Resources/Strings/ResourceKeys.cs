@@ -216,6 +216,15 @@ public static class ResourceKeys
     public const string Btn_NeuesZiel = nameof(Btn_NeuesZiel);
     public const string Btn_ZielHinzufuegen = nameof(Btn_ZielHinzufuegen);
 
+    // Backup-Liste
+    public const string Ttl_BackupAuswaehlen = nameof(Ttl_BackupAuswaehlen);
+    public const string Lbl_BackupTransaktionen = nameof(Lbl_BackupTransaktionen);
+    public const string Lbl_BackupDatum = nameof(Lbl_BackupDatum);
+    public const string Btn_BackupWiederherstellen = nameof(Btn_BackupWiederherstellen);
+    public const string Empty_KeineBackupsVorhanden = nameof(Empty_KeineBackupsVorhanden);
+    public const string Msg_BackupRestoreConfirmTitle = nameof(Msg_BackupRestoreConfirmTitle);
+    public const string Msg_BackupRestoreConfirmBody = nameof(Msg_BackupRestoreConfirmBody);
+
     // Accessibility
     public const string A11y_VorherigerMonat = nameof(A11y_VorherigerMonat);
     public const string A11y_NaechsterMonat = nameof(A11y_NaechsterMonat);
