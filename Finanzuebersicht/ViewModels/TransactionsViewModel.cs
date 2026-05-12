@@ -21,10 +21,12 @@ public partial class TransactionsViewModel(
     IDialogService dialogService,
     ILocalizationService localizationService,
     ICategoryRepository categoryRepository,
-    ILogger<TransactionsViewModel> logger) : MonthNavigationViewModel
+    ILogger<TransactionsViewModel> logger) : MonthNavigationViewModel, IAutoLoadViewModel
 {
     private readonly DeleteTransactionUseCase _deleteTransactionUseCase = deleteTransactionUseCase;
     private readonly LoadTransactionsMonthUseCase _loadTransactionsMonthUseCase = loadTransactionsMonthUseCase;
+
+    public System.Windows.Input.ICommand AutoLoadCommand => LoadTransaktionenCommand;
     private readonly SearchTransactionsUseCase _searchTransactionsUseCase = searchTransactionsUseCase;
     private readonly INavigationService _navigationService = navigationService;
     private readonly ImportService _importService = importService;
@@ -49,6 +51,9 @@ public partial class TransactionsViewModel(
 
     [ObservableProperty]
     private ObservableCollection<TransactionGroup> transaktionsGruppen = [];
+
+    [ObservableProperty]
+    private Dictionary<string, string> iconMap = [];
 
     [ObservableProperty]
     private bool isLoading;
@@ -226,7 +231,7 @@ public partial class TransactionsViewModel(
             if (version >= 0 && version != _searchVersion) return;
             SearchErgebnisGruppen = new ObservableCollection<TransactionGroup>(result.Gruppen);
             TotalSearchCount = result.TotalCount;
-            Converters.KategorieIdToIconConverter.SetCache(result.IconMap);
+            IconMap = result.IconMap;
         }
         catch (Exception ex)
         {
@@ -292,7 +297,7 @@ public partial class TransactionsViewModel(
         {
             var data = await _loadTransactionsMonthUseCase.ExecuteAsync(AktuellerMonat);
             TransaktionsGruppen = new ObservableCollection<TransactionGroup>(data.Gruppen);
-            Converters.KategorieIdToIconConverter.SetCache(data.IconMap);
+            IconMap = data.IconMap;
 
             if (AvailableKategorien.Count == 0)
                 await LoadKategorienAsync();

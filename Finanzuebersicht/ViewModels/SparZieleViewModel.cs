@@ -8,13 +8,15 @@ using Finanzuebersicht.Services;
 
 namespace Finanzuebersicht.ViewModels;
 
-public partial class SparZieleViewModel : ObservableObject
+public partial class SparZieleViewModel : ObservableObject, IAutoLoadViewModel
 {
     private readonly LoadSparZieleUseCase _loadUseCase;
     private readonly SaveSparZielUseCase _saveUseCase;
     private readonly DeleteSparZielUseCase _deleteUseCase;
     private readonly IDialogService _dialogService;
     private readonly ILocalizationService _loc;
+
+    public System.Windows.Input.ICommand AutoLoadCommand => LoadSparZieleCommand;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsEmpty))]
