@@ -2,6 +2,7 @@
   <Project Path="Finanzuebersicht.Application/Finanzuebersicht.Application.csproj" />
   <Project Path="Finanzuebersicht.Core/Finanzuebersicht.Core.csproj" />
   <Project Path="Finanzuebersicht.Infrastructure/Finanzuebersicht.Infrastructure.csproj" />
+  <Project Path="Finanzuebersicht.Presentation/Finanzuebersicht.Presentation.csproj" />
   <Project Path="Finanzuebersicht.Tests/Finanzuebersicht.Tests.csproj" />
   <Project Path="Finanzuebersicht/Finanzuebersicht.csproj" />
 </Solution>

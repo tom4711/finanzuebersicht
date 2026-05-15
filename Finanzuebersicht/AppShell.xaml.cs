@@ -1,4 +1,5 @@
-﻿using Finanzuebersicht.Views;
+using Finanzuebersicht.Navigation;
+using Finanzuebersicht.Views;
 
 namespace Finanzuebersicht;
 
@@ -8,18 +9,18 @@ public partial class AppShell : Shell
 	{
 		InitializeComponent();
 
-		Routing.RegisterRoute(nameof(TransactionDetailPage), typeof(TransactionDetailPage));
-		Routing.RegisterRoute(nameof(RecurringTransactionDetailPage), typeof(RecurringTransactionDetailPage));
-		Routing.RegisterRoute(nameof(CategoryDetailPage), typeof(CategoryDetailPage));
-		Routing.RegisterRoute(nameof(RecurringInstanceShiftPage), typeof(RecurringInstanceShiftPage));
-		Routing.RegisterRoute(nameof(SettingsPage), typeof(SettingsPage));
-		Routing.RegisterRoute(nameof(BackupListPage), typeof(BackupListPage));
+		Routing.RegisterRoute(Routes.TransactionDetail, typeof(TransactionDetailPage));
+		Routing.RegisterRoute(Routes.RecurringTransactionDetail, typeof(RecurringTransactionDetailPage));
+		Routing.RegisterRoute(Routes.CategoryDetail, typeof(CategoryDetailPage));
+		Routing.RegisterRoute(Routes.RecurringInstanceShift, typeof(RecurringInstanceShiftPage));
+		Routing.RegisterRoute(Routes.Settings, typeof(SettingsPage));
+		Routing.RegisterRoute(Routes.BackupList, typeof(BackupListPage));
 	}
 
 	private async void OnSettingsClicked(object? sender, EventArgs e)
 	{
 		var location = Shell.Current.CurrentState.Location.ToString();
-		if (location.EndsWith(nameof(SettingsPage))) return;
-		await Shell.Current.GoToAsync(nameof(SettingsPage));
+		if (location.EndsWith(Routes.Settings)) return;
+		await Shell.Current.GoToAsync(Routes.Settings);
 	}
 }

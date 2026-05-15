@@ -6,13 +6,12 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Finanzuebersicht.Application.UseCases.RecurringTransactions;
 using Finanzuebersicht.Models;
-using Finanzuebersicht.Services;
-using Finanzuebersicht.Views;
+using Finanzuebersicht.Navigation;
 using Finanzuebersicht.Resources.Strings;
+using Finanzuebersicht.Services;
 
 namespace Finanzuebersicht.ViewModels;
 
-[QueryProperty(nameof(RecurringTransaction), "RecurringTransaction")]
 public partial class RecurringTransactionDetailViewModel(
     SaveRecurringTransactionDetailUseCase saveRecurringTransactionDetailUseCase,
     LoadRecurringTransactionDetailDataUseCase loadRecurringTransactionDetailDataUseCase,
@@ -23,7 +22,7 @@ public partial class RecurringTransactionDetailViewModel(
     IDialogService dialogService,
     ILocalizationService localizationService,
     ILogger<RecurringTransactionDetailViewModel>? logger = null,
-    Finanzuebersicht.Services.IClock? clock = null) : ObservableObject, IAutoLoadViewModel
+    Finanzuebersicht.Services.IClock? clock = null) : ObservableObject, IAutoLoadViewModel, IApplyQueryAttributes
 {
     private readonly SaveRecurringTransactionDetailUseCase _saveRecurringTransactionDetailUseCase = saveRecurringTransactionDetailUseCase;
     private readonly LoadRecurringTransactionDetailDataUseCase _loadRecurringTransactionDetailDataUseCase = loadRecurringTransactionDetailDataUseCase;
@@ -119,6 +118,12 @@ public partial class RecurringTransactionDetailViewModel(
                 Exceptions = new ObservableCollection<RecurringException>(value.Exceptions ?? new List<RecurringException>());
             }
         }
+    }
+
+    public void ApplyQueryAttributes(IDictionary<string, object> query)
+    {
+        if (query.TryGetValue("RecurringTransaction", out var val) && val is RecurringTransaction rt)
+            RecurringTransaction = rt;
     }
 
     [RelayCommand]
@@ -238,7 +243,7 @@ public partial class RecurringTransactionDetailViewModel(
             ["InstanceDate"] = next.Date
         };
 
-        await _navigationService.GoToAsync(nameof(RecurringInstanceShiftPage), parameters);
+        await _navigationService.GoToAsync(Routes.RecurringInstanceShift, parameters);
     }
 
     private static DateTime GetNextInstanceLocal(RecurringTransaction recurring, DateTime fromDate, int intervalFactor)

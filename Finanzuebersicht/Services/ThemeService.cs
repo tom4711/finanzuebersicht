@@ -3,7 +3,7 @@ namespace Finanzuebersicht.Services;
 /// <summary>
 /// Verwaltet das App-Theme (Light/Dark/System) und wendet es auf MAUI und UIKit an.
 /// </summary>
-public class ThemeService
+public class ThemeService : IThemeService
 {
     public void Apply(string themeKey)
     {
