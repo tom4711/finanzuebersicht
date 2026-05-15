@@ -18,7 +18,7 @@ public partial class TransactionDetailViewModel(
     INavigationService navigationService,
     IDialogService dialogService,
     ILogger<TransactionDetailViewModel>? logger = null,
-    Finanzuebersicht.Services.IClock? clock = null) : ObservableObject
+    Finanzuebersicht.Services.IClock? clock = null) : ObservableObject, IAutoLoadViewModel
 {
     private readonly SaveTransactionDetailUseCase _saveTransactionDetailUseCase = saveTransactionDetailUseCase;
     private readonly LoadTransactionDetailDataUseCase _loadTransactionDetailDataUseCase = loadTransactionDetailDataUseCase;
@@ -29,6 +29,8 @@ public partial class TransactionDetailViewModel(
     private readonly IDialogService _dialogService = dialogService;
     private readonly ILogger<TransactionDetailViewModel>? _logger = logger;
     private readonly Finanzuebersicht.Services.IClock _clock = clock ?? Finanzuebersicht.Services.SystemClock.Instance;
+
+    public System.Windows.Input.ICommand AutoLoadCommand => LoadKategorienCommand;
 
     [ObservableProperty]
     private string betragText = string.Empty;

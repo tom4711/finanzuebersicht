@@ -23,7 +23,7 @@ public partial class RecurringTransactionDetailViewModel(
     IDialogService dialogService,
     ILocalizationService localizationService,
     ILogger<RecurringTransactionDetailViewModel>? logger = null,
-    Finanzuebersicht.Services.IClock? clock = null) : ObservableObject
+    Finanzuebersicht.Services.IClock? clock = null) : ObservableObject, IAutoLoadViewModel
 {
     private readonly SaveRecurringTransactionDetailUseCase _saveRecurringTransactionDetailUseCase = saveRecurringTransactionDetailUseCase;
     private readonly LoadRecurringTransactionDetailDataUseCase _loadRecurringTransactionDetailDataUseCase = loadRecurringTransactionDetailDataUseCase;
@@ -36,6 +36,8 @@ public partial class RecurringTransactionDetailViewModel(
     private readonly ILocalizationService _loc = localizationService;
     private readonly ILogger<RecurringTransactionDetailViewModel>? _logger = logger;
     private readonly Finanzuebersicht.Services.IClock _clock = clock ?? Finanzuebersicht.Services.SystemClock.Instance;
+
+    public System.Windows.Input.ICommand AutoLoadCommand => LoadKategorienCommand;
 
     [ObservableProperty]
     private string betragText = string.Empty;

@@ -6,13 +6,15 @@ using Finanzuebersicht.Resources.Strings;
 
 namespace Finanzuebersicht.ViewModels;
 
-public partial class BackupListViewModel : ObservableObject
+public partial class BackupListViewModel : ObservableObject, IAutoLoadViewModel
 {
     private readonly IBackupService _backupService;
     private readonly SettingsService _settings;
     private readonly IDialogService _dialogService;
     private readonly ILocalizationService _loc;
     private readonly INavigationService _navigationService;
+
+    public System.Windows.Input.ICommand AutoLoadCommand => LoadBackupsCommand;
 
     [ObservableProperty]
     private ObservableCollection<BackupMetadata> backups = [];

@@ -14,13 +14,15 @@ public partial class CategoriesViewModel(
     LoadCategoriesUseCase loadCategoriesUseCase,
     ILocalizationService localizationService,
     INavigationService navigationService,
-    IDialogService dialogService) : ObservableObject
+    IDialogService dialogService) : ObservableObject, IAutoLoadViewModel
 {
     private readonly DeleteCategoryUseCase _deleteCategoryUseCase = deleteCategoryUseCase;
     private readonly LoadCategoriesUseCase _loadCategoriesUseCase = loadCategoriesUseCase;
     private readonly ILocalizationService _loc = localizationService;
     private readonly INavigationService _navigationService = navigationService;
     private readonly IDialogService _dialogService = dialogService;
+
+    public System.Windows.Input.ICommand AutoLoadCommand => LoadKategorienCommand;
 
     [ObservableProperty]
     private ObservableCollection<Category> kategorien = [];
