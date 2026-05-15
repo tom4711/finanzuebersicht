@@ -102,6 +102,10 @@ public static class MauiProgram
 		builder.Services.AddTransient<RecurringTransactionsViewModel>();
 		builder.Services.AddTransient<RecurringTransactionDetailViewModel>();
         builder.Services.AddTransient<RecurringInstanceShiftViewModel>();
+		builder.Services.AddTransient<AppearanceViewModel>();
+		builder.Services.AddTransient<StorageViewModel>();
+		builder.Services.AddTransient<BackupViewModel>();
+		builder.Services.AddTransient<AboutViewModel>();
 		builder.Services.AddTransient<SettingsViewModel>();
 		builder.Services.AddTransient<SparZieleViewModel>();
 		builder.Services.AddTransient<BackupListViewModel>();

@@ -24,22 +24,22 @@
 
                     <Grid ColumnDefinitions="*,*,*" ColumnSpacing="8">
                         <Button Text="{loc:Translate Btn_System}"
-                                Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.SetThemeCommand}"
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.Appearance.SetThemeCommand}"
                                 CommandParameter="0"
-                                BackgroundColor="{Binding SelectedThemeIndex, Converter={StaticResource ThemeButtonConverter}, ConverterParameter=0}"
-                                TextColor="{Binding SelectedThemeIndex, Converter={StaticResource ThemeButtonTextConverter}, ConverterParameter=0}" />
+                                BackgroundColor="{Binding Appearance.SelectedThemeIndex, Converter={StaticResource ThemeButtonConverter}, ConverterParameter=0}"
+                                TextColor="{Binding Appearance.SelectedThemeIndex, Converter={StaticResource ThemeButtonTextConverter}, ConverterParameter=0}" />
                         <Button Text="{loc:Translate Btn_Hell}"
                                 Grid.Column="1"
-                                Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.SetThemeCommand}"
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.Appearance.SetThemeCommand}"
                                 CommandParameter="1"
-                                BackgroundColor="{Binding SelectedThemeIndex, Converter={StaticResource ThemeButtonConverter}, ConverterParameter=1}"
-                                TextColor="{Binding SelectedThemeIndex, Converter={StaticResource ThemeButtonTextConverter}, ConverterParameter=1}" />
+                                BackgroundColor="{Binding Appearance.SelectedThemeIndex, Converter={StaticResource ThemeButtonConverter}, ConverterParameter=1}"
+                                TextColor="{Binding Appearance.SelectedThemeIndex, Converter={StaticResource ThemeButtonTextConverter}, ConverterParameter=1}" />
                         <Button Text="{loc:Translate Btn_Dunkel}"
                                 Grid.Column="2"
-                                Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.SetThemeCommand}"
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.Appearance.SetThemeCommand}"
                                 CommandParameter="2"
-                                BackgroundColor="{Binding SelectedThemeIndex, Converter={StaticResource ThemeButtonConverter}, ConverterParameter=2}"
-                                TextColor="{Binding SelectedThemeIndex, Converter={StaticResource ThemeButtonTextConverter}, ConverterParameter=2}" />
+                                BackgroundColor="{Binding Appearance.SelectedThemeIndex, Converter={StaticResource ThemeButtonConverter}, ConverterParameter=2}"
+                                TextColor="{Binding Appearance.SelectedThemeIndex, Converter={StaticResource ThemeButtonTextConverter}, ConverterParameter=2}" />
                     </Grid>
                 </VerticalStackLayout>
             </Border>
@@ -57,22 +57,22 @@
 
                     <Grid ColumnDefinitions="*,*,*" ColumnSpacing="8">
                         <Button Text="{loc:Translate Stn_SpracheSystem}"
-                                Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.SetLanguageCommand}"
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.Appearance.SetLanguageCommand}"
                                 CommandParameter="0"
-                                BackgroundColor="{Binding SelectedLanguageIndex, Converter={StaticResource ThemeButtonConverter}, ConverterParameter=0}"
-                                TextColor="{Binding SelectedLanguageIndex, Converter={StaticResource ThemeButtonTextConverter}, ConverterParameter=0}" />
+                                BackgroundColor="{Binding Appearance.SelectedLanguageIndex, Converter={StaticResource ThemeButtonConverter}, ConverterParameter=0}"
+                                TextColor="{Binding Appearance.SelectedLanguageIndex, Converter={StaticResource ThemeButtonTextConverter}, ConverterParameter=0}" />
                         <Button Text="{loc:Translate Stn_SpracheDeutsch}"
                                 Grid.Column="1"
-                                Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.SetLanguageCommand}"
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.Appearance.SetLanguageCommand}"
                                 CommandParameter="1"
-                                BackgroundColor="{Binding SelectedLanguageIndex, Converter={StaticResource ThemeButtonConverter}, ConverterParameter=1}"
-                                TextColor="{Binding SelectedLanguageIndex, Converter={StaticResource ThemeButtonTextConverter}, ConverterParameter=1}" />
+                                BackgroundColor="{Binding Appearance.SelectedLanguageIndex, Converter={StaticResource ThemeButtonConverter}, ConverterParameter=1}"
+                                TextColor="{Binding Appearance.SelectedLanguageIndex, Converter={StaticResource ThemeButtonTextConverter}, ConverterParameter=1}" />
                         <Button Text="{loc:Translate Stn_SpracheEnglisch}"
                                 Grid.Column="2"
-                                Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.SetLanguageCommand}"
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.Appearance.SetLanguageCommand}"
                                 CommandParameter="2"
-                                BackgroundColor="{Binding SelectedLanguageIndex, Converter={StaticResource ThemeButtonConverter}, ConverterParameter=2}"
-                                TextColor="{Binding SelectedLanguageIndex, Converter={StaticResource ThemeButtonTextConverter}, ConverterParameter=2}" />
+                                BackgroundColor="{Binding Appearance.SelectedLanguageIndex, Converter={StaticResource ThemeButtonConverter}, ConverterParameter=2}"
+                                TextColor="{Binding Appearance.SelectedLanguageIndex, Converter={StaticResource ThemeButtonTextConverter}, ConverterParameter=2}" />
                     </Grid>
                 </VerticalStackLayout>
             </Border>
@@ -96,7 +96,7 @@
                             BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray900}}"
                             Padding="12,8"
                             StrokeThickness="0">
-                        <Label Text="{Binding DataPath}"
+                        <Label Text="{Binding Storage.DataPath}"
                                FontSize="13"
                                FontFamily="monospace"
                                LineBreakMode="TailTruncation"
@@ -105,11 +105,11 @@
 
                     <HorizontalStackLayout Spacing="8">
                         <Button Text="{loc:Translate Btn_OrdnerWaehlen}"
-                                Command="{Binding ChooseDataPathCommand}"
+                                Command="{Binding Storage.ChooseDataPathCommand}"
                                 FontSize="14"
                                 Padding="12,8" />
                         <Button Text="{loc:Translate Btn_Zuruecksetzen}"
-                                Command="{Binding ResetDataPathCommand}"
+                                Command="{Binding Storage.ResetDataPathCommand}"
                                 FontSize="14"
                                 Padding="12,8"
                                 BackgroundColor="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray800}}"
@@ -139,30 +139,30 @@
 
                         <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
                         <Button Text="{loc:Translate Btn_BackupCreate}"
-                            Command="{Binding CreateBackupCommand}"
+                            Command="{Binding Backup.CreateBackupCommand}"
                             FontSize="14"
                             Padding="12,8" />
                         <Button Text="{loc:Translate Btn_BackupManage}"
                             Grid.Column="1"
-                            Command="{Binding BrowseBackupsCommand}"
+                            Command="{Binding Backup.BrowseBackupsCommand}"
                             FontSize="14"
                             Padding="12,8" />
                         </Grid>
 
                         <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
                         <Button Text="{loc:Translate Btn_BackupRestore}"
-                            Command="{Binding RestoreBackupCommand}"
+                            Command="{Binding Backup.RestoreBackupCommand}"
                             FontSize="14"
                             Padding="12,8"
                             BackgroundColor="{AppThemeBinding Light={StaticResource Warning}, Dark={StaticResource WarningDark}}" />
                         <Button Text="{loc:Translate Btn_ExportCSV}"
                             Grid.Column="1"
-                            Command="{Binding ExportAsCSVCommand}"
+                            Command="{Binding Backup.ExportAsCSVCommand}"
                             FontSize="14"
                             Padding="12,8" />
                         </Grid>
 
-                    <Label Text="{Binding LastBackupInfo}"
+                    <Label Text="{Binding Backup.LastBackupInfo}"
                            FontSize="12"
                            TextColor="{AppThemeBinding Light={StaticResource TextTertiary}, Dark={StaticResource Gray400}}"
                            Margin="0,4,0,0" />
@@ -184,12 +184,12 @@
                            <Label Text="{loc:Translate Title_AppName}"
                                FontSize="16" FontAttributes="Bold"
                                TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
-                        <Label Grid.Column="1" Text="{Binding AppVersion}"
+                        <Label Grid.Column="1" Text="{Binding About.AppVersion}"
                                FontSize="16" FontAttributes="Bold"
                                TextColor="{StaticResource Primary}"
                                HorizontalTextAlignment="End" />
                         <Label Grid.Row="1" Grid.ColumnSpan="2"
-                               Text="{Binding BuildInfo, StringFormat='Build: {0}'}"
+                               Text="{Binding About.BuildInfo, StringFormat='Build: {0}'}"
                                FontSize="12"
                                TextColor="{AppThemeBinding Light={StaticResource TextTertiary}, Dark={StaticResource Gray400}}" />
                     </Grid>
@@ -201,7 +201,7 @@
                            FontAttributes="Bold"
                            TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}" />
 
-                    <CollectionView ItemsSource="{Binding Libraries}" SelectionMode="None">
+                    <CollectionView ItemsSource="{Binding About.Libraries}" SelectionMode="None">
                         <CollectionView.ItemTemplate>
                             <DataTemplate x:DataType="vm:LibraryInfo">
                                 <VerticalStackLayout Padding="0,4">
