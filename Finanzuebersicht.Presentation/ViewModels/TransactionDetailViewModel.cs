@@ -4,12 +4,12 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Finanzuebersicht.Application.UseCases.Transactions;
 using Finanzuebersicht.Models;
+using Finanzuebersicht.Navigation;
 using Finanzuebersicht.Services;
 using Finanzuebersicht.Resources.Strings;
 
 namespace Finanzuebersicht.ViewModels;
 
-[QueryProperty(nameof(Transaction), "Transaction")]
 public partial class TransactionDetailViewModel(
     SaveTransactionDetailUseCase saveTransactionDetailUseCase,
     LoadTransactionDetailDataUseCase loadTransactionDetailDataUseCase,
@@ -18,7 +18,7 @@ public partial class TransactionDetailViewModel(
     INavigationService navigationService,
     IDialogService dialogService,
     ILogger<TransactionDetailViewModel>? logger = null,
-    Finanzuebersicht.Services.IClock? clock = null) : ObservableObject
+    Finanzuebersicht.Services.IClock? clock = null) : ObservableObject, IAutoLoadViewModel, IApplyQueryAttributes
 {
     private readonly SaveTransactionDetailUseCase _saveTransactionDetailUseCase = saveTransactionDetailUseCase;
     private readonly LoadTransactionDetailDataUseCase _loadTransactionDetailDataUseCase = loadTransactionDetailDataUseCase;
@@ -29,6 +29,8 @@ public partial class TransactionDetailViewModel(
     private readonly IDialogService _dialogService = dialogService;
     private readonly ILogger<TransactionDetailViewModel>? _logger = logger;
     private readonly Finanzuebersicht.Services.IClock _clock = clock ?? Finanzuebersicht.Services.SystemClock.Instance;
+
+    public System.Windows.Input.ICommand AutoLoadCommand => LoadKategorienCommand;
 
     [ObservableProperty]
     private string betragText = string.Empty;
@@ -68,6 +70,12 @@ public partial class TransactionDetailViewModel(
                 _ = SetKategorieAsync(value.KategorieId);
             }
         }
+    }
+
+    public void ApplyQueryAttributes(IDictionary<string, object> query)
+    {
+        if (query.TryGetValue("Transaction", out var val) && val is Transaction t)
+            Transaction = t;
     }
 
     [RelayCommand]

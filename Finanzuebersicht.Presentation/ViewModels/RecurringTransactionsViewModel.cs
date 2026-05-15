@@ -3,9 +3,9 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Finanzuebersicht.Application.UseCases.RecurringTransactions;
 using Finanzuebersicht.Models;
-using Finanzuebersicht.Services;
-using Finanzuebersicht.Views;
+using Finanzuebersicht.Navigation;
 using Finanzuebersicht.Resources.Strings;
+using Finanzuebersicht.Services;
 
 namespace Finanzuebersicht.ViewModels;
 
@@ -15,7 +15,7 @@ public partial class RecurringTransactionsViewModel(
     ToggleRecurringTransactionActiveUseCase toggleRecurringTransactionActiveUseCase,
     ILocalizationService localizationService,
     INavigationService navigationService,
-    IDialogService dialogService) : ObservableObject
+    IDialogService dialogService) : ObservableObject, IAutoLoadViewModel
 {
     private readonly DeleteRecurringTransactionUseCase _deleteRecurringTransactionUseCase = deleteRecurringTransactionUseCase;
     private readonly LoadRecurringTransactionsUseCase _loadRecurringTransactionsUseCase = loadRecurringTransactionsUseCase;
@@ -23,6 +23,8 @@ public partial class RecurringTransactionsViewModel(
     private readonly ILocalizationService _loc = localizationService;
     private readonly INavigationService _navigationService = navigationService;
     private readonly IDialogService _dialogService = dialogService;
+
+    public System.Windows.Input.ICommand AutoLoadCommand => LoadDauerauftraegeCommand;
 
     [ObservableProperty]
     private ObservableCollection<RecurringTransaction> dauerauftraege = [];
@@ -96,6 +98,6 @@ public partial class RecurringTransactionsViewModel(
             parameter["RecurringTransaction"] = dauerauftrag;
         }
 
-        await _navigationService.GoToAsync(nameof(RecurringTransactionDetailPage), parameter);
+        await _navigationService.GoToAsync(Routes.RecurringTransactionDetail, parameter);
     }
 }

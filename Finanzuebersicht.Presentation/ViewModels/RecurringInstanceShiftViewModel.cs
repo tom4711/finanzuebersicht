@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Finanzuebersicht.Application.UseCases.RecurringTransactions;
+using Finanzuebersicht.Navigation;
 using Finanzuebersicht.Resources.Strings;
 using Finanzuebersicht.Services;
 using Finanzuebersicht.Models;
@@ -8,14 +9,12 @@ using System.Globalization;
 
 namespace Finanzuebersicht.ViewModels;
 
-[QueryProperty(nameof(RecurringId), "RecurringId")]
-[QueryProperty(nameof(InstanceDate), "InstanceDate")]
 public partial class RecurringInstanceShiftViewModel(
     ShiftRecurringInstanceUseCase shiftRecurringInstanceUseCase,
     INavigationService navigationService,
     IDialogService dialogService,
     ILocalizationService localizationService,
-    Finanzuebersicht.Services.IClock? clock = null) : ObservableObject
+    Finanzuebersicht.Services.IClock? clock = null) : ObservableObject, IApplyQueryAttributes
 {
     private readonly ShiftRecurringInstanceUseCase _shiftRecurringInstanceUseCase = shiftRecurringInstanceUseCase;
     private readonly INavigationService _navigationService = navigationService;
@@ -38,6 +37,14 @@ public partial class RecurringInstanceShiftViewModel(
     partial void OnInstanceDateChanged(DateTime value)
     {
         NewDate = value;
+    }
+
+    public void ApplyQueryAttributes(IDictionary<string, object> query)
+    {
+        if (query.TryGetValue("RecurringId", out var id) && id is string recurringId)
+            RecurringId = recurringId;
+        if (query.TryGetValue("InstanceDate", out var date) && date is DateTime instanceDate)
+            InstanceDate = instanceDate;
     }
 
     [RelayCommand]

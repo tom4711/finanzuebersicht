@@ -1,8 +1,9 @@
+using Finanzuebersicht.Navigation;
 using Finanzuebersicht.ViewModels;
 
 namespace Finanzuebersicht.Views;
 
-public partial class RecurringTransactionDetailPage : ContentPage
+public partial class RecurringTransactionDetailPage : BaseContentPage, IQueryAttributable
 {
     public RecurringTransactionDetailPage(RecurringTransactionDetailViewModel viewModel)
     {
@@ -10,10 +11,9 @@ public partial class RecurringTransactionDetailPage : ContentPage
         BindingContext = viewModel;
     }
 
-    protected override void OnAppearing()
+    public void ApplyQueryAttributes(IDictionary<string, object> query)
     {
-        base.OnAppearing();
-        if (BindingContext is RecurringTransactionDetailViewModel vm)
-            vm.LoadKategorienCommand.Execute(null);
+        if (BindingContext is IApplyQueryAttributes vm)
+            vm.ApplyQueryAttributes(query);
     }
 }

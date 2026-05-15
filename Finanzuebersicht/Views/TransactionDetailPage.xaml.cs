@@ -1,8 +1,9 @@
+using Finanzuebersicht.Navigation;
 using Finanzuebersicht.ViewModels;
 
 namespace Finanzuebersicht.Views;
 
-public partial class TransactionDetailPage : ContentPage
+public partial class TransactionDetailPage : BaseContentPage, IQueryAttributable
 {
     public TransactionDetailPage(TransactionDetailViewModel viewModel)
     {
@@ -10,10 +11,9 @@ public partial class TransactionDetailPage : ContentPage
         BindingContext = viewModel;
     }
 
-    protected override void OnAppearing()
+    public void ApplyQueryAttributes(IDictionary<string, object> query)
     {
-        base.OnAppearing();
-        if (BindingContext is TransactionDetailViewModel vm)
-            vm.LoadKategorienCommand.Execute(null);
+        if (BindingContext is IApplyQueryAttributes vm)
+            vm.ApplyQueryAttributes(query);
     }
 }

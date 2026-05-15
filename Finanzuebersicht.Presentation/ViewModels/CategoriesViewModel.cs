@@ -3,9 +3,9 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Finanzuebersicht.Application.UseCases.Categories;
 using Finanzuebersicht.Models;
-using Finanzuebersicht.Services;
-using Finanzuebersicht.Views;
+using Finanzuebersicht.Navigation;
 using Finanzuebersicht.Resources.Strings;
+using Finanzuebersicht.Services;
 
 namespace Finanzuebersicht.ViewModels;
 
@@ -14,13 +14,15 @@ public partial class CategoriesViewModel(
     LoadCategoriesUseCase loadCategoriesUseCase,
     ILocalizationService localizationService,
     INavigationService navigationService,
-    IDialogService dialogService) : ObservableObject
+    IDialogService dialogService) : ObservableObject, IAutoLoadViewModel
 {
     private readonly DeleteCategoryUseCase _deleteCategoryUseCase = deleteCategoryUseCase;
     private readonly LoadCategoriesUseCase _loadCategoriesUseCase = loadCategoriesUseCase;
     private readonly ILocalizationService _loc = localizationService;
     private readonly INavigationService _navigationService = navigationService;
     private readonly IDialogService _dialogService = dialogService;
+
+    public System.Windows.Input.ICommand AutoLoadCommand => LoadKategorienCommand;
 
     [ObservableProperty]
     private ObservableCollection<Category> kategorien = [];
@@ -84,6 +86,6 @@ public partial class CategoriesViewModel(
         if (kategorie != null)
             parameter["Category"] = kategorie;
 
-        await _navigationService.GoToAsync(nameof(CategoryDetailPage), parameter);
+        await _navigationService.GoToAsync(Routes.CategoryDetail, parameter);
     }
 }

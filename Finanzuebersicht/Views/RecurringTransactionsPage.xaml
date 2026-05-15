@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+<views:BaseContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:views="clr-namespace:Finanzuebersicht.Views"
              xmlns:vm="clr-namespace:Finanzuebersicht.ViewModels"
              xmlns:models="clr-namespace:Finanzuebersicht.Models"
              xmlns:conv="clr-namespace:Finanzuebersicht.Converters"
@@ -9,12 +10,12 @@
              x:DataType="vm:RecurringTransactionsViewModel"
              Title="Daueraufträge">
 
-    <ContentPage.Resources>
+    <views:BaseContentPage.Resources>
         <conv:TransactionTypToColorConverter x:Key="TypToColor" />
         <conv:BoolToOpacityConverter x:Key="BoolToOpacity" />
         <conv:VorzeichenConverter x:Key="VorzeichenConv" />
         <conv:AktivTextConverter x:Key="AktivText" />
-    </ContentPage.Resources>
+    </views:BaseContentPage.Resources>
 
     <Grid>
         <RefreshView Command="{Binding LoadDauerauftraegeCommand}"
@@ -110,4 +111,4 @@
             Shadow="{Shadow Brush='#40000000', Offset='0,4', Radius=8}"
             Command="{Binding GoToDetailCommand}" />
     </Grid>
-</ContentPage>
+</views:BaseContentPage>

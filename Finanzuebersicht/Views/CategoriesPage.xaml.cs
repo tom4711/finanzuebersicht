@@ -2,18 +2,11 @@ using Finanzuebersicht.ViewModels;
 
 namespace Finanzuebersicht.Views;
 
-public partial class CategoriesPage : ContentPage
+public partial class CategoriesPage : BaseContentPage
 {
     public CategoriesPage(CategoriesViewModel viewModel)
     {
         InitializeComponent();
         BindingContext = viewModel;
-    }
-
-    protected override void OnAppearing()
-    {
-        base.OnAppearing();
-        if (BindingContext is CategoriesViewModel vm)
-            vm.LoadKategorienCommand.Execute(null);
     }
 }

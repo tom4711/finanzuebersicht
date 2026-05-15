@@ -3,10 +3,9 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Finanzuebersicht.Application.UseCases.Transactions;
 using Finanzuebersicht.Models;
+using Finanzuebersicht.Navigation;
 using Finanzuebersicht.Resources.Strings;
 using Finanzuebersicht.Services;
-using Finanzuebersicht.Views;
-using Microsoft.Maui.Storage;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 
@@ -21,16 +20,24 @@ public partial class TransactionsViewModel(
     IDialogService dialogService,
     ILocalizationService localizationService,
     ICategoryRepository categoryRepository,
-    ILogger<TransactionsViewModel> logger) : MonthNavigationViewModel
+    IMainThreadDispatcher dispatcher,
+    IFilePicker filePicker,
+    IAppEvents appEvents,
+    ILogger<TransactionsViewModel> logger) : MonthNavigationViewModel, IAutoLoadViewModel
 {
     private readonly DeleteTransactionUseCase _deleteTransactionUseCase = deleteTransactionUseCase;
     private readonly LoadTransactionsMonthUseCase _loadTransactionsMonthUseCase = loadTransactionsMonthUseCase;
+
+    public System.Windows.Input.ICommand AutoLoadCommand => LoadTransaktionenCommand;
     private readonly SearchTransactionsUseCase _searchTransactionsUseCase = searchTransactionsUseCase;
     private readonly INavigationService _navigationService = navigationService;
     private readonly ImportService _importService = importService;
     private readonly IDialogService _dialogService = dialogService;
     private readonly ILocalizationService _loc = localizationService;
     private readonly ICategoryRepository _categoryRepository = categoryRepository;
+    private readonly IMainThreadDispatcher _dispatcher = dispatcher;
+    private readonly IFilePicker _filePicker = filePicker;
+    private readonly IAppEvents _appEvents = appEvents;
     private readonly ILogger<TransactionsViewModel> _logger = logger;
 
     private CancellationTokenSource? _searchDebounce;
@@ -49,6 +56,9 @@ public partial class TransactionsViewModel(
 
     [ObservableProperty]
     private ObservableCollection<TransactionGroup> transaktionsGruppen = [];
+
+    [ObservableProperty]
+    private Dictionary<string, string> iconMap = [];
 
     [ObservableProperty]
     private bool isLoading;
@@ -199,7 +209,7 @@ public partial class TransactionsViewModel(
             {
                 await Task.Delay(300, token);
                 if (!token.IsCancellationRequested)
-                    await MainThread.InvokeOnMainThreadAsync(() => ExecuteSearchAsync(version));
+                    await _dispatcher.InvokeAsync(() => ExecuteSearchAsync(version));
             }
             catch (TaskCanceledException) { }
         });
@@ -226,7 +236,7 @@ public partial class TransactionsViewModel(
             if (version >= 0 && version != _searchVersion) return;
             SearchErgebnisGruppen = new ObservableCollection<TransactionGroup>(result.Gruppen);
             TotalSearchCount = result.TotalCount;
-            Converters.KategorieIdToIconConverter.SetCache(result.IconMap);
+            IconMap = result.IconMap;
         }
         catch (Exception ex)
         {
@@ -292,7 +302,7 @@ public partial class TransactionsViewModel(
         {
             var data = await _loadTransactionsMonthUseCase.ExecuteAsync(AktuellerMonat);
             TransaktionsGruppen = new ObservableCollection<TransactionGroup>(data.Gruppen);
-            Converters.KategorieIdToIconConverter.SetCache(data.IconMap);
+            IconMap = data.IconMap;
 
             if (AvailableKategorien.Count == 0)
                 await LoadKategorienAsync();
@@ -360,7 +370,7 @@ public partial class TransactionsViewModel(
                 return;
             }
 
-            await _navigationService.GoToAsync(nameof(TransactionDetailPage), parameter);
+            await _navigationService.GoToAsync(Routes.TransactionDetail, parameter);
         }
         catch (Exception ex)
         {
@@ -392,7 +402,7 @@ public partial class TransactionsViewModel(
 
         try
         {
-            var result = await FilePicker.PickAsync();
+            var result = await _filePicker.PickAsync();
             if (result == null) return;
 
             using var stream = await result.OpenReadAsync();
@@ -415,7 +425,7 @@ public partial class TransactionsViewModel(
             await LoadTransaktionen();
 
             // notify other parts of the app (dashboard/year views) that data changed
-            try { App.NotifyDataChanged(); } catch { }
+            try { _appEvents.NotifyDataChanged(); } catch { }
         }
         catch (System.Exception ex)
         {
