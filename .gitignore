@@ -39,3 +39,4 @@ bld/
 Finanzuebersicht.Tests/TestResults/test-results.trx
 Finanzuebersicht.Tests/dotnet-tools.json
 *.lscache
+coverage/
