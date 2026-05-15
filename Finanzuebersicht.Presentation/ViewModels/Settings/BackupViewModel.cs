@@ -96,7 +96,7 @@ public partial class BackupViewModel : ObservableObject
             var backupList = string.Join("\n", backups.Take(5).Select(b => $"{b.CreatedAt:g} - {Path.GetFileNameWithoutExtension(b.FileName)}"));
             if (backups.Count > 5)
             {
-                backupList += $"\n... und {backups.Count - 5} weitere";
+                backupList += "\n" + _loc.GetString(ResourceKeys.Msg_AndMoreBackups, backups.Count - 5);
             }
 
             await _dialogService.ShowAlertAsync(
