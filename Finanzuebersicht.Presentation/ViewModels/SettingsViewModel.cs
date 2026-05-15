@@ -3,22 +3,24 @@ using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Finanzuebersicht.Services;
+using Finanzuebersicht.Navigation;
 using Finanzuebersicht.Resources.Strings;
-using Finanzuebersicht.Views;
+using Finanzuebersicht.Services;
 
 namespace Finanzuebersicht.ViewModels;
 
 public partial class SettingsViewModel : ObservableObject
 {
     private readonly SettingsService _settings;
-    private readonly ThemeService _themeService;
+    private readonly IThemeService _themeService;
     private readonly ILogger<SettingsViewModel>? _logger;
     private readonly ILocalizationService _loc;
     private readonly IDialogService _dialogService;
     private readonly IBackupService? _backupService;
     private readonly INavigationService _navigationService;
     private readonly Finanzuebersicht.Services.IClock _clock;
+    private readonly IFolderPicker? _folderPicker;
+    private readonly IFileSaver? _fileSaver;
 
 
     [ObservableProperty]
@@ -40,13 +42,15 @@ public partial class SettingsViewModel : ObservableObject
 
     public SettingsViewModel(
         SettingsService settings,
-        ThemeService themeService,
+        IThemeService themeService,
         ILocalizationService localizationService,
         IDialogService dialogService,
         INavigationService navigationService,
         IBackupService? backupService = null,
         ILogger<SettingsViewModel>? logger = null,
-        Finanzuebersicht.Services.IClock? clock = null)
+        Finanzuebersicht.Services.IClock? clock = null,
+        IFolderPicker? folderPicker = null,
+        IFileSaver? fileSaver = null)
     {
         _settings = settings;
         _themeService = themeService;
@@ -56,6 +60,8 @@ public partial class SettingsViewModel : ObservableObject
         _backupService = backupService;
         _navigationService = navigationService;
         _clock = clock ?? Finanzuebersicht.Services.SystemClock.Instance;
+        _folderPicker = folderPicker;
+        _fileSaver = fileSaver;
 
         // Version aus Assembly-Metadaten lesen (von Nerdbank.GitVersioning gesetzt)
         var asm = Assembly.GetExecutingAssembly();
@@ -180,14 +186,12 @@ public partial class SettingsViewModel : ObservableObject
     [RelayCommand]
     private async Task ChooseDataPath()
     {
-        // Auf macOS/iOS: Ordnerauswahl via FolderPicker (CommunityToolkit.Maui)
+        if (_folderPicker == null) return;
         try
         {
-            var result = await CommunityToolkit.Maui.Storage.FolderPicker.Default.PickAsync();
-            if (result.IsSuccessful && result.Folder != null)
+            var newPath = await _folderPicker.PickAsync();
+            if (newPath != null)
             {
-                var newPath = result.Folder.Path;
-
                 // Temp-Pfade ablehnen – FolderPicker gibt auf macOS manchmal einen
                 // Sandbox-Temp-Pfad zurück (/var/folders/.../T/GUID) statt dem echten Pfad.
                 var tempPath = Path.GetTempPath().TrimEnd(Path.DirectorySeparatorChar);
@@ -377,7 +381,7 @@ public partial class SettingsViewModel : ObservableObject
             return;
         }
 
-        await _navigationService.GoToAsync(nameof(BackupListPage));
+        await _navigationService.GoToAsync(Routes.BackupList);
     }
 
     [RelayCommand]
@@ -394,12 +398,13 @@ public partial class SettingsViewModel : ObservableObject
 
         try
         {
+            if (_fileSaver == null) return;
+
             await using var csvStream = await _backupService.ExportAsCSVAsync();
             csvStream.Seek(0, System.IO.SeekOrigin.Begin);
 
             var fileName = $"Finanzuebersicht_Export_{_clock.Now:yyyy-MM-dd}.csv";
-            var result = await CommunityToolkit.Maui.Storage.FileSaver.Default
-                .SaveAsync(fileName, csvStream, CancellationToken.None);
+            var result = await _fileSaver.SaveAsync(fileName, csvStream, CancellationToken.None);
 
             if (result.IsSuccessful)
             {

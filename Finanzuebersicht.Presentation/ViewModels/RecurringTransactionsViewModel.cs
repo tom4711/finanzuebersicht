@@ -3,9 +3,9 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Finanzuebersicht.Application.UseCases.RecurringTransactions;
 using Finanzuebersicht.Models;
-using Finanzuebersicht.Services;
-using Finanzuebersicht.Views;
+using Finanzuebersicht.Navigation;
 using Finanzuebersicht.Resources.Strings;
+using Finanzuebersicht.Services;
 
 namespace Finanzuebersicht.ViewModels;
 
@@ -98,6 +98,6 @@ public partial class RecurringTransactionsViewModel(
             parameter["RecurringTransaction"] = dauerauftrag;
         }
 
-        await _navigationService.GoToAsync(nameof(RecurringTransactionDetailPage), parameter);
+        await _navigationService.GoToAsync(Routes.RecurringTransactionDetail, parameter);
     }
 }

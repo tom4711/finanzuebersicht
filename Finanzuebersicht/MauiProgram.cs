@@ -86,6 +86,12 @@ public static class MauiProgram
 		builder.Services.AddSingleton<ILocalizationService, LocalizationService>();
 		builder.Services.AddSingleton<INavigationService, ShellNavigationService>();
 		builder.Services.AddSingleton<IDialogService, ShellDialogService>();
+		builder.Services.AddSingleton<IMainThreadDispatcher, MauiMainThreadDispatcher>();
+		builder.Services.AddSingleton<Finanzuebersicht.Services.IFilePicker, MauiFilePicker>();
+		builder.Services.AddSingleton<IAppEvents, MauiAppEvents>();
+		builder.Services.AddSingleton<IFolderPicker, MauiFolderPicker>();
+		builder.Services.AddSingleton<IFileSaver, MauiFileSaver>();
+		builder.Services.AddSingleton<IThemeService>(sp => sp.GetRequiredService<ThemeService>());
 
 		// ViewModels
 		builder.Services.AddTransient<DashboardViewModel>();

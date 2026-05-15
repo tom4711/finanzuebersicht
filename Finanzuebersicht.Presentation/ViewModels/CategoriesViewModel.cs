@@ -3,9 +3,9 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Finanzuebersicht.Application.UseCases.Categories;
 using Finanzuebersicht.Models;
-using Finanzuebersicht.Services;
-using Finanzuebersicht.Views;
+using Finanzuebersicht.Navigation;
 using Finanzuebersicht.Resources.Strings;
+using Finanzuebersicht.Services;
 
 namespace Finanzuebersicht.ViewModels;
 
@@ -86,6 +86,6 @@ public partial class CategoriesViewModel(
         if (kategorie != null)
             parameter["Category"] = kategorie;
 
-        await _navigationService.GoToAsync(nameof(CategoryDetailPage), parameter);
+        await _navigationService.GoToAsync(Routes.CategoryDetail, parameter);
     }
 }

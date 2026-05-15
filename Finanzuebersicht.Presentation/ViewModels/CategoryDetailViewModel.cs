@@ -2,21 +2,23 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Finanzuebersicht.Application.UseCases.Categories;
 using Finanzuebersicht.Models;
+using Finanzuebersicht.Navigation;
 using Finanzuebersicht.Services;
 using Finanzuebersicht.Resources.Strings;
 using System.Globalization;
 
 namespace Finanzuebersicht.ViewModels;
 
-[QueryProperty(nameof(Category), "Category")]
 public partial class CategoryDetailViewModel(
     SaveCategoryDetailUseCase saveCategoryDetailUseCase,
     INavigationService navigationService,
+    ILocalizationService localizationService,
     SaveCategoryBudgetUseCase? saveCategoryBudgetUseCase = null,
-    IBudgetRepository? budgetRepository = null) : ObservableObject
+    IBudgetRepository? budgetRepository = null) : ObservableObject, IApplyQueryAttributes
 {
     private readonly SaveCategoryDetailUseCase _saveCategoryDetailUseCase = saveCategoryDetailUseCase;
     private readonly INavigationService _navigationService = navigationService;
+    private readonly ILocalizationService _loc = localizationService;
     private readonly SaveCategoryBudgetUseCase? _saveCategoryBudgetUseCase = saveCategoryBudgetUseCase;
     private readonly IBudgetRepository? _budgetRepository = budgetRepository;
     private Category? _existingCategory;
@@ -38,8 +40,8 @@ public partial class CategoryDetailViewModel(
     private string monthlyBudgetText = string.Empty;
 
     public string PageTitle => _existingCategory == null 
-        ? LocalizationResourceManager.Current[ResourceKeys.Title_NeueKategorie] 
-        : LocalizationResourceManager.Current[ResourceKeys.Title_KategorieBearbeiten];
+        ? _loc.GetString(ResourceKeys.Title_NeueKategorie) 
+        : _loc.GetString(ResourceKeys.Title_KategorieBearbeiten);
 
     public List<string> VerfuegbareIcons { get; } =
     [
@@ -69,6 +71,12 @@ public partial class CategoryDetailViewModel(
                 _ = LoadBudgetAsync(value.Id);
             }
         }
+    }
+
+    public void ApplyQueryAttributes(IDictionary<string, object> query)
+    {
+        if (query.TryGetValue("Category", out var val) && val is Category c)
+            Category = c;
     }
 
     private async Task LoadBudgetAsync(string kategorieId)
