@@ -74,6 +74,25 @@ public class StorageViewModelTests
     }
 
     [Fact]
+    public async Task ChooseDataPath_WhenFolderPickerIsNull_ShowsErrorAlert()
+    {
+        using var settingsScope = new SettingsScope(nameof(StorageViewModelTests));
+        var dialogService = CreateDialogService();
+        var sut = new StorageViewModel(
+            settingsScope.Settings,
+            dialogService,
+            CreateLocalizationService(),
+            folderPicker: null);
+
+        await sut.ChooseDataPathCommand.ExecuteAsync(null);
+
+        await dialogService.Received(1).ShowAlertAsync(
+            ResourceKeys.Err_Titel,
+            ResourceKeys.Msg_ImportServiceNichtVerfuegbar,
+            ResourceKeys.Btn_OK);
+    }
+
+    [Fact]
     public async Task ChooseDataPath_WhenPickerReturnsTempPath_ShowsError()
     {
         using var settingsScope = new SettingsScope(nameof(StorageViewModelTests));

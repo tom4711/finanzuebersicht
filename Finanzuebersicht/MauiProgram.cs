@@ -1,4 +1,5 @@
-﻿using CommunityToolkit.Maui;
+﻿using System.Reflection;
+using CommunityToolkit.Maui;
 using Finanzuebersicht.Application.UseCases.Categories;
 using Finanzuebersicht.Application.UseCases.Dashboard;
 using Finanzuebersicht.Application.UseCases.RecurringTransactions;
@@ -105,7 +106,8 @@ public static class MauiProgram
 		builder.Services.AddTransient<AppearanceViewModel>();
 		builder.Services.AddTransient<StorageViewModel>();
 		builder.Services.AddTransient<BackupViewModel>();
-		builder.Services.AddTransient<AboutViewModel>();
+		builder.Services.AddTransient<AboutViewModel>(sp =>
+			new AboutViewModel(Assembly.GetExecutingAssembly(), sp.GetService<ILogger<AboutViewModel>>()));
 		builder.Services.AddTransient<SettingsViewModel>();
 		builder.Services.AddTransient<SparZieleViewModel>();
 		builder.Services.AddTransient<BackupListViewModel>();

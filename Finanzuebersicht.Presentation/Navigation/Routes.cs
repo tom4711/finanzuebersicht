@@ -6,10 +6,10 @@ namespace Finanzuebersicht.Navigation;
 /// </summary>
 public static class Routes
 {
-    public const string TransactionDetail = "TransactionDetailPage";
-    public const string RecurringTransactionDetail = "RecurringTransactionDetailPage";
-    public const string CategoryDetail = "CategoryDetailPage";
-    public const string RecurringInstanceShift = "RecurringInstanceShiftPage";
-    public const string Settings = "SettingsPage";
-    public const string BackupList = "BackupListPage";
+    public static readonly string TransactionDetail = "TransactionDetailPage";
+    public static readonly string RecurringTransactionDetail = "RecurringTransactionDetailPage";
+    public static readonly string CategoryDetail = "CategoryDetailPage";
+    public static readonly string RecurringInstanceShift = "RecurringInstanceShiftPage";
+    public static readonly string Settings = "SettingsPage";
+    public static readonly string BackupList = "BackupListPage";
 }

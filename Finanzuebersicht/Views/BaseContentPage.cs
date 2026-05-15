@@ -12,7 +12,7 @@ public abstract class BaseContentPage : ContentPage
     protected override void OnAppearing()
     {
         base.OnAppearing();
-        if (BindingContext is IAutoLoadViewModel vm)
+        if (BindingContext is IAutoLoadViewModel vm && vm.ShouldAutoLoad)
             vm.AutoLoadCommand.Execute(null);
     }
 }

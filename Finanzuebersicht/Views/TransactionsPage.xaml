@@ -35,8 +35,8 @@
                         <Label.Text>
                             <MultiBinding Converter="{StaticResource KategorieIdToIcon}">
                                 <Binding Path="KategorieId" />
-                                <Binding Source="{RelativeSource AncestorType={x:Type vm:TransactionsViewModel}}"
-                                         Path="IconMap" />
+                                <Binding Source="{RelativeSource AncestorType={x:Type views:BaseContentPage}}"
+                                         Path="BindingContext.IconMap" />
                             </MultiBinding>
                         </Label.Text>
                     </Label>
@@ -215,8 +215,8 @@
                                             <Label.Text>
                                                 <MultiBinding Converter="{StaticResource KategorieIdToIcon}">
                                                     <Binding Path="KategorieId" />
-                                                    <Binding Source="{RelativeSource AncestorType={x:Type vm:TransactionsViewModel}}"
-                                                             Path="IconMap" />
+                                                    <Binding Source="{RelativeSource AncestorType={x:Type views:BaseContentPage}}"
+                                                             Path="BindingContext.IconMap" />
                                                 </MultiBinding>
                                             </Label.Text>
                                         </Label>
