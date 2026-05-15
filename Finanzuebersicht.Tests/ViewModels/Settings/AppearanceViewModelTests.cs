@@ -1,4 +1,5 @@
 using Finanzuebersicht.Services;
+using Finanzuebersicht.Tests.TestHelpers;
 using Finanzuebersicht.ViewModels;
 
 namespace Finanzuebersicht.Tests.ViewModels.Settings;
@@ -8,7 +9,7 @@ public class AppearanceViewModelTests
     [Fact]
     public void Constructor_LoadsThemeFromSettings()
     {
-        using var settingsScope = new SettingsScope(("Theme", "Dark"));
+        using var settingsScope = new SettingsScope(nameof(AppearanceViewModelTests), ("Theme", "Dark"));
         var themeService = Substitute.For<IThemeService>();
         var localizationService = CreateLocalizationService();
 
@@ -20,7 +21,7 @@ public class AppearanceViewModelTests
     [Fact]
     public void Constructor_LoadsLanguageFromLocalizationService()
     {
-        using var settingsScope = new SettingsScope();
+        using var settingsScope = new SettingsScope(nameof(AppearanceViewModelTests));
         var themeService = Substitute.For<IThemeService>();
         var localizationService = CreateLocalizationService("en");
 
@@ -32,7 +33,7 @@ public class AppearanceViewModelTests
     [Fact]
     public void SetTheme_UpdatesIndexAndPersists()
     {
-        using var settingsScope = new SettingsScope();
+        using var settingsScope = new SettingsScope(nameof(AppearanceViewModelTests));
         var themeService = Substitute.For<IThemeService>();
         var localizationService = CreateLocalizationService();
         var sut = new AppearanceViewModel(settingsScope.Settings, themeService, localizationService);
@@ -47,7 +48,7 @@ public class AppearanceViewModelTests
     [Fact]
     public void OnSelectedThemeIndexChanged_AppliesTheme()
     {
-        using var settingsScope = new SettingsScope();
+        using var settingsScope = new SettingsScope(nameof(AppearanceViewModelTests));
         var themeService = Substitute.For<IThemeService>();
         var localizationService = CreateLocalizationService();
         var sut = new AppearanceViewModel(settingsScope.Settings, themeService, localizationService);
@@ -61,7 +62,7 @@ public class AppearanceViewModelTests
     [Fact]
     public void SetLanguage_UpdatesIndex()
     {
-        using var settingsScope = new SettingsScope();
+        using var settingsScope = new SettingsScope(nameof(AppearanceViewModelTests));
         var themeService = Substitute.For<IThemeService>();
         var localizationService = CreateLocalizationService();
         var sut = new AppearanceViewModel(settingsScope.Settings, themeService, localizationService);
@@ -79,38 +80,4 @@ public class AppearanceViewModelTests
         return localizationService;
     }
 
-    private sealed class SettingsScope : IDisposable
-    {
-        private readonly string directory;
-
-        public SettingsScope(params (string Key, string Value)[] values)
-        {
-            directory = Path.Combine(
-                AppContext.BaseDirectory,
-                "test-artifacts",
-                nameof(AppearanceViewModelTests),
-                Guid.NewGuid().ToString("N"));
-
-            Directory.CreateDirectory(directory);
-            Settings = new SettingsService(Path.Combine(directory, "settings.json"));
-
-            foreach (var (key, value) in values)
-            {
-                Settings.Set(key, value);
-            }
-        }
-
-        public SettingsService Settings { get; }
-
-        public void Dispose()
-        {
-            try
-            {
-                Directory.Delete(directory, true);
-            }
-            catch
-            {
-            }
-        }
-    }
 }

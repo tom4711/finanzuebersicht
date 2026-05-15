@@ -1,5 +1,6 @@
 using Finanzuebersicht.Resources.Strings;
 using Finanzuebersicht.Services;
+using Finanzuebersicht.Tests.TestHelpers;
 using Finanzuebersicht.ViewModels;
 
 namespace Finanzuebersicht.Tests.ViewModels.Settings;
@@ -9,7 +10,7 @@ public class StorageViewModelTests
     [Fact]
     public void Constructor_LoadsDataPathFromSettings()
     {
-        using var settingsScope = new SettingsScope(("DataPath", "/Users/test/custom-data"));
+        using var settingsScope = new SettingsScope(nameof(StorageViewModelTests), ("DataPath", "/Users/test/custom-data"));
 
         var sut = new StorageViewModel(
             settingsScope.Settings,
@@ -22,7 +23,7 @@ public class StorageViewModelTests
     [Fact]
     public void Constructor_UsesDefaultPath_WhenSettingsEmpty()
     {
-        using var settingsScope = new SettingsScope(("DataPath", string.Empty));
+        using var settingsScope = new SettingsScope(nameof(StorageViewModelTests), ("DataPath", string.Empty));
 
         var sut = new StorageViewModel(
             settingsScope.Settings,
@@ -36,7 +37,7 @@ public class StorageViewModelTests
     [Fact]
     public async Task ResetDataPath_ClearsSettingsAndRestoresDefault()
     {
-        using var settingsScope = new SettingsScope(("DataPath", "/Users/test/custom-data"));
+        using var settingsScope = new SettingsScope(nameof(StorageViewModelTests), ("DataPath", "/Users/test/custom-data"));
         var dialogService = CreateDialogService();
         var sut = new StorageViewModel(
             settingsScope.Settings,
@@ -56,7 +57,7 @@ public class StorageViewModelTests
     [Fact]
     public async Task ChooseDataPath_WhenPickerReturnsNull_DoesNothing()
     {
-        using var settingsScope = new SettingsScope();
+        using var settingsScope = new SettingsScope(nameof(StorageViewModelTests));
         var dialogService = CreateDialogService();
         var folderPicker = Substitute.For<IFolderPicker>();
         folderPicker.PickAsync().Returns(Task.FromResult<string?>(null));
@@ -75,7 +76,7 @@ public class StorageViewModelTests
     [Fact]
     public async Task ChooseDataPath_WhenPickerReturnsTempPath_ShowsError()
     {
-        using var settingsScope = new SettingsScope();
+        using var settingsScope = new SettingsScope(nameof(StorageViewModelTests));
         var dialogService = CreateDialogService();
         var folderPicker = Substitute.For<IFolderPicker>();
         folderPicker.PickAsync().Returns(Task.FromResult<string?>(Path.Combine(Path.GetTempPath(), "something")));
@@ -110,38 +111,4 @@ public class StorageViewModelTests
         return localizationService;
     }
 
-    private sealed class SettingsScope : IDisposable
-    {
-        private readonly string directory;
-
-        public SettingsScope(params (string Key, string Value)[] values)
-        {
-            directory = Path.Combine(
-                AppContext.BaseDirectory,
-                "test-artifacts",
-                nameof(StorageViewModelTests),
-                Guid.NewGuid().ToString("N"));
-
-            Directory.CreateDirectory(directory);
-            Settings = new SettingsService(Path.Combine(directory, "settings.json"));
-
-            foreach (var (key, value) in values)
-            {
-                Settings.Set(key, value);
-            }
-        }
-
-        public SettingsService Settings { get; }
-
-        public void Dispose()
-        {
-            try
-            {
-                Directory.Delete(directory, true);
-            }
-            catch
-            {
-            }
-        }
-    }
 }

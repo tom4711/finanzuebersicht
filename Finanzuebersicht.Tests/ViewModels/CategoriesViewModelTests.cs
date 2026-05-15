@@ -23,7 +23,6 @@ public class CategoriesViewModelTests
             categoryRepository,
             Substitute.For<ITransactionRepository>(),
             Substitute.For<IRecurringTransactionRepository>(),
-            out _,
             out _);
 
         await sut.LoadKategorienCommand.ExecuteAsync(null);
@@ -55,8 +54,7 @@ public class CategoriesViewModelTests
             categoryRepository,
             transactionRepository,
             recurringTransactionRepository,
-            out var dialogService,
-            out _);
+            out var dialogService);
 
         sut.Kategorien = new ObservableCollection<Category> { categoryToDelete };
         dialogService.ShowConfirmationAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
@@ -72,12 +70,12 @@ public class CategoriesViewModelTests
     public async Task DeleteKategorie_WhenNotConfirmed_DoesNotDelete()
     {
         var categoryToDelete = new Category { Id = "cat-1", Name = "Miete" };
+        var categoryRepository = Substitute.For<ICategoryRepository>();
         var sut = CreateSut(
-            Substitute.For<ICategoryRepository>(),
+            categoryRepository,
             Substitute.For<ITransactionRepository>(),
             Substitute.For<IRecurringTransactionRepository>(),
-            out var dialogService,
-            out var categoryRepository);
+            out var dialogService);
 
         sut.Kategorien = new ObservableCollection<Category> { categoryToDelete };
         dialogService.ShowConfirmationAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
@@ -98,7 +96,6 @@ public class CategoriesViewModelTests
             Substitute.For<ITransactionRepository>(),
             Substitute.For<IRecurringTransactionRepository>(),
             out _,
-            out _,
             out var navigationService);
 
         await sut.GoToDetailCommand.ExecuteAsync(category);
@@ -116,7 +113,6 @@ public class CategoriesViewModelTests
         ITransactionRepository transactionRepository,
         IRecurringTransactionRepository recurringTransactionRepository,
         out IDialogService dialogService,
-        out ICategoryRepository deleteCategoryRepository,
         out INavigationService navigationService)
     {
         dialogService = Substitute.For<IDialogService>();
@@ -130,7 +126,6 @@ public class CategoriesViewModelTests
         localizationService.GetString(Arg.Any<string>(), Arg.Any<object[]>()).Returns(call => call.ArgAt<string>(0));
 
         navigationService = Substitute.For<INavigationService>();
-        deleteCategoryRepository = categoryRepository;
 
         return new CategoriesViewModel(
             new DeleteCategoryUseCase(categoryRepository, transactionRepository, recurringTransactionRepository),
@@ -144,15 +139,13 @@ public class CategoriesViewModelTests
         ICategoryRepository categoryRepository,
         ITransactionRepository transactionRepository,
         IRecurringTransactionRepository recurringTransactionRepository,
-        out IDialogService dialogService,
-        out ICategoryRepository deleteCategoryRepository)
+        out IDialogService dialogService)
     {
         return CreateSut(
             categoryRepository,
             transactionRepository,
             recurringTransactionRepository,
             out dialogService,
-            out deleteCategoryRepository,
             out _);
     }
 }

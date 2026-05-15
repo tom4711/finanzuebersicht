@@ -11,7 +11,7 @@ public class BackupViewModelTests
     [Fact]
     public async Task CreateBackup_WhenBackupServiceNull_ShowsAlert()
     {
-        using var settingsScope = new SettingsScope();
+        using var settingsScope = new SettingsScope(nameof(BackupViewModelTests));
         var dialogService = CreateDialogService();
         var sut = new BackupViewModel(
             settingsScope.Settings,
@@ -31,7 +31,7 @@ public class BackupViewModelTests
     [Fact]
     public async Task CreateBackup_WhenSuccessful_ShowsSuccessAlert()
     {
-        using var settingsScope = new SettingsScope();
+        using var settingsScope = new SettingsScope(nameof(BackupViewModelTests));
         var backupService = Substitute.For<IBackupService>();
         backupService.CreateBackupAsync(Arg.Any<string?>())
             .Returns(Task.FromResult(new BackupMetadata
@@ -64,7 +64,7 @@ public class BackupViewModelTests
     [Fact]
     public async Task ExportAsCSV_WhenFileSaverNull_DoesNothing()
     {
-        using var settingsScope = new SettingsScope();
+        using var settingsScope = new SettingsScope(nameof(BackupViewModelTests));
         var backupService = Substitute.For<IBackupService>();
         var dialogService = CreateDialogService();
         var sut = new BackupViewModel(
@@ -85,7 +85,7 @@ public class BackupViewModelTests
     [Fact]
     public async Task RestoreBackup_NavigatesToBackupListRoute()
     {
-        using var settingsScope = new SettingsScope();
+        using var settingsScope = new SettingsScope(nameof(BackupViewModelTests));
         var navigationService = Substitute.For<INavigationService>();
         var sut = new BackupViewModel(
             settingsScope.Settings,
@@ -104,7 +104,7 @@ public class BackupViewModelTests
     [Fact]
     public async Task BrowseBackups_WhenNoBackups_ShowsEmptyAlert()
     {
-        using var settingsScope = new SettingsScope();
+        using var settingsScope = new SettingsScope(nameof(BackupViewModelTests));
         var backupService = Substitute.For<IBackupService>();
         backupService.ListBackupsAsync(Arg.Any<string>())
             .Returns(Task.FromResult<IEnumerable<BackupMetadata>>(Array.Empty<BackupMetadata>()));
@@ -141,38 +141,4 @@ public class BackupViewModelTests
         return localizationService;
     }
 
-    private sealed class SettingsScope : IDisposable
-    {
-        private readonly string directory;
-
-        public SettingsScope(params (string Key, string Value)[] values)
-        {
-            directory = Path.Combine(
-                AppContext.BaseDirectory,
-                "test-artifacts",
-                nameof(BackupViewModelTests),
-                Guid.NewGuid().ToString("N"));
-
-            Directory.CreateDirectory(directory);
-            Settings = new SettingsService(Path.Combine(directory, "settings.json"));
-
-            foreach (var (key, value) in values)
-            {
-                Settings.Set(key, value);
-            }
-        }
-
-        public SettingsService Settings { get; }
-
-        public void Dispose()
-        {
-            try
-            {
-                Directory.Delete(directory, true);
-            }
-            catch
-            {
-            }
-        }
-    }
 }
