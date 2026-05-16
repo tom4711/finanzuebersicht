@@ -7,6 +7,7 @@
 [![CI](https://github.com/tom4711/finanzuebersicht/actions/workflows/ci.yml/badge.svg)](https://github.com/tom4711/finanzuebersicht/actions/workflows/ci.yml)
 [![Pre-Release](https://github.com/tom4711/finanzuebersicht/actions/workflows/prerelease.yml/badge.svg)](https://github.com/tom4711/finanzuebersicht/actions/workflows/prerelease.yml)
 [![Release](https://github.com/tom4711/finanzuebersicht/actions/workflows/release.yml/badge.svg)](https://github.com/tom4711/finanzuebersicht/actions/workflows/release.yml)
+[![Downloads](https://img.shields.io/github/downloads/tom4711/finanzuebersicht/total)](https://github.com/tom4711/finanzuebersicht/releases)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
 [![.NET 10](https://img.shields.io/badge/.NET-10-blueviolet)](https://dotnet.microsoft.com/download)
 
