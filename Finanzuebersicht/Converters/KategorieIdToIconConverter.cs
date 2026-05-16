@@ -13,7 +13,7 @@ public class KategorieIdToIconConverter : IMultiValueConverter
         if (values.Length < 1 || values[0] is not string kategorieId || string.IsNullOrEmpty(kategorieId))
             return "📁";
 
-        if (values.Length >= 2 && values[1] is Dictionary<string, string> iconMap
+        if (values.Length >= 2 && values[1] is IDictionary<string, string> iconMap
             && iconMap.TryGetValue(kategorieId, out var icon))
             return icon;
 

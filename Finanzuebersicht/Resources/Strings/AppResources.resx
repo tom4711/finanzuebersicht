@@ -156,6 +156,7 @@ Please restart the app.</value></data>
   <data name="Msg_NoBackupsTitle" xml:space="preserve"><value>No backups</value></data>
   <data name="Msg_NoBackupsDesc" xml:space="preserve"><value>No backups have been created yet.</value></data>
   <data name="Msg_AvailableBackupsTitle" xml:space="preserve"><value>Available backups</value></data>
+  <data name="Msg_AndMoreBackups" xml:space="preserve"><value>... and {0} more</value></data>
   <data name="Msg_RestoreConfirmTitle" xml:space="preserve"><value>Restore backup</value></data>
   <data name="Msg_RestoreConfirmBody" xml:space="preserve"><value>Do you want to restore the backup from {0} with {1} transactions? This will overwrite current data.</value></data>
   <data name="Msg_RestoreSuccessTitle" xml:space="preserve"><value>Restore successful</value></data>
