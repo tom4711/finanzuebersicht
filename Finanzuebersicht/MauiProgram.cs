@@ -1,13 +1,8 @@
-﻿using System.Reflection;
-using CommunityToolkit.Maui;
-using Finanzuebersicht.Application.UseCases.Categories;
-using Finanzuebersicht.Application.UseCases.Dashboard;
-using Finanzuebersicht.Application.UseCases.RecurringTransactions;
-using Finanzuebersicht.Application.UseCases.SparZiele;
-using Finanzuebersicht.Application.UseCases.Transactions;
+﻿using CommunityToolkit.Maui;
+using Finanzuebersicht.Application.DependencyInjection;
 using Finanzuebersicht.Infrastructure;
+using Finanzuebersicht.Presentation.DependencyInjection;
 using Finanzuebersicht.Services;
-using Finanzuebersicht.ViewModels;
 using Finanzuebersicht.Views;
 using Microsoft.Extensions.Logging;
 
@@ -58,31 +53,8 @@ public static class MauiProgram
 		Microsoft.Extensions.DependencyInjection.ServiceCollectionServiceExtensions.AddSingleton<ICategorizationStrategy, HistoricalCategorizationStrategy>(builder.Services);
 		builder.Services.AddSingleton<CategorizationService>();
 
-		builder.Services.AddTransient<DeleteCategoryUseCase>();
-		builder.Services.AddTransient<LoadCategoriesUseCase>();
-		builder.Services.AddTransient<SaveCategoryDetailUseCase>();
-		builder.Services.AddTransient<SaveCategoryBudgetUseCase>();
-		builder.Services.AddTransient<LoadDashboardMonthUseCase>();
-		builder.Services.AddTransient<LoadDashboardYearUseCase>();
-		builder.Services.AddTransient<LoadForecastUseCase>();
-		builder.Services.AddTransient<DeleteRecurringTransactionUseCase>();
-		builder.Services.AddTransient<LoadRecurringTransactionDetailDataUseCase>();
-		builder.Services.AddTransient<LoadRecurringTransactionsUseCase>();
-		builder.Services.AddTransient<ToggleRecurringTransactionActiveUseCase>();
-		builder.Services.AddTransient<AddRecurringExceptionUseCase>();
-		builder.Services.AddTransient<RemoveRecurringExceptionUseCase>();
-		builder.Services.AddTransient<ShiftRecurringInstanceUseCase>();
-		builder.Services.AddTransient<GetDueRecurringWithHintsUseCase>();
-		builder.Services.AddTransient<LoadTransactionDetailDataUseCase>();
-		builder.Services.AddTransient<DeleteTransactionUseCase>();
-		builder.Services.AddTransient<LoadTransactionsMonthUseCase>();
-		builder.Services.AddTransient<SearchTransactionsUseCase>();
-		builder.Services.AddTransient<SaveRecurringTransactionDetailUseCase>();
-		builder.Services.AddTransient<SaveTransactionDetailUseCase>();
-		builder.Services.AddSingleton<InitializationService>();
-		builder.Services.AddTransient<LoadSparZieleUseCase>();
-		builder.Services.AddTransient<SaveSparZielUseCase>();
-		builder.Services.AddTransient<DeleteSparZielUseCase>();
+		builder.Services.AddApplicationUseCases();
+
 		builder.Services.AddSingleton<ThemeService>();
 		builder.Services.AddSingleton<ILocalizationService, LocalizationService>();
 		builder.Services.AddSingleton<INavigationService, ShellNavigationService>();
@@ -94,23 +66,7 @@ public static class MauiProgram
 		builder.Services.AddSingleton<IFileSaver, MauiFileSaver>();
 		builder.Services.AddSingleton<IThemeService>(sp => sp.GetRequiredService<ThemeService>());
 
-		// ViewModels
-		builder.Services.AddTransient<DashboardViewModel>();
-		builder.Services.AddTransient<CategoriesViewModel>();
-		builder.Services.AddTransient<CategoryDetailViewModel>();
-		builder.Services.AddTransient<TransactionsViewModel>();
-		builder.Services.AddTransient<TransactionDetailViewModel>();
-		builder.Services.AddTransient<RecurringTransactionsViewModel>();
-		builder.Services.AddTransient<RecurringTransactionDetailViewModel>();
-        builder.Services.AddTransient<RecurringInstanceShiftViewModel>();
-		builder.Services.AddTransient<AppearanceViewModel>();
-		builder.Services.AddTransient<StorageViewModel>();
-		builder.Services.AddTransient<BackupViewModel>();
-		builder.Services.AddTransient<AboutViewModel>(sp =>
-			new AboutViewModel(Assembly.GetExecutingAssembly(), sp.GetService<ILogger<AboutViewModel>>()));
-		builder.Services.AddTransient<SettingsViewModel>();
-		builder.Services.AddTransient<SparZieleViewModel>();
-		builder.Services.AddTransient<BackupListViewModel>();
+		builder.Services.AddPresentationViewModels();
 
 		// Pages
 		builder.Services.AddTransient<DashboardPage>();
