@@ -1,5 +1,6 @@
 using Finanzuebersicht.Models;
 
+#pragma warning disable CS0618 // IDataService is intentionally implemented here as the local storage adapter
 namespace Finanzuebersicht.Services;
 
 /// <summary>

@@ -37,7 +37,10 @@ public static class MauiProgram
 		builder.Services.AddInfrastructureServices();
 		builder.Services.AddSingleton<IRecurringGenerationService, RecurringGenerationService>();
 		builder.Services.AddSingleton<IReportingService, ReportingService>();
+		// IDataService is kept for legacy compatibility; new code uses specific repository interfaces
+#pragma warning disable CS0618
 		builder.Services.AddSingleton<IDataService, DataServiceFacade>();
+#pragma warning restore CS0618
 		builder.Services.AddSingleton<IForecastService, ForecastService>();
 		builder.Services.AddSingleton<ITransactionValidationService, TransactionValidationService>();
 		builder.Services.AddSingleton<IBackupService, BackupService>();
