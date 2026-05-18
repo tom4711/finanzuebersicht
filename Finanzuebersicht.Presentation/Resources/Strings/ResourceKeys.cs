@@ -143,6 +143,7 @@ public static class ResourceKeys
     public const string Msg_NoBackupsTitle = nameof(Msg_NoBackupsTitle);
     public const string Msg_NoBackupsDesc = nameof(Msg_NoBackupsDesc);
     public const string Msg_AvailableBackupsTitle = nameof(Msg_AvailableBackupsTitle);
+    public const string Msg_AndMoreBackups = nameof(Msg_AndMoreBackups);
     public const string Msg_RestoreConfirmTitle = nameof(Msg_RestoreConfirmTitle);
     public const string Msg_RestoreConfirmBody = nameof(Msg_RestoreConfirmBody);
     public const string Msg_RestoreSuccessTitle = nameof(Msg_RestoreSuccessTitle);

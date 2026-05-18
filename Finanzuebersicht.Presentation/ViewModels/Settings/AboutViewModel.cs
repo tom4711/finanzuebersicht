@@ -6,18 +6,19 @@ namespace Finanzuebersicht.ViewModels;
 
 public partial class AboutViewModel : ObservableObject
 {
+    private readonly Assembly _appAssembly;
     private readonly ILogger<AboutViewModel>? _logger;
 
     public string AppVersion { get; }
     public string BuildInfo { get; }
     public List<LibraryInfo> Libraries { get; } = [];
 
-    public AboutViewModel(ILogger<AboutViewModel>? logger = null)
+    public AboutViewModel(Assembly? appAssembly = null, ILogger<AboutViewModel>? logger = null)
     {
+        _appAssembly = appAssembly ?? Assembly.GetExecutingAssembly();
         _logger = logger;
 
-        var assembly = Assembly.GetExecutingAssembly();
-        var infoVersion = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? "unbekannt";
+        var infoVersion = _appAssembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? "unbekannt";
 
         AppVersion = infoVersion.Contains('+')
             ? infoVersion[..infoVersion.IndexOf('+')]
@@ -33,7 +34,7 @@ public partial class AboutViewModel : ObservableObject
     {
         try
         {
-            var entry = Assembly.GetEntryAssembly() ?? Assembly.GetExecutingAssembly();
+            var entry = Assembly.GetEntryAssembly() ?? _appAssembly;
             var refs = entry.GetReferencedAssemblies();
 
             foreach (var reference in refs.OrderBy(r => r.Name))

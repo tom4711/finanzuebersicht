@@ -7,6 +7,7 @@
 [![CI](https://github.com/tom4711/finanzuebersicht/actions/workflows/ci.yml/badge.svg)](https://github.com/tom4711/finanzuebersicht/actions/workflows/ci.yml)
 [![Pre-Release](https://github.com/tom4711/finanzuebersicht/actions/workflows/prerelease.yml/badge.svg)](https://github.com/tom4711/finanzuebersicht/actions/workflows/prerelease.yml)
 [![Release](https://github.com/tom4711/finanzuebersicht/actions/workflows/release.yml/badge.svg)](https://github.com/tom4711/finanzuebersicht/actions/workflows/release.yml)
+[![Downloads](https://img.shields.io/github/downloads/tom4711/finanzuebersicht/total)](https://github.com/tom4711/finanzuebersicht/releases)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
 [![.NET 10](https://img.shields.io/badge/.NET-10-blueviolet)](https://dotnet.microsoft.com/download)
 
@@ -78,12 +79,36 @@ dotnet test Finanzuebersicht.Tests
 
 See [Quick Start (docs/QUICK_START.md)](docs/QUICK_START.md) for a concise guide.
 
-## Projektstruktur (Kurz)
+## Projektstruktur (Clean Architecture)
 
-- `Finanzuebersicht/` – MAUI App (Views, ViewModels, Converters, Resources)
-- `Finanzuebersicht.Core/` – Geschäftslogik, Modelle, Services
-- `Finanzuebersicht.Infrastructure/` – DI-Registrierung, Infrastrukturdienste
-- `Finanzuebersicht.Tests/` – Unit-Tests (xUnit)
+**6 Schichten:**
+
+```
+Finanzuebersicht/                  ← MAUI App Entry Point (iOS, macOS, Windows)
+├── App.xaml, AppShell.xaml, MauiProgram.cs
+
+Finanzuebersicht.Presentation/     ← Presentation Layer (MVVM)
+├── ViewModels/                    ← DashboardVM, TransactionsVM, etc.
+├── Navigation/                    ← Shell Navigation
+├── Services/                      ← UI Services (ILocalizationService, IDialogService, etc.)
+└── Resources/                     ← Presentation resource helpers (e.g. string keys)
+
+Finanzuebersicht.Application/      ← Use Cases / Application Layer (net10.0)
+
+Finanzuebersicht.Infrastructure/   ← DI-Registrierung, Infrastrukturdienste (net10.0)
+
+Finanzuebersicht.Core/             ← Domain Layer (Modelle, Geschäftslogik, Services)
+├── Models/                        ← Transaction, Category, Budget, SparZiel, etc.
+└── Services/                      ← IDataService, LocalDataService, SettingsService, etc.
+
+Finanzuebersicht.Tests/            ← xUnit Tests (net10.0)
+└── Testet alle Layer (Application, Infrastructure, Presentation, Core)
+```
+
+**Notizen:**
+- Views bleiben in `Finanzuebersicht/Views/` (MAUI App)
+- Converters bleiben in `Finanzuebersicht/Converters/` (MAUI App)
+- ViewModels sind in `Finanzuebersicht.Presentation/ViewModels/`
 
 ## Lokalisierung & Ressourcen
 

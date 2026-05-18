@@ -156,6 +156,7 @@ Bitte starte die App neu.</value></data>
   <data name="Msg_NoBackupsTitle" xml:space="preserve"><value>Keine Sicherungen</value></data>
   <data name="Msg_NoBackupsDesc" xml:space="preserve"><value>Es wurden noch keine Sicherungen erstellt.</value></data>
   <data name="Msg_AvailableBackupsTitle" xml:space="preserve"><value>Verfügbare Sicherungen</value></data>
+  <data name="Msg_AndMoreBackups" xml:space="preserve"><value>... und {0} weitere</value></data>
   <data name="Msg_RestoreConfirmTitle" xml:space="preserve"><value>Sicherung wiederherstellen</value></data>
   <data name="Msg_RestoreConfirmBody" xml:space="preserve"><value>Möchtest du die Sicherung vom {0} mit {1} Transaktionen wiederherstellen? Dies überschreibt alle aktuellen Daten.</value></data>
   <data name="Msg_RestoreSuccessTitle" xml:space="preserve"><value>Wiederherstellung erfolgreich</value></data>

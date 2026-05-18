@@ -35,13 +35,13 @@ open "/Applications/Finanzübersicht.app"
 **Ein-Liner nach jedem Build:**
 
 ```bash
-dotnet build -f net10.0-maccatalyst && cp -R Finanzuebersicht/bin/Debug/net10.0-maccatalyst/maccatalyst-x64/Finanzübersicht.app /Applications/ && open /Applications/Finanzübersicht.app
+dotnet build Finanzuebersicht/Finanzuebersicht.csproj -f net10.0-maccatalyst && cp -R Finanzuebersicht/bin/Debug/net10.0-maccatalyst/maccatalyst-x64/Finanzübersicht.app /Applications/ && open /Applications/Finanzübersicht.app
 ```
 
 ### iOS (Simulator)
 
 ```bash
-dotnet build -f net10.0-ios
+dotnet build Finanzuebersicht/Finanzuebersicht.csproj -f net10.0-ios
 ```
 
 ## 4. Tests
@@ -60,33 +60,50 @@ dotnet test Finanzuebersicht.Tests
 | UI-Texte (Englisch) | `Finanzuebersicht/Resources/Strings/AppResources.en.resx` |
 | Farbdefinitionen | `Finanzuebersicht/Resources/Styles/Colors.xaml` |
 
-## 6. Projektstruktur
+## 6. Projektstruktur (Clean Architecture)
 
 ```
 Finanzuebersicht.slnx              ← Solution file
 version.json                       ← Nerdbank.GitVersioning config
 Directory.Build.props              ← Shared MSBuild properties
 
-Finanzuebersicht.Core/             ← Shared library (net10.0)
-├── Models/                        ← Transaction, Category, RecurringTransaction, CategoryBudget, SparZiel, etc.
-└── Services/                      ← IDataService, LocalDataService, SettingsService, BackupService, DataMigrationService
-
-Finanzuebersicht.Application/      ← Use Cases / Application Layer (net10.0)
-Finanzuebersicht.Infrastructure/   ← DI-Registrierung, Infrastrukturdienste (net10.0)
-
-Finanzuebersicht/                  ← MAUI app (net10.0-ios, net10.0-maccatalyst)
-├── MauiProgram.cs
-├── App.xaml / App.xaml.cs
-├── AppShell.xaml / AppShell.xaml.cs
-├── ViewModels/                    ← DashboardVM, TransactionsVM, SettingsVM, etc.
-├── Views/                         ← XAML pages
-├── Converters/                    ← Value converters for UI
-├── Resources/Strings/             ← AppResources.resx (+ .de.resx)
+Finanzuebersicht/                  ← MAUI app entry point (net10.0-ios, net10.0-maccatalyst, net10.0-windows)
+├── MauiProgram.cs                ← DI setup, feature registration
+├── App.xaml / App.xaml.cs         ← App lifecycle
+├── AppShell.xaml / AppShell.xaml.cs ← Shell navigation
+├── Views/                         ← XAML pages (DashboardPage, TransactionsPage, etc.)
+├── Converters/                    ← Value converters (BetragDisplayConverter, etc.)
+├── Resources/Strings/             ← AppResources.resx (German), AppResources.en.resx (English)
 ├── Resources/Styles/              ← Colors.xaml, Styles.xaml
-└── Platforms/                     ← iOS, MacCatalyst
+├── Charts/                        ← Custom chart implementations
+└── Platforms/                     ← iOS, MacCatalyst, Windows platform code
+
+Finanzuebersicht.Presentation/     ← Presentation Layer (net10.0) - MVVM ViewModels & Services
+├── ViewModels/                    ← DashboardViewModel, TransactionsViewModel, SettingsViewModel, etc.
+│   └── Settings/                  ← AppearanceViewModel, BackupViewModel, StorageViewModel, AboutViewModel
+├── Navigation/                    ← Shell navigation helpers
+├── Services/                      ← ILocalizationService, IDialogService, INavigationService implementations
+└── Resources/                     ← App-wide resources
+
+Finanzuebersicht.Application/      ← Application / Use Cases Layer (net10.0) - Business logic orchestration
+
+Finanzuebersicht.Infrastructure/   ← Infrastructure Layer (net10.0) - DI setup, external service integration
+├── DependencyInjection/           ← Service registration (MauiBuilder extensions)
+└── Services/                      ← Infrastructure-level service implementations
+
+Finanzuebersicht.Core/             ← Domain Layer (net10.0) - Models & Domain Services
+├── Models/                        ← Transaction, Category, RecurringTransaction, CategoryBudget, SparZiel
+├── Services/
+│   ├── IDataService               ← Data persistence interface
+│   ├── LocalDataService           ← JSON file-based persistence
+│   ├── SettingsService            ← User settings & preferences
+│   ├── BackupService              ← Backup/Restore with ZIP + schema migration
+│   ├── DataMigrationService       ← Schema versioning (v1 → v2+)
+│   └── InitializationService      ← App initialization, recurring transaction auto-generation
+└── Data/                          ← Embedded data files (categorization-rules.json)
 
 Finanzuebersicht.Tests/            ← xUnit tests (net10.0)
-└── Services/                      ← BackupService, DataMigrationService, InitializationService tests
+└── Tests for all layers (Application, Infrastructure, Presentation, Core)
 ```
 
 ## 7. Entwicklungs-Konventionen

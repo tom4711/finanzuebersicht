@@ -46,18 +46,13 @@ public partial class BackupViewModel : ObservableObject
     [RelayCommand]
     private async Task CreateBackup()
     {
-        if (_backupService == null)
-        {
-            await _dialogService.ShowAlertAsync(
-                _loc.GetString(ResourceKeys.Err_Titel),
-                _loc.GetString(ResourceKeys.Msg_BackupServiceNotAvailable),
-                _loc.GetString(ResourceKeys.Btn_OK));
-            return;
-        }
+        if (!await EnsureBackupServiceAvailableAsync()) return;
+
+        var backupService = _backupService!;
 
         try
         {
-            var metadata = await _backupService.CreateBackupAsync(GetBackupPath());
+            var metadata = await backupService.CreateBackupAsync(GetBackupPath());
 
             UpdateLastBackupInfo();
 
@@ -82,18 +77,13 @@ public partial class BackupViewModel : ObservableObject
     [RelayCommand]
     private async Task BrowseBackups()
     {
-        if (_backupService == null)
-        {
-            await _dialogService.ShowAlertAsync(
-                _loc.GetString(ResourceKeys.Err_Titel),
-                _loc.GetString(ResourceKeys.Msg_BackupServiceNotAvailable),
-                _loc.GetString(ResourceKeys.Btn_OK));
-            return;
-        }
+        if (!await EnsureBackupServiceAvailableAsync()) return;
+
+        var backupService = _backupService!;
 
         try
         {
-            var backups = (await _backupService.ListBackupsAsync(GetBackupPath())).ToList();
+            var backups = (await backupService.ListBackupsAsync(GetBackupPath())).ToList();
             if (!backups.Any())
             {
                 await _dialogService.ShowAlertAsync(
@@ -106,7 +96,7 @@ public partial class BackupViewModel : ObservableObject
             var backupList = string.Join("\n", backups.Take(5).Select(b => $"{b.CreatedAt:g} - {Path.GetFileNameWithoutExtension(b.FileName)}"));
             if (backups.Count > 5)
             {
-                backupList += $"\n... und {backups.Count - 5} weitere";
+                backupList += "\n" + _loc.GetString(ResourceKeys.Msg_AndMoreBackups, backups.Count - 5);
             }
 
             await _dialogService.ShowAlertAsync(
@@ -126,14 +116,7 @@ public partial class BackupViewModel : ObservableObject
     [RelayCommand]
     private async Task RestoreBackup()
     {
-        if (_backupService == null)
-        {
-            await _dialogService.ShowAlertAsync(
-                _loc.GetString(ResourceKeys.Err_Titel),
-                _loc.GetString(ResourceKeys.Msg_BackupServiceNotAvailable),
-                _loc.GetString(ResourceKeys.Btn_OK));
-            return;
-        }
+        if (!await EnsureBackupServiceAvailableAsync()) return;
 
         await _navigationService.GoToAsync(Routes.BackupList);
     }
@@ -141,14 +124,9 @@ public partial class BackupViewModel : ObservableObject
     [RelayCommand]
     private async Task ExportAsCSV()
     {
-        if (_backupService == null)
-        {
-            await _dialogService.ShowAlertAsync(
-                _loc.GetString(ResourceKeys.Err_Titel),
-                _loc.GetString(ResourceKeys.Msg_BackupServiceNotAvailable),
-                _loc.GetString(ResourceKeys.Btn_OK));
-            return;
-        }
+        if (!await EnsureBackupServiceAvailableAsync()) return;
+
+        var backupService = _backupService!;
 
         try
         {
@@ -157,7 +135,7 @@ public partial class BackupViewModel : ObservableObject
                 return;
             }
 
-            await using var csvStream = await _backupService.ExportAsCSVAsync();
+            await using var csvStream = await backupService.ExportAsCSVAsync();
             csvStream.Seek(0, SeekOrigin.Begin);
 
             var fileName = $"Finanzuebersicht_Export_{_clock.Now:yyyy-MM-dd}.csv";
@@ -187,6 +165,17 @@ public partial class BackupViewModel : ObservableObject
                 string.Format(_loc.GetString(ResourceKeys.Err_SpeichernFehlgeschlagen), ex.Message),
                 _loc.GetString(ResourceKeys.Btn_OK));
         }
+    }
+
+    private async Task<bool> EnsureBackupServiceAvailableAsync()
+    {
+        if (_backupService != null) return true;
+
+        await _dialogService.ShowAlertAsync(
+            _loc.GetString(ResourceKeys.Err_Titel),
+            _loc.GetString(ResourceKeys.Msg_BackupServiceNotAvailable),
+            _loc.GetString(ResourceKeys.Btn_OK));
+        return false;
     }
 
     private void UpdateLastBackupInfo()

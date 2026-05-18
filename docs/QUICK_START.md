@@ -16,7 +16,7 @@ dotnet workload install maui
 ### Mac Catalyst
 
 ```bash
-dotnet build -f net10.0-maccatalyst
+dotnet build Finanzuebersicht/Finanzuebersicht.csproj -f net10.0-maccatalyst
 cp -R "Finanzuebersicht/bin/Debug/net10.0-maccatalyst/maccatalyst-x64/Finanzübersicht.app" "/Applications/Finanzübersicht.app"
 open "/Applications/Finanzübersicht.app"
 ```
@@ -24,13 +24,13 @@ open "/Applications/Finanzübersicht.app"
 One-liner:
 
 ```bash
-dotnet build -f net10.0-maccatalyst && cp -R Finanzuebersicht/bin/Debug/net10.0-maccatalyst/maccatalyst-x64/Finanzübersicht.app /Applications/ && open /Applications/Finanzübersicht.app
+dotnet build Finanzuebersicht/Finanzuebersicht.csproj -f net10.0-maccatalyst && cp -R Finanzuebersicht/bin/Debug/net10.0-maccatalyst/maccatalyst-x64/Finanzübersicht.app /Applications/ && open /Applications/Finanzübersicht.app
 ```
 
 ### iOS
 
 ```bash
-dotnet build -f net10.0-ios
+dotnet build Finanzuebersicht/Finanzuebersicht.csproj -f net10.0-ios
 ```
 
 ## Run Tests
@@ -43,14 +43,18 @@ dotnet test Finanzuebersicht.Tests
 
 | Location | Purpose |
 |----------|---------|
-| `Finanzuebersicht.Core/` | Shared models & services (net10.0) |
-| `Finanzuebersicht/` | MAUI app (Views, ViewModels, Converters) |
-| `Finanzuebersicht.Tests/` | xUnit tests |
+| `Finanzuebersicht/` | MAUI app entry point (App.xaml, MauiProgram.cs, Views, Converters, Resources) |
+| `Finanzuebersicht.Presentation/` | Presentation layer (ViewModels, Navigation, UI Services) |
+| `Finanzuebersicht.Application/` | Application / Use Cases layer (net10.0) |
+| `Finanzuebersicht.Infrastructure/` | DI registration, infrastructure services (net10.0) |
+| `Finanzuebersicht.Core/` | Domain layer: models & business services (net10.0) |
+| `Finanzuebersicht.Tests/` | xUnit tests (net10.0) |
 
 ## Key Resources
 
-- **Localization:** `Finanzuebersicht/Resources/Strings/AppResources.resx` (German), `AppResources.de.resx`
+- **Localization:** `Finanzuebersicht/Resources/Strings/AppResources.resx` (neutral/default, English), `AppResources.de.resx` (German)
 - **Colors:** `Finanzuebersicht/Resources/Styles/Colors.xaml`
+- **ViewModels:** `Finanzuebersicht.Presentation/ViewModels/`
 - **Architecture:** MVVM with CommunityToolkit.Mvvm
 - **Data:** JSON via `LocalDataService` (persisted locally)
 
@@ -99,9 +103,9 @@ Additional documentation:
 
 ## Contributing
 
-1. Create feature branch from `main`: `git checkout -b feature/<name>`
+1. Create feature branch from `develop`: `git checkout develop && git checkout -b feature/<name>`
 2. Make changes, commit using Conventional Commits + Gitmoji
-3. Push and create a Pull Request
-4. `main` is protected — PRs are required
+3. Push and create a Pull Request targeting `develop`
+4. When a milestone is complete, PR `develop` → `main`
 
-Happy coding! 🚀
+See [README.md](../README.md#mitmachen) for full branching strategy.

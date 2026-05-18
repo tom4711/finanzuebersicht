@@ -7,4 +7,5 @@ namespace Finanzuebersicht.ViewModels;
 public interface IAutoLoadViewModel
 {
     System.Windows.Input.ICommand AutoLoadCommand { get; }
+    bool ShouldAutoLoad => true;
 }

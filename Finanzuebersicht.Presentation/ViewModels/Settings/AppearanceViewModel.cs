@@ -26,7 +26,7 @@ public partial class AppearanceViewModel : ObservableObject
         _loc = localizationService;
 
         var theme = _settings.Get("Theme", "System");
-        SelectedThemeIndex = theme switch
+        selectedThemeIndex = theme switch
         {
             "Light" => 1,
             "Dark" => 2,
@@ -34,7 +34,7 @@ public partial class AppearanceViewModel : ObservableObject
         };
 
         var lang = _loc.CurrentLanguageCode;
-        SelectedLanguageIndex = lang switch
+        selectedLanguageIndex = lang switch
         {
             "de" => 1,
             "en" => 2,
