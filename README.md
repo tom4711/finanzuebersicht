@@ -105,7 +105,7 @@ Finanzuebersicht.Tests/            ← xUnit Tests (net10.0)
 └── Testet alle Layer (Application, Infrastructure, Presentation, Core)
 ```
 
-**Noten:**
+**Notizen:**
 - Views bleiben in `Finanzuebersicht/Views/` (MAUI App)
 - Converters bleiben in `Finanzuebersicht/Converters/` (MAUI App)
 - ViewModels sind in `Finanzuebersicht.Presentation/ViewModels/`
