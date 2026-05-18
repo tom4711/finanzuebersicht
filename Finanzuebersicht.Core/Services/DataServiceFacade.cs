@@ -55,8 +55,8 @@ public class DataServiceFacade(
     public Task ReplaceAllRecurringTransactionsAsync(IEnumerable<RecurringTransaction> recurring)
         => _recurringRepository.ReplaceAllRecurringTransactionsAsync(recurring);
 
-    public Task GeneratePendingRecurringTransactionsAsync()
-        => _recurringGenerationService.GeneratePendingRecurringTransactionsAsync();
+    public Task GeneratePendingRecurringTransactionsAsync(CancellationToken cancellationToken = default)
+        => _recurringGenerationService.GeneratePendingRecurringTransactionsAsync(cancellationToken);
 
     public Task<YearSummary> GetYearSummaryAsync(int year)
         => _reportingService.GetYearSummaryAsync(year);

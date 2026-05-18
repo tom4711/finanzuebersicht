@@ -7,8 +7,9 @@ namespace Finanzuebersicht.Services;
 
 /// <summary>
 /// Verwaltet App-Einstellungen als Key-Value-Paare (JSON-Datei).
+/// File-I/O beim Speichern erfolgt asynchron im Hintergrund um den UI-Thread nicht zu blockieren.
 /// </summary>
-public class SettingsService
+public class SettingsService : ISettingsService
 {
     private readonly string _settingsFile;
     private readonly ILogger<SettingsService>? _logger;

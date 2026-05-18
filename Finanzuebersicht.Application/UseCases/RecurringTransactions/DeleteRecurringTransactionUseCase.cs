@@ -6,7 +6,7 @@ public class DeleteRecurringTransactionUseCase(IRecurringTransactionRepository r
 {
     private readonly IRecurringTransactionRepository _recurringTransactionRepository = recurringTransactionRepository;
 
-    public async Task ExecuteAsync(string recurringTransactionId)
+    public async Task ExecuteAsync(string recurringTransactionId, CancellationToken cancellationToken = default)
     {
         await _recurringTransactionRepository.DeleteRecurringTransactionAsync(recurringTransactionId);
     }

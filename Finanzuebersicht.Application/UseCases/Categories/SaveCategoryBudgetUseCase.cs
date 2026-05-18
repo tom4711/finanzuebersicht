@@ -5,7 +5,7 @@ namespace Finanzuebersicht.Application.UseCases.Categories;
 
 public class SaveCategoryBudgetUseCase(IBudgetRepository budgetRepository)
 {
-    public async Task ExecuteAsync(string kategorieId, decimal betrag, int? monat = null, int? jahr = null)
+    public async Task ExecuteAsync(string kategorieId, decimal betrag, int? monat = null, int? jahr = null, CancellationToken cancellationToken = default)
     {
         var budgets = await budgetRepository.GetBudgetsAsync();
         var existing = budgets.FirstOrDefault(b =>

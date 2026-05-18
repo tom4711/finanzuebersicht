@@ -7,7 +7,7 @@ public class LoadDashboardYearUseCase(IReportingService reportingService)
 {
     private readonly IReportingService _reportingService = reportingService;
 
-    public async Task<DashboardYearData> ExecuteAsync(int year)
+    public async Task<DashboardYearData> ExecuteAsync(int year, CancellationToken cancellationToken = default)
     {
         var summary = await _reportingService.GetYearSummaryAsync(year);
         if (summary == null)

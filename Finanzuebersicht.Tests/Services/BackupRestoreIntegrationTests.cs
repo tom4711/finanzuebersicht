@@ -370,7 +370,7 @@ namespace Finanzuebersicht.Tests.Services
             public Task DeleteRecurringTransactionAsync(string id) { _recurring.RemoveAll(r => r.Id == id); return Task.CompletedTask; }
             public Task ReplaceAllRecurringTransactionsAsync(IEnumerable<RecurringTransaction> recurring) { _recurring = recurring.ToList(); return Task.CompletedTask; }
 
-            public Task GeneratePendingRecurringTransactionsAsync() => Task.CompletedTask;
+            public Task GeneratePendingRecurringTransactionsAsync(CancellationToken cancellationToken = default) => Task.CompletedTask;
 
             public Task<YearSummary> GetYearSummaryAsync(int year) => Task.FromResult(new YearSummary());
             public Task<MonthSummary> GetMonthSummaryAsync(int year, int month) => Task.FromResult(new MonthSummary());
@@ -429,7 +429,7 @@ namespace Finanzuebersicht.Tests.Services
             public Task<Category?> GetMostCommonCategoryForPayeeAsync(string p, double c = 0.5, CancellationToken ct = default) => Task.FromResult<Category?>(null);
             public Task SaveRecurringTransactionAsync(RecurringTransaction r) => Task.CompletedTask;
             public Task DeleteRecurringTransactionAsync(string id) => Task.CompletedTask;
-            public Task GeneratePendingRecurringTransactionsAsync() => Task.CompletedTask;
+            public Task GeneratePendingRecurringTransactionsAsync(CancellationToken cancellationToken = default) => Task.CompletedTask;
             public Task<YearSummary> GetYearSummaryAsync(int y) => Task.FromResult(new YearSummary());
             public Task<MonthSummary> GetMonthSummaryAsync(int y, int m) => Task.FromResult(new MonthSummary());
             public Task SaveBudgetAsync(CategoryBudget b) => Task.CompletedTask;

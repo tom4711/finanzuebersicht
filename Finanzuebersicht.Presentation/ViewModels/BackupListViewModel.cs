@@ -9,7 +9,7 @@ namespace Finanzuebersicht.ViewModels;
 public partial class BackupListViewModel : ObservableObject, IAutoLoadViewModel
 {
     private readonly IBackupService _backupService;
-    private readonly SettingsService _settings;
+    private readonly ISettingsService _settings;
     private readonly IDialogService _dialogService;
     private readonly ILocalizationService _loc;
     private readonly INavigationService _navigationService;
@@ -27,7 +27,7 @@ public partial class BackupListViewModel : ObservableObject, IAutoLoadViewModel
 
     public BackupListViewModel(
         IBackupService backupService,
-        SettingsService settings,
+        ISettingsService settings,
         IDialogService dialogService,
         ILocalizationService localizationService,
         INavigationService navigationService)

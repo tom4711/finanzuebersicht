@@ -12,7 +12,7 @@ public class SaveCategoryDetailUseCase(ICategoryRepository categoryRepository)
         string name,
         string icon,
         string color,
-        TransactionType typ)
+        TransactionType typ, CancellationToken cancellationToken = default)
     {
         var category = existingCategory ?? new Category();
         category.Name = name;

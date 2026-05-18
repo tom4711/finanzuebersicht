@@ -7,7 +7,7 @@ public class LoadTransactionDetailDataUseCase(ICategoryRepository categoryReposi
 {
     private readonly ICategoryRepository _categoryRepository = categoryRepository;
 
-    public async Task<TransactionDetailData> ExecuteAsync(string? selectedCategoryId)
+    public async Task<TransactionDetailData> ExecuteAsync(string? selectedCategoryId, CancellationToken cancellationToken = default)
     {
         var categories = await _categoryRepository.GetCategoriesAsync();
         var selectedCategory = selectedCategoryId == null

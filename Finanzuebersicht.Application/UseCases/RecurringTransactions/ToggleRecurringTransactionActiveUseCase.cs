@@ -7,7 +7,7 @@ public class ToggleRecurringTransactionActiveUseCase(IRecurringTransactionReposi
 {
     private readonly IRecurringTransactionRepository _recurringTransactionRepository = recurringTransactionRepository;
 
-    public async Task ExecuteAsync(RecurringTransaction recurringTransaction)
+    public async Task ExecuteAsync(RecurringTransaction recurringTransaction, CancellationToken cancellationToken = default)
     {
         recurringTransaction.Aktiv = !recurringTransaction.Aktiv;
         await _recurringTransactionRepository.SaveRecurringTransactionAsync(recurringTransaction);

@@ -9,7 +9,7 @@ namespace Finanzuebersicht.ViewModels;
 
 public partial class BackupViewModel : ObservableObject
 {
-    private readonly SettingsService _settings;
+    private readonly ISettingsService _settings;
     private readonly IBackupService? _backupService;
     private readonly IDialogService _dialogService;
     private readonly ILocalizationService _loc;
@@ -22,7 +22,7 @@ public partial class BackupViewModel : ObservableObject
     private string lastBackupInfo = string.Empty;
 
     public BackupViewModel(
-        SettingsService settings,
+        ISettingsService settings,
         IBackupService? backupService,
         IDialogService dialogService,
         ILocalizationService localizationService,

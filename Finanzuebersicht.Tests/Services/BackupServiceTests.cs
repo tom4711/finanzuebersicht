@@ -397,7 +397,7 @@ namespace Finanzuebersicht.Tests.Services
         public Task ReplaceAllRecurringTransactionsAsync(IEnumerable<RecurringTransaction> recurring) { _recurring = recurring.ToList(); return Task.CompletedTask; }
 
         // IRecurringGenerationService
-        public Task GeneratePendingRecurringTransactionsAsync() => Task.CompletedTask;
+        public Task GeneratePendingRecurringTransactionsAsync(CancellationToken cancellationToken = default) => Task.CompletedTask;
 
         // IReportingService
         public Task<YearSummary> GetYearSummaryAsync(int year) => Task.FromResult(new YearSummary());

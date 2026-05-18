@@ -17,7 +17,7 @@ namespace Finanzuebersicht.Services
     public class BackupService : IBackupService
     {
         private readonly IDataService _dataService;
-        private readonly SettingsService _settingsService;
+        private readonly ISettingsService _settingsService;
         private readonly ILogger<BackupService>? _logger;
         private readonly Finanzuebersicht.Services.IClock _clock;
         private readonly DataMigrationService _migrationService;
@@ -31,7 +31,7 @@ namespace Finanzuebersicht.Services
         private const string BackupMetadataFileName = "backup.metadata.json";
         private const int CurrentSchemaVersion = 2;
 
-        public BackupService(IDataService dataService, SettingsService settingsService, DataMigrationService migrationService, ILogger<BackupService>? logger = null, Finanzuebersicht.Services.IClock? clock = null)
+        public BackupService(IDataService dataService, ISettingsService settingsService, DataMigrationService migrationService, ILogger<BackupService>? logger = null, Finanzuebersicht.Services.IClock? clock = null)
         {
             _dataService = dataService ?? throw new ArgumentNullException(nameof(dataService));
             _settingsService = settingsService ?? throw new ArgumentNullException(nameof(settingsService));
