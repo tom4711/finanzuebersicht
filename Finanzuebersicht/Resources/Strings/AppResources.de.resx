@@ -162,6 +162,8 @@ Bitte starte die App neu.</value></data>
   <data name="Msg_RestoreSuccessTitle" xml:space="preserve"><value>Wiederherstellung erfolgreich</value></data>
   <data name="Msg_RestoreSuccessDesc" xml:space="preserve"><value>Die Sicherung wurde erfolgreich wiederhergestellt.</value></data>
   <data name="Msg_RestoreFailedTitle" xml:space="preserve"><value>Wiederherstellung fehlgeschlagen</value></data>
+  <data name="Msg_RestoreInconsistentTitle" xml:space="preserve"><value>⚠️ Daten möglicherweise inkonsistent</value></data>
+  <data name="Msg_RestoreInconsistentDesc" xml:space="preserve"><value>Die Wiederherstellung ist fehlgeschlagen und der Rollback ist ebenfalls fehlgeschlagen. Deine Daten könnten in einem inkonsistenten Zustand sein. Bitte starte die App neu und überprüfe deine Daten. Es wird empfohlen, aus einer anderen Sicherung wiederherzustellen.</value></data>
   <data name="Msg_CSVExportedTitle" xml:space="preserve"><value>CSV exportiert</value></data>
   <data name="Msg_CSVExportedBody" xml:space="preserve"><value>Die Daten wurden zu:
 {0}</value></data>

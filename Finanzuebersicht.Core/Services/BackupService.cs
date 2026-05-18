@@ -219,6 +219,16 @@ namespace Finanzuebersicht.Services
                     RestoredMetadata = archiveData.Metadata
                 };
             }
+            catch (RollbackFailedException ex)
+            {
+                _logger?.LogCritical(ex, "Restore und Rollback fehlgeschlagen für Backup {BackupId} – Daten möglicherweise inkonsistent", backupId);
+                return new RestoreResult
+                {
+                    Success = false,
+                    DataMayBeInconsistent = true,
+                    ErrorMessage = "Wiederherstellung und Rollback sind fehlgeschlagen. Die Daten könnten inkonsistent sein. Bitte starte die App neu und versuche es erneut."
+                };
+            }
             catch (Exception ex)
             {
                 _logger?.LogError(ex, "Fehler beim Restore aus Backup {BackupId}", backupId);
@@ -233,6 +243,7 @@ namespace Finanzuebersicht.Services
         /// <summary>
         /// Stellt alle Daten aus dem Backup wieder her in je einem einzigen Schreibvorgang pro Entity-Typ.
         /// Bei einem Fehler wird ein Rollback auf den vorherigen Zustand durchgeführt.
+        /// Wirft <see cref="RollbackFailedException"/> wenn der Rollback selbst fehlschlägt.
         /// </summary>
         private async Task<bool> AtomicRestoreAsync(
             List<Category> categories,
@@ -241,7 +252,9 @@ namespace Finanzuebersicht.Services
             List<CategoryBudget> budgets,
             List<SparZiel> sparziele)
         {
-            // Snapshot des aktuellen Zustands laden (für Rollback)
+            // Snapshot des aktuellen Zustands laden (für Rollback).
+            // Wenn dieser Schritt fehlschlägt (z.B. DataCorruptionException), bricht der Restore
+            // ab bevor irgendetwas überschrieben wurde — das ist das gewünschte Verhalten.
             var snapshotCategories = await _dataService.GetCategoriesAsync();
             var snapshotTransactions = await _dataService.GetTransactionsAsync(DateTime.MinValue, DateTime.MaxValue);
             var snapshotRecurring = await _dataService.GetRecurringTransactionsAsync();
@@ -289,6 +302,7 @@ namespace Finanzuebersicht.Services
             catch (Exception rollbackEx)
             {
                 _logger?.LogCritical(rollbackEx, "Rollback fehlgeschlagen – Datenzustand ist möglicherweise inkonsistent");
+                throw new RollbackFailedException("Rollback nach fehlgeschlagenem Restore ist fehlgeschlagen. Der Datenzustand kann inkonsistent sein.", rollbackEx);
             }
         }
 

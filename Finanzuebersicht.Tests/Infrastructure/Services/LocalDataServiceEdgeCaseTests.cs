@@ -26,12 +26,18 @@ public class LocalDataServiceEdgeCaseTests : IDisposable
     }
 
     [Fact]
-    public async Task LoadAsync_KorrupteJSON_GibtLeereListeZurueck()
+    public async Task LoadAsync_KorrupteJSON_WirftDataCorruptionException()
     {
-        // Korrupte JSON-Datei schreiben
         await File.WriteAllTextAsync(Path.Combine(_tempDir, "categories.json"), "{ not valid json [[[");
 
-        // Soll keine Exception werfen, sondern leere Liste zurückgeben
+        await Assert.ThrowsAsync<DataCorruptionException>(
+            () => _service.GetCategoriesAsync());
+    }
+
+    [Fact]
+    public async Task LoadAsync_DateiExistiertNicht_GibtLeereListeZurueck()
+    {
+        // Datei existiert nicht → leere Liste (kein Fehler)
         var result = await _service.GetCategoriesAsync();
         Assert.Empty(result);
     }

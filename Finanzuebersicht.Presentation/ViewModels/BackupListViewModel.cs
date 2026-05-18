@@ -87,6 +87,13 @@ public partial class BackupListViewModel : ObservableObject, IAutoLoadViewModel
                     _loc.GetString(ResourceKeys.Btn_OK));
                 await _navigationService.GoBackAsync();
             }
+            else if (result.DataMayBeInconsistent)
+            {
+                await _dialogService.ShowAlertAsync(
+                    _loc.GetString(ResourceKeys.Msg_RestoreInconsistentTitle),
+                    _loc.GetString(ResourceKeys.Msg_RestoreInconsistentDesc),
+                    _loc.GetString(ResourceKeys.Btn_OK));
+            }
             else
             {
                 await _dialogService.ShowAlertAsync(

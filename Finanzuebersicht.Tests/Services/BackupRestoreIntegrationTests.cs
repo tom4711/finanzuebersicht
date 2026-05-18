@@ -263,6 +263,62 @@ namespace Finanzuebersicht.Tests.Services
             Assert.Contains("nicht gefunden", result.ErrorMessage, StringComparison.OrdinalIgnoreCase);
         }
 
+        [Fact]
+        public async Task RestoreBackup_WriteFailsMidway_RollbackSucceeds_OriginalDataPreserved()
+        {
+            // Arrange: create backup with data
+            var service = new BackupService(_mockDataService, _mockSettingsService, new DataMigrationService([new V1ToV2Migrator()]));
+            var backupPath = Path.Combine(_testDir, "backups");
+
+            var originalCategories = new[] { new Category { Id = "c1", Name = "Groceries" } };
+            var originalTransactions = new[] { new Transaction { Id = "t1", Titel = "Shop", Betrag = 10m, Datum = DateTime.Today } };
+            _mockDataService.SetCategories(originalCategories);
+            _mockDataService.SetTransactions(originalTransactions);
+
+            var metadata = await service.CreateBackupAsync(backupPath);
+
+            // Change the data to something different
+            _mockDataService.SetCategories([new Category { Id = "c2", Name = "New" }]);
+            _mockDataService.SetTransactions([new Transaction { Id = "t2", Titel = "New", Betrag = 99m, Datum = DateTime.Today }]);
+
+            // Break the ZIP so restore fails mid-write by corrupting the zip file
+            var backupFile = Directory.GetFiles(backupPath, "*.zip").First();
+            await File.WriteAllTextAsync(backupFile, "NOT A ZIP FILE");
+
+            // Act
+            var result = await service.RestoreBackupAsync(backupPath, metadata.Id);
+
+            // Assert: restore failed, rollback succeeded, data is still "c2/t2" (the state before restore attempt)
+            Assert.False(result.Success);
+            Assert.False(result.DataMayBeInconsistent);
+
+            var cats = await _mockDataService.GetCategoriesAsync();
+            Assert.Single(cats);
+            Assert.Equal("c2", cats[0].Id);
+        }
+
+        [Fact]
+        public async Task RestoreBackup_WriteFailsAndRollbackFails_DataMayBeInconsistentIsTrue()
+        {
+            // Arrange: create a valid backup
+            var service = new BackupService(_mockDataService, _mockSettingsService, new DataMigrationService([new V1ToV2Migrator()]));
+            var backupPath = Path.Combine(_testDir, "backups");
+
+            _mockDataService.SetCategories([new Category { Id = "c1", Name = "Original" }]);
+            var metadata = await service.CreateBackupAsync(backupPath);
+
+            // Use a data service that fails on both write AND rollback
+            var failingDataService = new FailingMockDataService();
+            var failingService = new BackupService(failingDataService, _mockSettingsService, new DataMigrationService([new V1ToV2Migrator()]));
+
+            // Act
+            var result = await failingService.RestoreBackupAsync(backupPath, metadata.Id);
+
+            // Assert
+            Assert.False(result.Success);
+            Assert.True(result.DataMayBeInconsistent);
+        }
+
         // Mock implementations
         private class MockDataService : IDataService
         {
@@ -346,6 +402,41 @@ namespace Finanzuebersicht.Tests.Services
             public MockSettingsService(string testDataDir) : base(Path.Combine(testDataDir, "settings.json"))
             {
             }
+        }
+
+        /// <summary>
+        /// A data service that always throws on ReplaceAll operations (both write and rollback).
+        /// Used to test the scenario where restore fails AND rollback also fails.
+        /// </summary>
+        private class FailingMockDataService : IDataService
+        {
+            public Task<List<Category>> GetCategoriesAsync() => Task.FromResult(new List<Category>());
+            public Task<List<Transaction>> GetTransactionsAsync(DateTime v, DateTime b) => Task.FromResult(new List<Transaction>());
+            public Task<List<RecurringTransaction>> GetRecurringTransactionsAsync() => Task.FromResult(new List<RecurringTransaction>());
+            public Task<List<CategoryBudget>> GetBudgetsAsync() => Task.FromResult(new List<CategoryBudget>());
+            public Task<List<SparZiel>> GetSparZieleAsync() => Task.FromResult(new List<SparZiel>());
+
+            public Task ReplaceAllCategoriesAsync(IEnumerable<Category> c) => Task.FromException(new InvalidOperationException("Simulated write failure"));
+            public Task ReplaceAllTransactionsAsync(IEnumerable<Transaction> t) => Task.FromException(new InvalidOperationException("Simulated write failure"));
+            public Task ReplaceAllRecurringTransactionsAsync(IEnumerable<RecurringTransaction> r) => Task.FromException(new InvalidOperationException("Simulated write failure"));
+            public Task ReplaceAllBudgetsAsync(IEnumerable<CategoryBudget> b) => Task.FromException(new InvalidOperationException("Simulated write failure"));
+            public Task ReplaceAllSparZieleAsync(IEnumerable<SparZiel> s) => Task.FromException(new InvalidOperationException("Simulated write failure"));
+
+            public Task SaveCategoryAsync(Category c) => Task.CompletedTask;
+            public Task DeleteCategoryAsync(string id) => Task.CompletedTask;
+            public Task SaveTransactionAsync(Transaction t) => Task.CompletedTask;
+            public Task DeleteTransactionAsync(string id) => Task.CompletedTask;
+            public Task<Category?> GetMostCommonCategoryForPayeeAsync(string p, double c = 0.5, CancellationToken ct = default) => Task.FromResult<Category?>(null);
+            public Task SaveRecurringTransactionAsync(RecurringTransaction r) => Task.CompletedTask;
+            public Task DeleteRecurringTransactionAsync(string id) => Task.CompletedTask;
+            public Task GeneratePendingRecurringTransactionsAsync() => Task.CompletedTask;
+            public Task<YearSummary> GetYearSummaryAsync(int y) => Task.FromResult(new YearSummary());
+            public Task<MonthSummary> GetMonthSummaryAsync(int y, int m) => Task.FromResult(new MonthSummary());
+            public Task SaveBudgetAsync(CategoryBudget b) => Task.CompletedTask;
+            public Task DeleteBudgetAsync(string id) => Task.CompletedTask;
+            public Task<CategoryBudget?> GetBudgetForCategoryAsync(string k, int y, int m) => Task.FromResult<CategoryBudget?>(null);
+            public Task SaveSparZielAsync(SparZiel s) => Task.CompletedTask;
+            public Task DeleteSparZielAsync(string id) => Task.CompletedTask;
         }
     }
 }
