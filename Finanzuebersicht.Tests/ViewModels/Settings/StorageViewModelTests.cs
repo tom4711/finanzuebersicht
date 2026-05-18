@@ -88,7 +88,7 @@ public class StorageViewModelTests
 
         await dialogService.Received(1).ShowAlertAsync(
             ResourceKeys.Err_Titel,
-            ResourceKeys.Msg_ImportServiceNichtVerfuegbar,
+            ResourceKeys.Msg_BackupServiceNotAvailable,
             ResourceKeys.Btn_OK);
     }
 
