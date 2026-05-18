@@ -40,7 +40,7 @@ public partial class StorageViewModel : ObservableObject
         {
             await _dialogService.ShowAlertAsync(
                 _loc.GetString(ResourceKeys.Err_Titel),
-                _loc.GetString(ResourceKeys.Msg_ImportServiceNichtVerfuegbar),
+                _loc.GetString(ResourceKeys.Msg_BackupServiceNotAvailable),
                 _loc.GetString(ResourceKeys.Btn_OK));
             return;
         }
