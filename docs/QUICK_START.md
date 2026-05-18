@@ -52,7 +52,7 @@ dotnet test Finanzuebersicht.Tests
 
 ## Key Resources
 
-- **Localization:** `Finanzuebersicht/Resources/Strings/AppResources.resx` (German), `AppResources.en.resx` (English)
+- **Localization:** `Finanzuebersicht/Resources/Strings/AppResources.resx` (neutral/default, English), `AppResources.de.resx` (German)
 - **Colors:** `Finanzuebersicht/Resources/Styles/Colors.xaml`
 - **ViewModels:** `Finanzuebersicht.Presentation/ViewModels/`
 - **Architecture:** MVVM with CommunityToolkit.Mvvm
