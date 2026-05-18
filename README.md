@@ -91,7 +91,7 @@ Finanzuebersicht.Presentation/     ← Presentation Layer (MVVM)
 ├── ViewModels/                    ← DashboardVM, TransactionsVM, etc.
 ├── Navigation/                    ← Shell Navigation
 ├── Services/                      ← UI Services (ILocalizationService, IDialogService, etc.)
-└── Resources/                     ← App Strings (German/English)
+└── Resources/                     ← Presentation resource helpers (e.g. string keys)
 
 Finanzuebersicht.Application/      ← Use Cases / Application Layer (net10.0)
 
