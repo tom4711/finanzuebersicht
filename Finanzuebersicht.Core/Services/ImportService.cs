@@ -93,18 +93,27 @@ namespace Finanzuebersicht.Services
             var duplicates = new List<Transaction>();
             var skippedMalformed = 0;
 
-            // Load existing transactions once for the full import date range (avoids N+1 queries)
+            // Load existing transactions once for the full import date range (avoids N+1 queries).
+            // Only consider DTOs with a valid Buchungsdatum — malformed ones (default/MinValue) are
+            // skipped later in the loop and must not distort the date range.
             List<Transaction>? existingInRange = null;
-            try
+            var validDates = dtosList
+                .Where(d => d?.Buchungsdatum != null && d.Buchungsdatum != default)
+                .Select(d => d!.Buchungsdatum)
+                .ToList();
+            if (validDates.Count > 0)
             {
-                var minDate = dtosList.Min(d => d?.Buchungsdatum ?? DateTime.MaxValue).Date.AddDays(-1);
-                var maxDate = dtosList.Max(d => d?.Buchungsdatum ?? DateTime.MinValue).Date.AddDays(1);
-                existingInRange = await _transactionRepository
-                    .GetTransactionsAsync(minDate, maxDate).ConfigureAwait(false);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogWarning(ex, "ImportService: failed to load existing transactions for duplicate check; duplicates won't be detected");
+                try
+                {
+                    var minDate = validDates.Min().Date.AddDays(-1);
+                    var maxDate = validDates.Max().Date.AddDays(1);
+                    existingInRange = await _transactionRepository
+                        .GetTransactionsAsync(minDate, maxDate).ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogWarning(ex, "ImportService: failed to load existing transactions for duplicate check; duplicates won't be detected");
+                }
             }
 
             foreach (var dto in dtosList)
