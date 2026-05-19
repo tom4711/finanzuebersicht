@@ -1,6 +1,6 @@
 using Finanzuebersicht.Models;
 
-namespace Finanzuebersicht.Services;
+namespace Finanzuebersicht.Core.Services;
 
 public interface IForecastService
 {

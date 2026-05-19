@@ -1,5 +1,4 @@
 using System.Globalization;
-using Finanzuebersicht.Services;
 
 namespace Finanzuebersicht.Tests.Services;
 

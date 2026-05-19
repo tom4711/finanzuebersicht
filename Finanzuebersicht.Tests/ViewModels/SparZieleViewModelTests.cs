@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using Finanzuebersicht.Application.UseCases.SparZiele;
 using Finanzuebersicht.Models;
-using Finanzuebersicht.Services;
 using Finanzuebersicht.ViewModels;
 
 namespace Finanzuebersicht.Tests.ViewModels;

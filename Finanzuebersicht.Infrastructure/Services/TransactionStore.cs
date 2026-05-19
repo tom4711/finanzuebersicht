@@ -3,7 +3,7 @@ using Finanzuebersicht.Models;
 using Finanzuebersicht.Constants;
 using Microsoft.Extensions.Logging;
 
-namespace Finanzuebersicht.Services;
+namespace Finanzuebersicht.Infrastructure.Services;
 
 /// <summary>
 /// JSON-based adapter for Transaction repository operations.

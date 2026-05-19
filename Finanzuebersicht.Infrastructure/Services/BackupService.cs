@@ -6,10 +6,9 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Finanzuebersicht.Services;
 using Finanzuebersicht.Models;
 
-namespace Finanzuebersicht.Services
+namespace Finanzuebersicht.Infrastructure.Services
 {
     /// <summary>
     /// Implementierung des Backup- und Restore-Services mit Versionierung und Validierung.
@@ -23,7 +22,7 @@ namespace Finanzuebersicht.Services
         private readonly ISparZielRepository _sparZielRepository;
         private readonly ISettingsService _settingsService;
         private readonly ILogger<BackupService>? _logger;
-        private readonly Finanzuebersicht.Services.IClock _clock;
+        private readonly Finanzuebersicht.Core.Services.IClock _clock;
         private readonly DataMigrationService _migrationService;
 
         private static readonly JsonSerializerOptions BackupJsonOptions = new()
@@ -44,7 +43,7 @@ namespace Finanzuebersicht.Services
             ISettingsService settingsService,
             DataMigrationService migrationService,
             ILogger<BackupService>? logger = null,
-            Finanzuebersicht.Services.IClock? clock = null)
+            Finanzuebersicht.Core.Services.IClock? clock = null)
         {
             _categoryRepository = categoryRepository ?? throw new ArgumentNullException(nameof(categoryRepository));
             _transactionRepository = transactionRepository ?? throw new ArgumentNullException(nameof(transactionRepository));
@@ -54,7 +53,7 @@ namespace Finanzuebersicht.Services
             _settingsService = settingsService ?? throw new ArgumentNullException(nameof(settingsService));
             _migrationService = migrationService ?? throw new ArgumentNullException(nameof(migrationService));
             _logger = logger;
-            _clock = clock ?? Finanzuebersicht.Services.SystemClock.Instance;
+            _clock = clock ?? Finanzuebersicht.Core.Services.SystemClock.Instance;
         }
 
         /// <summary>

@@ -1,7 +1,6 @@
 using System.Collections.ObjectModel;
 using Finanzuebersicht.Application.UseCases.RecurringTransactions;
 using Finanzuebersicht.Models;
-using Finanzuebersicht.Services;
 using Finanzuebersicht.ViewModels;
 
 namespace Finanzuebersicht.Tests.ViewModels;

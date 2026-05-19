@@ -2,7 +2,6 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Finanzuebersicht.Navigation;
 using Finanzuebersicht.Resources.Strings;
-using Finanzuebersicht.Services;
 using Microsoft.Extensions.Logging;
 
 namespace Finanzuebersicht.ViewModels;
@@ -52,7 +51,7 @@ public partial class BackupViewModel : ObservableObject
 
         try
         {
-            var metadata = await backupService.CreateBackupAsync(GetBackupPath());
+            var metadata = await backupService.CreateBackupAsync(_settings.GetBackupPath());
 
             UpdateLastBackupInfo();
 
@@ -83,7 +82,7 @@ public partial class BackupViewModel : ObservableObject
 
         try
         {
-            var backups = (await backupService.ListBackupsAsync(GetBackupPath())).ToList();
+            var backups = (await backupService.ListBackupsAsync(_settings.GetBackupPath())).ToList();
             if (!backups.Any())
             {
                 await _dialogService.ShowAlertAsync(
@@ -210,20 +209,4 @@ public partial class BackupViewModel : ObservableObject
         }
     }
 
-    private string GetBackupPath()
-    {
-        var backupPath = _settings.Get("BackupPath", string.Empty);
-        if (!string.IsNullOrEmpty(backupPath))
-        {
-            return backupPath;
-        }
-
-        var dataPath = _settings.Get("DataPath", string.Empty);
-        if (string.IsNullOrEmpty(dataPath))
-        {
-            dataPath = AppPaths.GetDefaultDataDir();
-        }
-
-        return Path.Combine(dataPath, "backups");
-    }
 }

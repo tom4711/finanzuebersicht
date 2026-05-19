@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Finanzuebersicht.Services
+namespace Finanzuebersicht.Core.Services
 {
     /// <summary>
     /// Metadaten eines Backups für Versionierung und Validierung.

@@ -1,6 +1,6 @@
 using System.Globalization;
 
-namespace Finanzuebersicht.Services;
+namespace Finanzuebersicht.Presentation.Services;
 
 public interface ILocalizationService
 {

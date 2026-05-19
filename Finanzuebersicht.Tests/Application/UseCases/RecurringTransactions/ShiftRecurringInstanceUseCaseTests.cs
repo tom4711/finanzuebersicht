@@ -1,6 +1,5 @@
 using Finanzuebersicht.Application.UseCases.RecurringTransactions;
 using Finanzuebersicht.Models;
-using Finanzuebersicht.Services;
 using NSubstitute;
 using System.Collections.Generic;
 using System.Threading.Tasks;

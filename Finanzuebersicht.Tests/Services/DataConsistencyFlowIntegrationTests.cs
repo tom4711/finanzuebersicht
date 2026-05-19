@@ -1,5 +1,4 @@
 using Xunit;
-using Finanzuebersicht.Services;
 using Finanzuebersicht.Models;
 using Finanzuebersicht.Application.UseCases.Categories;
 

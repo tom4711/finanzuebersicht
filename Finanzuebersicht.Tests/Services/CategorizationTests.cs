@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using NSubstitute;
 using Xunit;
 using Microsoft.Extensions.Logging;
-using Finanzuebersicht.Services;
 using Finanzuebersicht.Models;
 
 namespace Finanzuebersicht.Tests.Services

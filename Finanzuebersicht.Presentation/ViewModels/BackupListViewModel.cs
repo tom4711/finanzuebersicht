@@ -1,8 +1,8 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Finanzuebersicht.Services;
 using Finanzuebersicht.Resources.Strings;
+using Microsoft.Extensions.Logging;
 
 namespace Finanzuebersicht.ViewModels;
 
@@ -13,6 +13,7 @@ public partial class BackupListViewModel : ObservableObject, IAutoLoadViewModel
     private readonly IDialogService _dialogService;
     private readonly ILocalizationService _loc;
     private readonly INavigationService _navigationService;
+    private readonly ILogger<BackupListViewModel>? _logger;
 
     public System.Windows.Input.ICommand AutoLoadCommand => LoadBackupsCommand;
 
@@ -30,13 +31,15 @@ public partial class BackupListViewModel : ObservableObject, IAutoLoadViewModel
         ISettingsService settings,
         IDialogService dialogService,
         ILocalizationService localizationService,
-        INavigationService navigationService)
+        INavigationService navigationService,
+        ILogger<BackupListViewModel>? logger = null)
     {
         _backupService = backupService;
         _settings = settings;
         _dialogService = dialogService;
         _loc = localizationService;
         _navigationService = navigationService;
+        _logger = logger;
     }
 
     [RelayCommand]
@@ -46,14 +49,14 @@ public partial class BackupListViewModel : ObservableObject, IAutoLoadViewModel
         IsLoading = true;
         try
         {
-            var backupPath = GetBackupPath();
+            var backupPath = _settings.GetBackupPath();
             var list = (await _backupService.ListBackupsAsync(backupPath)).ToList();
             Backups = new ObservableCollection<BackupMetadata>(list);
             IsEmpty = Backups.Count == 0;
         }
         catch (Exception ex)
         {
-            try { FileLogger.Append("BackupListViewModel", $"{nameof(LoadBackups)} failed", ex); } catch { }
+            _logger?.LogError(ex, "BackupListViewModel: {Context}", nameof(LoadBackups));
             Backups = [];
             IsEmpty = true;
         }
@@ -77,7 +80,7 @@ public partial class BackupListViewModel : ObservableObject, IAutoLoadViewModel
 
         try
         {
-            var backupPath = GetBackupPath();
+            var backupPath = _settings.GetBackupPath();
             var result = await _backupService.RestoreBackupAsync(backupPath, backup.Id);
             if (result.Success)
             {
@@ -104,23 +107,11 @@ public partial class BackupListViewModel : ObservableObject, IAutoLoadViewModel
         }
         catch (Exception ex)
         {
-            try { FileLogger.Append("BackupListViewModel", "RestoreBackup failed", ex); } catch { }
+            _logger?.LogError(ex, "BackupListViewModel: RestoreBackup failed");
             await _dialogService.ShowAlertAsync(
                 _loc.GetString(ResourceKeys.Err_Titel),
                 string.Format(_loc.GetString(ResourceKeys.Err_SpeichernFehlgeschlagen), ex.Message),
                 _loc.GetString(ResourceKeys.Btn_OK));
         }
-    }
-
-    private string GetBackupPath()
-    {
-        var backupPath = _settings.Get("BackupPath", "");
-        if (!string.IsNullOrEmpty(backupPath)) return backupPath;
-
-        var dataPath = _settings.Get("DataPath", "");
-        if (string.IsNullOrEmpty(dataPath))
-            dataPath = AppPaths.GetDefaultDataDir();
-
-        return Path.Combine(dataPath, "backups");
     }
 }

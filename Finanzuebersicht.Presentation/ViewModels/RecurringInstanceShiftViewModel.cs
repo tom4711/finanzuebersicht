@@ -3,8 +3,8 @@ using CommunityToolkit.Mvvm.Input;
 using Finanzuebersicht.Application.UseCases.RecurringTransactions;
 using Finanzuebersicht.Navigation;
 using Finanzuebersicht.Resources.Strings;
-using Finanzuebersicht.Services;
 using Finanzuebersicht.Models;
+using Microsoft.Extensions.Logging;
 using System.Globalization;
 
 namespace Finanzuebersicht.ViewModels;
@@ -14,22 +14,24 @@ public partial class RecurringInstanceShiftViewModel(
     INavigationService navigationService,
     IDialogService dialogService,
     ILocalizationService localizationService,
-    Finanzuebersicht.Services.IClock? clock = null) : ObservableObject, IApplyQueryAttributes
+    Finanzuebersicht.Core.Services.IClock? clock = null,
+    ILogger<RecurringInstanceShiftViewModel>? logger = null) : ObservableObject, IApplyQueryAttributes
 {
     private readonly ShiftRecurringInstanceUseCase _shiftRecurringInstanceUseCase = shiftRecurringInstanceUseCase;
     private readonly INavigationService _navigationService = navigationService;
     private readonly IDialogService _dialogService = dialogService;
     private readonly ILocalizationService _loc = localizationService;
-    private readonly Finanzuebersicht.Services.IClock _clock = clock ?? Finanzuebersicht.Services.SystemClock.Instance;
+    private readonly Finanzuebersicht.Core.Services.IClock _clock = clock ?? Finanzuebersicht.Core.Services.SystemClock.Instance;
+    private readonly ILogger<RecurringInstanceShiftViewModel>? _logger = logger;
 
     [ObservableProperty]
     private string recurringId = string.Empty;
 
     [ObservableProperty]
-    private DateTime instanceDate = Finanzuebersicht.Services.SystemClock.Instance.Today;
+    private DateTime instanceDate = Finanzuebersicht.Core.Services.SystemClock.Instance.Today;
 
     [ObservableProperty]
-    private DateTime newDate = Finanzuebersicht.Services.SystemClock.Instance.Today;
+    private DateTime newDate = Finanzuebersicht.Core.Services.SystemClock.Instance.Today;
 
     [ObservableProperty]
     private string? note;
@@ -57,7 +59,7 @@ public partial class RecurringInstanceShiftViewModel(
         }
         catch (Exception ex)
         {
-            try { Finanzuebersicht.Services.FileLogger.Append("RecurringInstanceShiftViewModel", nameof(Save), ex); } catch { }
+            _logger?.LogError(ex, "RecurringInstanceShiftViewModel: {Context}", nameof(Save));
             await _dialogService.ShowAlertAsync(
                 _loc.GetString(ResourceKeys.Err_Titel),
                 _loc.GetString(ResourceKeys.Err_SpeichernFehlgeschlagen, ex.Message),

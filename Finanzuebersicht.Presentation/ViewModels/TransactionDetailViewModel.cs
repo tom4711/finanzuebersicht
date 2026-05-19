@@ -5,7 +5,6 @@ using CommunityToolkit.Mvvm.Input;
 using Finanzuebersicht.Application.UseCases.Transactions;
 using Finanzuebersicht.Models;
 using Finanzuebersicht.Navigation;
-using Finanzuebersicht.Services;
 using Finanzuebersicht.Resources.Strings;
 
 namespace Finanzuebersicht.ViewModels;
@@ -18,7 +17,7 @@ public partial class TransactionDetailViewModel(
     INavigationService navigationService,
     IDialogService dialogService,
     ILogger<TransactionDetailViewModel>? logger = null,
-    Finanzuebersicht.Services.IClock? clock = null) : ObservableObject, IAutoLoadViewModel, IApplyQueryAttributes
+    Finanzuebersicht.Core.Services.IClock? clock = null) : ObservableObject, IAutoLoadViewModel, IApplyQueryAttributes
 {
     private readonly SaveTransactionDetailUseCase _saveTransactionDetailUseCase = saveTransactionDetailUseCase;
     private readonly LoadTransactionDetailDataUseCase _loadTransactionDetailDataUseCase = loadTransactionDetailDataUseCase;
@@ -28,7 +27,7 @@ public partial class TransactionDetailViewModel(
     private readonly INavigationService _navigationService = navigationService;
     private readonly IDialogService _dialogService = dialogService;
     private readonly ILogger<TransactionDetailViewModel>? _logger = logger;
-    private readonly Finanzuebersicht.Services.IClock _clock = clock ?? Finanzuebersicht.Services.SystemClock.Instance;
+    private readonly Finanzuebersicht.Core.Services.IClock _clock = clock ?? Finanzuebersicht.Core.Services.SystemClock.Instance;
 
     public System.Windows.Input.ICommand AutoLoadCommand => LoadKategorienCommand;
 
@@ -42,7 +41,7 @@ public partial class TransactionDetailViewModel(
     private string verwendungszweck = string.Empty;
 
     [ObservableProperty]
-    private DateTime datum = Finanzuebersicht.Services.SystemClock.Instance.Today;
+    private DateTime datum = Finanzuebersicht.Core.Services.SystemClock.Instance.Today;
 
     [ObservableProperty]
     private Category? selectedKategorie;

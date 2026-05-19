@@ -1,4 +1,4 @@
-namespace Finanzuebersicht.Services;
+namespace Finanzuebersicht.Core.Services;
 
 /// <summary>
 /// Rohdaten eines Backup-Archivs als JSON-Strings pro Datei.

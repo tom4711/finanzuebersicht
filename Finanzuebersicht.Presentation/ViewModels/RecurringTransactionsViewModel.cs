@@ -5,7 +5,7 @@ using Finanzuebersicht.Application.UseCases.RecurringTransactions;
 using Finanzuebersicht.Models;
 using Finanzuebersicht.Navigation;
 using Finanzuebersicht.Resources.Strings;
-using Finanzuebersicht.Services;
+using Microsoft.Extensions.Logging;
 
 namespace Finanzuebersicht.ViewModels;
 
@@ -15,7 +15,8 @@ public partial class RecurringTransactionsViewModel(
     ToggleRecurringTransactionActiveUseCase toggleRecurringTransactionActiveUseCase,
     ILocalizationService localizationService,
     INavigationService navigationService,
-    IDialogService dialogService) : ObservableObject, IAutoLoadViewModel
+    IDialogService dialogService,
+    ILogger<RecurringTransactionsViewModel>? logger = null) : ObservableObject, IAutoLoadViewModel
 {
     private readonly DeleteRecurringTransactionUseCase _deleteRecurringTransactionUseCase = deleteRecurringTransactionUseCase;
     private readonly LoadRecurringTransactionsUseCase _loadRecurringTransactionsUseCase = loadRecurringTransactionsUseCase;
@@ -23,6 +24,7 @@ public partial class RecurringTransactionsViewModel(
     private readonly ILocalizationService _loc = localizationService;
     private readonly INavigationService _navigationService = navigationService;
     private readonly IDialogService _dialogService = dialogService;
+    private readonly ILogger<RecurringTransactionsViewModel>? _logger = logger;
 
     public System.Windows.Input.ICommand AutoLoadCommand => LoadDauerauftraegeCommand;
 
@@ -45,7 +47,7 @@ public partial class RecurringTransactionsViewModel(
         }
         catch (Exception ex)
         {
-            try { Finanzuebersicht.Services.FileLogger.Append("RecurringTransactionsViewModel", nameof(LoadDauerauftraege), ex); } catch { }
+            _logger?.LogError(ex, "RecurringTransactionsViewModel: {Context}", nameof(LoadDauerauftraege));
             await _dialogService.ShowAlertAsync(
                 _loc.GetString(ResourceKeys.Err_Titel),
                 _loc.GetString(ResourceKeys.Err_LadenFehlgeschlagen, ex.Message),
@@ -81,7 +83,7 @@ public partial class RecurringTransactionsViewModel(
         }
         catch (Exception ex)
         {
-            try { Finanzuebersicht.Services.FileLogger.Append("RecurringTransactionsViewModel", nameof(DeleteDauerauftrag), ex); } catch { }
+            _logger?.LogError(ex, "RecurringTransactionsViewModel: {Context}", nameof(DeleteDauerauftrag));
             await _dialogService.ShowAlertAsync(
                 _loc.GetString(ResourceKeys.Err_Titel),
                 _loc.GetString(ResourceKeys.Err_LoeschenFehlgeschlagen, ex.Message),

@@ -1,6 +1,6 @@
 using System.Globalization;
 
-namespace Finanzuebersicht.Services;
+namespace Finanzuebersicht.Core.Services;
 
 public interface ITransactionValidationService
 {
