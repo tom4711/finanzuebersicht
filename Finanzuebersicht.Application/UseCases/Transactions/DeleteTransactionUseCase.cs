@@ -6,7 +6,7 @@ public class DeleteTransactionUseCase(ITransactionRepository transactionReposito
 {
     private readonly ITransactionRepository _transactionRepository = transactionRepository;
 
-    public async Task ExecuteAsync(string transactionId)
+    public async Task ExecuteAsync(string transactionId, CancellationToken cancellationToken = default)
     {
         await _transactionRepository.DeleteTransactionAsync(transactionId);
     }

@@ -11,7 +11,7 @@ public static class InfrastructureServiceCollectionExtensions
         // Helper to resolve data directory
         string GetDataDir(IServiceProvider sp)
         {
-            var settings = sp.GetRequiredService<SettingsService>();
+            var settings = sp.GetRequiredService<ISettingsService>();
             var customPath = settings.Get("DataPath", "");
             return string.IsNullOrWhiteSpace(customPath) ? AppPaths.GetDefaultDataDir() : customPath;
         }

@@ -2,5 +2,5 @@ namespace Finanzuebersicht.Services;
 
 public interface IRecurringGenerationService
 {
-    Task GeneratePendingRecurringTransactionsAsync();
+    Task GeneratePendingRecurringTransactionsAsync(CancellationToken cancellationToken = default);
 }

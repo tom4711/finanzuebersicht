@@ -162,6 +162,8 @@ Please restart the app.</value></data>
   <data name="Msg_RestoreSuccessTitle" xml:space="preserve"><value>Restore successful</value></data>
   <data name="Msg_RestoreSuccessDesc" xml:space="preserve"><value>The backup was restored successfully.</value></data>
   <data name="Msg_RestoreFailedTitle" xml:space="preserve"><value>Restore failed</value></data>
+  <data name="Msg_RestoreInconsistentTitle" xml:space="preserve"><value>⚠️ Data may be inconsistent</value></data>
+  <data name="Msg_RestoreInconsistentDesc" xml:space="preserve"><value>The restore failed and the rollback also failed. Your data may be in an inconsistent state. Please restart the app and check your data. It is recommended to restore from a backup.</value></data>
   <data name="Msg_CSVExportedTitle" xml:space="preserve"><value>CSV exported</value></data>
   <data name="Msg_CSVExportedBody" xml:space="preserve"><value>Data exported to:
 {0}</value></data>

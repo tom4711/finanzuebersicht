@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Finanzuebersicht.Models;
 using Microsoft.Extensions.Logging;
 
 namespace Finanzuebersicht.Services;
@@ -27,8 +28,9 @@ public abstract class JsonDataStoreBase : IDisposable
     }
 
     /// <summary>
-    /// Loads a list of items from a JSON file. Returns empty list if file doesn't exist
-    /// or JSON is corrupted (with logged warning).
+    /// Loads a list of items from a JSON file. Returns an empty list if the file doesn't exist.
+    /// Throws <see cref="DataCorruptionException"/> if the file exists but cannot be parsed,
+    /// to prevent silent data loss from overwriting a corrupted file with an empty collection.
     /// </summary>
     protected async Task<List<T>> LoadAsync<T>(string path)
     {
@@ -42,8 +44,8 @@ public abstract class JsonDataStoreBase : IDisposable
         }
         catch (JsonException ex)
         {
-            Logger?.LogWarning(ex, "Error deserializing {Path}", path);
-            return [];
+            Logger?.LogError(ex, "Data file is corrupted and cannot be loaded: {Path}", path);
+            throw new DataCorruptionException(path, ex);
         }
     }
 

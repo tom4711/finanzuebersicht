@@ -57,6 +57,12 @@ namespace Finanzuebersicht.Services
         public string? ErrorMessage { get; set; }
 
         /// <summary>
+        /// true wenn der Rollback nach einem fehlgeschlagenen Restore ebenfalls fehlgeschlagen ist.
+        /// In diesem Fall kann der Datenzustand inkonsistent sein.
+        /// </summary>
+        public bool DataMayBeInconsistent { get; set; }
+
+        /// <summary>
         /// Optionale Detailinformation (z.B. Anzahl wiederhergestellter Transaktionen).
         /// </summary>
         public string? Details { get; set; }

@@ -406,12 +406,29 @@ public partial class TransactionsViewModel(
             if (result == null) return;
 
             using var stream = await result.OpenReadAsync();
-            var imported = await _importService.ImportFromCsvAsync(stream);
-            var count = imported?.Count() ?? 0;
+            var importResult = await _importService.ImportFromCsvAsync(stream);
 
             var titleDone = _loc?.GetString(Finanzuebersicht.Resources.Strings.ResourceKeys.Msg_ImportAbgeschlossen_Title) ?? "Import abgeschlossen";
-            var importedMsg = string.Format(_loc?.GetString(Finanzuebersicht.Resources.Strings.ResourceKeys.Msg_ImportiertCount) ?? "Importiert: {0} Transaktionen", count);
             var okBtn = _loc?.GetString(Finanzuebersicht.Resources.Strings.ResourceKeys.Btn_OK) ?? "OK";
+
+            string importedMsg;
+            if (!importResult.Success)
+            {
+                importedMsg = importResult.ErrorMessage ?? "Unbekannter Fehler beim Import.";
+            }
+            else
+            {
+                importedMsg = string.Format(
+                    _loc?.GetString(Finanzuebersicht.Resources.Strings.ResourceKeys.Msg_ImportiertCount) ?? "Importiert: {0} Transaktionen",
+                    importResult.Imported.Count);
+
+                if (importResult.Duplicates.Count > 0)
+                    importedMsg += $"\n{importResult.Duplicates.Count} Duplikate übersprungen";
+                if (importResult.SkippedMalformed > 0)
+                    importedMsg += $"\n{importResult.SkippedMalformed} fehlerhafte Zeilen übersprungen";
+                if (importResult.SaveErrors.Count > 0)
+                    importedMsg += $"\n{importResult.SaveErrors.Count} Transaktionen konnten nicht gespeichert werden";
+            }
 
             if (_dialogService != null)
             {

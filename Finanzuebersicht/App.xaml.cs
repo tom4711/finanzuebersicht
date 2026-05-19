@@ -17,7 +17,7 @@ public partial class App : global::Microsoft.Maui.Controls.Application
 	private readonly ThemeService _themeService;
 	private readonly string _savedTheme;
 
-	public App(InitializationService initService, IRecurringGenerationService recurringGenerationService, SettingsService settings,
+	public App(InitializationService initService, IRecurringGenerationService recurringGenerationService, ISettingsService settings,
 		ThemeService themeService, ILocalizationService localizationService)
 	{
 		// Sprache vor InitializeComponent setzen, damit XAML-Bindings korrekt aufgelöst werden

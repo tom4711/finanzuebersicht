@@ -149,6 +149,8 @@ public static class ResourceKeys
     public const string Msg_RestoreSuccessTitle = nameof(Msg_RestoreSuccessTitle);
     public const string Msg_RestoreSuccessDesc = nameof(Msg_RestoreSuccessDesc);
     public const string Msg_RestoreFailedTitle = nameof(Msg_RestoreFailedTitle);
+    public const string Msg_RestoreInconsistentTitle = nameof(Msg_RestoreInconsistentTitle);
+    public const string Msg_RestoreInconsistentDesc = nameof(Msg_RestoreInconsistentDesc);
     public const string Msg_CSVExportedTitle = nameof(Msg_CSVExportedTitle);
     public const string Msg_CSVExportedBody = nameof(Msg_CSVExportedBody);
     public const string Msg_CSVExportFailedTitle = nameof(Msg_CSVExportFailedTitle);
