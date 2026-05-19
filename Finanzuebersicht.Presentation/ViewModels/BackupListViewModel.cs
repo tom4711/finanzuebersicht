@@ -49,8 +49,7 @@ public partial class BackupListViewModel : ObservableObject, IAutoLoadViewModel
         IsLoading = true;
         try
         {
-            var backupPath = GetBackupPath();
-            var list = (await _backupService.ListBackupsAsync(backupPath)).ToList();
+            var backupPath = _settings.GetBackupPath();
             Backups = new ObservableCollection<BackupMetadata>(list);
             IsEmpty = Backups.Count == 0;
         }
@@ -80,7 +79,7 @@ public partial class BackupListViewModel : ObservableObject, IAutoLoadViewModel
 
         try
         {
-            var backupPath = GetBackupPath();
+            var backupPath = _settings.GetBackupPath();
             var result = await _backupService.RestoreBackupAsync(backupPath, backup.Id);
             if (result.Success)
             {
@@ -114,6 +113,4 @@ public partial class BackupListViewModel : ObservableObject, IAutoLoadViewModel
                 _loc.GetString(ResourceKeys.Btn_OK));
         }
     }
-
-    private string GetBackupPath() => _settings.GetBackupPath();
 }
