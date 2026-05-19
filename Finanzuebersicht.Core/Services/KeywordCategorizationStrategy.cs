@@ -83,12 +83,10 @@ public class KeywordCategorizationStrategy : ICategorizationStrategy
             }
 
             _logger?.LogInformation($"Loaded {_rules.Count} categorization rules");
-            try { FileLogger.Append("KeywordCategorizationStrategy", $"Loaded {_rules.Count} rules"); } catch { }
         }
         catch (Exception ex)
         {
             _logger?.LogError(ex, "Error loading categorization rules");
-            try { FileLogger.Append("KeywordCategorizationStrategy", $"Error loading rules: {ex.Message}"); } catch { }
         }
     }
 

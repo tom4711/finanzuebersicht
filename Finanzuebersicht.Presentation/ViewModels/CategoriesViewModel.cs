@@ -6,6 +6,7 @@ using Finanzuebersicht.Models;
 using Finanzuebersicht.Navigation;
 using Finanzuebersicht.Resources.Strings;
 using Finanzuebersicht.Services;
+using Microsoft.Extensions.Logging;
 
 namespace Finanzuebersicht.ViewModels;
 
@@ -14,13 +15,15 @@ public partial class CategoriesViewModel(
     LoadCategoriesUseCase loadCategoriesUseCase,
     ILocalizationService localizationService,
     INavigationService navigationService,
-    IDialogService dialogService) : ObservableObject, IAutoLoadViewModel
+    IDialogService dialogService,
+    ILogger<CategoriesViewModel>? logger = null) : ObservableObject, IAutoLoadViewModel
 {
     private readonly DeleteCategoryUseCase _deleteCategoryUseCase = deleteCategoryUseCase;
     private readonly LoadCategoriesUseCase _loadCategoriesUseCase = loadCategoriesUseCase;
     private readonly ILocalizationService _loc = localizationService;
     private readonly INavigationService _navigationService = navigationService;
     private readonly IDialogService _dialogService = dialogService;
+    private readonly ILogger<CategoriesViewModel>? _logger = logger;
 
     public System.Windows.Input.ICommand AutoLoadCommand => LoadKategorienCommand;
 
@@ -43,7 +46,7 @@ public partial class CategoriesViewModel(
         }
         catch (Exception ex)
         {
-            try { Finanzuebersicht.Services.FileLogger.Append("CategoriesViewModel", nameof(LoadKategorien), ex); } catch { }
+            _logger?.LogError(ex, "CategoriesViewModel: {Context}", nameof(LoadKategorien));
             await _dialogService.ShowAlertAsync(
                 _loc.GetString(ResourceKeys.Err_Titel),
                 _loc.GetString(ResourceKeys.Err_LadenFehlgeschlagen, ex.Message),
@@ -71,7 +74,7 @@ public partial class CategoriesViewModel(
         }
         catch (Exception ex)
         {
-            try { Finanzuebersicht.Services.FileLogger.Append("CategoriesViewModel", nameof(DeleteKategorie), ex); } catch { }
+            _logger?.LogError(ex, "CategoriesViewModel: {Context}", nameof(DeleteKategorie));
             await _dialogService.ShowAlertAsync(
                 _loc.GetString(ResourceKeys.Err_Titel),
                 _loc.GetString(ResourceKeys.Err_LoeschenFehlgeschlagen, ex.Message),

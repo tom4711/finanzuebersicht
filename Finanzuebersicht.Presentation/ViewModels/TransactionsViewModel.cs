@@ -49,7 +49,6 @@ public partial class TransactionsViewModel(
             _logger?.LogError(ex, "TransactionsViewModel: {Context}", context);
         else
             _logger?.LogError("TransactionsViewModel: {Context}", context);
-        try { FileLogger.Append("TransactionsViewModel", context, ex); } catch { }
     }
 
     // --- Monatsansicht ---

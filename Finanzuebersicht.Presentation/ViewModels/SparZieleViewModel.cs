@@ -5,6 +5,7 @@ using Finanzuebersicht.Application.UseCases.SparZiele;
 using Finanzuebersicht.Models;
 using Finanzuebersicht.Resources.Strings;
 using Finanzuebersicht.Services;
+using Microsoft.Extensions.Logging;
 
 namespace Finanzuebersicht.ViewModels;
 
@@ -15,6 +16,7 @@ public partial class SparZieleViewModel : ObservableObject, IAutoLoadViewModel
     private readonly DeleteSparZielUseCase _deleteUseCase;
     private readonly IDialogService _dialogService;
     private readonly ILocalizationService _loc;
+    private readonly ILogger<SparZieleViewModel>? _logger;
 
     public System.Windows.Input.ICommand AutoLoadCommand => LoadSparZieleCommand;
 
@@ -50,13 +52,15 @@ public partial class SparZieleViewModel : ObservableObject, IAutoLoadViewModel
         SaveSparZielUseCase saveUseCase,
         DeleteSparZielUseCase deleteUseCase,
         IDialogService dialogService,
-        ILocalizationService localizationService)
+        ILocalizationService localizationService,
+        ILogger<SparZieleViewModel>? logger = null)
     {
         _loadUseCase = loadUseCase;
         _saveUseCase = saveUseCase;
         _deleteUseCase = deleteUseCase;
         _dialogService = dialogService;
         _loc = localizationService;
+        _logger = logger;
     }
 
     [RelayCommand]
@@ -129,7 +133,7 @@ public partial class SparZieleViewModel : ObservableObject, IAutoLoadViewModel
         }
         catch (Exception ex)
         {
-            try { Finanzuebersicht.Services.FileLogger.Append("SparZieleViewModel", nameof(SaveNewSparZiel), ex); } catch { }
+            _logger?.LogError(ex, "SparZieleViewModel: {Context}", nameof(SaveNewSparZiel));
             await _dialogService.ShowAlertAsync(
                 _loc.GetString(ResourceKeys.Err_Titel),
                 _loc.GetString(ResourceKeys.Err_SpeichernFehlgeschlagen, ex.Message),
@@ -151,7 +155,7 @@ public partial class SparZieleViewModel : ObservableObject, IAutoLoadViewModel
         }
         catch (Exception ex)
         {
-            try { Finanzuebersicht.Services.FileLogger.Append("SparZieleViewModel", nameof(UpdateBetrag), ex); } catch { }
+            _logger?.LogError(ex, "SparZieleViewModel: {Context}", nameof(UpdateBetrag));
             await _dialogService.ShowAlertAsync(
                 _loc.GetString(ResourceKeys.Err_Titel),
                 _loc.GetString(ResourceKeys.Err_SpeichernFehlgeschlagen, ex.Message),
@@ -176,7 +180,7 @@ public partial class SparZieleViewModel : ObservableObject, IAutoLoadViewModel
         }
         catch (Exception ex)
         {
-            try { Finanzuebersicht.Services.FileLogger.Append("SparZieleViewModel", nameof(DeleteSparZiel), ex); } catch { }
+            _logger?.LogError(ex, "SparZieleViewModel: {Context}", nameof(DeleteSparZiel));
             await _dialogService.ShowAlertAsync(
                 _loc.GetString(ResourceKeys.Err_Titel),
                 _loc.GetString(ResourceKeys.Err_LoeschenFehlgeschlagen, ex.Message),

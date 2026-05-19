@@ -49,7 +49,6 @@ public class HistoricalCategorizationStrategy(
         catch (Exception ex)
         {
             _logger?.LogWarning(ex, "Error looking up historical category for payee '{Payee}'", payee);
-            try { FileLogger.Append("HistoricalCategorizationStrategy", $"Error for payee {payee}: {ex.Message}"); } catch { }
             return null;
         }
     }

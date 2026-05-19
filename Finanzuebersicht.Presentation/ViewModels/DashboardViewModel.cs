@@ -7,6 +7,7 @@ using Finanzuebersicht.Application.UseCases.RecurringTransactions;
 using Finanzuebersicht.Models;
 using Finanzuebersicht.Resources.Strings;
 using Finanzuebersicht.Services;
+using Microsoft.Extensions.Logging;
 
 namespace Finanzuebersicht.ViewModels;
 public partial class DashboardViewModel : MonthNavigationViewModel
@@ -20,6 +21,7 @@ public partial class DashboardViewModel : MonthNavigationViewModel
     private readonly ILocalizationService _loc;
     private readonly INavigationService _navigationService;
     private readonly IClock _clock;
+    private readonly ILogger<DashboardViewModel>? _logger;
 
     // --- Monatsansicht ---
 
@@ -140,7 +142,8 @@ public partial class DashboardViewModel : MonthNavigationViewModel
         ILocalizationService localizationService,
         INavigationService navigationService,
         ITransactionRepository transactionRepository,
-        IClock? clock = null) : base(clock)
+        IClock? clock = null,
+        ILogger<DashboardViewModel>? logger = null) : base(clock)
     {
         _clock = clock ?? SystemClock.Instance;
         _aktuellesJahr = _clock.Today.Year;
@@ -154,6 +157,7 @@ public partial class DashboardViewModel : MonthNavigationViewModel
         _loc = localizationService;
         _navigationService = navigationService;
         _transactionRepository = transactionRepository;
+        _logger = logger;
         UpdateJahrAnzeige();
     }
 
@@ -203,7 +207,7 @@ public partial class DashboardViewModel : MonthNavigationViewModel
         }
         catch (Exception ex)
         {
-            try { Finanzuebersicht.Services.FileLogger.Append("DashboardViewModel", "EnsureMinJahrLoadedAsync failed", ex); } catch { }
+            _logger?.LogError(ex, "DashboardViewModel: EnsureMinJahrLoadedAsync failed");
         }
         PreviousYearCommand.NotifyCanExecuteChanged();
     }
