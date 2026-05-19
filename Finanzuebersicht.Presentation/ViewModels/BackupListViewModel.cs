@@ -50,6 +50,7 @@ public partial class BackupListViewModel : ObservableObject, IAutoLoadViewModel
         try
         {
             var backupPath = _settings.GetBackupPath();
+            var list = (await _backupService.ListBackupsAsync(backupPath)).ToList();
             Backups = new ObservableCollection<BackupMetadata>(list);
             IsEmpty = Backups.Count == 0;
         }
