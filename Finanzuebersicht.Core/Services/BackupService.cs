@@ -16,8 +16,12 @@ namespace Finanzuebersicht.Services
     /// </summary>
     public class BackupService : IBackupService
     {
-        private readonly IDataService _dataService;
-        private readonly SettingsService _settingsService;
+        private readonly ICategoryRepository _categoryRepository;
+        private readonly ITransactionRepository _transactionRepository;
+        private readonly IRecurringTransactionRepository _recurringRepository;
+        private readonly IBudgetRepository _budgetRepository;
+        private readonly ISparZielRepository _sparZielRepository;
+        private readonly ISettingsService _settingsService;
         private readonly ILogger<BackupService>? _logger;
         private readonly Finanzuebersicht.Services.IClock _clock;
         private readonly DataMigrationService _migrationService;
@@ -31,9 +35,22 @@ namespace Finanzuebersicht.Services
         private const string BackupMetadataFileName = "backup.metadata.json";
         private const int CurrentSchemaVersion = 2;
 
-        public BackupService(IDataService dataService, SettingsService settingsService, DataMigrationService migrationService, ILogger<BackupService>? logger = null, Finanzuebersicht.Services.IClock? clock = null)
+        public BackupService(
+            ICategoryRepository categoryRepository,
+            ITransactionRepository transactionRepository,
+            IRecurringTransactionRepository recurringRepository,
+            IBudgetRepository budgetRepository,
+            ISparZielRepository sparZielRepository,
+            ISettingsService settingsService,
+            DataMigrationService migrationService,
+            ILogger<BackupService>? logger = null,
+            Finanzuebersicht.Services.IClock? clock = null)
         {
-            _dataService = dataService ?? throw new ArgumentNullException(nameof(dataService));
+            _categoryRepository = categoryRepository ?? throw new ArgumentNullException(nameof(categoryRepository));
+            _transactionRepository = transactionRepository ?? throw new ArgumentNullException(nameof(transactionRepository));
+            _recurringRepository = recurringRepository ?? throw new ArgumentNullException(nameof(recurringRepository));
+            _budgetRepository = budgetRepository ?? throw new ArgumentNullException(nameof(budgetRepository));
+            _sparZielRepository = sparZielRepository ?? throw new ArgumentNullException(nameof(sparZielRepository));
             _settingsService = settingsService ?? throw new ArgumentNullException(nameof(settingsService));
             _migrationService = migrationService ?? throw new ArgumentNullException(nameof(migrationService));
             _logger = logger;
@@ -47,7 +64,7 @@ namespace Finanzuebersicht.Services
         {
             try
             {
-                var backupPath = customPath ?? GetDefaultBackupPath();
+                var backupPath = customPath ?? _settingsService.GetBackupPath();
                 Directory.CreateDirectory(backupPath);
 
                 // Backup ID = ISO-Timestamp format (z.B. 2026-03-11T21-46-19-123)
@@ -56,11 +73,11 @@ namespace Finanzuebersicht.Services
                 var filePath = Path.Combine(backupPath, fileName);
 
                 // Lade alle Daten
-                var categories = await _dataService.GetCategoriesAsync();
-                var transactions = await _dataService.GetTransactionsAsync(DateTime.MinValue, DateTime.MaxValue);
-                var recurring = await _dataService.GetRecurringTransactionsAsync();
-                var budgets = await _dataService.GetBudgetsAsync();
-                var sparziele = await _dataService.GetSparZieleAsync();
+                var categories = await _categoryRepository.GetCategoriesAsync();
+                var transactions = await _transactionRepository.GetTransactionsAsync(DateTime.MinValue, DateTime.MaxValue);
+                var recurring = await _recurringRepository.GetRecurringTransactionsAsync();
+                var budgets = await _budgetRepository.GetBudgetsAsync();
+                var sparziele = await _sparZielRepository.GetSparZieleAsync();
 
                 // Erstelle Metadaten
                 var metadata = new BackupMetadata
@@ -95,7 +112,7 @@ namespace Finanzuebersicht.Services
                     fileName, metadata.EntityCounts["categories"], metadata.EntityCounts["transactions"], metadata.EntityCounts["recurring"], metadata.EntityCounts["budgets"], metadata.EntityCounts["sparziele"]);
 
                 // Speichere Zeitstempel in Settings
-                _settingsService.Set("LastBackupTime", _clock.UtcNow.ToString("O"));
+                _settingsService.SetLastBackupTime(_clock.UtcNow);
 
                 return metadata;
             }
@@ -219,6 +236,16 @@ namespace Finanzuebersicht.Services
                     RestoredMetadata = archiveData.Metadata
                 };
             }
+            catch (RollbackFailedException ex)
+            {
+                _logger?.LogCritical(ex, "Restore und Rollback fehlgeschlagen für Backup {BackupId} – Daten möglicherweise inkonsistent", backupId);
+                return new RestoreResult
+                {
+                    Success = false,
+                    DataMayBeInconsistent = true,
+                    ErrorMessage = "Wiederherstellung und Rollback sind fehlgeschlagen. Die Daten könnten inkonsistent sein. Bitte starte die App neu und versuche es erneut."
+                };
+            }
             catch (Exception ex)
             {
                 _logger?.LogError(ex, "Fehler beim Restore aus Backup {BackupId}", backupId);
@@ -233,6 +260,7 @@ namespace Finanzuebersicht.Services
         /// <summary>
         /// Stellt alle Daten aus dem Backup wieder her in je einem einzigen Schreibvorgang pro Entity-Typ.
         /// Bei einem Fehler wird ein Rollback auf den vorherigen Zustand durchgeführt.
+        /// Wirft <see cref="RollbackFailedException"/> wenn der Rollback selbst fehlschlägt.
         /// </summary>
         private async Task<bool> AtomicRestoreAsync(
             List<Category> categories,
@@ -241,23 +269,25 @@ namespace Finanzuebersicht.Services
             List<CategoryBudget> budgets,
             List<SparZiel> sparziele)
         {
-            // Snapshot des aktuellen Zustands laden (für Rollback)
-            var snapshotCategories = await _dataService.GetCategoriesAsync();
-            var snapshotTransactions = await _dataService.GetTransactionsAsync(DateTime.MinValue, DateTime.MaxValue);
-            var snapshotRecurring = await _dataService.GetRecurringTransactionsAsync();
-            var snapshotBudgets = await _dataService.GetBudgetsAsync();
-            var snapshotSparziele = await _dataService.GetSparZieleAsync();
+            // Snapshot des aktuellen Zustands laden (für Rollback).
+            // Wenn dieser Schritt fehlschlägt (z.B. DataCorruptionException), bricht der Restore
+            // ab bevor irgendetwas überschrieben wurde — das ist das gewünschte Verhalten.
+            var snapshotCategories = await _categoryRepository.GetCategoriesAsync();
+            var snapshotTransactions = await _transactionRepository.GetTransactionsAsync(DateTime.MinValue, DateTime.MaxValue);
+            var snapshotRecurring = await _recurringRepository.GetRecurringTransactionsAsync();
+            var snapshotBudgets = await _budgetRepository.GetBudgetsAsync();
+            var snapshotSparziele = await _sparZielRepository.GetSparZieleAsync();
 
             try
             {
                 _logger?.LogInformation("Starte Wiederherstellung: {CatCount} Kategorien, {TxnCount} Transaktionen, {RecCount} Daueraufträge, {BudCount} Budgets, {SparCount} Sparziele",
                     categories.Count, transactions.Count, recurring.Count, budgets.Count, sparziele.Count);
 
-                await _dataService.ReplaceAllCategoriesAsync(categories);
-                await _dataService.ReplaceAllTransactionsAsync(transactions);
-                await _dataService.ReplaceAllRecurringTransactionsAsync(recurring);
-                await _dataService.ReplaceAllBudgetsAsync(budgets);
-                await _dataService.ReplaceAllSparZieleAsync(sparziele);
+                await _categoryRepository.ReplaceAllCategoriesAsync(categories);
+                await _transactionRepository.ReplaceAllTransactionsAsync(transactions);
+                await _recurringRepository.ReplaceAllRecurringTransactionsAsync(recurring);
+                await _budgetRepository.ReplaceAllBudgetsAsync(budgets);
+                await _sparZielRepository.ReplaceAllSparZieleAsync(sparziele);
 
                 return true;
             }
@@ -278,17 +308,18 @@ namespace Finanzuebersicht.Services
         {
             try
             {
-                await _dataService.ReplaceAllCategoriesAsync(categories);
-                await _dataService.ReplaceAllTransactionsAsync(transactions);
-                await _dataService.ReplaceAllRecurringTransactionsAsync(recurring);
-                await _dataService.ReplaceAllBudgetsAsync(budgets);
-                await _dataService.ReplaceAllSparZieleAsync(sparziele);
+                await _categoryRepository.ReplaceAllCategoriesAsync(categories);
+                await _transactionRepository.ReplaceAllTransactionsAsync(transactions);
+                await _recurringRepository.ReplaceAllRecurringTransactionsAsync(recurring);
+                await _budgetRepository.ReplaceAllBudgetsAsync(budgets);
+                await _sparZielRepository.ReplaceAllSparZieleAsync(sparziele);
 
                 _logger?.LogInformation("Rollback erfolgreich abgeschlossen");
             }
             catch (Exception rollbackEx)
             {
                 _logger?.LogCritical(rollbackEx, "Rollback fehlgeschlagen – Datenzustand ist möglicherweise inkonsistent");
+                throw new RollbackFailedException("Rollback nach fehlgeschlagenem Restore ist fehlgeschlagen. Der Datenzustand kann inkonsistent sein.", rollbackEx);
             }
         }
 
@@ -322,8 +353,8 @@ namespace Finanzuebersicht.Services
         {
             try
             {
-                var transactions = await _dataService.GetTransactionsAsync(DateTime.MinValue, DateTime.MaxValue);
-                var categories = await _dataService.GetCategoriesAsync();
+                var transactions = await _transactionRepository.GetTransactionsAsync(DateTime.MinValue, DateTime.MaxValue);
+                var categories = await _categoryRepository.GetCategoriesAsync();
                 var categoryMap = categories.ToDictionary(c => c.Id, c => c.Name);
 
                 var memoryStream = new MemoryStream();
@@ -355,19 +386,6 @@ namespace Finanzuebersicht.Services
         }
 
         // ========== Hilfsmethoden ==========
-
-        private string GetDefaultBackupPath()
-        {
-            var backupPath = _settingsService.Get("BackupPath");
-            if (!string.IsNullOrEmpty(backupPath))
-                return backupPath;
-
-            var dataPath = _settingsService.Get("DataPath");
-            if (string.IsNullOrEmpty(dataPath))
-                dataPath = AppPaths.GetDefaultDataDir();
-
-            return Path.Combine(dataPath, "backups");
-        }
 
         private static void WriteJsonToZip<T>(ZipArchive archive, string entryName, T data)
         {

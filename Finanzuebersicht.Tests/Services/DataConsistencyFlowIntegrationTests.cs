@@ -364,7 +364,7 @@ namespace Finanzuebersicht.Tests.Services
             }
 
             // IRecurringGenerationService
-            public Task GeneratePendingRecurringTransactionsAsync() =>
+            public Task GeneratePendingRecurringTransactionsAsync(CancellationToken cancellationToken = default) =>
                 Task.CompletedTask;
 
             // IReportingService

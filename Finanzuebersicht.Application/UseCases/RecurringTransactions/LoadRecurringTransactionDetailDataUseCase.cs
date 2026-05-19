@@ -7,7 +7,7 @@ public class LoadRecurringTransactionDetailDataUseCase(ICategoryRepository categ
 {
     private readonly ICategoryRepository _categoryRepository = categoryRepository;
 
-    public async Task<RecurringTransactionDetailData> ExecuteAsync(string? selectedCategoryId)
+    public async Task<RecurringTransactionDetailData> ExecuteAsync(string? selectedCategoryId, CancellationToken cancellationToken = default)
     {
         var categories = await _categoryRepository.GetCategoriesAsync();
         var selectedCategory = selectedCategoryId == null

@@ -5,6 +5,6 @@ namespace Finanzuebersicht.Application.UseCases.SparZiele;
 
 public class SaveSparZielUseCase(ISparZielRepository sparZielRepository)
 {
-    public Task ExecuteAsync(SparZiel sparZiel)
+    public Task ExecuteAsync(SparZiel sparZiel, CancellationToken cancellationToken = default)
         => sparZielRepository.SaveSparZielAsync(sparZiel);
 }

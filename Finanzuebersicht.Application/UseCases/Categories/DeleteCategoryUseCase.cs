@@ -12,7 +12,7 @@ public class DeleteCategoryUseCase(
     private readonly ITransactionRepository _transactionRepository = transactionRepository;
     private readonly IRecurringTransactionRepository _recurringTransactionRepository = recurringTransactionRepository;
 
-    public async Task ExecuteAsync(string categoryId)
+    public async Task ExecuteAsync(string categoryId, CancellationToken cancellationToken = default)
     {
         var categories = await _categoryRepository.GetCategoriesAsync();
         if (!categories.Any(c => c.Id == categoryId))

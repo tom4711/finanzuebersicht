@@ -10,7 +10,7 @@ public class LoadTransactionsMonthUseCase(
     private readonly ITransactionRepository _transactionRepository = transactionRepository;
     private readonly ICategoryRepository _categoryRepository = categoryRepository;
 
-    public async Task<TransactionsMonthData> ExecuteAsync(DateTime aktuellerMonat)
+    public async Task<TransactionsMonthData> ExecuteAsync(DateTime aktuellerMonat, CancellationToken cancellationToken = default)
     {
         var von = aktuellerMonat;
         var bis = aktuellerMonat.AddMonths(1).AddDays(-1);

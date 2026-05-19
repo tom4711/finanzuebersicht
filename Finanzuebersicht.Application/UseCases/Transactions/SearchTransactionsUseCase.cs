@@ -27,7 +27,7 @@ public class SearchTransactionsUseCase(
     private readonly ITransactionRepository _transactionRepository = transactionRepository;
     private readonly ICategoryRepository _categoryRepository = categoryRepository;
 
-    public async Task<SearchTransactionsResult> ExecuteAsync(SearchTransactionsQuery query)
+    public async Task<SearchTransactionsResult> ExecuteAsync(SearchTransactionsQuery query, CancellationToken cancellationToken = default)
     {
         var von = query.VonDatum ?? DateTime.MinValue;
         var bis = query.BisDatum ?? DateTime.MaxValue;

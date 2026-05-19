@@ -7,7 +7,7 @@ namespace Finanzuebersicht.ViewModels;
 
 public partial class StorageViewModel : ObservableObject
 {
-    private readonly SettingsService _settings;
+    private readonly ISettingsService _settings;
     private readonly IDialogService _dialogService;
     private readonly ILocalizationService _loc;
     private readonly IFolderPicker? _folderPicker;
@@ -16,7 +16,7 @@ public partial class StorageViewModel : ObservableObject
     private string dataPath = string.Empty;
 
     public StorageViewModel(
-        SettingsService settings,
+        ISettingsService settings,
         IDialogService dialogService,
         ILocalizationService localizationService,
         IFolderPicker? folderPicker = null)

@@ -1,5 +1,6 @@
 using Finanzuebersicht.Models;
 
+#pragma warning disable CS0618 // IDataService is intentionally implemented here as the facade
 namespace Finanzuebersicht.Services;
 
 public class DataServiceFacade(
@@ -55,8 +56,8 @@ public class DataServiceFacade(
     public Task ReplaceAllRecurringTransactionsAsync(IEnumerable<RecurringTransaction> recurring)
         => _recurringRepository.ReplaceAllRecurringTransactionsAsync(recurring);
 
-    public Task GeneratePendingRecurringTransactionsAsync()
-        => _recurringGenerationService.GeneratePendingRecurringTransactionsAsync();
+    public Task GeneratePendingRecurringTransactionsAsync(CancellationToken cancellationToken = default)
+        => _recurringGenerationService.GeneratePendingRecurringTransactionsAsync(cancellationToken);
 
     public Task<YearSummary> GetYearSummaryAsync(int year)
         => _reportingService.GetYearSummaryAsync(year);

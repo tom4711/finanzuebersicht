@@ -1,5 +1,6 @@
 using Finanzuebersicht.Models;
 
+#pragma warning disable CS0618 // IDataService is intentionally implemented here as the local storage adapter
 namespace Finanzuebersicht.Services;
 
 /// <summary>
@@ -46,7 +47,7 @@ public class LocalDataService : IDataService, IDisposable
     /// <summary>
     /// Alternative constructor for manual instantiation (e.g., in tests).
     /// </summary>
-    public LocalDataService(SettingsService? settings, IClock clock)
+    public LocalDataService(ISettingsService? settings, IClock clock)
     {
         var defaultDataDir = AppPaths.GetDefaultDataDir();
         var customPath = settings?.Get("DataPath", "");
@@ -127,8 +128,8 @@ public class LocalDataService : IDataService, IDisposable
 
     #region IRecurringGenerationService delegation
 
-    public async Task GeneratePendingRecurringTransactionsAsync()
-        => await _recurringGenerationService.GeneratePendingRecurringTransactionsAsync();
+    public async Task GeneratePendingRecurringTransactionsAsync(CancellationToken cancellationToken = default)
+        => await _recurringGenerationService.GeneratePendingRecurringTransactionsAsync(cancellationToken);
 
     #endregion
 

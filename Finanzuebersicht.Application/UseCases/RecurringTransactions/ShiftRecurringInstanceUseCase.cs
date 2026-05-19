@@ -11,7 +11,7 @@ public class ShiftRecurringInstanceUseCase
 {
     private readonly IRecurringTransactionRepository _recurringTransactionRepository = recurringTransactionRepository;
 
-    public async Task ExecuteAsync(string recurringTransactionId, DateTime instanceDate, DateTime newDate, string? note = null)
+    public async Task ExecuteAsync(string recurringTransactionId, DateTime instanceDate, DateTime newDate, string? note = null, CancellationToken cancellationToken = default)
     {
         var list = await _recurringTransactionRepository.GetRecurringTransactionsAsync();
         var recurring = list.FirstOrDefault(r => r.Id == recurringTransactionId);

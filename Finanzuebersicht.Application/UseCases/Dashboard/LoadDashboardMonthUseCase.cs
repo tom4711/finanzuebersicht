@@ -15,7 +15,7 @@ public class LoadDashboardMonthUseCase(
     private readonly IRecurringTransactionRepository _recurringTransactionRepository = recurringTransactionRepository;
     private readonly IBudgetRepository _budgetRepository = budgetRepository;
 
-    public async Task<DashboardMonthData> ExecuteAsync(DateTime aktuellerMonat, DateTime today)
+    public async Task<DashboardMonthData> ExecuteAsync(DateTime aktuellerMonat, DateTime today, CancellationToken cancellationToken = default)
     {
         var kategorien = await _categoryRepository.GetCategoriesAsync();
 

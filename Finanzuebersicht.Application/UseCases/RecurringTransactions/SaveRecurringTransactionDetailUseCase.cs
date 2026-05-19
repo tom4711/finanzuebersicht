@@ -22,7 +22,7 @@ public class SaveRecurringTransactionDetailUseCase(
         RecurrenceInterval interval = RecurrenceInterval.Monthly,
         int intervalFactor = 1,
         int reminderDaysBefore = 0,
-        List<RecurringException>? exceptions = null)
+        List<RecurringException>? exceptions = null, CancellationToken cancellationToken = default)
     {
         // logging removed: prefer centralized ILogger or conditional debug logging
 

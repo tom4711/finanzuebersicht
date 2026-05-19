@@ -12,7 +12,7 @@ public class AddRecurringExceptionUseCase
 {
     private readonly IRecurringTransactionRepository _recurringTransactionRepository = recurringTransactionRepository;
 
-    public async Task ExecuteAsync(string recurringTransactionId, RecurringException exception)
+    public async Task ExecuteAsync(string recurringTransactionId, RecurringException exception, CancellationToken cancellationToken = default)
     {
         var list = await _recurringTransactionRepository.GetRecurringTransactionsAsync();
         var recurring = list.FirstOrDefault(r => r.Id == recurringTransactionId);

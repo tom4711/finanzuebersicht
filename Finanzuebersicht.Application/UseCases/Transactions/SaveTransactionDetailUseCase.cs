@@ -14,7 +14,7 @@ public class SaveTransactionDetailUseCase(ITransactionRepository transactionRepo
         DateTime datum,
         string kategorieId,
         TransactionType typ,
-        string verwendungszweck)
+        string verwendungszweck, CancellationToken cancellationToken = default)
     {
         var transaction = existingTransaction ?? new Transaction();
         transaction.Betrag = betrag;

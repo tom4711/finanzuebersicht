@@ -6,7 +6,7 @@ namespace Finanzuebersicht.ViewModels;
 
 public partial class AppearanceViewModel : ObservableObject
 {
-    private readonly SettingsService _settings;
+    private readonly ISettingsService _settings;
     private readonly IThemeService _themeService;
     private readonly ILocalizationService _loc;
 
@@ -17,7 +17,7 @@ public partial class AppearanceViewModel : ObservableObject
     private int selectedLanguageIndex;
 
     public AppearanceViewModel(
-        SettingsService settings,
+        ISettingsService settings,
         IThemeService themeService,
         ILocalizationService localizationService)
     {
