@@ -33,7 +33,6 @@ public static class MauiProgram
 #endif
 
 		// Services
-		builder.Services.AddSingleton<ISettingsService, SettingsService>();
 		// Clock for testable current time
 		builder.Services.AddSingleton<Finanzuebersicht.Services.IClock, Finanzuebersicht.Services.SystemClock>();
 		builder.Services.AddInfrastructureServices();
@@ -45,10 +44,6 @@ public static class MauiProgram
 #pragma warning restore CS0618
 		builder.Services.AddSingleton<IForecastService, ForecastService>();
 		builder.Services.AddSingleton<ITransactionValidationService, TransactionValidationService>();
-		builder.Services.AddSingleton<IBackupService, BackupService>();
-		builder.Services.AddSingleton<IDataMigrator, Finanzuebersicht.Services.Migrations.V1ToV2Migrator>();
-		builder.Services.AddSingleton<DataMigrationService>(sp =>
-			new DataMigrationService(sp.GetServices<IDataMigrator>()));
 		// Import/parsers
 		// register parser explicitly using DI extension to avoid ambiguous CommunityToolkit overloads
 		Microsoft.Extensions.DependencyInjection.ServiceCollectionServiceExtensions.AddSingleton<IStatementParser, DkbCsvParser>(builder.Services);

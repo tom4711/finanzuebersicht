@@ -8,6 +8,15 @@ public static class InfrastructureServiceCollectionExtensions
 {
     public static IServiceCollection AddInfrastructureServices(this IServiceCollection services)
     {
+        // Settings (file-based JSON persistence)
+        services.AddSingleton<ISettingsService, SettingsService>();
+
+        // Backup
+        services.AddSingleton<IDataMigrator, Finanzuebersicht.Services.Migrations.V1ToV2Migrator>();
+        services.AddSingleton<DataMigrationService>(sp =>
+            new DataMigrationService(sp.GetServices<IDataMigrator>()));
+        services.AddSingleton<IBackupService, BackupService>();
+
         // Helper to resolve data directory
         string GetDataDir(IServiceProvider sp)
         {

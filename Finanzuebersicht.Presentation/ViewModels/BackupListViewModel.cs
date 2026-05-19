@@ -116,15 +116,5 @@ public partial class BackupListViewModel : ObservableObject, IAutoLoadViewModel
         }
     }
 
-    private string GetBackupPath()
-    {
-        var backupPath = _settings.Get("BackupPath", "");
-        if (!string.IsNullOrEmpty(backupPath)) return backupPath;
-
-        var dataPath = _settings.Get("DataPath", "");
-        if (string.IsNullOrEmpty(dataPath))
-            dataPath = AppPaths.GetDefaultDataDir();
-
-        return Path.Combine(dataPath, "backups");
-    }
+    private string GetBackupPath() => _settings.GetBackupPath();
 }
