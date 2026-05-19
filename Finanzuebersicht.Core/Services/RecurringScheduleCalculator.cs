@@ -20,7 +20,7 @@ public static class RecurringScheduleCalculator
         return recurring.Interval switch
         {
             RecurrenceInterval.Daily => fromDate.Date.AddDays(1 * factor),
-            RecurrenceInterval.Weekly => fromDate.Date.AddDays(7L * factor),
+            RecurrenceInterval.Weekly => fromDate.Date.AddDays(7 * factor),
             RecurrenceInterval.Monthly => AddMonthsPreserveDay(fromDate.Date, 1 * factor),
             RecurrenceInterval.Quarterly => AddMonthsPreserveDay(fromDate.Date, 3 * factor),
             RecurrenceInterval.Yearly => AddMonthsPreserveDay(fromDate.Date, 12 * factor),
@@ -41,7 +41,8 @@ public static class RecurringScheduleCalculator
             return adjusted;
 
         // Loop to handle consecutive Skip exceptions (e.g. two back-to-back skipped dates).
-        // Upper bound prevents infinite loops for pathological configurations.
+        // 366 = max days in a leap year; handles the worst-case of a daily recurring with
+        // a full year of consecutive Skips before finding a non-excepted date.
         const int maxIterations = 366;
         for (int i = 0; i < maxIterations; i++)
         {
