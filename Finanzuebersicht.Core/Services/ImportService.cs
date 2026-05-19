@@ -212,8 +212,8 @@ namespace Finanzuebersicht.Services
             }
             catch (Exception ex)
             {
-                _logger.LogWarning(ex, "ImportService: failed to load categories for auto-categorization");
-                return string.Empty;
+                _logger.LogWarning(ex, "ImportService: failed to load categories for auto-categorization; attempting Unkategorisiert fallback");
+                // categories stays null — fall through to Unkategorisiert fallback below
             }
 
             if (categories is { Count: > 0 } && _categorizationService is not null)

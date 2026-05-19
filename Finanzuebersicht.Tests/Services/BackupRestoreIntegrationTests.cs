@@ -264,9 +264,11 @@ namespace Finanzuebersicht.Tests.Services
         }
 
         [Fact]
-        public async Task RestoreBackup_WriteFailsMidway_RollbackSucceeds_OriginalDataPreserved()
+        public async Task RestoreBackup_BackupFileCorrupted_OriginalDataPreserved()
         {
-            // Arrange: create backup with data
+            // Arrange: create backup, then corrupt the ZIP before restoring.
+            // The restore fails at extraction (before any ReplaceAll* write occurs),
+            // so the existing data must remain untouched.
             var service = new BackupService(_mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockSettingsService, new DataMigrationService([new V1ToV2Migrator()]));
             var backupPath = Path.Combine(_testDir, "backups");
 

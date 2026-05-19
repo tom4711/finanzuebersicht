@@ -133,6 +133,20 @@ public class RecurringScheduleCalculatorTests
         Assert.Equal(candidate, RecurringScheduleCalculator.ApplyExceptions(r, candidate));
     }
 
+    [Fact]
+    public void ApplyExceptions_TwoConsecutiveSkips_SkipsBoth()
+    {
+        // March 1 → Skip, April 1 → Skip, May 1 → no exception → should return May 1
+        var candidate = new DateTime(2025, 3, 1);
+        var r = Make(RecurrenceInterval.Monthly, exceptions:
+        [
+            new RecurringException { InstanceDate = new DateTime(2025, 3, 1), Type = RecurringExceptionType.Skip },
+            new RecurringException { InstanceDate = new DateTime(2025, 4, 1), Type = RecurringExceptionType.Skip }
+        ]);
+        var result = RecurringScheduleCalculator.ApplyExceptions(r, candidate);
+        Assert.Equal(new DateTime(2025, 5, 1), result);
+    }
+
     // ── IsWithinActiveRange ──────────────────────────────────────────────────
 
     [Fact]

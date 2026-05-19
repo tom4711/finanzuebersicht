@@ -1,9 +1,11 @@
-﻿using CommunityToolkit.Maui;
+﻿using System.Reflection;
+using CommunityToolkit.Maui;
 using Finanzuebersicht.Application.DependencyInjection;
 using Finanzuebersicht.Infrastructure;
 using Finanzuebersicht.Presentation.DependencyInjection;
 using Finanzuebersicht.Services;
 using Finanzuebersicht.Views;
+
 using Microsoft.Extensions.Logging;
 
 namespace Finanzuebersicht;
@@ -69,7 +71,7 @@ public static class MauiProgram
 		builder.Services.AddSingleton<IFileSaver, MauiFileSaver>();
 		builder.Services.AddSingleton<IThemeService>(sp => sp.GetRequiredService<ThemeService>());
 
-		builder.Services.AddPresentationViewModels();
+		builder.Services.AddPresentationViewModels(Assembly.GetExecutingAssembly());
 
 		// Pages
 		builder.Services.AddTransient<DashboardPage>();

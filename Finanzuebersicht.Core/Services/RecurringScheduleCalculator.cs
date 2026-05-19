@@ -40,16 +40,28 @@ public static class RecurringScheduleCalculator
         if (recurring.Exceptions is null || recurring.Exceptions.Count == 0)
             return adjusted;
 
-        var exception = recurring.Exceptions.FirstOrDefault(e => e.InstanceDate.Date == adjusted);
-        if (exception is null)
-            return adjusted;
-
-        return exception.Type switch
+        // Loop to handle consecutive Skip exceptions (e.g. two back-to-back skipped dates).
+        // Upper bound prevents infinite loops for pathological configurations.
+        const int maxIterations = 366;
+        for (int i = 0; i < maxIterations; i++)
         {
-            RecurringExceptionType.Skip => GetNextInstance(recurring, adjusted),
-            RecurringExceptionType.Shift when exception.ShiftToDate.HasValue => exception.ShiftToDate.Value.Date,
-            _ => adjusted,
-        };
+            var exception = recurring.Exceptions.FirstOrDefault(e => e.InstanceDate.Date == adjusted);
+            if (exception is null)
+                return adjusted;
+
+            switch (exception.Type)
+            {
+                case RecurringExceptionType.Skip:
+                    adjusted = GetNextInstance(recurring, adjusted);
+                    break;
+                case RecurringExceptionType.Shift when exception.ShiftToDate.HasValue:
+                    return exception.ShiftToDate.Value.Date;
+                default:
+                    return adjusted;
+            }
+        }
+
+        return adjusted; // safety fallback
     }
 
     /// <summary>
