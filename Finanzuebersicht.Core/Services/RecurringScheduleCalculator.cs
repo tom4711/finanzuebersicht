@@ -1,6 +1,6 @@
 using Finanzuebersicht.Models;
 
-namespace Finanzuebersicht.Services;
+namespace Finanzuebersicht.Core.Services;
 
 /// <summary>
 /// Pure domain component for calculating recurring transaction schedules.

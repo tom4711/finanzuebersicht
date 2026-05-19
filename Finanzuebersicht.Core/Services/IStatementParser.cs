@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace Finanzuebersicht.Services
+namespace Finanzuebersicht.Core.Services
 {
     public interface IStatementParser
     {

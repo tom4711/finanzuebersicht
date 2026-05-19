@@ -12,7 +12,6 @@ public partial class TransactionsPage : BaseContentPage
         if (viewModel == null)
         {
             logger?.LogError("TransactionsPage: injected TransactionsViewModel is null. DI may have failed.");
-            try { Finanzuebersicht.Services.FileLogger.Append("TransactionsPage", "injected TransactionsViewModel is null"); } catch { }
             BindingContext = new object();
         }
         else

@@ -2,6 +2,8 @@
 
 Übersicht über geplante Releases und Features. Die Roadmap wird fortlaufend aktualisiert.
 
+> **Hinweis:** Die Milestone-Bezeichnungen (v1.1, v1.2, v2.0) sind thematische GitHub-Planungslabels, keine sequenziellen Release-Versionen. Tatsächliche Releases (v1.0, v1.6, v1.6.1 …) werden durch Git-Commit-Höhe via Nerdbank.GitVersioning bestimmt.
+
 ---
 
 ## ✅ v1.0 — Stable Release *(abgeschlossen)*
@@ -13,6 +15,27 @@
 - Accessibility (VoiceOver / Tastaturnavigation)
 - CI/CD: Build-Artifacts für macOS & Windows
 - Vollständige Fehlerbehandlung in allen ViewModels
+
+---
+
+## ✅ v1.6 — Architektur & Datenrobustheit *(abgeschlossen)*
+
+Fokus: Layering bereinigen, Persistenz robuster machen und DI modularisieren.
+
+| Issue | Thema | Status |
+|-------|-------|--------|
+| [#152](https://github.com/tom4711/finanzuebersicht/issues/152) | JSON-Persistenz: Korruption nicht stillschweigend als leere Daten behandeln | ✅ Closed |
+| [#153](https://github.com/tom4711/finanzuebersicht/issues/153) | Restore-Prozess transaktional absichern | ✅ Closed |
+| [#154](https://github.com/tom4711/finanzuebersicht/issues/154) | Refactor Core: I/O-, Logging- und Persistenz-Services aus Core auslagern | ✅ Closed |
+| [#155](https://github.com/tom4711/finanzuebersicht/issues/155) | CSV-Import: Teilimporte und globale Side-Effects vermeiden | ✅ Closed |
+| [#159](https://github.com/tom4711/finanzuebersicht/issues/159) | Recurring-Berechnung zentralisieren und CancellationToken unterstützen | ✅ Closed |
+| [#160](https://github.com/tom4711/finanzuebersicht/issues/160) | DataServiceFacade in fachlich getrennte Interfaces aufteilen | ✅ Closed |
+| [#161](https://github.com/tom4711/finanzuebersicht/issues/161) | DI-Registrierung in modulare Extensions aufteilen | ✅ Closed |
+| [#162](https://github.com/tom4711/finanzuebersicht/issues/162) | Namespaces nach Layern trennen und vereinheitlichen | ✅ Closed |
+| [#163](https://github.com/tom4711/finanzuebersicht/issues/163) | SettingsService: I/O abstrahieren und async/testbar machen | ✅ Closed |
+| [#168](https://github.com/tom4711/finanzuebersicht/issues/168) | UseCases um CancellationToken und klare Application-Verantwortung erweitern | ✅ Closed |
+
+Alle 10 Issues des Milestones sind geschlossen.
 
 ---
 

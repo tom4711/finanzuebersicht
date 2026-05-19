@@ -5,9 +5,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Finanzuebersicht.Models;
-using Finanzuebersicht.Services;
 
-namespace Finanzuebersicht.Services;
+namespace Finanzuebersicht.Core.Services;
 
 /// <summary>
 /// Categorizes transactions based on historical categorization patterns.
@@ -49,7 +48,6 @@ public class HistoricalCategorizationStrategy(
         catch (Exception ex)
         {
             _logger?.LogWarning(ex, "Error looking up historical category for payee '{Payee}'", payee);
-            try { FileLogger.Append("HistoricalCategorizationStrategy", $"Error for payee {payee}: {ex.Message}"); } catch { }
             return null;
         }
     }

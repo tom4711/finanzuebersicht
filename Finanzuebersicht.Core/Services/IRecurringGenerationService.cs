@@ -1,4 +1,4 @@
-namespace Finanzuebersicht.Services;
+namespace Finanzuebersicht.Core.Services;
 
 public interface IRecurringGenerationService
 {

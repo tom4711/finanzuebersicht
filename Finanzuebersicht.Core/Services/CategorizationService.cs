@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Finanzuebersicht.Models;
 
-namespace Finanzuebersicht.Services;
+namespace Finanzuebersicht.Core.Services;
 
 /// <summary>
 /// Orchestrates transaction categorization using pluggable strategies.
@@ -52,7 +52,6 @@ public class CategorizationService(
                         dto.Verwendungszweck ?? "(no reference)",
                         strategy.Name,
                         matchedCategory.Name);
-                    try { FileLogger.Append("CategorizationService", $"Auto-categorized by {strategy.Name} → {matchedCategory.Name}"); } catch { }
                     return matchedCategory;
                 }
             }
@@ -62,7 +61,6 @@ public class CategorizationService(
                     ex,
                     "Strategy {StrategyName} threw exception during categorization",
                     strategy.Name);
-                try { FileLogger.Append("CategorizationService", $"Strategy {strategy.Name} error: {ex.Message}"); } catch { }
             }
         }
 
@@ -72,7 +70,6 @@ public class CategorizationService(
             _logger?.LogInformation(
                 "Transaction '{Title}' fell back to Unkategorisiert (no strategy matched)",
                 dto.Verwendungszweck ?? "(no reference)");
-            try { FileLogger.Append("CategorizationService", "No strategy matched - using Unkategorisiert fallback"); } catch { }
             return uncategorizedCategory;
         }
 

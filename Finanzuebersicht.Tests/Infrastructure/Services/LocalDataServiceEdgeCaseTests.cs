@@ -1,6 +1,5 @@
 using System.Text.Json;
 using Finanzuebersicht.Models;
-using Finanzuebersicht.Services;
 
 namespace Finanzuebersicht.Tests.Services;
 
@@ -16,7 +15,7 @@ public class LocalDataServiceEdgeCaseTests : IDisposable
 
         var settings = new SettingsService(Path.Combine(_tempDir, "settings.json"));
         settings.Set("DataPath", _tempDir);
-        _service = new LocalDataService(settings, new Finanzuebersicht.Services.SystemClock());
+        _service = new LocalDataService(settings, new Finanzuebersicht.Core.Services.SystemClock());
     }
 
     public void Dispose()

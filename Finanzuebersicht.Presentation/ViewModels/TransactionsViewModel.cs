@@ -5,7 +5,6 @@ using Finanzuebersicht.Application.UseCases.Transactions;
 using Finanzuebersicht.Models;
 using Finanzuebersicht.Navigation;
 using Finanzuebersicht.Resources.Strings;
-using Finanzuebersicht.Services;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 
@@ -49,7 +48,6 @@ public partial class TransactionsViewModel(
             _logger?.LogError(ex, "TransactionsViewModel: {Context}", context);
         else
             _logger?.LogError("TransactionsViewModel: {Context}", context);
-        try { FileLogger.Append("TransactionsViewModel", context, ex); } catch { }
     }
 
     // --- Monatsansicht ---

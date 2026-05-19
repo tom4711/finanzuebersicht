@@ -1,4 +1,3 @@
-using Finanzuebersicht.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -8,6 +7,15 @@ public static class InfrastructureServiceCollectionExtensions
 {
     public static IServiceCollection AddInfrastructureServices(this IServiceCollection services)
     {
+        // Settings (file-based JSON persistence)
+        services.AddSingleton<ISettingsService, SettingsService>();
+
+        // Backup
+        services.AddSingleton<IDataMigrator, Finanzuebersicht.Core.Services.Migrations.V1ToV2Migrator>();
+        services.AddSingleton<DataMigrationService>(sp =>
+            new DataMigrationService(sp.GetServices<IDataMigrator>()));
+        services.AddSingleton<IBackupService, BackupService>();
+
         // Helper to resolve data directory
         string GetDataDir(IServiceProvider sp)
         {
@@ -53,7 +61,7 @@ public static class InfrastructureServiceCollectionExtensions
                 sp.GetRequiredService<RecurringStore>(),
                 sp.GetRequiredService<BudgetStore>(),
                 sp.GetRequiredService<SparZielStore>(),
-                sp.GetRequiredService<Finanzuebersicht.Services.IClock>()));
+                sp.GetRequiredService<Finanzuebersicht.Core.Services.IClock>()));
 
         // Expose the LocalDataService instance via the repository interfaces it implements
         services.AddSingleton<ICategoryRepository>(sp => sp.GetRequiredService<LocalDataService>());

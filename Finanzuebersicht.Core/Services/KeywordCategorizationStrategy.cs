@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Finanzuebersicht.Models;
 
-namespace Finanzuebersicht.Services;
+namespace Finanzuebersicht.Core.Services;
 
 /// <summary>
 /// Categorizes transactions using regex pattern matching on payee/reference fields.
@@ -83,12 +83,10 @@ public class KeywordCategorizationStrategy : ICategorizationStrategy
             }
 
             _logger?.LogInformation($"Loaded {_rules.Count} categorization rules");
-            try { FileLogger.Append("KeywordCategorizationStrategy", $"Loaded {_rules.Count} rules"); } catch { }
         }
         catch (Exception ex)
         {
             _logger?.LogError(ex, "Error loading categorization rules");
-            try { FileLogger.Append("KeywordCategorizationStrategy", $"Error loading rules: {ex.Message}"); } catch { }
         }
     }
 

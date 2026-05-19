@@ -1,6 +1,5 @@
 using Finanzuebersicht.Application.UseCases.Transactions;
 using Finanzuebersicht.Models;
-using Finanzuebersicht.Services;
 using NSubstitute;
 
 namespace Finanzuebersicht.Tests.Application.UseCases.Transactions;
@@ -38,7 +37,7 @@ public class SearchTransactionsUseCaseTests
             Id = id,
             Titel = titel,
             Verwendungszweck = verwendungszweck,
-            KategorieId = kategorieId,
+            KategorieId = kategorieId ?? string.Empty,
             Typ = typ,
             Betrag = 10m,
             Datum = datum ?? new DateTime(2026, 1, 15)

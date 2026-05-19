@@ -3,7 +3,6 @@ using Finanzuebersicht.Application.UseCases.Dashboard;
 using Finanzuebersicht.Application.UseCases.RecurringTransactions;
 using Finanzuebersicht.Application.UseCases.SparZiele;
 using Finanzuebersicht.Application.UseCases.Transactions;
-using Finanzuebersicht.Services;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Finanzuebersicht.Application.DependencyInjection;

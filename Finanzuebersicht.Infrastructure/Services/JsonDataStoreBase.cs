@@ -2,7 +2,7 @@ using System.Text.Json;
 using Finanzuebersicht.Models;
 using Microsoft.Extensions.Logging;
 
-namespace Finanzuebersicht.Services;
+namespace Finanzuebersicht.Infrastructure.Services;
 
 /// <summary>
 /// Base class for JSON-based data stores. Provides shared JSON serialization,

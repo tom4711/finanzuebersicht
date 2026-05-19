@@ -33,9 +33,8 @@ public static class MauiProgram
 #endif
 
 		// Services
-		builder.Services.AddSingleton<ISettingsService, SettingsService>();
 		// Clock for testable current time
-		builder.Services.AddSingleton<Finanzuebersicht.Services.IClock, Finanzuebersicht.Services.SystemClock>();
+		builder.Services.AddSingleton<Finanzuebersicht.Core.Services.IClock, Finanzuebersicht.Core.Services.SystemClock>();
 		builder.Services.AddInfrastructureServices();
 		builder.Services.AddSingleton<IRecurringGenerationService, RecurringGenerationService>();
 		builder.Services.AddSingleton<IReportingService, ReportingService>();
@@ -45,10 +44,6 @@ public static class MauiProgram
 #pragma warning restore CS0618
 		builder.Services.AddSingleton<IForecastService, ForecastService>();
 		builder.Services.AddSingleton<ITransactionValidationService, TransactionValidationService>();
-		builder.Services.AddSingleton<IBackupService, BackupService>();
-		builder.Services.AddSingleton<IDataMigrator, Finanzuebersicht.Services.Migrations.V1ToV2Migrator>();
-		builder.Services.AddSingleton<DataMigrationService>(sp =>
-			new DataMigrationService(sp.GetServices<IDataMigrator>()));
 		// Import/parsers
 		// register parser explicitly using DI extension to avoid ambiguous CommunityToolkit overloads
 		Microsoft.Extensions.DependencyInjection.ServiceCollectionServiceExtensions.AddSingleton<IStatementParser, DkbCsvParser>(builder.Services);
@@ -65,7 +60,7 @@ public static class MauiProgram
 		builder.Services.AddSingleton<INavigationService, ShellNavigationService>();
 		builder.Services.AddSingleton<IDialogService, ShellDialogService>();
 		builder.Services.AddSingleton<IMainThreadDispatcher, MauiMainThreadDispatcher>();
-		builder.Services.AddSingleton<Finanzuebersicht.Services.IFilePicker, MauiFilePicker>();
+		builder.Services.AddSingleton<Finanzuebersicht.Presentation.Services.IFilePicker, MauiFilePicker>();
 		builder.Services.AddSingleton<IAppEvents, MauiAppEvents>();
 		builder.Services.AddSingleton<IFolderPicker, MauiFolderPicker>();
 		builder.Services.AddSingleton<IFileSaver, MauiFileSaver>();

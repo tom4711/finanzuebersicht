@@ -1,6 +1,4 @@
 using Xunit;
-using Finanzuebersicht.Services;
-using Finanzuebersicht.Services.Migrations;
 using Finanzuebersicht.Models;
 using System.IO.Compression;
 using System.Text.Json;
@@ -358,6 +356,7 @@ namespace Finanzuebersicht.Tests.Services
 
     // ========== Mock-Implementierungen ==========
 
+#pragma warning disable CS0618
     internal class MockDataService : IDataService
     {
         private List<Category> _categories = [];
@@ -416,6 +415,7 @@ namespace Finanzuebersicht.Tests.Services
         public Task DeleteSparZielAsync(string id) => Task.CompletedTask;
         public Task ReplaceAllSparZieleAsync(IEnumerable<SparZiel> sparziele) { _sparziele = sparziele.ToList(); return Task.CompletedTask; }
     }
+#pragma warning restore CS0618
 
     internal class MockSettingsService : SettingsService
     {

@@ -1,8 +1,7 @@
 using Finanzuebersicht.Models;
-using Finanzuebersicht.Services;
 using Microsoft.Extensions.Logging;
 
-namespace Finanzuebersicht.Services;
+namespace Finanzuebersicht.Infrastructure.Services;
 
 public class SparZielStore : JsonDataStoreBase, ISparZielRepository
 {

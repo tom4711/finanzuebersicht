@@ -1,7 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Finanzuebersicht.Resources.Strings;
-using Finanzuebersicht.Services;
 
 namespace Finanzuebersicht.ViewModels;
 
