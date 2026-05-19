@@ -93,6 +93,20 @@ namespace Finanzuebersicht.Services
             var duplicates = new List<Transaction>();
             var skippedMalformed = 0;
 
+            // Load existing transactions once for the full import date range (avoids N+1 queries)
+            List<Transaction>? existingInRange = null;
+            try
+            {
+                var minDate = dtosList.Min(d => d?.Buchungsdatum ?? DateTime.MaxValue).Date.AddDays(-1);
+                var maxDate = dtosList.Max(d => d?.Buchungsdatum ?? DateTime.MinValue).Date.AddDays(1);
+                existingInRange = await _transactionRepository
+                    .GetTransactionsAsync(minDate, maxDate).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "ImportService: failed to load existing transactions for duplicate check; duplicates won't be detected");
+            }
+
             foreach (var dto in dtosList)
             {
                 cancellationToken.ThrowIfCancellationRequested();
@@ -116,22 +130,16 @@ namespace Finanzuebersicht.Services
                     AccountId = accountId ?? dto.SourceAccountId
                 };
 
-                // Duplicate check
+                // Duplicate check (against in-memory snapshot loaded once before the loop)
                 bool isDuplicate = false;
-                try
+                if (existingInRange is not null)
                 {
                     var from = dto.Buchungsdatum.Date.AddDays(-1);
                     var to = dto.Buchungsdatum.Date.AddDays(1);
-                    var existing = await _transactionRepository.GetTransactionsAsync(from, to).ConfigureAwait(false);
-                    isDuplicate = existing?.Any(e =>
+                    isDuplicate = existingInRange.Any(e =>
                         e.Datum.Date >= from && e.Datum.Date <= to &&
                         e.Betrag == dto.Betrag &&
-                        Normalize(e.Titel) == Normalize(title)) ?? false;
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogWarning(ex, "ImportService: duplicate check failed for '{Title}'", title);
-                    // On duplicate check failure, treat as non-duplicate (safer: import rather than lose data)
+                        Normalize(e.Titel) == Normalize(title));
                 }
 
                 if (isDuplicate)

@@ -64,7 +64,7 @@ namespace Finanzuebersicht.Services
         {
             try
             {
-                var backupPath = customPath ?? GetDefaultBackupPath();
+                var backupPath = customPath ?? _settingsService.GetBackupPath();
                 Directory.CreateDirectory(backupPath);
 
                 // Backup ID = ISO-Timestamp format (z.B. 2026-03-11T21-46-19-123)
@@ -112,7 +112,7 @@ namespace Finanzuebersicht.Services
                     fileName, metadata.EntityCounts["categories"], metadata.EntityCounts["transactions"], metadata.EntityCounts["recurring"], metadata.EntityCounts["budgets"], metadata.EntityCounts["sparziele"]);
 
                 // Speichere Zeitstempel in Settings
-                _settingsService.Set("LastBackupTime", _clock.UtcNow.ToString("O"));
+                _settingsService.SetLastBackupTime(_clock.UtcNow);
 
                 return metadata;
             }
@@ -386,19 +386,6 @@ namespace Finanzuebersicht.Services
         }
 
         // ========== Hilfsmethoden ==========
-
-        private string GetDefaultBackupPath()
-        {
-            var backupPath = _settingsService.Get("BackupPath");
-            if (!string.IsNullOrEmpty(backupPath))
-                return backupPath;
-
-            var dataPath = _settingsService.Get("DataPath");
-            if (string.IsNullOrEmpty(dataPath))
-                dataPath = AppPaths.GetDefaultDataDir();
-
-            return Path.Combine(dataPath, "backups");
-        }
 
         private static void WriteJsonToZip<T>(ZipArchive archive, string entryName, T data)
         {
