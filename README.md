@@ -88,18 +88,23 @@ Finanzuebersicht/                  ← MAUI App Entry Point (iOS, macOS, Windows
 ├── App.xaml, AppShell.xaml, MauiProgram.cs
 
 Finanzuebersicht.Presentation/     ← Presentation Layer (MVVM)
+├── DependencyInjection/           ← AddPresentationViewModels(...)
 ├── ViewModels/                    ← DashboardVM, TransactionsVM, etc.
 ├── Navigation/                    ← Shell Navigation
-├── Services/                      ← UI Services (ILocalizationService, IDialogService, etc.)
+├── Services/                      ← namespace Finanzuebersicht.Presentation.Services
 └── Resources/                     ← Presentation resource helpers (e.g. string keys)
 
 Finanzuebersicht.Application/      ← Use Cases / Application Layer (net10.0)
+├── DependencyInjection/           ← AddApplicationUseCases()
+└── UseCases/                      ← namespace Finanzuebersicht.Application.UseCases.*
 
-Finanzuebersicht.Infrastructure/   ← DI-Registrierung, Infrastrukturdienste (net10.0)
+Finanzuebersicht.Infrastructure/   ← DI-Registrierung, Persistenz & Infrastrukturdienste (net10.0)
+├── DependencyInjection/           ← AddInfrastructureServices()
+└── Services/                      ← SettingsService, BackupService, LocalDataService, *Store.cs
 
 Finanzuebersicht.Core/             ← Domain Layer (Modelle, Geschäftslogik, Services)
-├── Models/                        ← Transaction, Category, Budget, SparZiel, etc.
-└── Services/                      ← IDataService, LocalDataService, SettingsService, etc.
+├── Models/                        ← namespace Finanzuebersicht.Models
+└── Services/                      ← namespace Finanzuebersicht.Core.Services (Interfaces, Domain Services, AppPaths, Migrations)
 
 Finanzuebersicht.Tests/            ← xUnit Tests (net10.0)
 └── Testet alle Layer (Application, Infrastructure, Presentation, Core)
@@ -109,6 +114,9 @@ Finanzuebersicht.Tests/            ← xUnit Tests (net10.0)
 - Views bleiben in `Finanzuebersicht/Views/` (MAUI App)
 - Converters bleiben in `Finanzuebersicht/Converters/` (MAUI App)
 - ViewModels sind in `Finanzuebersicht.Presentation/ViewModels/`
+- `FileLogger` wurde entfernt; Logging läuft über `ILogger<T>`
+- `IDataService` ist nur noch Legacy-Kompatibilität; neue Features nutzen spezifische Repository-Interfaces
+- `MauiProgram.cs` ist ein schlanker Orchestrator für die layer-spezifischen DI-Extensions
 
 ## Lokalisierung & Ressourcen
 

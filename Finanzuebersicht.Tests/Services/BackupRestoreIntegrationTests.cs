@@ -320,6 +320,7 @@ namespace Finanzuebersicht.Tests.Services
         }
 
         // Mock implementations
+#pragma warning disable CS0618
         private class MockDataService : IDataService
         {
             private List<Category> _categories = [];
@@ -396,6 +397,7 @@ namespace Finanzuebersicht.Tests.Services
             public Task DeleteSparZielAsync(string id) { _sparziele.RemoveAll(s => s.Id == id); return Task.CompletedTask; }
             public Task ReplaceAllSparZieleAsync(IEnumerable<SparZiel> sparziele) { _sparziele = sparziele.ToList(); return Task.CompletedTask; }
         }
+#pragma warning restore CS0618
 
         private class MockSettingsService : SettingsService
         {
@@ -408,6 +410,7 @@ namespace Finanzuebersicht.Tests.Services
         /// A data service that always throws on ReplaceAll operations (both write and rollback).
         /// Used to test the scenario where restore fails AND rollback also fails.
         /// </summary>
+#pragma warning disable CS0618
         private class FailingMockDataService : IDataService
         {
             public Task<List<Category>> GetCategoriesAsync() => Task.FromResult(new List<Category>());
@@ -438,5 +441,6 @@ namespace Finanzuebersicht.Tests.Services
             public Task SaveSparZielAsync(SparZiel s) => Task.CompletedTask;
             public Task DeleteSparZielAsync(string id) => Task.CompletedTask;
         }
+#pragma warning restore CS0618
     }
 }

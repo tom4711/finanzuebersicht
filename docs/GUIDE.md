@@ -68,9 +68,10 @@ version.json                       ← Nerdbank.GitVersioning config
 Directory.Build.props              ← Shared MSBuild properties
 
 Finanzuebersicht/                  ← MAUI app entry point (net10.0-ios, net10.0-maccatalyst, net10.0-windows)
-├── MauiProgram.cs                ← DI setup, feature registration
+├── MauiProgram.cs                ← thin DI orchestrator; calls Add*() extension methods
 ├── App.xaml / App.xaml.cs         ← App lifecycle
 ├── AppShell.xaml / AppShell.xaml.cs ← Shell navigation
+├── Services/                      ← MAUI-specific concrete services (LocalizationService, ShellDialogService, etc.)
 ├── Views/                         ← XAML pages (DashboardPage, TransactionsPage, etc.)
 ├── Converters/                    ← Value converters (BetragDisplayConverter, etc.)
 ├── Resources/Strings/             ← AppResources.resx (German), AppResources.en.resx (English)
@@ -78,28 +79,33 @@ Finanzuebersicht/                  ← MAUI app entry point (net10.0-ios, net10.
 ├── Charts/                        ← Custom chart implementations
 └── Platforms/                     ← iOS, MacCatalyst, Windows platform code
 
-Finanzuebersicht.Presentation/     ← Presentation Layer (net10.0) - MVVM ViewModels & Services
+Finanzuebersicht.Presentation/     ← Presentation Layer (net10.0) - MVVM ViewModels & UI abstractions
+├── DependencyInjection/           ← AddPresentationViewModels(...)
 ├── ViewModels/                    ← DashboardViewModel, TransactionsViewModel, SettingsViewModel, etc.
 │   └── Settings/                  ← AppearanceViewModel, BackupViewModel, StorageViewModel, AboutViewModel
 ├── Navigation/                    ← Shell navigation helpers
-├── Services/                      ← ILocalizationService, IDialogService, INavigationService implementations
+├── Services/                      ← namespace Finanzuebersicht.Presentation.Services (IDialogService, INavigationService, ILocalizationService, etc.)
 └── Resources/                     ← App-wide resources
 
 Finanzuebersicht.Application/      ← Application / Use Cases Layer (net10.0) - Business logic orchestration
+├── DependencyInjection/           ← AddApplicationUseCases()
+└── UseCases/                      ← namespace Finanzuebersicht.Application.UseCases.*
 
-Finanzuebersicht.Infrastructure/   ← Infrastructure Layer (net10.0) - DI setup, external service integration
-├── DependencyInjection/           ← Service registration (MauiBuilder extensions)
-└── Services/                      ← Infrastructure-level service implementations
+Finanzuebersicht.Infrastructure/   ← Infrastructure Layer (net10.0) - persistence & wiring
+├── DependencyInjection/           ← AddInfrastructureServices()
+└── Services/                      ← namespace Finanzuebersicht.Infrastructure.Services
+    ├── SettingsService            ← implements ISettingsService
+    ├── BackupService              ← implements IBackupService
+    ├── LocalDataService           ← implements repository interfaces (+ legacy IDataService facade)
+    └── *Store.cs                  ← CategoryStore, TransactionStore, RecurringStore, etc.
 
-Finanzuebersicht.Core/             ← Domain Layer (net10.0) - Models & Domain Services
-├── Models/                        ← Transaction, Category, RecurringTransaction, CategoryBudget, SparZiel
-├── Services/
-│   ├── IDataService               ← Data persistence interface
-│   ├── LocalDataService           ← JSON file-based persistence
-│   ├── SettingsService            ← User settings & preferences
-│   ├── BackupService              ← Backup/Restore with ZIP + schema migration
-│   ├── DataMigrationService       ← Schema versioning (v1 → v2+)
-│   └── InitializationService      ← App initialization, recurring transaction auto-generation
+Finanzuebersicht.Core/             ← Domain Layer (net10.0) - Models & domain services
+├── Models/                        ← namespace Finanzuebersicht.Models
+├── Services/                      ← namespace Finanzuebersicht.Core.Services
+│   ├── Interfaces                 ← ISettingsService, IBackupService, ICategoryRepository, etc.
+│   ├── Domain services            ← CategorizationService, RecurringGenerationService, ReportingService, etc.
+│   ├── AppPaths.cs                ← pure path helper (no file I/O)
+│   └── Migrations/                ← namespace Finanzuebersicht.Core.Services.Migrations
 └── Data/                          ← Embedded data files (categorization-rules.json)
 
 Finanzuebersicht.Tests/            ← xUnit tests (net10.0)
@@ -111,7 +117,7 @@ Finanzuebersicht.Tests/            ← xUnit tests (net10.0)
 ### MVVM-Architektur
 
 - **Framework:** CommunityToolkit.Mvvm mit Source Generators (kein manuelles `INotifyPropertyChanged`)
-- **DI:** Alle Services und ViewModels in `MauiProgram.cs` registriert
+- **DI:** `MauiProgram.cs` bleibt schlank und orchestriert `AddInfrastructureServices()`, `AddApplicationUseCases()` und `AddPresentationViewModels()`
 - **Pages:** Erhalten ViewModel via Constructor Injection
 - **Data Loading:** Triggern via Command in `OnAppearing()`
 
@@ -154,7 +160,8 @@ Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>
 ## 8. Datenspeicherung
 
 - **Lokal:** JSON-Dateien via `LocalDataService` (Standard, keine externe Abhängigkeit)
-- **Pfad:** Standardmäßig `LocalApplicationData/Finanzuebersicht`, über `SettingsService` anpassbar
+- **Repos:** Neue Features arbeiten gegen spezifische Repository-Interfaces; `IDataService` bleibt nur für Legacy-Kompatibilität erhalten
+- **Pfad:** Standardmäßig `LocalApplicationData/Finanzuebersicht`, konfigurierbar über `ISettingsService` / `Infrastructure.Services.SettingsService`
 - **CloudKit:** Code vorhanden (`CloudKitDataService`), aber deaktiviert (erfordert kostenpflichtiges Apple Developer Account)
 - **Daueraufträge:** Automatische Generierung läuft auf `App.OnStart()` und `Window.Resumed`
 

@@ -265,6 +265,7 @@ namespace Finanzuebersicht.Tests.Services
         /// In-memory implementation of IDataService for testing.
         /// Provides isolated test environment without file I/O.
         /// </summary>
+#pragma warning disable CS0618
         private class InMemoryDataService : IDataService
         {
             private readonly List<Category> _categories = [];
@@ -396,5 +397,6 @@ namespace Finanzuebersicht.Tests.Services
             public Task DeleteSparZielAsync(string id) { _sparziele.RemoveAll(s => s.Id == id); return Task.CompletedTask; }
             public Task ReplaceAllSparZieleAsync(IEnumerable<SparZiel> sparziele) { _sparziele.Clear(); _sparziele.AddRange(sparziele); return Task.CompletedTask; }
         }
+#pragma warning restore CS0618
     }
 }
