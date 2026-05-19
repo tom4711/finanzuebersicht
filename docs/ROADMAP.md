@@ -16,6 +16,27 @@
 
 ---
 
+## ✅ v1.6 — Architektur & Datenrobustheit *(abgeschlossen)*
+
+Fokus: Layering bereinigen, Persistenz robuster machen und DI modularisieren.
+
+| Issue | Thema | Status |
+|-------|-------|--------|
+| [#152](https://github.com/tom4711/finanzuebersicht/issues/152) | JSON-Persistenz: Korruption nicht stillschweigend als leere Daten behandeln | ✅ Closed |
+| [#153](https://github.com/tom4711/finanzuebersicht/issues/153) | Restore-Prozess transaktional absichern | ✅ Closed |
+| [#154](https://github.com/tom4711/finanzuebersicht/issues/154) | Refactor Core: I/O-, Logging- und Persistenz-Services aus Core auslagern | ✅ Closed |
+| [#155](https://github.com/tom4711/finanzuebersicht/issues/155) | CSV-Import: Teilimporte und globale Side-Effects vermeiden | ✅ Closed |
+| [#159](https://github.com/tom4711/finanzuebersicht/issues/159) | Recurring-Berechnung zentralisieren und CancellationToken unterstützen | ✅ Closed |
+| [#160](https://github.com/tom4711/finanzuebersicht/issues/160) | DataServiceFacade in fachlich getrennte Interfaces aufteilen | ✅ Closed |
+| [#161](https://github.com/tom4711/finanzuebersicht/issues/161) | DI-Registrierung in modulare Extensions aufteilen | ✅ Closed |
+| [#162](https://github.com/tom4711/finanzuebersicht/issues/162) | Namespaces nach Layern trennen und vereinheitlichen | ✅ Closed |
+| [#163](https://github.com/tom4711/finanzuebersicht/issues/163) | SettingsService: I/O abstrahieren und async/testbar machen | ✅ Closed |
+| [#168](https://github.com/tom4711/finanzuebersicht/issues/168) | UseCases um CancellationToken und klare Application-Verantwortung erweitern | ✅ Closed |
+
+Alle 10 Issues des Milestones sind geschlossen.
+
+---
+
 ## 🔧 v1.1 — Qualität & Performance *(geplant)* · [Milestone](https://github.com/tom4711/finanzuebersicht/milestone/5)
 
 Fokus: Code-Qualität, technische Schulden abbauen, Performance verbessern.

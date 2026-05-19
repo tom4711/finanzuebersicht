@@ -44,10 +44,10 @@ dotnet test Finanzuebersicht.Tests
 | Location | Purpose |
 |----------|---------|
 | `Finanzuebersicht/` | MAUI app entry point (App.xaml, MauiProgram.cs, Views, Converters, Resources) |
-| `Finanzuebersicht.Presentation/` | Presentation layer (ViewModels, Navigation, UI Services) |
-| `Finanzuebersicht.Application/` | Application / Use Cases layer (net10.0) |
-| `Finanzuebersicht.Infrastructure/` | DI registration, infrastructure services (net10.0) |
-| `Finanzuebersicht.Core/` | Domain layer: models & business services (net10.0) |
+| `Finanzuebersicht.Presentation/` | Presentation layer (ViewModels, Navigation, `Finanzuebersicht.Presentation.Services`, `AddPresentationViewModels`) |
+| `Finanzuebersicht.Application/` | Application / Use Cases layer (`UseCases/*`, `AddApplicationUseCases`) |
+| `Finanzuebersicht.Infrastructure/` | Infrastructure layer (`SettingsService`, `BackupService`, `LocalDataService`, `*Store.cs`, `AddInfrastructureServices`) |
+| `Finanzuebersicht.Core/` | Domain layer: `Finanzuebersicht.Models` + `Finanzuebersicht.Core.Services` (interfaces, domain services, migrations) |
 | `Finanzuebersicht.Tests/` | xUnit tests (net10.0) |
 
 ## Key Resources
@@ -61,10 +61,11 @@ dotnet test Finanzuebersicht.Tests
 ## Architecture Overview
 
 - **MVVM** using CommunityToolkit.Mvvm source generators
-- **DI:** Register all services in `MauiProgram.cs`
+- **DI:** `MauiProgram.cs` acts as a thin orchestrator and calls `AddInfrastructureServices()`, `AddApplicationUseCases()` and `AddPresentationViewModels()`
 - **Localization:** German (default) + English support
-- **Data Persistence:** JSON files locally; CloudKit available but not maintained
-- **Backup:** ZIP-based with schema versioning and automatic migration (`DataMigrationService`)
+- **Data Persistence:** JSON files locally via `LocalDataService`; new code prefers specific repository interfaces, `IDataService` remains legacy-only
+- **Backup:** ZIP-based with schema versioning and automatic migration (`DataMigrationService`); `BackupService` lives in Infrastructure
+- **Logging:** `FileLogger` was removed; logging uses `ILogger<T>`
 
 ## Features
 

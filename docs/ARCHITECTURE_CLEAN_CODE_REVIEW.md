@@ -8,6 +8,21 @@ Clean Code, Testbarkeit, .NET/MAUI-Best-Practices und Wartbarkeit. Es ist so
 strukturiert, dass daraus direkt GitHub-Issues mit Beschreibung,
 Akzeptanzkriterien und betroffenen Dateien erstellt werden können.
 
+## v1.6 Status
+
+Dieses Dokument ist eine Vorab-Analyse. Seit v1.6 sind die zentralen
+Layering-Maßnahmen aus diesem Review umgesetzt:
+
+- ✅ #154 erledigt: `FileLogger` entfernt; Logging läuft über `ILogger<T>`.
+- ✅ `SettingsService` und `BackupService` aus `Core` nach
+  `Finanzuebersicht.Infrastructure.Services` verschoben.
+- ✅ #161 erledigt: DI über `AddInfrastructureServices()`,
+  `AddApplicationUseCases()` und `AddPresentationViewModels()` modularisiert.
+- ✅ #162 erledigt: Layer-Namespaces vereinheitlicht; neue GlobalUsings wurden
+  in den Layer-Projekten ergänzt.
+- ✅ `IDataService` ist nur noch als Legacy-Kompatibilität markiert; neue
+  Features nutzen spezifische Repository-Interfaces.
+
 ## Kurzfazit
 
 Die Codebasis ist funktional stabil und hat bereits wichtige Qualitätsmerkmale:
@@ -20,10 +35,13 @@ Die Codebasis ist funktional stabil und hat bereits wichtige Qualitätsmerkmale:
 - DI-Registrierung und erste Clean-Architecture-Ausrichtung
 - Nerdbank.GitVersioning und CI/CD sind vorhanden
 
-Die größten Architektur-Risiken liegen aktuell aber in unscharfen Layer-Grenzen:
+Die größten Architektur-Risiken lagen zum Erstellungszeitpunkt dieses Reviews
+vor allem in unscharfen Layer-Grenzen:
 
-1. `Finanzuebersicht.Core` enthält noch Infrastruktur-Logik wie Datei-I/O,
-   Backup/Restore, Settings-Persistenz, Import und Logging.
+1. Historischer Befund: `Finanzuebersicht.Core` enthielt Infrastruktur-Logik wie
+   Datei-I/O, Backup/Restore, Settings-Persistenz, Import und Logging.
+   **Status v1.6:** Logging/Settings/Backup wurden bereinigt; offene Punkte
+   betreffen vor allem verbleibende Import-/Legacy-Themen.
 2. ViewModels enthalten teilweise direkte MAUI-/Shell-/Toolkit-Abhängigkeiten.
 3. JSON-Persistenz und Restore sind noch nicht robust genug gegen Korruption
    oder Teilzustände.
@@ -74,7 +92,7 @@ Issues ergänzt:
 |-------|-------|-----------|
 | #152 | JSON-Persistenz: Korruption nicht stillschweigend als leere Daten behandeln | v1.6 – Architektur & Datenrobustheit |
 | #153 | Restore-Prozess transaktional absichern | v1.6 – Architektur & Datenrobustheit |
-| #154 | Refactor Core: I/O-, Logging- und Persistenz-Services aus Core auslagern | v1.6 – Architektur & Datenrobustheit |
+| #154 | Refactor Core: I/O-, Logging- und Persistenz-Services aus Core auslagern | v1.6 – Architektur & Datenrobustheit · ✅ DONE |
 | #155 | CSV-Import: Teilimporte und globale Side-Effects vermeiden | v1.6 – Architektur & Datenrobustheit |
 | #156 | Architektur: UI-nahe MAUI-APIs aus ViewModels herauslösen | v1.5 – Testabdeckung & ViewModel-Tests |
 | #157 | Refactor: SettingsViewModel in fachlich getrennte Komponenten zerlegen | v1.5 – Testabdeckung & ViewModel-Tests |
@@ -82,7 +100,7 @@ Issues ergänzt:
 | #159 | Recurring-Berechnung zentralisieren und CancellationToken unterstützen | v1.6 – Architektur & Datenrobustheit |
 | #160 | DataServiceFacade in fachlich getrennte Interfaces aufteilen | v1.6 – Architektur & Datenrobustheit |
 | #161 | DI-Registrierung in modulare Extensions aufteilen | v1.6 – Architektur & Datenrobustheit |
-| #162 | Namespaces nach Layern trennen und vereinheitlichen | v1.6 – Architektur & Datenrobustheit |
+| #162 | Namespaces nach Layern trennen und vereinheitlichen | v1.6 – Architektur & Datenrobustheit · ✅ DONE |
 | #163 | SettingsService: I/O abstrahieren und async/testbar machen | v1.6 – Architektur & Datenrobustheit |
 | #164 | Refactor: Static Cache aus KategorieIdToIconConverter entfernen | v1.5 – Testabdeckung & ViewModel-Tests |
 | #165 | Build-Reproduzierbarkeit erhöhen: Floating Package-Versionen eliminieren | v1.7 – Build, CI & Wartbarkeit |
@@ -104,23 +122,28 @@ wurden geschlossen, da sie keine offenen Issues mehr enthalten.
 
 ## Priorisierte Issue-Kandidaten
 
-### P0 - Core von Infrastruktur befreien
+### P0 - Core von Infrastruktur befreien ✅ DONE in v1.6
 
 **Titel:** `Refactor Core: I/O-, Logging- und Persistenz-Services aus Core auslagern`
 
 **Labels:** `architecture`, `refactor`, `.NET`, `priority:high`
 
-**Problem:**  
-`Finanzuebersicht.Core` ist aktuell kein reiner Domain-/Abstraktions-Layer. In
-`Core` liegen u. a. Datei-I/O, ZIP/JSON-Serialisierung, Settings-Persistenz,
-Import-Workflow und Datei-Logging.
+**Problem (historischer Befund):**  
+`Finanzuebersicht.Core` war zum Zeitpunkt dieses Reviews kein reiner
+Domain-/Abstraktions-Layer. In `Core` lagen u. a. Datei-I/O,
+ZIP/JSON-Serialisierung, Settings-Persistenz, Import-Workflow und
+Datei-Logging.
 
-**Betroffene Dateien:**
+**Status v1.6:** `FileLogger` wurde gelöscht, `SettingsService` und
+`BackupService` nach `Finanzuebersicht.Infrastructure.Services` verschoben.
+`AppPaths` ist als reiner Pfad-Helper im Core verblieben.
 
-- `Finanzuebersicht.Core/Services/BackupService.cs`
-- `Finanzuebersicht.Core/Services/SettingsService.cs`
+**Betroffene Dateien (historisch / heute):**
+
+- ~~`Finanzuebersicht.Core/Services/BackupService.cs`~~ → `Finanzuebersicht.Infrastructure/Services/BackupService.cs`
+- ~~`Finanzuebersicht.Core/Services/SettingsService.cs`~~ → `Finanzuebersicht.Infrastructure/Services/SettingsService.cs`
 - `Finanzuebersicht.Core/Services/ImportService.cs`
-- `Finanzuebersicht.Core/Services/FileLogger.cs`
+- ~~`Finanzuebersicht.Core/Services/FileLogger.cs`~~ (in v1.6 gelöscht)
 - `Finanzuebersicht.Core/Services/AppPaths.cs`
 - `Finanzuebersicht.Infrastructure/Services/*`
 
@@ -135,7 +158,8 @@ CloudKit/Sync, Multi-Account und alternative Speicherorte.
 - Datei-/ZIP-/JSON-/Settings-/Logging-Implementierungen nach
   `Finanzuebersicht.Infrastructure` verschieben.
 - Falls nötig neue Contracts einführen, z. B. `ISettingsStore`,
-  `IBackupArchiveStore`, `IFileLogger`, `IAppPathProvider`.
+  `IBackupArchiveStore`, `IAppPathProvider` oder eine `ILogger<T>`-basierte
+  Logging-Abstraktion.
 - Bestehende Tests auf Interfaces ausrichten.
 
 **Akzeptanzkriterien:**
@@ -199,7 +223,8 @@ ursprünglichen Zustand überschreiben.
 `BackupService.AtomicRestoreAsync` schreibt Entity-Typen nacheinander und macht
 bei Fehlern ein Best-Effort-Rollback:
 
-- `Finanzuebersicht.Core/Services/BackupService.cs:237-293`
+- `Finanzuebersicht.Infrastructure/Services/BackupService.cs` (seit v1.6; im
+  ursprünglichen Review noch unter `Core` verortet)
 
 Wenn Restore oder Rollback fehlschlägt, kann ein gemischter Datenzustand
 entstehen.
@@ -241,8 +266,9 @@ Verarbeitung einzeln und läuft bei Save-Fehlern weiter:
 - Save-Fehler werden in `ImportService.cs:195-205` geloggt, aber der Import
   wird fortgesetzt.
 
-Zusätzlich gibt es direkte `FileLogger.Append`-Side-Effects und mehrere Stellen,
-an denen Fehler zu `[]` führen.
+Historischer Befund: Zusätzlich gab es direkte `FileLogger.Append`-Side-Effects
+und mehrere Stellen, an denen Fehler zu `[]` führten. Das Logging ist seit
+v1.6 auf `ILogger<T>` umgestellt.
 
 **Impact:**  
 Importe können teilweise erfolgreich sein, ohne dass die App oder der Nutzer
@@ -463,7 +489,7 @@ unnötig viele Klassen betreffen.
 
 ---
 
-### P2 - DI-Registrierung modularisieren
+### P2 - DI-Registrierung modularisieren ✅ DONE in v1.6
 
 **Titel:** `DI-Registrierung in modulare Extensions aufteilen`
 
@@ -481,13 +507,14 @@ führen schnell zu Merge-Konflikten und erschweren Reviews.
 
 **Empfohlener Ansatz:**
 
-- Extension-Methoden einführen:
-  - `AddApplicationServices()`
-  - `AddInfrastructureServices()` existiert bereits und kann erweitert werden
-  - `AddPresentationServices()`
-  - `AddViewModels()`
-  - `AddPages()`
+- Extension-Methoden einführen bzw. nutzen:
+  - `AddInfrastructureServices()`
+  - `AddApplicationUseCases()`
+  - `AddPresentationViewModels()`
 - `MauiProgram` nur als Orchestrator belassen.
+
+**Status v1.6:** umgesetzt; `MauiProgram.cs` orchestriert die layer-spezifischen
+Registrierungen.
 
 **Akzeptanzkriterien:**
 
@@ -497,7 +524,7 @@ führen schnell zu Merge-Konflikten und erschweren Reviews.
 
 ---
 
-### P2 - Namespaces nach Layern vereinheitlichen
+### P2 - Namespaces nach Layern vereinheitlichen ✅ DONE in v1.6
 
 **Titel:** `Namespaces nach Layern trennen und vereinheitlichen`
 
@@ -515,12 +542,16 @@ Layer-Aufgaben haben. Das erschwert Code Reviews, Navigation und Refactorings.
 **Empfohlener Ansatz:**
 
 - Zielstruktur definieren:
-  - `Finanzuebersicht.Domain` oder `Finanzuebersicht.Core`
-  - `Finanzuebersicht.Application`
-  - `Finanzuebersicht.Infrastructure`
-  - `Finanzuebersicht.Presentation` oder MAUI-spezifisch
+  - `Finanzuebersicht.Core.Services`
+  - `Finanzuebersicht.Application.UseCases.*`
+  - `Finanzuebersicht.Infrastructure.Services`
+  - `Finanzuebersicht.Presentation.Services`
+  - MAUI-spezifische App-Typen bleiben unter `Finanzuebersicht.*`
 - Namespaces schrittweise angleichen.
 - Bei großen Umbenennungen kleine PRs bevorzugen.
+
+**Status v1.6:** umgesetzt; Layer-Namespaces sind vereinheitlicht und über
+projektbezogene `GlobalUsings.cs` ergänzt.
 
 **Akzeptanzkriterien:**
 
@@ -530,19 +561,24 @@ Layer-Aufgaben haben. Das erschwert Code Reviews, Navigation und Refactorings.
 
 ---
 
-### P2 - SettingsService async und testbar machen
+### P2 - SettingsService async und testbar machen ✅ DONE in v1.6
 
 **Titel:** `SettingsService: I/O abstrahieren und async/testbar machen`
 
 **Labels:** `refactor`, `settings`, `.NET`, `priority:medium`
 
-**Problem:**  
-`SettingsService` arbeitet synchron und hängt direkt an Pfaden bzw.
+**Problem (historischer Befund):**  
+`SettingsService` arbeitete synchron und hing direkt an Pfaden bzw.
 Dateisystemlogik.
+
+**Status v1.6:** Die konkrete Implementierung lebt jetzt in
+`Finanzuebersicht.Infrastructure.Services.SettingsService`; das Interface bleibt
+in `Finanzuebersicht.Core.Services`.
 
 **Betroffene Dateien:**
 
-- `Finanzuebersicht.Core/Services/SettingsService.cs`
+- `Finanzuebersicht.Infrastructure/Services/SettingsService.cs`
+- `Finanzuebersicht.Core/Services/ISettingsService.cs`
 - `Finanzuebersicht.Infrastructure/DependencyInjection/InfrastructureServiceCollectionExtensions.cs`
 
 **Impact:**  
