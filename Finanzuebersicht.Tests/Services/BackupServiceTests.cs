@@ -415,6 +415,7 @@ namespace Finanzuebersicht.Tests.Services
         public Task DeleteSparZielAsync(string id) => Task.CompletedTask;
         public Task ReplaceAllSparZieleAsync(IEnumerable<SparZiel> sparziele) { _sparziele = sparziele.ToList(); return Task.CompletedTask; }
     }
+#pragma warning restore CS0618
 
     internal class MockSettingsService : SettingsService
     {

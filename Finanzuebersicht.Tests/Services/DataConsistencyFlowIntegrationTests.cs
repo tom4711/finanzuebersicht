@@ -397,5 +397,6 @@ namespace Finanzuebersicht.Tests.Services
             public Task DeleteSparZielAsync(string id) { _sparziele.RemoveAll(s => s.Id == id); return Task.CompletedTask; }
             public Task ReplaceAllSparZieleAsync(IEnumerable<SparZiel> sparziele) { _sparziele.Clear(); _sparziele.AddRange(sparziele); return Task.CompletedTask; }
         }
+#pragma warning restore CS0618
     }
 }

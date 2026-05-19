@@ -2,6 +2,8 @@
 
 Übersicht über geplante Releases und Features. Die Roadmap wird fortlaufend aktualisiert.
 
+> **Hinweis:** Die Milestone-Bezeichnungen (v1.1, v1.2, v2.0) sind thematische GitHub-Planungslabels, keine sequenziellen Release-Versionen. Tatsächliche Releases (v1.0, v1.6, v1.6.1 …) werden durch Git-Commit-Höhe via Nerdbank.GitVersioning bestimmt.
+
 ---
 
 ## ✅ v1.0 — Stable Release *(abgeschlossen)*
