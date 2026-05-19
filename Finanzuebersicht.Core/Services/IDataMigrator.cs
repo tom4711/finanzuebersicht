@@ -1,4 +1,4 @@
-namespace Finanzuebersicht.Services;
+namespace Finanzuebersicht.Core.Services;
 
 /// <summary>
 /// Migriert Backup-Daten von einer Schema-Version zur nächsten.

@@ -3,7 +3,7 @@ using System;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 
-namespace Finanzuebersicht.Services;
+namespace Finanzuebersicht.Infrastructure.Services;
 
 /// <summary>
 /// Verwaltet App-Einstellungen als Key-Value-Paare (JSON-Datei).

@@ -1,6 +1,5 @@
 using Finanzuebersicht.Application.UseCases.Dashboard;
 using Finanzuebersicht.Models;
-using Finanzuebersicht.Services;
 
 namespace Finanzuebersicht.Tests.Application.UseCases;
 

@@ -3,7 +3,6 @@ using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using Finanzuebersicht.Application.UseCases.Transactions;
 using Finanzuebersicht.Models;
-using Finanzuebersicht.Services;
 using Finanzuebersicht.ViewModels;
 using Microsoft.Extensions.Logging;
 

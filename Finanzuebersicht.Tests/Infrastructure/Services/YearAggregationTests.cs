@@ -4,7 +4,6 @@ using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Finanzuebersicht.Models;
-using Finanzuebersicht.Services;
 using Xunit;
 
 namespace Finanzuebersicht.Tests.Services
@@ -42,7 +41,7 @@ namespace Finanzuebersicht.Tests.Services
             // Use SettingsService to point LocalDataService to temp dir
             var settings = new SettingsService(Path.Combine(_tempDir, "settings.json"));
             settings.Set("DataPath", _tempDir);
-            var ds = new LocalDataService(settings, new Finanzuebersicht.Services.SystemClock());
+            var ds = new LocalDataService(settings, new Finanzuebersicht.Core.Services.SystemClock());
 
             // Act
             var summary = await ds.GetYearSummaryAsync(2025);

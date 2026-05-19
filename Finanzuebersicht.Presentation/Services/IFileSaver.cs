@@ -1,4 +1,4 @@
-namespace Finanzuebersicht.Services;
+namespace Finanzuebersicht.Presentation.Services;
 
 public record FileSaverResult(bool IsSuccessful, string? FilePath, Exception? Exception);
 

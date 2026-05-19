@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Finanzuebersicht.Models;
 
-namespace Finanzuebersicht.Services;
+namespace Finanzuebersicht.Core.Services;
 
 /// <summary>
 /// Orchestrates transaction categorization using pluggable strategies.

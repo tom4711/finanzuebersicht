@@ -1,6 +1,5 @@
 using Finanzuebersicht.Application.UseCases.Dashboard;
 using Finanzuebersicht.Application.UseCases.RecurringTransactions;
-using Finanzuebersicht.Services;
 using Finanzuebersicht.Tests.TestHelpers;
 using Finanzuebersicht.ViewModels;
 

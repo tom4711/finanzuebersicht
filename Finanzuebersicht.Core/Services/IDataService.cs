@@ -1,4 +1,4 @@
-namespace Finanzuebersicht.Services;
+namespace Finanzuebersicht.Core.Services;
 
 /// <summary>
 /// Broad facade interface aggregating all domain repositories and services.

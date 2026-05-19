@@ -5,7 +5,7 @@ namespace Finanzuebersicht.Services;
 /// <summary>
 /// MAUI implementation: wraps <see cref="FilePicker"/> so ViewModels stay platform-agnostic.
 /// </summary>
-public class MauiFilePicker : IFilePicker
+public class MauiFilePicker : Finanzuebersicht.Presentation.Services.IFilePicker
 {
     public async Task<PickFileResult?> PickAsync()
     {

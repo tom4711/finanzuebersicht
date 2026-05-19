@@ -1,7 +1,6 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Finanzuebersicht.Services;
 using Finanzuebersicht.Resources.Strings;
 using Microsoft.Extensions.Logging;
 

@@ -3,7 +3,6 @@ using CommunityToolkit.Mvvm.Input;
 using Finanzuebersicht.Application.UseCases.Categories;
 using Finanzuebersicht.Models;
 using Finanzuebersicht.Navigation;
-using Finanzuebersicht.Services;
 using Finanzuebersicht.Resources.Strings;
 using Microsoft.Extensions.Logging;
 using System.Globalization;

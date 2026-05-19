@@ -1,4 +1,3 @@
-using Finanzuebersicht.Services;
 using Finanzuebersicht.Tests.TestHelpers;
 using Finanzuebersicht.ViewModels;
 

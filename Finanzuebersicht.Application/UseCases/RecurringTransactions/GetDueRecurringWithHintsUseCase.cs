@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using Finanzuebersicht.Models;
-using Finanzuebersicht.Services;
 
 namespace Finanzuebersicht.Application.UseCases.RecurringTransactions;
 

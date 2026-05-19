@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Finanzuebersicht.Models;
-using Finanzuebersicht.Services;
 using Finanzuebersicht.Tests.TestHelpers;
 using Xunit;
 using NSubstitute;

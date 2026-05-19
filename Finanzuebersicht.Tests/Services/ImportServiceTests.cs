@@ -1,5 +1,4 @@
 using Xunit;
-using Finanzuebersicht.Services;
 using Finanzuebersicht.Models;
 using Microsoft.Extensions.Logging;
 using NSubstitute.ExceptionExtensions;

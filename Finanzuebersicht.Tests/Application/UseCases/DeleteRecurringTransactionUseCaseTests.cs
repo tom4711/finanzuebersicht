@@ -1,5 +1,4 @@
 using Finanzuebersicht.Application.UseCases.RecurringTransactions;
-using Finanzuebersicht.Services;
 using NSubstitute;
 
 namespace Finanzuebersicht.Tests.Application.UseCases;

@@ -1,4 +1,4 @@
-namespace Finanzuebersicht.Services;
+namespace Finanzuebersicht.Presentation.Services;
 
 /// <summary>
 /// Abstracts app-wide event notification so ViewModels don't depend on the

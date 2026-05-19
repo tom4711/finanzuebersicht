@@ -1,4 +1,4 @@
-namespace Finanzuebersicht.Services;
+namespace Finanzuebersicht.Presentation.Services;
 
 /// <summary>Result of a file pick operation, abstracting MAUI's FileResult.</summary>
 public sealed class PickFileResult

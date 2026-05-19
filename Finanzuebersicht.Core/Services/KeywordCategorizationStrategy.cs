@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Finanzuebersicht.Models;
 
-namespace Finanzuebersicht.Services;
+namespace Finanzuebersicht.Core.Services;
 
 /// <summary>
 /// Categorizes transactions using regex pattern matching on payee/reference fields.

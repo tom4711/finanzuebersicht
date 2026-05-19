@@ -1,6 +1,5 @@
 using Finanzuebersicht.Navigation;
 using Finanzuebersicht.Resources.Strings;
-using Finanzuebersicht.Services;
 using Finanzuebersicht.Tests.TestHelpers;
 using Finanzuebersicht.ViewModels;
 

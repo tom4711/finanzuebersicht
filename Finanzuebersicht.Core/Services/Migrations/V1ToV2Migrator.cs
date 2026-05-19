@@ -1,4 +1,4 @@
-namespace Finanzuebersicht.Services.Migrations;
+namespace Finanzuebersicht.Core.Services.Migrations;
 
 /// <summary>
 /// Migriert v1-Backups auf v2: ergänzt fehlende budgets.json und sparziele.json

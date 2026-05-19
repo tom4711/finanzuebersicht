@@ -1,17 +1,17 @@
 using Finanzuebersicht.Models;
 using Microsoft.Extensions.Logging;
 
-namespace Finanzuebersicht.Services;
+namespace Finanzuebersicht.Core.Services;
 
 public class RecurringGenerationService(
     IRecurringTransactionRepository recurringRepository,
     ITransactionRepository transactionRepository,
-    Finanzuebersicht.Services.IClock? clock = null,
+    Finanzuebersicht.Core.Services.IClock? clock = null,
     ILogger<RecurringGenerationService>? logger = null) : IRecurringGenerationService
 {
     private readonly IRecurringTransactionRepository _recurringRepository = recurringRepository;
     private readonly ITransactionRepository _transactionRepository = transactionRepository;
-    private readonly Finanzuebersicht.Services.IClock _clock = clock ?? Finanzuebersicht.Services.SystemClock.Instance;
+    private readonly Finanzuebersicht.Core.Services.IClock _clock = clock ?? Finanzuebersicht.Core.Services.SystemClock.Instance;
     private readonly ILogger<RecurringGenerationService>? _logger = logger;
     private const int MaxInstancesPerRun = 500;
 

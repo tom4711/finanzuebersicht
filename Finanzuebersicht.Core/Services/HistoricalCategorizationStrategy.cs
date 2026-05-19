@@ -5,9 +5,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Finanzuebersicht.Models;
-using Finanzuebersicht.Services;
 
-namespace Finanzuebersicht.Services;
+namespace Finanzuebersicht.Core.Services;
 
 /// <summary>
 /// Categorizes transactions based on historical categorization patterns.

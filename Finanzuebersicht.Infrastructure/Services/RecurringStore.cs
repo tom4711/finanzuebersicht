@@ -1,7 +1,7 @@
 using Finanzuebersicht.Models;
 using Microsoft.Extensions.Logging;
 
-namespace Finanzuebersicht.Services;
+namespace Finanzuebersicht.Infrastructure.Services;
 
 /// <summary>
 /// JSON-based adapter for RecurringTransaction repository operations.

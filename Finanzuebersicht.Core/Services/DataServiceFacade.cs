@@ -1,7 +1,7 @@
 using Finanzuebersicht.Models;
 
 #pragma warning disable CS0618 // IDataService is intentionally implemented here as the facade
-namespace Finanzuebersicht.Services;
+namespace Finanzuebersicht.Core.Services;
 
 public class DataServiceFacade(
     ICategoryRepository categoryRepository,

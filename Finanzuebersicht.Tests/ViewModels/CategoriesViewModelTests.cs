@@ -2,7 +2,6 @@ using System.Collections.ObjectModel;
 using Finanzuebersicht.Application.UseCases.Categories;
 using Finanzuebersicht.Models;
 using Finanzuebersicht.Navigation;
-using Finanzuebersicht.Services;
 using Finanzuebersicht.ViewModels;
 
 namespace Finanzuebersicht.Tests.ViewModels;

@@ -1,4 +1,4 @@
-namespace Finanzuebersicht.Services;
+namespace Finanzuebersicht.Presentation.Services;
 
 /// <summary>
 /// Abstracts MainThread.InvokeOnMainThreadAsync so ViewModels remain testable

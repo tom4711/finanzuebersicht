@@ -5,7 +5,6 @@ using Finanzuebersicht.Application.UseCases.RecurringTransactions;
 using Finanzuebersicht.Models;
 using Finanzuebersicht.Navigation;
 using Finanzuebersicht.Resources.Strings;
-using Finanzuebersicht.Services;
 using Microsoft.Extensions.Logging;
 
 namespace Finanzuebersicht.ViewModels;

@@ -1,6 +1,5 @@
 using Finanzuebersicht.Application.UseCases.Categories;
 using Finanzuebersicht.Models;
-using Finanzuebersicht.Services;
 using NSubstitute;
 
 namespace Finanzuebersicht.Tests.Application.UseCases;

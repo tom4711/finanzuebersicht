@@ -8,9 +8,8 @@ using System.Globalization;
 using System.Threading;
 using Microsoft.Extensions.Logging;
 using Finanzuebersicht.Models;
-using Finanzuebersicht.Services;
 
-namespace Finanzuebersicht.Services
+namespace Finanzuebersicht.Core.Services
 {
     public class ImportService(
         IEnumerable<IStatementParser> parsers,
