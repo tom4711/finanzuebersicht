@@ -320,6 +320,7 @@ namespace Finanzuebersicht.Tests.Services
         }
 
         // Mock implementations
+#pragma warning disable CS0618
         private class MockDataService : IDataService
         {
             private List<Category> _categories = [];
@@ -409,6 +410,7 @@ namespace Finanzuebersicht.Tests.Services
         /// Used to test the scenario where restore fails AND rollback also fails.
         /// </summary>
         private class FailingMockDataService : IDataService
+#pragma warning disable CS0618
         {
             public Task<List<Category>> GetCategoriesAsync() => Task.FromResult(new List<Category>());
             public Task<List<Transaction>> GetTransactionsAsync(DateTime v, DateTime b) => Task.FromResult(new List<Transaction>());

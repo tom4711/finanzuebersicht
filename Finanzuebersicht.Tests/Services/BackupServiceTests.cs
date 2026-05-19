@@ -356,6 +356,7 @@ namespace Finanzuebersicht.Tests.Services
 
     // ========== Mock-Implementierungen ==========
 
+#pragma warning disable CS0618
     internal class MockDataService : IDataService
     {
         private List<Category> _categories = [];

@@ -37,7 +37,7 @@ public class SearchTransactionsUseCaseTests
             Id = id,
             Titel = titel,
             Verwendungszweck = verwendungszweck,
-            KategorieId = kategorieId,
+            KategorieId = kategorieId ?? string.Empty,
             Typ = typ,
             Betrag = 10m,
             Datum = datum ?? new DateTime(2026, 1, 15)

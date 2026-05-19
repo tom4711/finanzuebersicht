@@ -265,6 +265,7 @@ namespace Finanzuebersicht.Tests.Services
         /// In-memory implementation of IDataService for testing.
         /// Provides isolated test environment without file I/O.
         /// </summary>
+#pragma warning disable CS0618
         private class InMemoryDataService : IDataService
         {
             private readonly List<Category> _categories = [];
