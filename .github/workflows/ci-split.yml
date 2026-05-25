@@ -62,7 +62,7 @@ jobs:
       - uses: actions/checkout@v6
         with:
           fetch-depth: 0
-      - name: Check for label
+      - name: Forward matrix to output
         id: labelcheck
         run: |
           echo "run_maui=${{ matrix.run_maui }}" >> "$GITHUB_OUTPUT"
