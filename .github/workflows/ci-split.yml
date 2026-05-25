@@ -36,7 +36,15 @@ jobs:
       - name: Restore tests only
         run: dotnet restore Finanzuebersicht.Tests/Finanzuebersicht.Tests.csproj
       - name: Build & Test
-        run: dotnet test Finanzuebersicht.Tests/Finanzuebersicht.Tests.csproj -c Release --no-restore --logger "console;verbosity=minimal"
+        run: dotnet test Finanzuebersicht.Tests/Finanzuebersicht.Tests.csproj -c Release --no-restore --logger "console;verbosity=minimal" --collect:"XPlat Code Coverage" --results-directory="coverage"
+       
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: coverage-report
+          path: coverage/
+          if-no-files-found: warn
 
   full-maui-checks:
     name: Full MAUI build (macOS)
@@ -57,7 +65,7 @@ jobs:
       - name: Check for label
         id: labelcheck
         run: |
-          echo "::set-output name=run_maui::${{ matrix.run-maui }}"
+          echo "run_maui=${{ matrix.run-maui }}" >> "$GITHUB_OUTPUT"
       - name: Setup .NET
         if: steps.labelcheck.outputs.run_maui == 'true'
         uses: actions/setup-dotnet@v5
