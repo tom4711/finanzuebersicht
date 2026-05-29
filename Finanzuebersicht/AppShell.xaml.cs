@@ -15,6 +15,7 @@ public partial class AppShell : Shell
 		Routing.RegisterRoute(Routes.RecurringInstanceShift, typeof(RecurringInstanceShiftPage));
 		Routing.RegisterRoute(Routes.Settings, typeof(SettingsPage));
 		Routing.RegisterRoute(Routes.BackupList, typeof(BackupListPage));
+		Routing.RegisterRoute(Routes.ImportPreview, typeof(ImportPreviewPage));
 	}
 
 	private async void OnSettingsClicked(object? sender, EventArgs e)

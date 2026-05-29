@@ -3,6 +3,8 @@ using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using Finanzuebersicht.Application.UseCases.Transactions;
 using Finanzuebersicht.Models;
+using Finanzuebersicht.Navigation;
+using Finanzuebersicht.Presentation.Services;
 using Finanzuebersicht.ViewModels;
 using Microsoft.Extensions.Logging;
 
@@ -163,6 +165,50 @@ public class TransactionsViewModelTests
         await deleteRepository.DidNotReceive().DeleteTransactionAsync(Arg.Any<string>());
     }
 
+    [Fact]
+    public async Task ImportCsv_NavigatesToPreviewRoute()
+    {
+        var parser = Substitute.For<IStatementParser>();
+        parser.Parse(Arg.Any<Stream>()).Returns([
+            new TransactionDto { Buchungsdatum = DateTime.Today, Betrag = 10m, Zahlungsempfaenger = "Import" }
+        ]);
+
+        var importRepository = Substitute.For<ITransactionRepository>();
+        importRepository.GetTransactionsAsync(Arg.Any<DateTime>(), Arg.Any<DateTime>())
+            .Returns(Task.FromResult(new List<Transaction>()));
+
+        var importCategoryRepository = Substitute.For<ICategoryRepository>();
+        importCategoryRepository.GetCategoriesAsync()
+            .Returns(Task.FromResult(new List<Category>()));
+
+        var importLogger = Substitute.For<ILogger<ImportService>>();
+        var importService = new ImportService([parser], importRepository, importLogger, importCategoryRepository);
+
+        var pickedFile = new PickFileResult("test.csv", () => Task.FromResult<Stream>(new MemoryStream()));
+        var filePicker = Substitute.For<IFilePicker>();
+        filePicker.PickAsync().Returns(Task.FromResult<PickFileResult?>(pickedFile));
+
+        var importSessionStore = new ImportSessionStore();
+
+        var viewModel = CreateSut(
+            Substitute.For<ITransactionRepository>(),
+            Substitute.For<ICategoryRepository>(),
+            Substitute.For<ITransactionRepository>(),
+            Substitute.For<ICategoryRepository>(),
+            out _,
+            out _,
+            out _,
+            out var navigationService,
+            filePicker: filePicker,
+            importService: importService,
+            importSessionStore: importSessionStore);
+
+        await viewModel.ImportCsvCommand.ExecuteAsync(null);
+
+        Assert.NotNull(importSessionStore.GetActiveSession());
+        await navigationService.Received(1).GoToAsync(Routes.ImportPreview, Arg.Any<IDictionary<string, object>>());
+    }
+
     private static TransactionsViewModel CreateSut(
         ITransactionRepository loadTransactionRepository,
         ICategoryRepository loadCategoryRepository,
@@ -172,7 +218,10 @@ public class TransactionsViewModelTests
         out ILocalizationService localizationService,
         out IMainThreadDispatcher dispatcher,
         out INavigationService navigationService,
-        ITransactionRepository? deleteTransactionRepository = null)
+        ITransactionRepository? deleteTransactionRepository = null,
+        IFilePicker? filePicker = null,
+        ImportService? importService = null,
+        IImportSessionStore? importSessionStore = null)
     {
         dialogService = Substitute.For<IDialogService>();
         dialogService.ShowAlertAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
@@ -189,14 +238,17 @@ public class TransactionsViewModelTests
             .Returns(call => call.Arg<Func<Task>>()());
 
         navigationService = Substitute.For<INavigationService>();
+        navigationService.GoToAsync(Arg.Any<string>(), Arg.Any<IDictionary<string, object>>()).Returns(Task.CompletedTask);
+        navigationService.GoToAsync(Arg.Any<string>()).Returns(Task.CompletedTask);
 
-        var filePicker = Substitute.For<IFilePicker>();
+        filePicker ??= Substitute.For<IFilePicker>();
         var appEvents = Substitute.For<IAppEvents>();
         var logger = Substitute.For<ILogger<TransactionsViewModel>>();
-        var importLogger = Substitute.For<ILogger<ImportService>>();
-        var importTransactionRepository = Substitute.For<ITransactionRepository>();
-        var importCategoryRepository = Substitute.For<ICategoryRepository>();
-        var importService = new ImportService([], importTransactionRepository, importLogger, importCategoryRepository);
+        importService ??= new ImportService(
+            [],
+            Substitute.For<ITransactionRepository>(),
+            Substitute.For<ILogger<ImportService>>(),
+            Substitute.For<ICategoryRepository>());
 
         deleteTransactionRepository ??= Substitute.For<ITransactionRepository>();
         deleteTransactionRepository.DeleteTransactionAsync(Arg.Any<string>()).Returns(Task.CompletedTask);
@@ -213,6 +265,7 @@ public class TransactionsViewModelTests
             dispatcher,
             filePicker,
             appEvents,
-            logger);
+            logger,
+            importSessionStore);
     }
 }

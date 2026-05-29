@@ -32,9 +32,13 @@ public static class ApplicationServiceCollectionExtensions
         services.AddTransient<LoadTransactionDetailDataUseCase>();
         services.AddTransient<DeleteTransactionUseCase>();
         services.AddTransient<LoadTransactionsMonthUseCase>();
+        services.AddTransient<LoadTransactionTemplatesUseCase>();
         services.AddTransient<SearchTransactionsUseCase>();
         services.AddTransient<SaveRecurringTransactionDetailUseCase>();
         services.AddTransient<SaveTransactionDetailUseCase>();
+        services.AddTransient<SaveTransactionTemplateUseCase>();
+        services.AddTransient<DeleteTransactionTemplateUseCase>();
+        services.AddTransient<UseTransactionTemplateUseCase>();
 
         services.AddTransient<LoadSparZieleUseCase>();
         services.AddTransient<SaveSparZielUseCase>();

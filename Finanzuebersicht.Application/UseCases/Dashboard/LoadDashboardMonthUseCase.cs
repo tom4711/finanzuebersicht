@@ -73,16 +73,52 @@ public class LoadDashboardMonthUseCase(
             .OrderByDescending(k => k.Total)
             .ToList();
 
-        // Enrich with budget data
         var budgets = await _budgetRepository.GetBudgetsAsync() ?? [];
+        var isCurrentMonth = aktuellerMonat.Year == today.Year && aktuellerMonat.Month == today.Month;
+        var verbleibendeTage = isCurrentMonth
+            ? Math.Max(1, (bis.Date - today.Date).Days + 1)
+            : 0;
+
+        // Enrich with budget data
         foreach (var cs in kategorieAusgaben)
         {
-            var budget = budgets.FirstOrDefault(b => b.KategorieId == cs.CategoryId && b.Jahr == aktuellerMonat.Year && b.Monat == aktuellerMonat.Month)
-                ?? budgets.FirstOrDefault(b => b.KategorieId == cs.CategoryId && b.Jahr == null && b.Monat == aktuellerMonat.Month)
-                ?? budgets.FirstOrDefault(b => b.KategorieId == cs.CategoryId && b.Jahr == null && b.Monat == null);
+            var budget = FindBudgetForMonth(budgets, cs.CategoryId, aktuellerMonat.Year, aktuellerMonat.Month);
             if (budget != null)
                 cs.BudgetBetrag = budget.Betrag;
         }
+
+        var ausgabenNachKategorie = transaktionen
+            .Where(t => t.Typ == TransactionType.Ausgabe)
+            .GroupBy(t => t.KategorieId)
+            .ToDictionary(g => g.Key, g => g.Sum(t => Math.Abs(t.Betrag)));
+
+        var budgetHinweise = budgets
+            .Select(b => new
+            {
+                Budget = b,
+                Effective = FindBudgetForMonth(budgets, b.KategorieId, aktuellerMonat.Year, aktuellerMonat.Month)
+            })
+            .Where(x => x.Effective?.Id == x.Budget.Id && x.Budget.Betrag > 0)
+            .Select(x =>
+            {
+                var category = kategorien.FirstOrDefault(k => k.Id == x.Budget.KategorieId) ?? unkategorisiert;
+                ausgabenNachKategorie.TryGetValue(x.Budget.KategorieId, out var verbrauch);
+                return new BudgetHintSummary
+                {
+                    CategoryId = x.Budget.KategorieId,
+                    CategoryName = category.Name,
+                    Color = category.Color,
+                    Icon = category.Icon,
+                    BudgetBetrag = x.Budget.Betrag,
+                    Verbrauch = verbrauch,
+                    IstAktuellerMonat = isCurrentMonth,
+                    VerbleibendeTage = verbleibendeTage
+                };
+            })
+            .OrderByDescending(b => b.IstKritisch)
+            .ThenByDescending(b => b.VerbrauchProzentRaw)
+            .ThenBy(b => b.CategoryName)
+            .ToList();
 
         var kategorieEinnahmen = transaktionen
             .Where(t => t.Typ == TransactionType.Einnahme)
@@ -106,9 +142,15 @@ public class LoadDashboardMonthUseCase(
             GesamtAusgaben = gesamtAusgaben,
             Bilanz = gesamtEinnahmen - gesamtAusgaben,
             KategorieAusgaben = kategorieAusgaben,
-            KategorieEinnahmen = kategorieEinnahmen
+            KategorieEinnahmen = kategorieEinnahmen,
+            BudgetHinweise = budgetHinweise
         };
     }
+
+    private static CategoryBudget? FindBudgetForMonth(IEnumerable<CategoryBudget> budgets, string categoryId, int year, int month)
+        => budgets.FirstOrDefault(b => b.KategorieId == categoryId && b.Jahr == year && b.Monat == month)
+            ?? budgets.FirstOrDefault(b => b.KategorieId == categoryId && b.Jahr == null && b.Monat == month)
+            ?? budgets.FirstOrDefault(b => b.KategorieId == categoryId && b.Jahr == null && b.Monat == null);
 
     private static bool OccursInRange(RecurringTransaction da, DateTime rangeStart, DateTime rangeEnd)
     {
@@ -222,4 +264,5 @@ public class DashboardMonthData
     public decimal Bilanz { get; set; }
     public List<CategorySummary> KategorieAusgaben { get; set; } = new List<CategorySummary>();
     public List<CategorySummary> KategorieEinnahmen { get; set; } = new List<CategorySummary>();
+    public List<BudgetHintSummary> BudgetHinweise { get; set; } = new List<BudgetHintSummary>();
 }

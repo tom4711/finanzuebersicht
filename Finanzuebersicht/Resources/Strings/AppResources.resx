@@ -142,6 +142,12 @@ Please restart the app.</value></data>
   <data name="Msg_ImportAbgeschlossen_Title" xml:space="preserve"><value>Import completed</value></data>
   <data name="Msg_ImportiertCount" xml:space="preserve"><value>Imported: {0} transactions</value></data>
   <data name="Msg_ImportFehler_Title" xml:space="preserve"><value>Error during import</value></data>
+  <data name="Msg_ImportDuplikateCount" xml:space="preserve"><value>Duplicates: {0}</value></data>
+  <data name="Msg_ImportFehlerCount" xml:space="preserve"><value>Errors: {0}</value></data>
+  <data name="Msg_ImportVorschauNichtVerfuegbar_Title" xml:space="preserve"><value>Import preview not available</value></data>
+  <data name="Msg_ImportVorschauNichtVerfuegbar_Body" xml:space="preserve"><value>No active import preview was found.</value></data>
+  <data name="Msg_ImportVorschauNichtsAusgewaehlt_Title" xml:space="preserve"><value>Nothing selected</value></data>
+  <data name="Msg_ImportVorschauNichtsAusgewaehlt_Body" xml:space="preserve"><value>Select at least one importable row.</value></data>
 
   <!-- Backup / Restore / Export -->
   <data name="Stn_NoBackupYet" xml:space="preserve"><value>No backup created yet</value></data>
@@ -221,10 +227,40 @@ Please restart the app.</value></data>
   <data name="A11y_FilterUmschalten" xml:space="preserve"><value>Toggle filters</value></data>
   <data name="Lbl_DauerauftraegeFaellig" xml:space="preserve"><value>🔔 {0} recurring transactions due soon</value></data>
   <data name="Lbl_DauerauftraegeFaellig_Singular" xml:space="preserve"><value>🔔 {0} recurring transaction due soon</value></data>
+  <data name="Lbl_OhneKategorie" xml:space="preserve"><value>No category</value></data>
   <data name="Lbl_BudgetVon" xml:space="preserve"><value>of {0}</value></data>
   <data name="Lbl_Von" xml:space="preserve"><value>of</value></data>
   <data name="Lbl_UeberBudget" xml:space="preserve"><value>over budget</value></data>
+  <data name="Lbl_BudgetHinweise" xml:space="preserve"><value>Budget hints</value></data>
+  <data name="Lbl_BudgetVerbraucht" xml:space="preserve"><value>Used budget</value></data>
+  <data name="Lbl_TagesbudgetBisMonatsende" xml:space="preserve"><value>Daily budget until month end</value></data>
+  <data name="Lbl_BudgetWarnung80" xml:space="preserve"><value>80% of budget used</value></data>
+  <data name="Lbl_BudgetAufgebraucht" xml:space="preserve"><value>Budget used up or exceeded</value></data>
+  <data name="Lbl_HaeufigVerwendet" xml:space="preserve"><value>Frequently used</value></data>
+  <data name="Lbl_ImportFilterAlle" xml:space="preserve"><value>All</value></data>
+  <data name="Lbl_ImportFilterBereit" xml:space="preserve"><value>Ready</value></data>
+  <data name="Lbl_ImportFilterDuplikate" xml:space="preserve"><value>Duplicates</value></data>
+  <data name="Lbl_ImportFilterProbleme" xml:space="preserve"><value>Problems</value></data>
+  <data name="Lbl_ImportFilterAusgeschlossen" xml:space="preserve"><value>Excluded</value></data>
+  <data name="Lbl_ImportStatusBereit" xml:space="preserve"><value>Ready</value></data>
+  <data name="Lbl_ImportStatusDuplikat" xml:space="preserve"><value>Duplicate</value></data>
+  <data name="Lbl_ImportStatusUngueltig" xml:space="preserve"><value>Invalid</value></data>
+  <data name="Lbl_ImportStatusUnkategorisiert" xml:space="preserve"><value>No category</value></data>
+  <data name="Lbl_ImportStatusSpeicherfehler" xml:space="preserve"><value>Save error</value></data>
+  <data name="Lbl_ImportBereitCount" xml:space="preserve"><value>Ready: {0}</value></data>
+  <data name="Lbl_ImportDuplikateCount" xml:space="preserve"><value>Duplicates: {0}</value></data>
+  <data name="Lbl_ImportProblemeCount" xml:space="preserve"><value>Problems: {0}</value></data>
+  <data name="Lbl_ImportAusgewaehltCount" xml:space="preserve"><value>Selected: {0}</value></data>
+  <data name="Btn_Duplizieren" xml:space="preserve"><value>Duplicate</value></data>
+  <data name="Btn_Verwenden" xml:space="preserve"><value>Use</value></data>
+  <data name="Btn_AlsVorlageSpeichern" xml:space="preserve"><value>Save as template</value></data>
+  <data name="Dlg_VorlageLoeschen" xml:space="preserve"><value>Delete template</value></data>
+  <data name="Dlg_VorlageLoeschenFrage" xml:space="preserve"><value>Delete template "{0}"?</value></data>
+  <data name="Msg_VorlageGespeichert_Title" xml:space="preserve"><value>Template saved</value></data>
+  <data name="Msg_VorlageGespeichert_Body" xml:space="preserve"><value>The transaction template is now available under frequently used.</value></data>
   <data name="Hint_BudgetOptional" xml:space="preserve"><value>0.00 (no budget)</value></data>
+  <data name="Empty_ImportVorschauLeer" xml:space="preserve"><value>No rows for current filter.</value></data>
+  <data name="Ttl_ImportVorschau" xml:space="preserve"><value>Import Preview</value></data>
   <data name="Hint_BudgetNull" xml:space="preserve"><value>Set to 0 to remove budget</value></data>
   <data name="Hint_ZielTitel" xml:space="preserve"><value>e.g. Vacation, New Laptop</value></data>
   <data name="Empty_KeineSparZiele" xml:space="preserve"><value>No savings goals yet</value></data>

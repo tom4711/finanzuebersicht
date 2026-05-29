@@ -26,6 +26,32 @@ namespace Finanzuebersicht.Models
             : 0;
     }
 
+    public class BudgetHintSummary
+    {
+        public string CategoryId { get; set; } = string.Empty;
+        public string CategoryName { get; set; } = string.Empty;
+        public string? Color { get; set; }
+        public string Icon { get; set; } = "📁";
+        public decimal BudgetBetrag { get; set; }
+        public decimal Verbrauch { get; set; }
+        public bool IstAktuellerMonat { get; set; }
+        public int VerbleibendeTage { get; set; }
+
+        public decimal Restbudget => BudgetBetrag - Verbrauch;
+        public decimal RestbudgetPositiv => Math.Max(Restbudget, 0);
+        public decimal Tagesbudget => IstAktuellerMonat && VerbleibendeTage > 0
+            ? RestbudgetPositiv / VerbleibendeTage
+            : 0;
+        public decimal VerbrauchProzentRaw => BudgetBetrag > 0
+            ? Verbrauch / BudgetBetrag * 100
+            : 0;
+        public decimal VerbrauchProzent => Math.Min(VerbrauchProzentRaw, 100);
+        public bool IstWarnung => IstAktuellerMonat && VerbrauchProzentRaw >= 80 && VerbrauchProzentRaw < 100;
+        public bool IstAusgeschoepft => IstAktuellerMonat && VerbrauchProzentRaw >= 100;
+        public bool IstKritisch => IstWarnung || IstAusgeschoepft;
+        public bool ZeigeTagesbudget => IstAktuellerMonat && RestbudgetPositiv > 0;
+    }
+
     public class ForecastResult
     {
         public int Year { get; set; }

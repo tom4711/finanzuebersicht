@@ -42,6 +42,28 @@ public partial class DashboardViewModel : MonthNavigationViewModel
     private ObservableCollection<CategorySummary> kategorieEinnahmen = [];
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasMonthData))]
+    [NotifyPropertyChangedFor(nameof(HasBudgetHinweise))]
+    private ObservableCollection<BudgetHintSummary> budgetHinweise = [];
+
+    [ObservableProperty]
+    private decimal budgetGesamt;
+
+    [ObservableProperty]
+    private decimal budgetVerbraucht;
+
+    [ObservableProperty]
+    private decimal budgetRest;
+
+    [ObservableProperty]
+    private decimal budgetTagesbudget;
+
+    [ObservableProperty]
+    private bool showBudgetTagesbudget;
+
+    public bool HasBudgetHinweise => BudgetHinweise.Count > 0;
+
+    [ObservableProperty]
     private bool istPrognose;
 
     [ObservableProperty]
@@ -100,7 +122,7 @@ public partial class DashboardViewModel : MonthNavigationViewModel
 
     public bool IsYearView => !IsMonthView;
 
-    public bool HasMonthData => KategorieAusgaben.Count > 0 || KategorieEinnahmen.Count > 0;
+    public bool HasMonthData => KategorieAusgaben.Count > 0 || KategorieEinnahmen.Count > 0 || BudgetHinweise.Count > 0;
 
     public bool HasYearData => JahrMonate.Count > 0 || JahrKategorien.Count > 0;
 
@@ -179,7 +201,7 @@ public partial class DashboardViewModel : MonthNavigationViewModel
                 await LadeJahrAsync();
             }
             await LadeFaelligeDauerauftraegeAsync();
-            HasAnyDataLoaded = _foundTransactions;
+            HasAnyDataLoaded = _foundTransactions || HasMonthData || HasYearData;
         }
         finally
         {
@@ -221,6 +243,15 @@ public partial class DashboardViewModel : MonthNavigationViewModel
         Bilanz = data.Bilanz;
         KategorieAusgaben = new ObservableCollection<CategorySummary>(data.KategorieAusgaben);
         KategorieEinnahmen = new ObservableCollection<CategorySummary>(data.KategorieEinnahmen);
+        BudgetHinweise = new ObservableCollection<BudgetHintSummary>(data.BudgetHinweise);
+        BudgetGesamt = data.BudgetHinweise.Sum(b => b.BudgetBetrag);
+        BudgetVerbraucht = data.BudgetHinweise.Sum(b => b.Verbrauch);
+        BudgetRest = data.BudgetHinweise.Sum(b => b.Restbudget);
+        ShowBudgetTagesbudget = data.BudgetHinweise.Any(b => b.ZeigeTagesbudget);
+        var remainingDays = data.BudgetHinweise.FirstOrDefault(b => b.IstAktuellerMonat)?.VerbleibendeTage ?? 0;
+        BudgetTagesbudget = remainingDays > 0
+            ? data.BudgetHinweise.Sum(b => b.RestbudgetPositiv) / remainingDays
+            : 0;
 
         // Vormonatsvergleich: nur Gesamt-Ausgaben via ReportingService (keine Kategorien nötig)
         var prevMonth = AktuellerMonat.AddMonths(-1);
