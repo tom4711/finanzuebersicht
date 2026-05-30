@@ -260,7 +260,19 @@ public partial class ImportPreviewRowItemViewModel : ObservableObject
     public string Title => _row.Transaction.Titel;
     public string Purpose => _row.Transaction.Verwendungszweck;
     public string DateText => _row.Transaction.Datum == default ? "—" : _row.Transaction.Datum.ToString("dd.MM.yyyy");
-    public string AmountText => _row.Transaction.Betrag.ToString("C", CultureInfo.CurrentCulture);
+    public string AmountText
+    {
+        get
+        {
+            var tx = _row.Transaction;
+            if (tx == null) return "—";
+            var ci = CultureInfo.CurrentCulture;
+            var abs = Math.Abs(tx.Betrag);
+            var formatted = abs.ToString("C", ci);
+            var sign = tx.Typ == TransactionType.Einnahme ? "+" : "-";
+            return $"{sign}{formatted}";
+        }
+    }
     public bool CanCommit => Status is ImportPreviewRowStatus.Ready or ImportPreviewRowStatus.Uncategorized or ImportPreviewRowStatus.SaveError;
     public bool IsProblem => Status is ImportPreviewRowStatus.Duplicate or ImportPreviewRowStatus.Invalid or ImportPreviewRowStatus.Uncategorized;
     public bool CanEditCategory => Status != ImportPreviewRowStatus.Invalid;

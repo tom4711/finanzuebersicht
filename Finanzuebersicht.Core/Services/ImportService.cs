@@ -79,12 +79,25 @@ namespace Finanzuebersicht.Core.Services
 
                 if (dto is null || dto.Buchungsdatum == default)
                 {
+                    var placeholderTransaction = new Transaction
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        Betrag = 0m,
+                        Datum = dto?.Buchungsdatum ?? default,
+                        Titel = dto is not null ? BuildTitle(dto) : string.Empty,
+                        Verwendungszweck = dto?.Verwendungszweck ?? string.Empty,
+                        KategorieId = string.Empty,
+                        Typ = TransactionType.Ausgabe,
+                        AccountId = accountId ?? dto?.SourceAccountId ?? string.Empty
+                    };
+
                     rows.Add(new ImportPreviewRow
                     {
                         SourceIndex = index,
                         IsIncluded = false,
                         Status = ImportPreviewRowStatus.Invalid,
-                        StatusMessage = "Missing booking date"
+                        StatusMessage = "Missing booking date",
+                        Transaction = placeholderTransaction
                     });
                     continue;
                 }
@@ -484,11 +497,6 @@ namespace Finanzuebersicht.Core.Services
                 && Normalize(existing.Titel) == Normalize(candidate.Titel);
         }
 
-        private static bool IsPayeeMatch(string? title, string normalizedPayee)
-        {
-            var normalizedTitle = Normalize(title);
-            return normalizedTitle == normalizedPayee || normalizedTitle.Contains(normalizedPayee, StringComparison.Ordinal);
-        }
 
         private static bool IsUncategorizedCategory(Category category)
             => category.SystemKey == Finanzuebersicht.Constants.SystemCategoryKeys.Unkategorisiert

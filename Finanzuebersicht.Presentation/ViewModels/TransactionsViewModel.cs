@@ -492,8 +492,17 @@ public partial class TransactionsViewModel(
                 return;
             }
 
-            _importSessionStore?.Clear();
-            _importSessionStore?.SetActiveSession(preview);
+            if (_importSessionStore == null)
+            {
+                await _dialogService.ShowAlertAsync(
+                    _loc.GetString(ResourceKeys.Msg_ImportVorschauNichtVerfuegbar_Title),
+                    _loc.GetString(ResourceKeys.Msg_ImportVorschauNichtVerfuegbar_Body),
+                    _loc.GetString(ResourceKeys.Btn_OK));
+                return;
+            }
+
+            _importSessionStore.Clear();
+            _importSessionStore.SetActiveSession(preview);
             await _navigationService.GoToAsync(Routes.ImportPreview);
         }
         catch (System.Exception ex)
