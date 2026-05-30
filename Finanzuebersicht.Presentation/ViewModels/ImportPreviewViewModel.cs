@@ -203,7 +203,10 @@ public partial class ImportPreviewViewModel(
             new ImportPreviewFilterOption(ImportPreviewFilter.Excluded, _loc.GetString(ResourceKeys.Lbl_ImportFilterAusgeschlossen))
         ];
 
-        SelectedFilter = FilterOptions.FirstOrDefault(f => f.Filter == selectedFilterKind) ?? FilterOptions.FirstOrDefault();
+        // Reset SelectedFilter to instance from new list to ensure Picker shows selection
+        var newSelected = FilterOptions.FirstOrDefault(f => f.Filter == selectedFilterKind) ?? FilterOptions.FirstOrDefault();
+        SelectedFilter = null;
+        SelectedFilter = newSelected;
     }
 
     private void ApplyFilter()

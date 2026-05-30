@@ -457,7 +457,8 @@ namespace Finanzuebersicht.Core.Services
         {
             return new Transaction
             {
-                Betrag = dto.Betrag,
+                // Normalize amount to positive value; sign represented by Typ
+                Betrag = Math.Abs(dto.Betrag),
                 Datum = dto.Buchungsdatum,
                 Titel = BuildTitle(dto),
                 Verwendungszweck = dto.Verwendungszweck ?? string.Empty,
@@ -479,7 +480,7 @@ namespace Finanzuebersicht.Core.Services
             var to = candidate.Datum.Date.AddDays(1);
             return existing.Datum.Date >= from
                 && existing.Datum.Date <= to
-                && existing.Betrag == candidate.Betrag
+                && Math.Abs(existing.Betrag) == Math.Abs(candidate.Betrag)
                 && Normalize(existing.Titel) == Normalize(candidate.Titel);
         }
 
