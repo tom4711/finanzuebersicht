@@ -181,9 +181,10 @@ public partial class ImportPreviewViewModel(
 
     private void RefreshState()
     {
-        HasRows = Rows.Count > 0;
         RefreshFilterOptions();
         ApplyFilter();
+        // HasRows should reflect currently visible rows after filtering
+        HasRows = FilteredRows.Count > 0;
         SummaryText = string.Join(" · ",
             string.Format(_loc.GetString(ResourceKeys.Lbl_ImportBereitCount), Rows.Count(r => r.Status == ImportPreviewRowStatus.Ready)),
             string.Format(_loc.GetString(ResourceKeys.Lbl_ImportDuplikateCount), Rows.Count(r => r.Status == ImportPreviewRowStatus.Duplicate)),
@@ -259,7 +260,7 @@ public partial class ImportPreviewRowItemViewModel : ObservableObject
     public ObservableCollection<ImportPreviewCategoryOption> CategoryOptions { get; }
     public string Title => _row.Transaction.Titel;
     public string Purpose => _row.Transaction.Verwendungszweck;
-    public string DateText => _row.Transaction.Datum == default ? "—" : _row.Transaction.Datum.ToString("dd.MM.yyyy");
+    public string DateText => _row.Transaction.Datum == default ? "—" : _row.Transaction.Datum.ToString("d", CultureInfo.CurrentCulture);
     public string AmountText
     {
         get

@@ -334,10 +334,19 @@ namespace Finanzuebersicht.Core.Services
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                var matchingTransactions = transactionsByKey
-                    .Where(kv => kv.Key == normalizedPayee || kv.Key.Contains(normalizedPayee))
-                    .SelectMany(kv => kv.Value)
-                    .ToList();
+                // Prefer exact lookup, fallback to contains-scan only when needed
+                List<Transaction> matchingTransactions;
+                if (transactionsByKey.TryGetValue(normalizedPayee, out var exactList))
+                {
+                    matchingTransactions = exactList;
+                }
+                else
+                {
+                    matchingTransactions = transactionsByKey
+                        .Where(kv => kv.Key.Contains(normalizedPayee, StringComparison.Ordinal))
+                        .SelectMany(kv => kv.Value)
+                        .ToList();
+                }
 
                 if (matchingTransactions.Count == 0)
                     continue;
