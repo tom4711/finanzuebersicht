@@ -60,7 +60,8 @@
                                            LineBreakMode="TailTruncation" />
                                 </VerticalStackLayout>
                                 <Switch Grid.Column="1"
-                                        IsToggled="{Binding IsIncluded}" />
+                                        IsToggled="{Binding IsIncluded}"
+                                        IsEnabled="{Binding CanCommit}" />
                             </Grid>
 
                             <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="8">

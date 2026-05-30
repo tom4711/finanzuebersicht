@@ -7,13 +7,41 @@ public class BetragDisplayConverter : IValueConverter
 {
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        if (value is not Transaction t) return string.Empty;
-
         var ci = culture ?? CultureInfo.CurrentCulture;
-        var abs = Math.Abs(t.Betrag);
-        var formatted = abs.ToString("C", ci);
-        var sign = t.Typ == TransactionType.Einnahme ? "+" : "-";
-        return $"{sign}{formatted}";
+
+        if (value is Transaction t)
+        {
+            var abs = Math.Abs(t.Betrag);
+            var formatted = abs.ToString("C", ci);
+            var sign = t.Typ == TransactionType.Einnahme ? "+" : "-";
+            return $"{sign}{formatted}";
+        }
+
+        if (value is TransactionTemplate tpl)
+        {
+            var abs = Math.Abs(tpl.Betrag);
+            var formatted = abs.ToString("C", ci);
+            var sign = tpl.Typ == TransactionType.Einnahme ? "+" : "-";
+            return $"{sign}{formatted}";
+        }
+
+        if (value is decimal dec)
+        {
+            var abs = Math.Abs(dec);
+            var formatted = abs.ToString("C", ci);
+            var sign = dec >= 0 ? "+" : "-";
+            return $"{sign}{formatted}";
+        }
+
+        if (value is double d)
+        {
+            var abs = Math.Abs(d);
+            var formatted = abs.ToString("C", ci);
+            var sign = d >= 0 ? "+" : "-";
+            return $"{sign}{formatted}";
+        }
+
+        return string.Empty;
     }
 
     public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
