@@ -276,7 +276,7 @@ namespace Finanzuebersicht.Core.Services
             CancellationToken cancellationToken)
         {
             if (_categoryRepository is null || categories.Count == 0)
-                return [];
+                return new Dictionary<string, Category>(StringComparer.Ordinal);
 
             var categoriesById = categories.ToDictionary(c => c.Id, c => c);
             var uncategorizedIds = categories
@@ -292,28 +292,38 @@ namespace Finanzuebersicht.Core.Services
                 .ToList();
 
             if (payees.Count == 0)
-                return [];
+                return new Dictionary<string, Category>(StringComparer.Ordinal);
 
+            // Limit timeframe to recent period to avoid scanning entire DB
+            var since = DateTime.Today.AddMonths(-24);
             List<Transaction> transactions;
             try
             {
                 transactions = await _transactionRepository
-                    .GetTransactionsAsync(DateTime.MinValue, DateTime.MaxValue)
+                    .GetTransactionsAsync(since, DateTime.MaxValue)
                     .ConfigureAwait(false);
             }
             catch (Exception ex)
             {
                 _logger.LogWarning(ex, "ImportService: failed to load historical transactions for categorization");
-                return [];
+                return new Dictionary<string, Category>(StringComparer.Ordinal);
             }
+
+            // Build index by normalized title to reduce repeated scans
+            var transactionsByKey = transactions
+                .Select(t => new { Key = Normalize(t.Titel), Tx = t })
+                .Where(x => !string.IsNullOrWhiteSpace(x.Key))
+                .GroupBy(x => x.Key)
+                .ToDictionary(g => g.Key, g => g.Select(x => x.Tx).ToList(), StringComparer.Ordinal);
 
             var result = new Dictionary<string, Category>(StringComparer.Ordinal);
             foreach (var normalizedPayee in payees)
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                var matchingTransactions = transactions
-                    .Where(t => IsPayeeMatch(t.Titel, normalizedPayee))
+                var matchingTransactions = transactionsByKey
+                    .Where(kv => kv.Key == normalizedPayee || kv.Key.Contains(normalizedPayee))
+                    .SelectMany(kv => kv.Value)
                     .ToList();
 
                 if (matchingTransactions.Count == 0)

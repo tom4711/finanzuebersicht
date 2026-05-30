@@ -36,71 +36,70 @@
                TextColor="{AppThemeBinding Light=#8E8E93, Dark=#636366}"
                Margin="0,24,0,0" />
 
-        <ScrollView Grid.Row="2"
-                    IsVisible="{Binding HasRows}">
-            <VerticalStackLayout BindableLayout.ItemsSource="{Binding FilteredRows}"
-                                 Spacing="0">
-                <BindableLayout.ItemTemplate>
-                    <DataTemplate x:DataType="vm:ImportPreviewRowItemViewModel">
-                        <Border StrokeShape="RoundRectangle 12"
-                                Stroke="{AppThemeBinding Light=#E5E5EA, Dark=#3A3A3C}"
-                                BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1C1C1E}"
-                                Padding="12"
-                                Margin="0,0,0,10">
-                            <VerticalStackLayout Spacing="8">
-                                <Grid ColumnDefinitions="*, Auto" ColumnSpacing="8">
-                                    <VerticalStackLayout Spacing="2">
-                                        <Label Text="{Binding Title}"
-                                               FontSize="15"
-                                               FontAttributes="Bold"
-                                               LineBreakMode="TailTruncation" />
-                                        <Label Text="{Binding Purpose}"
-                                               FontSize="12"
-                                               TextColor="{AppThemeBinding Light=#8E8E93, Dark=#636366}"
-                                               LineBreakMode="TailTruncation" />
-                                    </VerticalStackLayout>
-                                    <Switch Grid.Column="1"
-                                            IsToggled="{Binding IsIncluded}" />
-                                </Grid>
+        <CollectionView Grid.Row="2"
+                        IsVisible="{Binding HasRows}"
+                        ItemsSource="{Binding FilteredRows}"
+                        SelectionMode="None">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="vm:ImportPreviewRowItemViewModel">
+                    <Border StrokeShape="RoundRectangle 12"
+                            Stroke="{AppThemeBinding Light=#E5E5EA, Dark=#3A3A3C}"
+                            BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1C1C1E}"
+                            Padding="12"
+                            Margin="0,0,0,10">
+                        <VerticalStackLayout Spacing="8">
+                            <Grid ColumnDefinitions="*, Auto" ColumnSpacing="8">
+                                <VerticalStackLayout Spacing="2">
+                                    <Label Text="{Binding Title}"
+                                           FontSize="15"
+                                           FontAttributes="Bold"
+                                           LineBreakMode="TailTruncation" />
+                                    <Label Text="{Binding Purpose}"
+                                           FontSize="12"
+                                           TextColor="{AppThemeBinding Light=#8E8E93, Dark=#636366}"
+                                           LineBreakMode="TailTruncation" />
+                                </VerticalStackLayout>
+                                <Switch Grid.Column="1"
+                                        IsToggled="{Binding IsIncluded}" />
+                            </Grid>
 
-                                <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="8">
-                                    <Label Text="{Binding DateText}"
-                                           FontSize="12"
-                                           TextColor="{AppThemeBinding Light=#8E8E93, Dark=#636366}" />
-                                    <Label Grid.Column="1"
-                                           Text="{Binding AmountText}"
-                                           FontSize="12"
-                                           HorizontalTextAlignment="End"
-                                           TextColor="{AppThemeBinding Light=#8E8E93, Dark=#636366}" />
-                                    <Border Grid.Column="2"
-                                            Stroke="Transparent"
-                                            BackgroundColor="{Binding StatusColorHex}"
-                                            StrokeShape="RoundRectangle 8"
-                                            Padding="8,4">
-                                        <Label Text="{Binding StatusText}"
-                                               FontSize="11"
-                                               TextColor="Black" />
-                                    </Border>
-                                </Grid>
+                            <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="8">
+                                <Label Text="{Binding DateText}"
+                                       FontSize="12"
+                                       TextColor="{AppThemeBinding Light=#8E8E93, Dark=#636366}" />
+                                <Label Grid.Column="1"
+                                       Text="{Binding AmountText}"
+                                       FontSize="12"
+                                       HorizontalTextAlignment="End"
+                                       TextColor="{AppThemeBinding Light=#8E8E93, Dark=#636366}" />
+                                <Border Grid.Column="2"
+                                        Stroke="Transparent"
+                                        BackgroundColor="{Binding StatusColorHex}"
+                                        StrokeShape="RoundRectangle 8"
+                                        Padding="8,4">
+                                    <Label Text="{Binding StatusText}"
+                                           FontSize="11"
+                                           TextColor="Black" />
+                                </Border>
+                            </Grid>
 
-                                <Grid ColumnDefinitions="90,*" ColumnSpacing="8">
-                                    <Label Text="{loc:Translate Lbl_Kategorie}"
-                                           FontSize="12"
-                                           VerticalTextAlignment="Center"
-                                           TextColor="{AppThemeBinding Light=#8E8E93, Dark=#636366}" />
-                                    <Picker Grid.Column="1"
-                                            ItemsSource="{Binding CategoryOptions}"
-                                            ItemDisplayBinding="{Binding DisplayName}"
-                                            SelectedItem="{Binding SelectedCategoryOption}"
-                                            IsEnabled="{Binding CanEditCategory}"
-                                            FontSize="13" />
-                                </Grid>
-                            </VerticalStackLayout>
-                        </Border>
-                    </DataTemplate>
-                </BindableLayout.ItemTemplate>
-            </VerticalStackLayout>
-        </ScrollView>
+                            <Grid ColumnDefinitions="90,*" ColumnSpacing="8">
+                                <Label Text="{loc:Translate Lbl_Kategorie}"
+                                       FontSize="12"
+                                       VerticalTextAlignment="Center"
+                                       TextColor="{AppThemeBinding Light=#8E8E93, Dark=#636366}" />
+                                <Picker Grid.Column="1"
+                                        ItemsSource="{Binding CategoryOptions}"
+                                        ItemDisplayBinding="{Binding DisplayName}"
+                                        SelectedItem="{Binding SelectedCategoryOption}"
+                                        IsEnabled="{Binding CanEditCategory}"
+                                        FontSize="13" />
+                            </Grid>
+                        </VerticalStackLayout>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
 
         <Grid Grid.Row="3" ColumnDefinitions="*, *" ColumnSpacing="12">
             <Button Grid.Column="0"

@@ -8,7 +8,7 @@ namespace Finanzuebersicht.Tests.ViewModels;
 public class ImportPreviewViewModelTests
 {
     [Fact]
-    public async Task LoadPreview_LoadsRowsAndAppliesReadyFilter()
+    public async Task LoadPreview_LoadsRowsAndDefaultFilterIsAll()
     {
         var sessionStore = new ImportSessionStore();
         sessionStore.SetActiveSession(new ImportPreviewResult
