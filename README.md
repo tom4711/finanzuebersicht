@@ -2,7 +2,7 @@
 
 # Finanzübersicht
 
-**Persönliche Finanzverwaltung für iOS und macOS (Mac Catalyst)**
+**Persönliche Finanzverwaltung für iOS und macOS (Mac Catalyst) und Windows**
 
 [![CI](https://github.com/tom4711/finanzuebersicht/actions/workflows/ci.yml/badge.svg)](https://github.com/tom4711/finanzuebersicht/actions/workflows/ci.yml)
 [![Pre-Release](https://github.com/tom4711/finanzuebersicht/actions/workflows/prerelease.yml/badge.svg)](https://github.com/tom4711/finanzuebersicht/actions/workflows/prerelease.yml)
@@ -37,14 +37,14 @@ Hinweis: Die Benutzeroberfläche unterstützt Deutsch und Englisch; weitere Spra
 | Plattform | Status |
 |-----------|--------|
 | macOS (Mac Catalyst) | ✅ Unterstützt |
-| iOS | ✅ Unterstützt |
-| Windows | ⚠️ Experimentell / eingeschränkt |
+| iOS | ✅ Unterstützt / kein Build wegen fehlendem Dev Account |
+| Windows | ✅ Unterstützt / eingeschränkt getestet |
 
 ## Voraussetzungen
 
 - [.NET 10 SDK](https://dotnet.microsoft.com/download)
 - macOS (Xcode) für iOS / Mac Catalyst Builds
-- Optional: Windows + Visual Studio für experimentelle Windows-Builds
+- Optional: Windows + Visual Studio oder Visual Studio Code für  Windows-Builds
 
 Installiere benötigte Workloads:
 
