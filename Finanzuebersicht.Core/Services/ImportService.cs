@@ -96,7 +96,7 @@ namespace Finanzuebersicht.Core.Services
                         SourceIndex = index,
                         IsIncluded = false,
                         Status = ImportPreviewRowStatus.Invalid,
-                        StatusMessage = "Missing booking date",
+                        StatusMessage = ImportMessageKeys.MissingBookingDate,
                         Transaction = placeholderTransaction
                     });
                     continue;
@@ -110,7 +110,7 @@ namespace Finanzuebersicht.Core.Services
                         SourceIndex = index,
                         IsIncluded = false,
                         Status = ImportPreviewRowStatus.Duplicate,
-                        StatusMessage = "Possible duplicate",
+                        StatusMessage = ImportMessageKeys.PossibleDuplicate,
                         Transaction = transaction
                     });
                     continue;
@@ -131,7 +131,9 @@ namespace Finanzuebersicht.Core.Services
                     SourceIndex = index,
                     IsIncluded = true,
                     Status = status,
-                    StatusMessage = status == ImportPreviewRowStatus.Uncategorized ? "Category unresolved" : null,
+                    StatusMessage = status == ImportPreviewRowStatus.Uncategorized
+                        ? ImportMessageKeys.CategoryUnresolved
+                        : null,
                     Transaction = transaction
                 });
 

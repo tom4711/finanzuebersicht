@@ -297,16 +297,6 @@ public partial class ImportPreviewRowItemViewModel : ObservableObject
         _ => Status.ToString()
     };
 
-    public string StatusColorHex => Status switch
-    {
-        ImportPreviewRowStatus.Ready => "#34C759",
-        ImportPreviewRowStatus.Duplicate => "#FF9500",
-        ImportPreviewRowStatus.Invalid => "#FF3B30",
-        ImportPreviewRowStatus.Uncategorized => "#FFCC00",
-        ImportPreviewRowStatus.SaveError => "#FF3B30",
-        _ => "#8E8E93"
-    };
-
     partial void OnIsIncludedChanged(bool value)
     {
         _row.IsIncluded = value;
@@ -317,7 +307,6 @@ public partial class ImportPreviewRowItemViewModel : ObservableObject
     {
         _row.Status = value;
         OnPropertyChanged(nameof(StatusText));
-        OnPropertyChanged(nameof(StatusColorHex));
         OnPropertyChanged(nameof(CanCommit));
         OnPropertyChanged(nameof(IsProblem));
     }

@@ -246,6 +246,9 @@ public static class ResourceKeys
     public const string Lbl_ImportDuplikateCount = nameof(Lbl_ImportDuplikateCount);
     public const string Lbl_ImportProblemeCount = nameof(Lbl_ImportProblemeCount);
     public const string Lbl_ImportAusgewaehltCount = nameof(Lbl_ImportAusgewaehltCount);
+    public const string Msg_ImportStatusMissingDate = nameof(Msg_ImportStatusMissingDate);
+    public const string Msg_ImportStatusPossibleDuplicate = nameof(Msg_ImportStatusPossibleDuplicate);
+    public const string Msg_ImportStatusCategoryUnresolved = nameof(Msg_ImportStatusCategoryUnresolved);
     public const string Hint_BudgetOptional = nameof(Hint_BudgetOptional);
     public const string Hint_BudgetNull = nameof(Hint_BudgetNull);
     public const string Hint_ZielTitel = nameof(Hint_ZielTitel);

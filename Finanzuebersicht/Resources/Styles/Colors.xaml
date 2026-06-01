@@ -12,6 +12,8 @@
     <Color x:Key="AusgabeDark">#FF453A</Color>
     <Color x:Key="Warning">#FF9500</Color>
     <Color x:Key="WarningDark">#FF9F0A</Color>
+    <Color x:Key="ImportUncategorized">#FFCC00</Color>
+    <Color x:Key="ImportUncategorizedDark">#FFD60A</Color>
 
     <!-- Reminder Banner (fällige Daueraufträge) -->
     <Color x:Key="ReminderBannerBorder">#FFD60A</Color>

@@ -251,6 +251,9 @@ Please restart the app.</value></data>
   <data name="Lbl_ImportDuplikateCount" xml:space="preserve"><value>Duplicates: {0}</value></data>
   <data name="Lbl_ImportProblemeCount" xml:space="preserve"><value>Problems: {0}</value></data>
   <data name="Lbl_ImportAusgewaehltCount" xml:space="preserve"><value>Selected: {0}</value></data>
+  <data name="Msg_ImportStatusMissingDate" xml:space="preserve"><value>Missing booking date</value></data>
+  <data name="Msg_ImportStatusPossibleDuplicate" xml:space="preserve"><value>Possible duplicate</value></data>
+  <data name="Msg_ImportStatusCategoryUnresolved" xml:space="preserve"><value>Category not assigned</value></data>
   <data name="Btn_Duplizieren" xml:space="preserve"><value>Duplicate</value></data>
   <data name="Btn_Verwenden" xml:space="preserve"><value>Use</value></data>
   <data name="Btn_AlsVorlageSpeichern" xml:space="preserve"><value>Save as template</value></data>
