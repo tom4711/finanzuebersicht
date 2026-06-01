@@ -142,6 +142,12 @@ Bitte starte die App neu.</value></data>
   <data name="Msg_ImportAbgeschlossen_Title" xml:space="preserve"><value>Import abgeschlossen</value></data>
   <data name="Msg_ImportiertCount" xml:space="preserve"><value>Importiert: {0} Transaktionen</value></data>
   <data name="Msg_ImportFehler_Title" xml:space="preserve"><value>Fehler beim Import</value></data>
+  <data name="Msg_ImportDuplikateCount" xml:space="preserve"><value>Duplikate: {0}</value></data>
+  <data name="Msg_ImportFehlerCount" xml:space="preserve"><value>Fehler: {0}</value></data>
+  <data name="Msg_ImportVorschauNichtVerfuegbar_Title" xml:space="preserve"><value>Import-Vorschau nicht verfügbar</value></data>
+  <data name="Msg_ImportVorschauNichtVerfuegbar_Body" xml:space="preserve"><value>Keine aktive Import-Vorschau gefunden.</value></data>
+  <data name="Msg_ImportVorschauNichtsAusgewaehlt_Title" xml:space="preserve"><value>Nichts ausgewählt</value></data>
+  <data name="Msg_ImportVorschauNichtsAusgewaehlt_Body" xml:space="preserve"><value>Wähle mindestens eine importierbare Zeile aus.</value></data>
 
   <!-- Backup / Restore / Export -->
   <data name="Stn_NoBackupYet" xml:space="preserve"><value>Noch keine Sicherung erstellt</value></data>
@@ -221,10 +227,43 @@ Bitte starte die App neu.</value></data>
   <data name="A11y_FilterUmschalten" xml:space="preserve"><value>Filter umschalten</value></data>
   <data name="Lbl_DauerauftraegeFaellig" xml:space="preserve"><value>🔔 {0} Daueraufträge bald fällig</value></data>
   <data name="Lbl_DauerauftraegeFaellig_Singular" xml:space="preserve"><value>🔔 {0} Dauerauftrag bald fällig</value></data>
+  <data name="Lbl_OhneKategorie" xml:space="preserve"><value>Ohne Kategorie</value></data>
   <data name="Lbl_BudgetVon" xml:space="preserve"><value>von {0}</value></data>
   <data name="Lbl_Von" xml:space="preserve"><value>von</value></data>
   <data name="Lbl_UeberBudget" xml:space="preserve"><value>über Budget</value></data>
+  <data name="Lbl_BudgetHinweise" xml:space="preserve"><value>Budget-Hinweise</value></data>
+  <data name="Lbl_BudgetVerbraucht" xml:space="preserve"><value>Budget verbraucht</value></data>
+  <data name="Lbl_TagesbudgetBisMonatsende" xml:space="preserve"><value>Tagesbudget bis Monatsende</value></data>
+  <data name="Lbl_BudgetWarnung80" xml:space="preserve"><value>80 % des Budgets verbraucht</value></data>
+  <data name="Lbl_BudgetAufgebraucht" xml:space="preserve"><value>Budget aufgebraucht oder überschritten</value></data>
+  <data name="Lbl_HaeufigVerwendet" xml:space="preserve"><value>Häufig verwendet</value></data>
+  <data name="Lbl_ImportFilterAlle" xml:space="preserve"><value>Alle</value></data>
+  <data name="Lbl_ImportFilterBereit" xml:space="preserve"><value>Bereit</value></data>
+  <data name="Lbl_ImportFilterDuplikate" xml:space="preserve"><value>Duplikate</value></data>
+  <data name="Lbl_ImportFilterProbleme" xml:space="preserve"><value>Probleme</value></data>
+  <data name="Lbl_ImportFilterAusgeschlossen" xml:space="preserve"><value>Ausgeschlossen</value></data>
+  <data name="Lbl_ImportStatusBereit" xml:space="preserve"><value>Bereit</value></data>
+  <data name="Lbl_ImportStatusDuplikat" xml:space="preserve"><value>Duplikat</value></data>
+  <data name="Lbl_ImportStatusUngueltig" xml:space="preserve"><value>Ungültig</value></data>
+  <data name="Lbl_ImportStatusUnkategorisiert" xml:space="preserve"><value>Ohne Kategorie</value></data>
+  <data name="Lbl_ImportStatusSpeicherfehler" xml:space="preserve"><value>Speicherfehler</value></data>
+  <data name="Lbl_ImportBereitCount" xml:space="preserve"><value>Bereit: {0}</value></data>
+  <data name="Lbl_ImportDuplikateCount" xml:space="preserve"><value>Duplikate: {0}</value></data>
+  <data name="Lbl_ImportProblemeCount" xml:space="preserve"><value>Probleme: {0}</value></data>
+  <data name="Lbl_ImportAusgewaehltCount" xml:space="preserve"><value>Ausgewählt: {0}</value></data>
+  <data name="Msg_ImportStatusMissingDate" xml:space="preserve"><value>Buchungsdatum fehlt</value></data>
+  <data name="Msg_ImportStatusPossibleDuplicate" xml:space="preserve"><value>Mögliches Duplikat</value></data>
+  <data name="Msg_ImportStatusCategoryUnresolved" xml:space="preserve"><value>Kategorie nicht zugeordnet</value></data>
+  <data name="Btn_Duplizieren" xml:space="preserve"><value>Duplizieren</value></data>
+  <data name="Btn_Verwenden" xml:space="preserve"><value>Verwenden</value></data>
+  <data name="Btn_AlsVorlageSpeichern" xml:space="preserve"><value>Als Vorlage speichern</value></data>
+  <data name="Dlg_VorlageLoeschen" xml:space="preserve"><value>Vorlage löschen</value></data>
+  <data name="Dlg_VorlageLoeschenFrage" xml:space="preserve"><value>Vorlage "{0}" löschen?</value></data>
+  <data name="Msg_VorlageGespeichert_Title" xml:space="preserve"><value>Vorlage gespeichert</value></data>
+  <data name="Msg_VorlageGespeichert_Body" xml:space="preserve"><value>Die Transaktionsvorlage ist jetzt unter häufig verwendet verfügbar.</value></data>
   <data name="Hint_BudgetOptional" xml:space="preserve"><value>0,00 (kein Budget)</value></data>
+  <data name="Empty_ImportVorschauLeer" xml:space="preserve"><value>Keine Zeilen für den aktuellen Filter.</value></data>
+  <data name="Ttl_ImportVorschau" xml:space="preserve"><value>Import-Vorschau</value></data>
   <data name="Hint_BudgetNull" xml:space="preserve"><value>Auf 0 setzen um Budget zu entfernen</value></data>
   <data name="Hint_ZielTitel" xml:space="preserve"><value>z.B. Urlaub, Neuer Laptop</value></data>
   <data name="Empty_KeineSparZiele" xml:space="preserve"><value>Noch keine Sparziele angelegt</value></data>

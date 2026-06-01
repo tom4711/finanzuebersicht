@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<views:BaseContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+              xmlns:views="clr-namespace:Finanzuebersicht.Views"
+              xmlns:vm="clr-namespace:Finanzuebersicht.ViewModels"
+              xmlns:loc="clr-namespace:Finanzuebersicht.Extensions"
+              xmlns:conv="clr-namespace:Finanzuebersicht.Converters"
+              x:Class="Finanzuebersicht.Views.ImportPreviewPage"
+              x:DataType="vm:ImportPreviewViewModel"
+              Title="{loc:Translate Ttl_ImportVorschau}">
+
+    <views:BaseContentPage.Resources>
+        <conv:InvertBoolConverter x:Key="InvertBool" />
+        <conv:ImportPreviewStatusColorConverter x:Key="ImportStatusColor" />
+    </views:BaseContentPage.Resources>
+
+    <Grid RowDefinitions="Auto, Auto, *, Auto" Padding="16" RowSpacing="12">
+        <Border Grid.Row="0"
+                StrokeShape="RoundRectangle 12"
+                Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray900}}"
+                BackgroundColor="{AppThemeBinding Light={StaticResource CardBackground}, Dark={StaticResource CardBackgroundDark}}"
+                Padding="12">
+            <VerticalStackLayout Spacing="8">
+                <Label Text="{Binding SummaryText}"
+                       FontSize="13"
+                       TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}" />
+                <Picker ItemsSource="{Binding FilterOptions}"
+                        SelectedItem="{Binding SelectedFilter}"
+                        ItemDisplayBinding="{Binding DisplayName}" />
+            </VerticalStackLayout>
+        </Border>
+
+        <Label Grid.Row="1"
+               Text="{loc:Translate Empty_ImportVorschauLeer}"
+               IsVisible="{Binding HasRows, Converter={StaticResource InvertBool}}"
+               HorizontalTextAlignment="Center"
+               TextColor="{AppThemeBinding Light={StaticResource TextTertiary}, Dark={StaticResource Gray600}}"
+               Margin="0,24,0,0" />
+
+        <CollectionView Grid.Row="2"
+                        IsVisible="{Binding HasRows}"
+                        ItemsSource="{Binding FilteredRows}"
+                        SelectionMode="None">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="vm:ImportPreviewRowItemViewModel">
+                    <Border StrokeShape="RoundRectangle 12"
+                            Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray900}}"
+                            BackgroundColor="{AppThemeBinding Light={StaticResource CardBackground}, Dark={StaticResource CardBackgroundDark}}"
+                            Padding="12"
+                            Margin="0,0,0,10">
+                        <VerticalStackLayout Spacing="8">
+                            <Grid ColumnDefinitions="*, Auto" ColumnSpacing="8">
+                                <VerticalStackLayout Spacing="2">
+                                    <Label Text="{Binding Title}"
+                                           FontSize="15"
+                                           FontAttributes="Bold"
+                                           LineBreakMode="TailTruncation" />
+                                    <Label Text="{Binding Purpose}"
+                                           FontSize="12"
+                                           TextColor="{AppThemeBinding Light={StaticResource TextTertiary}, Dark={StaticResource Gray600}}"
+                                           LineBreakMode="TailTruncation" />
+                                </VerticalStackLayout>
+                                <Switch Grid.Column="1"
+                                        IsToggled="{Binding IsIncluded}"
+                                        IsEnabled="{Binding CanCommit}" />
+                            </Grid>
+
+                            <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="8">
+                                <Label Text="{Binding DateText}"
+                                       FontSize="12"
+                                       TextColor="{AppThemeBinding Light={StaticResource TextTertiary}, Dark={StaticResource Gray600}}" />
+                                <Label Grid.Column="1"
+                                       Text="{Binding AmountText}"
+                                       FontSize="12"
+                                       HorizontalTextAlignment="End"
+                                       TextColor="{AppThemeBinding Light={StaticResource TextTertiary}, Dark={StaticResource Gray600}}" />
+                                <Border Grid.Column="2"
+                                        Stroke="Transparent"
+                                        BackgroundColor="{Binding Status, Converter={StaticResource ImportStatusColor}}"
+                                        StrokeShape="RoundRectangle 8"
+                                        Padding="8,4">
+                                    <Label Text="{Binding StatusText}"
+                                           FontSize="11"
+                                           TextColor="{StaticResource TextPrimary}" />
+                                </Border>
+                            </Grid>
+
+                            <Grid ColumnDefinitions="90,*" ColumnSpacing="8">
+                                <Label Text="{loc:Translate Lbl_Kategorie}"
+                                       FontSize="12"
+                                       VerticalTextAlignment="Center"
+                                       TextColor="{AppThemeBinding Light={StaticResource TextTertiary}, Dark={StaticResource Gray600}}" />
+                                <Picker Grid.Column="1"
+                                        ItemsSource="{Binding CategoryOptions}"
+                                        ItemDisplayBinding="{Binding DisplayName}"
+                                        SelectedItem="{Binding SelectedCategoryOption}"
+                                        IsEnabled="{Binding CanEditCategory}"
+                                        FontSize="13" />
+                            </Grid>
+                        </VerticalStackLayout>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <Grid Grid.Row="3" ColumnDefinitions="*, *" ColumnSpacing="12">
+            <Button Grid.Column="0"
+                    Text="{loc:Translate Btn_Abbrechen}"
+                    Command="{Binding CancelImportCommand}"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray900}}"
+                    TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource Gray100}}" />
+            <Button Grid.Column="1"
+                    Text="{loc:Translate Btn_Import}"
+                    Command="{Binding CommitImportCommand}"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                    TextColor="White" />
+        </Grid>
+    </Grid>
+</views:BaseContentPage>

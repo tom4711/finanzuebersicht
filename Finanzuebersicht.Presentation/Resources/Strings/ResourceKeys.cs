@@ -65,6 +65,9 @@ public static class ResourceKeys
     public const string Btn_Ja = nameof(Btn_Ja);
     public const string Btn_Nein = nameof(Btn_Nein);
     public const string Btn_AktivInaktiv = nameof(Btn_AktivInaktiv);
+    public const string Btn_Duplizieren = nameof(Btn_Duplizieren);
+    public const string Btn_Verwenden = nameof(Btn_Verwenden);
+    public const string Btn_AlsVorlageSpeichern = nameof(Btn_AlsVorlageSpeichern);
 
     // Hints / Placeholders
     public const string Hint_Kategoriename = nameof(Hint_Kategoriename);
@@ -103,6 +106,8 @@ public static class ResourceKeys
     public const string Dlg_DauerauftragLoeschenFrage = nameof(Dlg_DauerauftragLoeschenFrage);
     public const string Dlg_TransaktionLoeschen = nameof(Dlg_TransaktionLoeschen);
     public const string Dlg_TransaktionLoeschenFrage = nameof(Dlg_TransaktionLoeschenFrage);
+    public const string Dlg_VorlageLoeschen = nameof(Dlg_VorlageLoeschen);
+    public const string Dlg_VorlageLoeschenFrage = nameof(Dlg_VorlageLoeschenFrage);
     public const string Dlg_SparZielLoeschen = nameof(Dlg_SparZielLoeschen);
     public const string Dlg_SparZielLoeschenFrage = nameof(Dlg_SparZielLoeschenFrage);
 
@@ -161,6 +166,14 @@ public static class ResourceKeys
     public const string Msg_ImportAbgeschlossen_Title = nameof(Msg_ImportAbgeschlossen_Title);
     public const string Msg_ImportiertCount = nameof(Msg_ImportiertCount);
     public const string Msg_ImportFehler_Title = nameof(Msg_ImportFehler_Title);
+    public const string Msg_ImportDuplikateCount = nameof(Msg_ImportDuplikateCount);
+    public const string Msg_ImportFehlerCount = nameof(Msg_ImportFehlerCount);
+    public const string Msg_ImportVorschauNichtVerfuegbar_Title = nameof(Msg_ImportVorschauNichtVerfuegbar_Title);
+    public const string Msg_ImportVorschauNichtVerfuegbar_Body = nameof(Msg_ImportVorschauNichtVerfuegbar_Body);
+    public const string Msg_ImportVorschauNichtsAusgewaehlt_Title = nameof(Msg_ImportVorschauNichtsAusgewaehlt_Title);
+    public const string Msg_ImportVorschauNichtsAusgewaehlt_Body = nameof(Msg_ImportVorschauNichtsAusgewaehlt_Body);
+    public const string Msg_VorlageGespeichert_Title = nameof(Msg_VorlageGespeichert_Title);
+    public const string Msg_VorlageGespeichert_Body = nameof(Msg_VorlageGespeichert_Body);
 
     // Additional keys found during XAML scan
     public const string Lbl_OriginalDatum = nameof(Lbl_OriginalDatum);
@@ -209,9 +222,33 @@ public static class ResourceKeys
     public const string A11y_FilterUmschalten = nameof(A11y_FilterUmschalten);
     public const string Lbl_DauerauftraegeFaellig = nameof(Lbl_DauerauftraegeFaellig);
     public const string Lbl_DauerauftraegeFaellig_Singular = nameof(Lbl_DauerauftraegeFaellig_Singular);
+    public const string Lbl_OhneKategorie = nameof(Lbl_OhneKategorie);
     public const string Lbl_BudgetVon = nameof(Lbl_BudgetVon);
     public const string Lbl_Von = nameof(Lbl_Von);
     public const string Lbl_UeberBudget = nameof(Lbl_UeberBudget);
+    public const string Lbl_BudgetHinweise = nameof(Lbl_BudgetHinweise);
+    public const string Lbl_BudgetVerbraucht = nameof(Lbl_BudgetVerbraucht);
+    public const string Lbl_TagesbudgetBisMonatsende = nameof(Lbl_TagesbudgetBisMonatsende);
+    public const string Lbl_BudgetWarnung80 = nameof(Lbl_BudgetWarnung80);
+    public const string Lbl_BudgetAufgebraucht = nameof(Lbl_BudgetAufgebraucht);
+    public const string Lbl_HaeufigVerwendet = nameof(Lbl_HaeufigVerwendet);
+    public const string Lbl_ImportFilterAlle = nameof(Lbl_ImportFilterAlle);
+    public const string Lbl_ImportFilterBereit = nameof(Lbl_ImportFilterBereit);
+    public const string Lbl_ImportFilterDuplikate = nameof(Lbl_ImportFilterDuplikate);
+    public const string Lbl_ImportFilterProbleme = nameof(Lbl_ImportFilterProbleme);
+    public const string Lbl_ImportFilterAusgeschlossen = nameof(Lbl_ImportFilterAusgeschlossen);
+    public const string Lbl_ImportStatusBereit = nameof(Lbl_ImportStatusBereit);
+    public const string Lbl_ImportStatusDuplikat = nameof(Lbl_ImportStatusDuplikat);
+    public const string Lbl_ImportStatusUngueltig = nameof(Lbl_ImportStatusUngueltig);
+    public const string Lbl_ImportStatusUnkategorisiert = nameof(Lbl_ImportStatusUnkategorisiert);
+    public const string Lbl_ImportStatusSpeicherfehler = nameof(Lbl_ImportStatusSpeicherfehler);
+    public const string Lbl_ImportBereitCount = nameof(Lbl_ImportBereitCount);
+    public const string Lbl_ImportDuplikateCount = nameof(Lbl_ImportDuplikateCount);
+    public const string Lbl_ImportProblemeCount = nameof(Lbl_ImportProblemeCount);
+    public const string Lbl_ImportAusgewaehltCount = nameof(Lbl_ImportAusgewaehltCount);
+    public const string Msg_ImportStatusMissingDate = nameof(Msg_ImportStatusMissingDate);
+    public const string Msg_ImportStatusPossibleDuplicate = nameof(Msg_ImportStatusPossibleDuplicate);
+    public const string Msg_ImportStatusCategoryUnresolved = nameof(Msg_ImportStatusCategoryUnresolved);
     public const string Hint_BudgetOptional = nameof(Hint_BudgetOptional);
     public const string Hint_BudgetNull = nameof(Hint_BudgetNull);
     public const string Hint_ZielTitel = nameof(Hint_ZielTitel);
@@ -225,6 +262,8 @@ public static class ResourceKeys
     public const string Lbl_BackupDatum = nameof(Lbl_BackupDatum);
     public const string Btn_BackupWiederherstellen = nameof(Btn_BackupWiederherstellen);
     public const string Empty_KeineBackupsVorhanden = nameof(Empty_KeineBackupsVorhanden);
+    public const string Empty_ImportVorschauLeer = nameof(Empty_ImportVorschauLeer);
+    public const string Ttl_ImportVorschau = nameof(Ttl_ImportVorschau);
     public const string Msg_BackupRestoreConfirmTitle = nameof(Msg_BackupRestoreConfirmTitle);
     public const string Msg_BackupRestoreConfirmBody = nameof(Msg_BackupRestoreConfirmBody);
 

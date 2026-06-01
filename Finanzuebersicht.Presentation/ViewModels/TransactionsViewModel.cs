@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.Input;
 using Finanzuebersicht.Application.UseCases.Transactions;
 using Finanzuebersicht.Models;
 using Finanzuebersicht.Navigation;
+using Finanzuebersicht.Presentation.Services;
 using Finanzuebersicht.Resources.Strings;
 using System.Linq;
 using Microsoft.Extensions.Logging;
@@ -22,7 +23,11 @@ public partial class TransactionsViewModel(
     IMainThreadDispatcher dispatcher,
     IFilePicker filePicker,
     IAppEvents appEvents,
-    ILogger<TransactionsViewModel> logger) : MonthNavigationViewModel, IAutoLoadViewModel
+    ILogger<TransactionsViewModel> logger,
+    IImportSessionStore? importSessionStore = null,
+    LoadTransactionTemplatesUseCase? loadTransactionTemplatesUseCase = null,
+    DeleteTransactionTemplateUseCase? deleteTransactionTemplateUseCase = null,
+    UseTransactionTemplateUseCase? useTransactionTemplateUseCase = null) : MonthNavigationViewModel, IAutoLoadViewModel
 {
     private readonly DeleteTransactionUseCase _deleteTransactionUseCase = deleteTransactionUseCase;
     private readonly LoadTransactionsMonthUseCase _loadTransactionsMonthUseCase = loadTransactionsMonthUseCase;
@@ -38,6 +43,10 @@ public partial class TransactionsViewModel(
     private readonly IFilePicker _filePicker = filePicker;
     private readonly IAppEvents _appEvents = appEvents;
     private readonly ILogger<TransactionsViewModel> _logger = logger;
+    private readonly IImportSessionStore? _importSessionStore = importSessionStore;
+    private readonly LoadTransactionTemplatesUseCase? _loadTransactionTemplatesUseCase = loadTransactionTemplatesUseCase;
+    private readonly DeleteTransactionTemplateUseCase? _deleteTransactionTemplateUseCase = deleteTransactionTemplateUseCase;
+    private readonly UseTransactionTemplateUseCase? _useTransactionTemplateUseCase = useTransactionTemplateUseCase;
 
     private CancellationTokenSource? _searchDebounce;
     private int _searchVersion;
@@ -59,6 +68,14 @@ public partial class TransactionsViewModel(
     private Dictionary<string, string> iconMap = [];
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasTransactionTemplates))]
+    [NotifyPropertyChangedFor(nameof(ShowTransactionTemplates))]
+    private ObservableCollection<TransactionTemplate> transactionTemplates = [];
+
+    public bool HasTransactionTemplates => TransactionTemplates.Count > 0;
+    public bool ShowTransactionTemplates => HasTransactionTemplates && IsMonthMode;
+
+    [ObservableProperty]
     private bool isLoading;
 
     // --- Suche & Filter ---
@@ -66,30 +83,35 @@ public partial class TransactionsViewModel(
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsSearchActive))]
     [NotifyPropertyChangedFor(nameof(IsMonthMode))]
+    [NotifyPropertyChangedFor(nameof(ShowTransactionTemplates))]
     private string searchText = string.Empty;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsFilterActive))]
     [NotifyPropertyChangedFor(nameof(IsSearchActive))]
     [NotifyPropertyChangedFor(nameof(IsMonthMode))]
+    [NotifyPropertyChangedFor(nameof(ShowTransactionTemplates))]
     private string? selectedKategorieId = null;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsFilterActive))]
     [NotifyPropertyChangedFor(nameof(IsSearchActive))]
     [NotifyPropertyChangedFor(nameof(IsMonthMode))]
+    [NotifyPropertyChangedFor(nameof(ShowTransactionTemplates))]
     private TransactionTypeFilter selectedTypFilter = TransactionTypeFilter.Alle;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsFilterActive))]
     [NotifyPropertyChangedFor(nameof(IsSearchActive))]
     [NotifyPropertyChangedFor(nameof(IsMonthMode))]
+    [NotifyPropertyChangedFor(nameof(ShowTransactionTemplates))]
     private DateTime? vonDatum = null;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsFilterActive))]
     [NotifyPropertyChangedFor(nameof(IsSearchActive))]
     [NotifyPropertyChangedFor(nameof(IsMonthMode))]
+    [NotifyPropertyChangedFor(nameof(ShowTransactionTemplates))]
     private DateTime? bisDatum = null;
 
     [ObservableProperty]
@@ -136,6 +158,7 @@ public partial class TransactionsViewModel(
     [NotifyPropertyChangedFor(nameof(IsFilterActive))]
     [NotifyPropertyChangedFor(nameof(IsSearchActive))]
     [NotifyPropertyChangedFor(nameof(IsMonthMode))]
+    [NotifyPropertyChangedFor(nameof(ShowTransactionTemplates))]
     private bool isDateFilterEnabled;
 
     [ObservableProperty]
@@ -304,6 +327,8 @@ public partial class TransactionsViewModel(
 
             if (AvailableKategorien.Count == 0)
                 await LoadKategorienAsync();
+
+            await LoadTemplatesAsync();
         }
         catch (Exception ex)
         {
@@ -317,6 +342,14 @@ public partial class TransactionsViewModel(
         {
             IsLoading = false;
         }
+    }
+
+    private async Task LoadTemplatesAsync()
+    {
+        if (_loadTransactionTemplatesUseCase == null) return;
+
+        var templates = await _loadTransactionTemplatesUseCase.ExecuteAsync();
+        TransactionTemplates = new ObservableCollection<TransactionTemplate>(templates);
     }
 
     [RelayCommand]
@@ -377,6 +410,50 @@ public partial class TransactionsViewModel(
     }
 
     [RelayCommand]
+    private async Task DuplicateTransaktion(Transaction transaktion)
+    {
+        if (transaktion == null) return;
+
+        await _navigationService.GoToAsync(Routes.TransactionDetail, new Dictionary<string, object>
+        {
+            ["DuplicateTransaction"] = transaktion
+        });
+    }
+
+    [RelayCommand]
+    private async Task CreateFromTemplate(TransactionTemplate template)
+    {
+        if (template == null) return;
+
+        if (_useTransactionTemplateUseCase != null)
+        {
+            await _useTransactionTemplateUseCase.ExecuteAsync(template);
+            await LoadTemplatesAsync();
+        }
+
+        await _navigationService.GoToAsync(Routes.TransactionDetail, new Dictionary<string, object>
+        {
+            ["TransactionTemplate"] = template
+        });
+    }
+
+    [RelayCommand]
+    private async Task DeleteTemplate(TransactionTemplate template)
+    {
+        if (template == null || _deleteTransactionTemplateUseCase == null) return;
+
+        var confirm = await _dialogService.ShowConfirmationAsync(
+            _loc.GetString(ResourceKeys.Dlg_VorlageLoeschen),
+            _loc.GetString(ResourceKeys.Dlg_VorlageLoeschenFrage, template.Name),
+            _loc.GetString(ResourceKeys.Btn_Ja),
+            _loc.GetString(ResourceKeys.Btn_Nein));
+        if (!confirm) return;
+
+        await _deleteTransactionTemplateUseCase.ExecuteAsync(template.Id);
+        await LoadTemplatesAsync();
+    }
+
+    [RelayCommand]
     private async Task ImportCsv()
     {
         // Defensive checks to avoid NullReferenceExceptions when DI failed
@@ -404,43 +481,29 @@ public partial class TransactionsViewModel(
             if (result == null) return;
 
             using var stream = await result.OpenReadAsync();
-            var importResult = await _importService.ImportFromCsvAsync(stream);
+            var preview = await _importService.AnalyzeCsvAsync(stream);
 
-            var titleDone = _loc?.GetString(Finanzuebersicht.Resources.Strings.ResourceKeys.Msg_ImportAbgeschlossen_Title) ?? "Import abgeschlossen";
-            var okBtn = _loc?.GetString(Finanzuebersicht.Resources.Strings.ResourceKeys.Btn_OK) ?? "OK";
-
-            string importedMsg;
-            if (!importResult.Success)
+            if (!preview.Success)
             {
-                importedMsg = importResult.ErrorMessage ?? "Unbekannter Fehler beim Import.";
-            }
-            else
-            {
-                importedMsg = string.Format(
-                    _loc?.GetString(Finanzuebersicht.Resources.Strings.ResourceKeys.Msg_ImportiertCount) ?? "Importiert: {0} Transaktionen",
-                    importResult.Imported.Count);
-
-                if (importResult.Duplicates.Count > 0)
-                    importedMsg += $"\n{importResult.Duplicates.Count} Duplikate übersprungen";
-                if (importResult.SkippedMalformed > 0)
-                    importedMsg += $"\n{importResult.SkippedMalformed} fehlerhafte Zeilen übersprungen";
-                if (importResult.SaveErrors.Count > 0)
-                    importedMsg += $"\n{importResult.SaveErrors.Count} Transaktionen konnten nicht gespeichert werden";
+                await _dialogService.ShowAlertAsync(
+                    _loc.GetString(ResourceKeys.Msg_ImportFehlgeschlagen_Title),
+                    preview.ErrorMessage ?? "Unbekannter Fehler beim Import.",
+                    _loc.GetString(ResourceKeys.Btn_OK));
+                return;
             }
 
-            if (_dialogService != null)
+            if (_importSessionStore == null)
             {
-                await _dialogService.ShowAlertAsync(titleDone, importedMsg, okBtn);
-            }
-            else
-            {
-                LogError("ImportCsv: DialogService is null after successful import");
+                await _dialogService.ShowAlertAsync(
+                    _loc.GetString(ResourceKeys.Msg_ImportVorschauNichtVerfuegbar_Title),
+                    _loc.GetString(ResourceKeys.Msg_ImportVorschauNichtVerfuegbar_Body),
+                    _loc.GetString(ResourceKeys.Btn_OK));
+                return;
             }
 
-            await LoadTransaktionen();
-
-            // notify other parts of the app (dashboard/year views) that data changed
-            try { _appEvents.NotifyDataChanged(); } catch { }
+            _importSessionStore.Clear();
+            _importSessionStore.SetActiveSession(preview);
+            await _navigationService.GoToAsync(Routes.ImportPreview);
         }
         catch (System.Exception ex)
         {

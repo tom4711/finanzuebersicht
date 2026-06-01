@@ -20,6 +20,7 @@ namespace Finanzuebersicht.Infrastructure.Services
         private readonly IRecurringTransactionRepository _recurringRepository;
         private readonly IBudgetRepository _budgetRepository;
         private readonly ISparZielRepository _sparZielRepository;
+        private readonly ITransactionTemplateRepository? _transactionTemplateRepository;
         private readonly ISettingsService _settingsService;
         private readonly ILogger<BackupService>? _logger;
         private readonly Finanzuebersicht.Core.Services.IClock _clock;
@@ -42,6 +43,7 @@ namespace Finanzuebersicht.Infrastructure.Services
             ISparZielRepository sparZielRepository,
             ISettingsService settingsService,
             DataMigrationService migrationService,
+            ITransactionTemplateRepository? transactionTemplateRepository = null,
             ILogger<BackupService>? logger = null,
             Finanzuebersicht.Core.Services.IClock? clock = null)
         {
@@ -50,6 +52,7 @@ namespace Finanzuebersicht.Infrastructure.Services
             _recurringRepository = recurringRepository ?? throw new ArgumentNullException(nameof(recurringRepository));
             _budgetRepository = budgetRepository ?? throw new ArgumentNullException(nameof(budgetRepository));
             _sparZielRepository = sparZielRepository ?? throw new ArgumentNullException(nameof(sparZielRepository));
+            _transactionTemplateRepository = transactionTemplateRepository;
             _settingsService = settingsService ?? throw new ArgumentNullException(nameof(settingsService));
             _migrationService = migrationService ?? throw new ArgumentNullException(nameof(migrationService));
             _logger = logger;
@@ -77,6 +80,9 @@ namespace Finanzuebersicht.Infrastructure.Services
                 var recurring = await _recurringRepository.GetRecurringTransactionsAsync();
                 var budgets = await _budgetRepository.GetBudgetsAsync();
                 var sparziele = await _sparZielRepository.GetSparZieleAsync();
+                List<TransactionTemplate> transactionTemplates = _transactionTemplateRepository is null
+                    ? []
+                    : await _transactionTemplateRepository.GetTransactionTemplatesAsync();
 
                 // Erstelle Metadaten
                 var metadata = new BackupMetadata
@@ -91,7 +97,8 @@ namespace Finanzuebersicht.Infrastructure.Services
                         { "transactions", transactions.Count() },
                         { "recurring", recurring.Count() },
                         { "budgets", budgets.Count },
-                        { "sparziele", sparziele.Count }
+                        { "sparziele", sparziele.Count },
+                        { "transactionTemplates", transactionTemplates.Count }
                     }
                 };
 
@@ -104,11 +111,12 @@ namespace Finanzuebersicht.Infrastructure.Services
                     WriteJsonToZip(zipArchive, "recurring.json", recurring);
                     WriteJsonToZip(zipArchive, "budgets.json", budgets);
                     WriteJsonToZip(zipArchive, "sparziele.json", sparziele);
+                    WriteJsonToZip(zipArchive, "transaction-templates.json", transactionTemplates);
                     WriteJsonToZip(zipArchive, BackupMetadataFileName, metadata);
                 }
 
-                _logger?.LogInformation("Backup erstellt: {FileName} mit {CatCount} Kategorien, {TxnCount} Transaktionen, {RecCount} Daueraufträgen, {BudCount} Budgets, {SparCount} Sparzielen",
-                    fileName, metadata.EntityCounts["categories"], metadata.EntityCounts["transactions"], metadata.EntityCounts["recurring"], metadata.EntityCounts["budgets"], metadata.EntityCounts["sparziele"]);
+                _logger?.LogInformation("Backup erstellt: {FileName} mit {CatCount} Kategorien, {TxnCount} Transaktionen, {RecCount} Daueraufträgen, {BudCount} Budgets, {SparCount} Sparzielen, {TemplateCount} Vorlagen",
+                    fileName, metadata.EntityCounts["categories"], metadata.EntityCounts["transactions"], metadata.EntityCounts["recurring"], metadata.EntityCounts["budgets"], metadata.EntityCounts["sparziele"], metadata.EntityCounts["transactionTemplates"]);
 
                 // Speichere Zeitstempel in Settings
                 _settingsService.SetLastBackupTime(_clock.UtcNow);
@@ -213,12 +221,13 @@ namespace Finanzuebersicht.Infrastructure.Services
                 var recurring = DeserializeFile<List<RecurringTransaction>>(archiveData, "recurring.json");
                 var budgets = DeserializeFile<List<CategoryBudget>>(archiveData, "budgets.json");
                 var sparziele = DeserializeFile<List<SparZiel>>(archiveData, "sparziele.json");
+                var transactionTemplates = DeserializeFile<List<TransactionTemplate>>(archiveData, "transaction-templates.json") ?? [];
 
                 if (categories == null || transactions == null || recurring == null || budgets == null || sparziele == null)
                     return new RestoreResult { Success = false, ErrorMessage = "ZIP-Datei ist beschädigt oder unvollständig" };
 
                 // Atomare Restore mit Rollback-Capability
-                var restoreSuccess = await AtomicRestoreAsync(categories, transactions, recurring, budgets, sparziele);
+                var restoreSuccess = await AtomicRestoreAsync(categories, transactions, recurring, budgets, sparziele, transactionTemplates);
 
                 if (!restoreSuccess)
                     return new RestoreResult { Success = false, ErrorMessage = "Fehler beim Speichern der wiederhergestellten Daten" };
@@ -231,7 +240,8 @@ namespace Finanzuebersicht.Infrastructure.Services
                     Success = true,
                     Details = $"Wiederhergestellt: {counts.GetValueOrDefault("categories")} Kategorien, " +
                               $"{counts.GetValueOrDefault("transactions")} Transaktionen, " +
-                              $"{counts.GetValueOrDefault("recurring")} Daueraufträge",
+                              $"{counts.GetValueOrDefault("recurring")} Daueraufträge, " +
+                              $"{counts.GetValueOrDefault("transactionTemplates")} Vorlagen",
                     RestoredMetadata = archiveData.Metadata
                 };
             }
@@ -266,7 +276,8 @@ namespace Finanzuebersicht.Infrastructure.Services
             List<Transaction> transactions,
             List<RecurringTransaction> recurring,
             List<CategoryBudget> budgets,
-            List<SparZiel> sparziele)
+            List<SparZiel> sparziele,
+            List<TransactionTemplate> transactionTemplates)
         {
             // Snapshot des aktuellen Zustands laden (für Rollback).
             // Wenn dieser Schritt fehlschlägt (z.B. DataCorruptionException), bricht der Restore
@@ -276,24 +287,29 @@ namespace Finanzuebersicht.Infrastructure.Services
             var snapshotRecurring = await _recurringRepository.GetRecurringTransactionsAsync();
             var snapshotBudgets = await _budgetRepository.GetBudgetsAsync();
             var snapshotSparziele = await _sparZielRepository.GetSparZieleAsync();
+            List<TransactionTemplate> snapshotTransactionTemplates = _transactionTemplateRepository is null
+                ? []
+                : await _transactionTemplateRepository.GetTransactionTemplatesAsync();
 
             try
             {
-                _logger?.LogInformation("Starte Wiederherstellung: {CatCount} Kategorien, {TxnCount} Transaktionen, {RecCount} Daueraufträge, {BudCount} Budgets, {SparCount} Sparziele",
-                    categories.Count, transactions.Count, recurring.Count, budgets.Count, sparziele.Count);
+                _logger?.LogInformation("Starte Wiederherstellung: {CatCount} Kategorien, {TxnCount} Transaktionen, {RecCount} Daueraufträge, {BudCount} Budgets, {SparCount} Sparziele, {TemplateCount} Vorlagen",
+                    categories.Count, transactions.Count, recurring.Count, budgets.Count, sparziele.Count, transactionTemplates.Count);
 
                 await _categoryRepository.ReplaceAllCategoriesAsync(categories);
                 await _transactionRepository.ReplaceAllTransactionsAsync(transactions);
                 await _recurringRepository.ReplaceAllRecurringTransactionsAsync(recurring);
                 await _budgetRepository.ReplaceAllBudgetsAsync(budgets);
                 await _sparZielRepository.ReplaceAllSparZieleAsync(sparziele);
+                if (_transactionTemplateRepository is not null)
+                    await _transactionTemplateRepository.ReplaceAllTransactionTemplatesAsync(transactionTemplates);
 
                 return true;
             }
             catch (Exception ex)
             {
                 _logger?.LogError(ex, "Fehler bei der Wiederherstellung – starte Rollback");
-                await RollbackAsync(snapshotCategories, snapshotTransactions, snapshotRecurring, snapshotBudgets, snapshotSparziele);
+                await RollbackAsync(snapshotCategories, snapshotTransactions, snapshotRecurring, snapshotBudgets, snapshotSparziele, snapshotTransactionTemplates);
                 return false;
             }
         }
@@ -303,7 +319,8 @@ namespace Finanzuebersicht.Infrastructure.Services
             List<Transaction> transactions,
             List<RecurringTransaction> recurring,
             List<CategoryBudget> budgets,
-            List<SparZiel> sparziele)
+            List<SparZiel> sparziele,
+            List<TransactionTemplate> transactionTemplates)
         {
             try
             {
@@ -312,6 +329,8 @@ namespace Finanzuebersicht.Infrastructure.Services
                 await _recurringRepository.ReplaceAllRecurringTransactionsAsync(recurring);
                 await _budgetRepository.ReplaceAllBudgetsAsync(budgets);
                 await _sparZielRepository.ReplaceAllSparZieleAsync(sparziele);
+                if (_transactionTemplateRepository is not null)
+                    await _transactionTemplateRepository.ReplaceAllTransactionTemplatesAsync(transactionTemplates);
 
                 _logger?.LogInformation("Rollback erfolgreich abgeschlossen");
             }

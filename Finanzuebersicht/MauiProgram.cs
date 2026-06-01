@@ -3,6 +3,7 @@ using CommunityToolkit.Maui;
 using Finanzuebersicht.Application.DependencyInjection;
 using Finanzuebersicht.Infrastructure;
 using Finanzuebersicht.Presentation.DependencyInjection;
+using Finanzuebersicht.Presentation.Services;
 using Finanzuebersicht.Services;
 using Finanzuebersicht.Views;
 
@@ -62,6 +63,7 @@ public static class MauiProgram
 		builder.Services.AddSingleton<IMainThreadDispatcher, MauiMainThreadDispatcher>();
 		builder.Services.AddSingleton<Finanzuebersicht.Presentation.Services.IFilePicker, MauiFilePicker>();
 		builder.Services.AddSingleton<IAppEvents, MauiAppEvents>();
+		builder.Services.AddSingleton<IImportSessionStore, ImportSessionStore>();
 		builder.Services.AddSingleton<IFolderPicker, MauiFolderPicker>();
 		builder.Services.AddSingleton<IFileSaver, MauiFileSaver>();
 		builder.Services.AddSingleton<IThemeService>(sp => sp.GetRequiredService<ThemeService>());
@@ -80,6 +82,7 @@ public static class MauiProgram
 		builder.Services.AddTransient<SettingsPage>();
 		builder.Services.AddTransient<SparZielePage>();
 		builder.Services.AddTransient<BackupListPage>();
+		builder.Services.AddTransient<ImportPreviewPage>();
 
 #if DEBUG
 		builder.Logging.AddDebug();
