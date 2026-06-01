@@ -17,17 +17,20 @@ public partial class TransactionDetailViewModel(
     INavigationService navigationService,
     IDialogService dialogService,
     ILogger<TransactionDetailViewModel>? logger = null,
-    Finanzuebersicht.Core.Services.IClock? clock = null) : ObservableObject, IAutoLoadViewModel, IApplyQueryAttributes
+    Finanzuebersicht.Core.Services.IClock? clock = null,
+    SaveTransactionTemplateUseCase? saveTransactionTemplateUseCase = null) : ObservableObject, IAutoLoadViewModel, IApplyQueryAttributes
 {
     private readonly SaveTransactionDetailUseCase _saveTransactionDetailUseCase = saveTransactionDetailUseCase;
     private readonly LoadTransactionDetailDataUseCase _loadTransactionDetailDataUseCase = loadTransactionDetailDataUseCase;
     private readonly ITransactionValidationService _validationService = validationService;
     private Transaction? _existingTransaction;
+    private string? _selectedKategorieId;
     private readonly ILocalizationService _loc = localizationService;
     private readonly INavigationService _navigationService = navigationService;
     private readonly IDialogService _dialogService = dialogService;
     private readonly ILogger<TransactionDetailViewModel>? _logger = logger;
     private readonly Finanzuebersicht.Core.Services.IClock _clock = clock ?? Finanzuebersicht.Core.Services.SystemClock.Instance;
+    private readonly SaveTransactionTemplateUseCase? _saveTransactionTemplateUseCase = saveTransactionTemplateUseCase;
 
     public System.Windows.Input.ICommand AutoLoadCommand => LoadKategorienCommand;
 
@@ -59,6 +62,7 @@ public partial class TransactionDetailViewModel(
             if (value != null)
             {
                 _existingTransaction = value;
+                _selectedKategorieId = value.KategorieId;
                 BetragText = value.Betrag.ToString("F2", System.Globalization.CultureInfo.CurrentCulture);
                 Titel = value.Titel;
                 Verwendungszweck = value.Verwendungszweck ?? string.Empty;
@@ -74,13 +78,23 @@ public partial class TransactionDetailViewModel(
     public void ApplyQueryAttributes(IDictionary<string, object> query)
     {
         if (query.TryGetValue("Transaction", out var val) && val is Transaction t)
+        {
             Transaction = t;
+        }
+        else if (query.TryGetValue("DuplicateTransaction", out var duplicateVal) && duplicateVal is Transaction duplicate)
+        {
+            ApplyTransactionDraft(duplicate, _clock.Today);
+        }
+        else if (query.TryGetValue("TransactionTemplate", out var templateVal) && templateVal is TransactionTemplate template)
+        {
+            ApplyTemplateDraft(template);
+        }
     }
 
     [RelayCommand]
     private async Task LoadKategorien()
     {
-        var data = await _loadTransactionDetailDataUseCase.ExecuteAsync(_existingTransaction?.KategorieId);
+        var data = await _loadTransactionDetailDataUseCase.ExecuteAsync(_selectedKategorieId ?? _existingTransaction?.KategorieId);
         Kategorien = new ObservableCollection<Category>(data.Kategorien);
         SelectedKategorie = data.SelectedKategorie;
     }
@@ -140,8 +154,56 @@ public partial class TransactionDetailViewModel(
         }
     }
 
+    [RelayCommand]
+    private async Task SaveAsTemplate()
+    {
+        if (_saveTransactionTemplateUseCase == null) return;
+
+        if (!_validationService.TryValidate(
+                BetragText,
+                Titel,
+                SelectedKategorie != null,
+                System.Globalization.CultureInfo.CurrentCulture,
+                out var betrag,
+                out var error))
+        {
+            var message = error switch
+            {
+                TransactionInputError.InvalidAmountFormat => _loc.GetString(ResourceKeys.Err_UngueltigerBetrag),
+                TransactionInputError.AmountMustBePositive => _loc.GetString(ResourceKeys.Err_BetragGroesserNull),
+                TransactionInputError.TitleRequired => _loc.GetString(ResourceKeys.Err_TitelErforderlich),
+                TransactionInputError.CategoryRequired => _loc.GetString(ResourceKeys.Err_KategorieErforderlich),
+                _ => _loc.GetString(ResourceKeys.Err_UngueltigerBetrag)
+            };
+
+            await _dialogService.ShowAlertAsync(
+                _loc.GetString(ResourceKeys.Err_Titel),
+                message,
+                _loc.GetString(ResourceKeys.Btn_OK));
+            return;
+        }
+
+        var template = new TransactionTemplate
+        {
+            Name = Titel,
+            Titel = Titel,
+            Betrag = betrag,
+            KategorieId = SelectedKategorie!.Id,
+            Typ = Typ,
+            Verwendungszweck = Verwendungszweck ?? string.Empty
+        };
+
+        await _saveTransactionTemplateUseCase.ExecuteAsync(template);
+        await _dialogService.ShowAlertAsync(
+            _loc.GetString(ResourceKeys.Msg_VorlageGespeichert_Title),
+            _loc.GetString(ResourceKeys.Msg_VorlageGespeichert_Body),
+            _loc.GetString(ResourceKeys.Btn_OK));
+    }
+
     private async Task SetKategorieAsync(string kategorieId)
     {
+        _selectedKategorieId = kategorieId;
+
         try
         {
             if (Kategorien.Count == 0)
@@ -155,5 +217,29 @@ public partial class TransactionDetailViewModel(
         {
             _logger?.LogWarning(ex, "Fehler beim Laden der Kategorie");
         }
+    }
+
+    private void ApplyTransactionDraft(Transaction source, DateTime datum)
+    {
+        _existingTransaction = null;
+        BetragText = source.Betrag.ToString("F2", System.Globalization.CultureInfo.CurrentCulture);
+        Titel = source.Titel;
+        Verwendungszweck = source.Verwendungszweck ?? string.Empty;
+        Datum = datum;
+        Typ = source.Typ;
+        _selectedKategorieId = source.KategorieId;
+        _ = SetKategorieAsync(source.KategorieId);
+    }
+
+    private void ApplyTemplateDraft(TransactionTemplate template)
+    {
+        _existingTransaction = null;
+        BetragText = template.Betrag.ToString("F2", System.Globalization.CultureInfo.CurrentCulture);
+        Titel = template.Titel;
+        Verwendungszweck = template.Verwendungszweck ?? string.Empty;
+        Datum = _clock.Today;
+        Typ = template.Typ;
+        _selectedKategorieId = template.KategorieId;
+        _ = SetKategorieAsync(template.KategorieId);
     }
 }

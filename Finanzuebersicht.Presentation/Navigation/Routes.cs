@@ -12,4 +12,5 @@ public static class Routes
     public static readonly string RecurringInstanceShift = "RecurringInstanceShiftPage";
     public static readonly string Settings = "SettingsPage";
     public static readonly string BackupList = "BackupListPage";
+    public static readonly string ImportPreview = "ImportPreviewPage";
 }

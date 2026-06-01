@@ -71,6 +71,14 @@
                     FontSize="16" FontAttributes="Bold"
                     Margin="0,20,0,0" />
 
+            <Button Text="{loc:Translate Btn_AlsVorlageSpeichern}"
+                    Command="{Binding SaveAsTemplateCommand}"
+                    BackgroundColor="Transparent"
+                    TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                    CornerRadius="12"
+                    HeightRequest="44"
+                    FontSize="15" />
+
         </VerticalStackLayout>
     </ScrollView>
 

@@ -40,7 +40,7 @@ namespace Finanzuebersicht.Tests.Services
         public async Task FullBackupRestoreCycle_PreserveAllData()
         {
             // Arrange
-            var service = new BackupService(_mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockSettingsService, new DataMigrationService([new V1ToV2Migrator()]));
+            var service = new BackupService(_mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockSettingsService, new DataMigrationService([new V1ToV2Migrator()]), _mockDataService);
             var backupPath = Path.Combine(_testDir, "backups");
 
             // Setup data
@@ -76,6 +76,16 @@ namespace Finanzuebersicht.Tests.Services
             _mockDataService.SetRecurring(originalRecurring);
             _mockDataService.SetBudgets([new CategoryBudget { Id = "b1", KategorieId = "c1", Betrag = 300m }]);
             _mockDataService.SetSparZiele([new SparZiel { Id = "s1", Titel = "Urlaub", ZielBetrag = 2000m }]);
+            _mockDataService.SetTransactionTemplates([new TransactionTemplate
+            {
+                Id = "tpl1",
+                Name = "Wocheneinkauf",
+                Titel = "Supermarket",
+                Betrag = 50.5m,
+                KategorieId = "c1",
+                Typ = TransactionType.Ausgabe,
+                UseCount = 3
+            }]);
 
             // Act 1: Create backup
             var backup = await service.CreateBackupAsync(backupPath);
@@ -87,6 +97,7 @@ namespace Finanzuebersicht.Tests.Services
             Assert.Equal(1, backup.EntityCounts["recurring"]);
             Assert.Equal(1, backup.EntityCounts["budgets"]);
             Assert.Equal(1, backup.EntityCounts["sparziele"]);
+            Assert.Equal(1, backup.EntityCounts["transactionTemplates"]);
             Assert.True(File.Exists(Path.Combine(backupPath, backup.FileName)));
 
             // Act 2: Restore backup — clear state first to verify data is re-saved
@@ -95,6 +106,7 @@ namespace Finanzuebersicht.Tests.Services
             _mockDataService.SetRecurring([]);
             _mockDataService.SetBudgets([]);
             _mockDataService.SetSparZiele([]);
+            _mockDataService.SetTransactionTemplates([]);
 
             var restoreResult = await service.RestoreBackupAsync(backupPath, backup.Id);
 
@@ -108,17 +120,20 @@ namespace Finanzuebersicht.Tests.Services
             var restoredRecurring = await _mockDataService.GetRecurringTransactionsAsync();
             var restoredBudgets = await _mockDataService.GetBudgetsAsync();
             var restoredSparziele = await _mockDataService.GetSparZieleAsync();
+            var restoredTemplates = await _mockDataService.GetTransactionTemplatesAsync();
 
             Assert.Equal(2, restoredCategories.Count);
             Assert.Equal(2, restoredTransactions.Count);
             Assert.Single(restoredRecurring);
             Assert.Single(restoredBudgets);
             Assert.Single(restoredSparziele);
+            Assert.Single(restoredTemplates);
             Assert.Contains(restoredCategories, c => c.Id == "c1" && c.Name == "Groceries");
             Assert.Contains(restoredTransactions, t => t.Id == "t1" && t.Betrag == 50.5m);
             Assert.Contains(restoredRecurring, r => r.Id == "r1" && r.Titel == "Rent");
             Assert.Contains(restoredBudgets, b => b.Id == "b1" && b.Betrag == 300m);
             Assert.Contains(restoredSparziele, s => s.Id == "s1" && s.Titel == "Urlaub");
+            Assert.Contains(restoredTemplates, t => t.Id == "tpl1" && t.Name == "Wocheneinkauf" && t.UseCount == 3);
         }
 
         [Fact]
@@ -321,19 +336,21 @@ namespace Finanzuebersicht.Tests.Services
 
         // Mock implementations
 #pragma warning disable CS0618
-        private class MockDataService : IDataService
+        private class MockDataService : IDataService, ITransactionTemplateRepository
         {
             private List<Category> _categories = [];
             private List<Transaction> _transactions = [];
             private List<RecurringTransaction> _recurring = [];
             private List<CategoryBudget> _budgets = [];
             private List<SparZiel> _sparziele = [];
+            private List<TransactionTemplate> _transactionTemplates = [];
 
             public void SetCategories(IEnumerable<Category> categories) => _categories = categories.ToList();
             public void SetTransactions(IEnumerable<Transaction> transactions) => _transactions = transactions.ToList();
             public void SetRecurring(IEnumerable<RecurringTransaction> recurring) => _recurring = recurring.ToList();
             public void SetBudgets(IEnumerable<CategoryBudget> budgets) => _budgets = budgets.ToList();
             public void SetSparZiele(IEnumerable<SparZiel> sparziele) => _sparziele = sparziele.ToList();
+            public void SetTransactionTemplates(IEnumerable<TransactionTemplate> templates) => _transactionTemplates = templates.ToList();
 
             public Task<List<Category>> GetCategoriesAsync() => Task.FromResult(_categories.ToList());
             public Task SaveCategoryAsync(Category category)
@@ -396,6 +413,16 @@ namespace Finanzuebersicht.Tests.Services
             }
             public Task DeleteSparZielAsync(string id) { _sparziele.RemoveAll(s => s.Id == id); return Task.CompletedTask; }
             public Task ReplaceAllSparZieleAsync(IEnumerable<SparZiel> sparziele) { _sparziele = sparziele.ToList(); return Task.CompletedTask; }
+
+            public Task<List<TransactionTemplate>> GetTransactionTemplatesAsync() => Task.FromResult(_transactionTemplates.ToList());
+            public Task SaveTransactionTemplateAsync(TransactionTemplate template)
+            {
+                var idx = _transactionTemplates.FindIndex(t => t.Id == template.Id);
+                if (idx >= 0) _transactionTemplates[idx] = template; else _transactionTemplates.Add(template);
+                return Task.CompletedTask;
+            }
+            public Task DeleteTransactionTemplateAsync(string id) { _transactionTemplates.RemoveAll(t => t.Id == id); return Task.CompletedTask; }
+            public Task ReplaceAllTransactionTemplatesAsync(IEnumerable<TransactionTemplate> templates) { _transactionTemplates = templates.ToList(); return Task.CompletedTask; }
         }
 #pragma warning restore CS0618
 

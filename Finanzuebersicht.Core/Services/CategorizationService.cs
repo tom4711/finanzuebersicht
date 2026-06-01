@@ -29,8 +29,24 @@ public class CategorizationService(
         IEnumerable<Category> availableCategories,
         CancellationToken cancellationToken = default)
     {
-        ArgumentNullException.ThrowIfNull(dto);
+        var category = await TryCategorizAsync(
+            dto,
+            availableCategories,
+            allowFallback: true,
+            strategyFilter: null,
+            cancellationToken).ConfigureAwait(false);
 
+        return category ?? throw new InvalidOperationException("Unkategorisiert category not found in available categories");
+    }
+
+    public async Task<Category?> TryCategorizAsync(
+        TransactionDto dto,
+        IEnumerable<Category> availableCategories,
+        bool allowFallback = true,
+        Func<ICategorizationStrategy, bool>? strategyFilter = null,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(dto);
         ArgumentNullException.ThrowIfNull(availableCategories);
 
         var categories = availableCategories.ToList();
@@ -38,7 +54,10 @@ public class CategorizationService(
             ?? categories.FirstOrDefault(c => c.Name == "Unkategorisiert");
 
         // Execute strategies in priority order
-        var sortedStrategies = _strategies.OrderBy(s => s.Priority).ToList();
+        var sortedStrategies = _strategies
+            .Where(strategyFilter ?? (_ => true))
+            .OrderBy(s => s.Priority)
+            .ToList();
 
         foreach (var strategy in sortedStrategies)
         {
@@ -65,7 +84,7 @@ public class CategorizationService(
         }
 
         // Fallback to Unkategorisiert
-        if (uncategorizedCategory != null)
+        if (allowFallback && uncategorizedCategory != null)
         {
             _logger?.LogInformation(
                 "Transaction '{Title}' fell back to Unkategorisiert (no strategy matched)",
@@ -73,6 +92,6 @@ public class CategorizationService(
             return uncategorizedCategory;
         }
 
-        throw new InvalidOperationException("Unkategorisiert category not found in available categories");
+        return null;
     }
 }

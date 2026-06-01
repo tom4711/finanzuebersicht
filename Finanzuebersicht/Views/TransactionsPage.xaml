@@ -56,7 +56,7 @@
         </DataTemplate>
     </views:BaseContentPage.Resources>
 
-    <Grid RowDefinitions="Auto, Auto, Auto, *">
+    <Grid RowDefinitions="Auto, Auto, Auto, Auto, *">
 
         <!-- Row 0: Suchleiste + Filter-Button -->
         <Grid Grid.Row="0" ColumnDefinitions="*, Auto" Padding="12,8,12,4" ColumnSpacing="8">
@@ -166,8 +166,70 @@
             </VerticalStackLayout>
         </Border>
 
-        <!-- Row 3: Content -->
-        <Grid Grid.Row="3">
+        <!-- Row 3: Schnellbuchungen -->
+        <Border Grid.Row="3"
+                StrokeShape="RoundRectangle 12"
+                Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray900}}"
+                BackgroundColor="{AppThemeBinding Light={StaticResource CardBackground}, Dark={StaticResource CardBackgroundDark}}"
+                Padding="12"
+                Margin="12,4"
+                IsVisible="{Binding ShowTransactionTemplates}">
+            <VerticalStackLayout Spacing="8">
+                <Label Text="{loc:Translate Lbl_HaeufigVerwendet}"
+                       FontSize="14"
+                       FontAttributes="Bold" />
+                <CollectionView ItemsSource="{Binding TransactionTemplates}"
+                                ItemsLayout="HorizontalList"
+                                SelectionMode="None"
+                                HeightRequest="86">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="models:TransactionTemplate">
+                            <Border StrokeShape="RoundRectangle 10"
+                                    Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray900}}"
+                                    BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray900}}"
+                                    Padding="10"
+                                    Margin="0,0,8,0"
+                                    WidthRequest="150">
+                                <Grid RowDefinitions="*, Auto" ColumnDefinitions="*, Auto">
+                                    <VerticalStackLayout Grid.Row="0" Grid.Column="0" Spacing="2">
+                                        <Label Text="{Binding Name}"
+                                               FontSize="13"
+                                               FontAttributes="Bold"
+                                               LineBreakMode="TailTruncation" />
+                                        <Label Text="{Binding ., Converter={StaticResource BetragDisplay}}"
+                                               FontSize="12"
+                                               TextColor="{AppThemeBinding Light={StaticResource TextTertiary}, Dark={StaticResource Gray600}}" />
+                                    </VerticalStackLayout>
+                                    <Button Grid.Row="0" Grid.Column="1"
+                                            Text="×"
+                                            FontSize="14"
+                                            BackgroundColor="Transparent"
+                                            TextColor="{AppThemeBinding Light={StaticResource Ausgabe}, Dark={StaticResource AusgabeDark}}"
+                                            Padding="0"
+                                            WidthRequest="28"
+                                            HeightRequest="28"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:TransactionsViewModel}}, Path=DeleteTemplateCommand}"
+                                            CommandParameter="{Binding .}"
+                                            SemanticProperties.Description="{loc:Translate Btn_Loeschen}" />
+                                    <Button Grid.Row="1" Grid.ColumnSpan="2"
+                                            Text="{loc:Translate Btn_Verwenden}"
+                                            FontSize="12"
+                                            Padding="8,4"
+                                            CornerRadius="8"
+                                            BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                                            TextColor="White"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:TransactionsViewModel}}, Path=CreateFromTemplateCommand}"
+                                            CommandParameter="{Binding .}" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </VerticalStackLayout>
+        </Border>
+
+        <!-- Row 4: Content -->
+        <Grid Grid.Row="4">
 
             <!-- Monatsansicht (normal) -->
             <RefreshView Command="{Binding LoadTransaktionenCommand}"
@@ -194,6 +256,10 @@
                             <SwipeView>
                                 <SwipeView.RightItems>
                                     <SwipeItems>
+                                        <SwipeItem Text="{loc:Translate Btn_Duplizieren}"
+                                                   BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                                                   Command="{Binding Source={RelativeSource AncestorType={x:Type vm:TransactionsViewModel}}, Path=DuplicateTransaktionCommand}"
+                                                   CommandParameter="{Binding .}" />
                                         <SwipeItem Text="{loc:Translate Btn_Loeschen}"
                                                    BackgroundColor="{AppThemeBinding Light={StaticResource Ausgabe}, Dark={StaticResource AusgabeDark}}"
                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:TransactionsViewModel}}, Path=DeleteTransaktionCommand}"
@@ -271,8 +337,8 @@
 
         </Grid>
 
-        <!-- FABs (immer sichtbar, über Row 3) -->
-        <Grid Grid.Row="3" HorizontalOptions="Fill" VerticalOptions="End" Padding="20,0,20,20">
+        <!-- FABs (immer sichtbar, über Row 4) -->
+        <Grid Grid.Row="4" HorizontalOptions="Fill" VerticalOptions="End" Padding="20,0,20,20">
             <Button Text="{loc:Translate Btn_Import}" FontSize="14" TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
                     BackgroundColor="Transparent"
                     HorizontalOptions="Start" VerticalOptions="End"

@@ -79,6 +79,7 @@ namespace Finanzuebersicht.Tests.Services
                 Assert.NotNull(zipArchive.GetEntry("recurring.json"));
                 Assert.NotNull(zipArchive.GetEntry("budgets.json"));
                 Assert.NotNull(zipArchive.GetEntry("sparziele.json"));
+                Assert.NotNull(zipArchive.GetEntry("transaction-templates.json"));
                 Assert.NotNull(zipArchive.GetEntry("backup.metadata.json"));
             }
         }

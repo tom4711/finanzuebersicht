@@ -162,6 +162,112 @@
                     </Border>
                 </Grid>
 
+                <!-- Budget-Hinweise -->
+                <Border StrokeShape="RoundRectangle 12"
+                        Stroke="{AppThemeBinding Light=#E5E5EA, Dark=#3A3A3C}"
+                        BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1C1C1E}"
+                        Padding="12"
+                        IsVisible="{Binding HasBudgetHinweise}">
+                    <VerticalStackLayout Spacing="10">
+                        <Grid ColumnDefinitions="*, Auto">
+                            <Label Grid.Column="0"
+                                   Text="{loc:Translate Lbl_BudgetHinweise}"
+                                   FontSize="18"
+                                   FontAttributes="Bold"
+                                   SemanticProperties.HeadingLevel="Level2" />
+                            <Label Grid.Column="1"
+                                   Text="{Binding BudgetRest, Converter={StaticResource Currency}}"
+                                   FontSize="15"
+                                   FontAttributes="Bold"
+                                   TextColor="{Binding BudgetRest, Converter={StaticResource BilanzColor}}" />
+                        </Grid>
+
+                        <Grid ColumnDefinitions="*, Auto">
+                            <Label Grid.Column="0"
+                                   Text="{loc:Translate Lbl_BudgetVerbraucht}"
+                                   FontSize="13"
+                                   TextColor="Gray" />
+                            <HorizontalStackLayout Grid.Column="1" Spacing="4">
+                                <Label Text="{Binding BudgetVerbraucht, Converter={StaticResource Currency}}"
+                                       FontSize="13"
+                                       FontAttributes="Bold" />
+                                <Label Text="{loc:Translate Lbl_Von}"
+                                       FontSize="13"
+                                       TextColor="Gray" />
+                                <Label Text="{Binding BudgetGesamt, Converter={StaticResource Currency}}"
+                                       FontSize="13"
+                                       TextColor="Gray" />
+                            </HorizontalStackLayout>
+                        </Grid>
+
+                        <Grid ColumnDefinitions="*, Auto"
+                              IsVisible="{Binding ShowBudgetTagesbudget}">
+                            <Label Grid.Column="0"
+                                   Text="{loc:Translate Lbl_TagesbudgetBisMonatsende}"
+                                   FontSize="13"
+                                   TextColor="Gray" />
+                            <Label Grid.Column="1"
+                                   Text="{Binding BudgetTagesbudget, Converter={StaticResource Currency}}"
+                                   FontSize="13"
+                                   FontAttributes="Bold"
+                                   TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                        </Grid>
+
+                        <VerticalStackLayout BindableLayout.ItemsSource="{Binding BudgetHinweise}"
+                                             Spacing="8">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="models:BudgetHintSummary">
+                                    <VerticalStackLayout Spacing="4">
+                                        <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="8">
+                                            <Label Grid.Column="0"
+                                                   Text="{Binding Icon}"
+                                                   FontSize="16"
+                                                   VerticalTextAlignment="Center" />
+                                            <Label Grid.Column="1"
+                                                   Text="{Binding CategoryName}"
+                                                   FontSize="14"
+                                                   VerticalTextAlignment="Center" />
+                                            <Label Grid.Column="2"
+                                                   Text="{Binding Restbudget, Converter={StaticResource Currency}}"
+                                                   FontSize="14"
+                                                   FontAttributes="Bold"
+                                                   TextColor="{Binding Restbudget, Converter={StaticResource BilanzColor}}" />
+                                        </Grid>
+                                        <ProgressBar
+                                            Progress="{Binding VerbrauchProzent, Converter={StaticResource ProzentToWidth}}"
+                                            ProgressColor="{Binding IstAusgeschoepft, Converter={StaticResource BudgetProgressColor}}"
+                                            BackgroundColor="{AppThemeBinding Light=#E5E5EA, Dark=#3A3A3C}"
+                                            SemanticProperties.Description="{loc:Translate A11y_BudgetBalken}" />
+                                        <Grid ColumnDefinitions="*, Auto">
+                                            <Label Grid.Column="0"
+                                                   Text="{loc:Translate Lbl_BudgetWarnung80}"
+                                                   IsVisible="{Binding IstWarnung}"
+                                                   FontSize="11"
+                                                   TextColor="{AppThemeBinding Light={StaticResource Warning}, Dark={StaticResource WarningDark}}" />
+                                            <Label Grid.Column="0"
+                                                   Text="{loc:Translate Lbl_BudgetAufgebraucht}"
+                                                   IsVisible="{Binding IstAusgeschoepft}"
+                                                   FontSize="11"
+                                                   TextColor="{AppThemeBinding Light={StaticResource Ausgabe}, Dark={StaticResource AusgabeDark}}" />
+                                            <HorizontalStackLayout Grid.Column="1" Spacing="2">
+                                                <Label Text="{Binding Verbrauch, Converter={StaticResource Currency}}"
+                                                       FontSize="11"
+                                                       TextColor="Gray" />
+                                                <Label Text="{loc:Translate Lbl_Von}"
+                                                       FontSize="11"
+                                                       TextColor="Gray" />
+                                                <Label Text="{Binding BudgetBetrag, Converter={StaticResource Currency}}"
+                                                       FontSize="11"
+                                                       TextColor="Gray" />
+                                            </HorizontalStackLayout>
+                                        </Grid>
+                                    </VerticalStackLayout>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </VerticalStackLayout>
+                    </VerticalStackLayout>
+                </Border>
+
                 <!-- Ausgaben nach Kategorie -->
                   <Label Text="{loc:Translate Lbl_AusgabenNachKategorie}" FontSize="18" FontAttributes="Bold"
                       Margin="0,8,0,0"

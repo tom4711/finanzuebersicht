@@ -14,13 +14,14 @@ namespace Finanzuebersicht.Infrastructure.Services;
 /// - ReportingService: Transaction aggregations
 /// - RecurringGenerationService: Auto-generation of recurring transactions
 /// </summary>
-public class LocalDataService : IDataService, IDisposable
+public class LocalDataService : IDataService, ITransactionTemplateRepository, IDisposable
 {
     private readonly CategoryStore _categoryStore;
     private readonly TransactionStore _transactionStore;
     private readonly RecurringStore _recurringStore;
     private readonly BudgetStore _budgetStore;
     private readonly SparZielStore _sparZielStore;
+    private readonly TransactionTemplateStore _transactionTemplateStore;
     private readonly ReportingService _reportingService;
     private readonly RecurringGenerationService _recurringGenerationService;
 
@@ -33,6 +34,7 @@ public class LocalDataService : IDataService, IDisposable
         RecurringStore recurringStore,
         BudgetStore budgetStore,
         SparZielStore sparZielStore,
+        TransactionTemplateStore transactionTemplateStore,
         IClock clock)
     {
         _categoryStore = categoryStore;
@@ -40,6 +42,7 @@ public class LocalDataService : IDataService, IDisposable
         _recurringStore = recurringStore;
         _budgetStore = budgetStore;
         _sparZielStore = sparZielStore;
+        _transactionTemplateStore = transactionTemplateStore;
         _reportingService = new ReportingService(_transactionStore, _categoryStore);
         _recurringGenerationService = new RecurringGenerationService(_recurringStore, _transactionStore, clock);
     }
@@ -58,6 +61,7 @@ public class LocalDataService : IDataService, IDisposable
         _recurringStore = new RecurringStore(dataDir);
         _budgetStore = new BudgetStore(dataDir);
         _sparZielStore = new SparZielStore(dataDir);
+        _transactionTemplateStore = new TransactionTemplateStore(dataDir);
         _reportingService = new ReportingService(_transactionStore, _categoryStore);
         _recurringGenerationService = new RecurringGenerationService(_recurringStore, _transactionStore, clock);
     }
@@ -152,6 +156,22 @@ public class LocalDataService : IDataService, IDisposable
     public Task DeleteSparZielAsync(string id) => _sparZielStore.DeleteSparZielAsync(id);
     public Task ReplaceAllSparZieleAsync(IEnumerable<SparZiel> sparziele)
         => _sparZielStore.ReplaceAllSparZieleAsync(sparziele);
+
+    #endregion
+
+    #region ITransactionTemplateRepository delegation
+
+    public Task<List<TransactionTemplate>> GetTransactionTemplatesAsync()
+        => _transactionTemplateStore.GetTransactionTemplatesAsync();
+
+    public Task SaveTransactionTemplateAsync(TransactionTemplate template)
+        => _transactionTemplateStore.SaveTransactionTemplateAsync(template);
+
+    public Task DeleteTransactionTemplateAsync(string id)
+        => _transactionTemplateStore.DeleteTransactionTemplateAsync(id);
+
+    public Task ReplaceAllTransactionTemplatesAsync(IEnumerable<TransactionTemplate> templates)
+        => _transactionTemplateStore.ReplaceAllTransactionTemplatesAsync(templates);
 
     #endregion
 
