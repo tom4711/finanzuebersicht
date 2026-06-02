@@ -18,6 +18,7 @@ public class SaveTransactionDetailUseCaseTests
             titel: "Einkauf",
             datum: new DateTime(2026, 3, 1),
             kategorieId: "cat-1",
+            accountId: "acc-1",
             typ: TransactionType.Ausgabe,
             verwendungszweck: "Zweck A");
 
@@ -27,6 +28,7 @@ public class SaveTransactionDetailUseCaseTests
                 t.Titel == "Einkauf" &&
                 t.Datum == new DateTime(2026, 3, 1) &&
                 t.KategorieId == "cat-1" &&
+                t.AccountId == "acc-1" &&
                 t.Typ == TransactionType.Ausgabe &&
                 t.Verwendungszweck == "Zweck A"));
     }
@@ -53,6 +55,7 @@ public class SaveTransactionDetailUseCaseTests
             titel: "Neu",
             datum: new DateTime(2026, 3, 2),
             kategorieId: "cat-2",
+            accountId: "acc-2",
             typ: TransactionType.Einnahme,
             verwendungszweck: "Gehaltszahlung");
 
@@ -62,6 +65,7 @@ public class SaveTransactionDetailUseCaseTests
         Assert.Equal("Neu", existing.Titel);
         Assert.Equal(new DateTime(2026, 3, 2), existing.Datum);
         Assert.Equal("cat-2", existing.KategorieId);
+        Assert.Equal("acc-2", existing.AccountId);
         Assert.Equal(TransactionType.Einnahme, existing.Typ);
         Assert.Equal("Gehaltszahlung", existing.Verwendungszweck);
     }

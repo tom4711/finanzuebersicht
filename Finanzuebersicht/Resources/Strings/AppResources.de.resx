@@ -27,6 +27,7 @@
   <data name="Lbl_Betrag" xml:space="preserve"><value>Betrag</value></data>
   <data name="Lbl_Titel" xml:space="preserve"><value>Titel</value></data>
   <data name="Lbl_Kategorie" xml:space="preserve"><value>Kategorie</value></data>
+  <data name="Lbl_Konto" xml:space="preserve"><value>Konto</value></data>
   <data name="Lbl_Datum" xml:space="preserve"><value>Datum</value></data>
   <data name="Lbl_Startdatum" xml:space="preserve"><value>Startdatum</value></data>
   <data name="Lbl_Enddatum" xml:space="preserve"><value>Enddatum</value></data>
@@ -72,6 +73,7 @@
   <data name="Hint_Beschreibung" xml:space="preserve"><value>Beschreibung</value></data>
   <data name="Hint_Titelbeispiel" xml:space="preserve"><value>z.B. Miete, Netflix, Gehalt</value></data>
   <data name="Hint_KategorieWaehlen" xml:space="preserve"><value>Kategorie wählen</value></data>
+  <data name="Hint_KontoWaehlen" xml:space="preserve"><value>Konto wählen</value></data>
   <data name="Hint_iCloudTipp" xml:space="preserve"><value>💡 Tipp: Wähle einen Ordner in iCloud Drive, um die Daten automatisch zu sichern.</value></data>
 
   <!-- Empty States -->

@@ -12,6 +12,7 @@ public class SaveTransactionDetailUseCase(ITransactionRepository transactionRepo
         string titel,
         DateTime datum,
         string kategorieId,
+        string? accountId,
         TransactionType typ,
         string verwendungszweck, CancellationToken cancellationToken = default)
     {
@@ -20,6 +21,7 @@ public class SaveTransactionDetailUseCase(ITransactionRepository transactionRepo
         transaction.Titel = titel;
         transaction.Datum = datum;
         transaction.KategorieId = kategorieId;
+        transaction.AccountId = accountId ?? transaction.AccountId ?? string.Empty;
         transaction.Typ = typ;
         transaction.Verwendungszweck = verwendungszweck ?? string.Empty;
 

@@ -40,7 +40,7 @@ namespace Finanzuebersicht.Tests.Services
         public async Task FullBackupRestoreCycle_PreserveAllData()
         {
             // Arrange
-            var service = new BackupService(_mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockSettingsService, new DataMigrationService([new V1ToV2Migrator()]), _mockDataService);
+            var service = new BackupService(_mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockSettingsService, new DataMigrationService([new V1ToV2Migrator(), new V2ToV3Migrator()]), _mockDataService);
             var backupPath = Path.Combine(_testDir, "backups");
 
             // Setup data
@@ -49,11 +49,15 @@ namespace Finanzuebersicht.Tests.Services
                 new Category { Id = "c1", Name = "Groceries", Icon = "🛒", Color = "#FF5733" },
                 new Category { Id = "c2", Name = "Transport", Icon = "🚗", Color = "#33FF57" }
             };
+            var originalAccounts = new[]
+            {
+                new Account { Id = "a1", Name = "Girokonto", Type = AccountType.Girokonto }
+            };
 
             var originalTransactions = new[]
             {
-                new Transaction { Id = "t1", Titel = "Supermarket", Betrag = 50.5m, Datum = new DateTime(2026, 1, 1), KategorieId = "c1" },
-                new Transaction { Id = "t2", Titel = "Gas", Betrag = 60.0m, Datum = new DateTime(2026, 1, 5), KategorieId = "c2" }
+                new Transaction { Id = "t1", Titel = "Supermarket", Betrag = 50.5m, Datum = new DateTime(2026, 1, 1), KategorieId = "c1", AccountId = "a1" },
+                new Transaction { Id = "t2", Titel = "Gas", Betrag = 60.0m, Datum = new DateTime(2026, 1, 5), KategorieId = "c2", AccountId = "a1" }
             };
 
             var originalRecurring = new[]
@@ -72,6 +76,7 @@ namespace Finanzuebersicht.Tests.Services
             };
 
             _mockDataService.SetCategories(originalCategories);
+            _mockDataService.SetAccounts(originalAccounts);
             _mockDataService.SetTransactions(originalTransactions);
             _mockDataService.SetRecurring(originalRecurring);
             _mockDataService.SetBudgets([new CategoryBudget { Id = "b1", KategorieId = "c1", Betrag = 300m }]);
@@ -93,6 +98,7 @@ namespace Finanzuebersicht.Tests.Services
             // Assert 1: Backup created with correct data
             Assert.NotNull(backup);
             Assert.Equal(2, backup.EntityCounts["categories"]);
+            Assert.Equal(1, backup.EntityCounts["accounts"]);
             Assert.Equal(2, backup.EntityCounts["transactions"]);
             Assert.Equal(1, backup.EntityCounts["recurring"]);
             Assert.Equal(1, backup.EntityCounts["budgets"]);
@@ -116,6 +122,7 @@ namespace Finanzuebersicht.Tests.Services
             Assert.Equal(backup.Id, restoreResult.RestoredMetadata.Id);
 
             var restoredCategories = await _mockDataService.GetCategoriesAsync();
+            var restoredAccounts = await _mockDataService.GetAccountsAsync();
             var restoredTransactions = await _mockDataService.GetTransactionsAsync(DateTime.MinValue, DateTime.MaxValue);
             var restoredRecurring = await _mockDataService.GetRecurringTransactionsAsync();
             var restoredBudgets = await _mockDataService.GetBudgetsAsync();
@@ -123,12 +130,14 @@ namespace Finanzuebersicht.Tests.Services
             var restoredTemplates = await _mockDataService.GetTransactionTemplatesAsync();
 
             Assert.Equal(2, restoredCategories.Count);
+            Assert.Single(restoredAccounts);
             Assert.Equal(2, restoredTransactions.Count);
             Assert.Single(restoredRecurring);
             Assert.Single(restoredBudgets);
             Assert.Single(restoredSparziele);
             Assert.Single(restoredTemplates);
             Assert.Contains(restoredCategories, c => c.Id == "c1" && c.Name == "Groceries");
+            Assert.Contains(restoredAccounts, a => a.Id == "a1" && a.Name == "Girokonto");
             Assert.Contains(restoredTransactions, t => t.Id == "t1" && t.Betrag == 50.5m);
             Assert.Contains(restoredRecurring, r => r.Id == "r1" && r.Titel == "Rent");
             Assert.Contains(restoredBudgets, b => b.Id == "b1" && b.Betrag == 300m);
@@ -140,7 +149,7 @@ namespace Finanzuebersicht.Tests.Services
         public async Task MultipleBackups_ListsInCorrectOrder()
         {
             // Arrange
-            var service = new BackupService(_mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockSettingsService, new DataMigrationService([new V1ToV2Migrator()]));
+            var service = new BackupService(_mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockSettingsService, new DataMigrationService([new V1ToV2Migrator(), new V2ToV3Migrator()]));
             var backupPath = Path.Combine(_testDir, "backups");
             var categories = new[] { new Category { Id = "1", Name = "Test", Icon = "🏠", Color = "#000" } };
             _mockDataService.SetCategories(categories);
@@ -164,7 +173,7 @@ namespace Finanzuebersicht.Tests.Services
         public async Task BackupWithEmptyDatabase_CreatesValidBackup()
         {
             // Arrange
-            var service = new BackupService(_mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockSettingsService, new DataMigrationService([new V1ToV2Migrator()]));
+            var service = new BackupService(_mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockSettingsService, new DataMigrationService([new V1ToV2Migrator(), new V2ToV3Migrator()]));
             var backupPath = Path.Combine(_testDir, "backups");
             // No data set
 
@@ -182,7 +191,7 @@ namespace Finanzuebersicht.Tests.Services
         public async Task DeleteBackup_RemovesBackupFile()
         {
             // Arrange
-            var service = new BackupService(_mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockSettingsService, new DataMigrationService([new V1ToV2Migrator()]));
+            var service = new BackupService(_mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockSettingsService, new DataMigrationService([new V1ToV2Migrator(), new V2ToV3Migrator()]));
             var backupPath = Path.Combine(_testDir, "backups");
             var category = new Category { Id = "1", Name = "Test", Icon = "🏠", Color = "#000" };
             _mockDataService.SetCategories(new[] { category });
@@ -202,7 +211,7 @@ namespace Finanzuebersicht.Tests.Services
         public async Task ExportAsCSV_ContainsAllTransactionData()
         {
             // Arrange
-            var service = new BackupService(_mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockSettingsService, new DataMigrationService([new V1ToV2Migrator()]));
+            var service = new BackupService(_mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockSettingsService, new DataMigrationService([new V1ToV2Migrator(), new V2ToV3Migrator()]));
             var categories = new[]
             {
                 new Category { Id = "c1", Name = "Food", Icon = "🍕", Color = "#FF0000" }
@@ -242,7 +251,7 @@ namespace Finanzuebersicht.Tests.Services
         public async Task BackupSettings_PersistsBackupMetadata()
         {
             // Arrange
-            var service = new BackupService(_mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockSettingsService, new DataMigrationService([new V1ToV2Migrator()]));
+            var service = new BackupService(_mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockSettingsService, new DataMigrationService([new V1ToV2Migrator(), new V2ToV3Migrator()]));
             var backupPath = Path.Combine(_testDir, "backups");
             _mockDataService.SetCategories(new[] { new Category { Id = "1", Name = "Test", Icon = "🏠", Color = "#000" } });
 
@@ -265,7 +274,7 @@ namespace Finanzuebersicht.Tests.Services
         public async Task RestoreNonexistentBackup_ReturnsFailed()
         {
             // Arrange
-            var service = new BackupService(_mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockSettingsService, new DataMigrationService([new V1ToV2Migrator()]));
+            var service = new BackupService(_mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockSettingsService, new DataMigrationService([new V1ToV2Migrator(), new V2ToV3Migrator()]));
             var backupPath = Path.Combine(_testDir, "backups");
 
             // Act
@@ -282,7 +291,7 @@ namespace Finanzuebersicht.Tests.Services
             // Arrange: create backup, then corrupt the ZIP before restoring.
             // The restore fails at extraction (before any ReplaceAll* write occurs),
             // so the existing data must remain untouched.
-            var service = new BackupService(_mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockSettingsService, new DataMigrationService([new V1ToV2Migrator()]));
+            var service = new BackupService(_mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockSettingsService, new DataMigrationService([new V1ToV2Migrator(), new V2ToV3Migrator()]));
             var backupPath = Path.Combine(_testDir, "backups");
 
             var originalCategories = new[] { new Category { Id = "c1", Name = "Groceries" } };
@@ -316,7 +325,7 @@ namespace Finanzuebersicht.Tests.Services
         public async Task RestoreBackup_WriteFailsAndRollbackFails_DataMayBeInconsistentIsTrue()
         {
             // Arrange: create a valid backup
-            var service = new BackupService(_mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockSettingsService, new DataMigrationService([new V1ToV2Migrator()]));
+            var service = new BackupService(_mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockSettingsService, new DataMigrationService([new V1ToV2Migrator(), new V2ToV3Migrator()]));
             var backupPath = Path.Combine(_testDir, "backups");
 
             _mockDataService.SetCategories([new Category { Id = "c1", Name = "Original" }]);
@@ -324,7 +333,7 @@ namespace Finanzuebersicht.Tests.Services
 
             // Use a data service that fails on both write AND rollback
             var failingDataService = new FailingMockDataService();
-            var failingService = new BackupService(failingDataService, failingDataService, failingDataService, failingDataService, failingDataService, _mockSettingsService, new DataMigrationService([new V1ToV2Migrator()]));
+            var failingService = new BackupService(failingDataService, failingDataService, failingDataService, failingDataService, failingDataService, failingDataService, _mockSettingsService, new DataMigrationService([new V1ToV2Migrator(), new V2ToV3Migrator()]));
 
             // Act
             var result = await failingService.RestoreBackupAsync(backupPath, metadata.Id);
@@ -336,9 +345,10 @@ namespace Finanzuebersicht.Tests.Services
 
         // Mock implementations
 #pragma warning disable CS0618
-        private class MockDataService : IDataService, ITransactionTemplateRepository
+        private class MockDataService : IDataService, IAccountRepository, ITransactionTemplateRepository
         {
             private List<Category> _categories = [];
+            private List<Account> _accounts = [];
             private List<Transaction> _transactions = [];
             private List<RecurringTransaction> _recurring = [];
             private List<CategoryBudget> _budgets = [];
@@ -346,6 +356,7 @@ namespace Finanzuebersicht.Tests.Services
             private List<TransactionTemplate> _transactionTemplates = [];
 
             public void SetCategories(IEnumerable<Category> categories) => _categories = categories.ToList();
+            public void SetAccounts(IEnumerable<Account> accounts) => _accounts = accounts.ToList();
             public void SetTransactions(IEnumerable<Transaction> transactions) => _transactions = transactions.ToList();
             public void SetRecurring(IEnumerable<RecurringTransaction> recurring) => _recurring = recurring.ToList();
             public void SetBudgets(IEnumerable<CategoryBudget> budgets) => _budgets = budgets.ToList();
@@ -353,6 +364,7 @@ namespace Finanzuebersicht.Tests.Services
             public void SetTransactionTemplates(IEnumerable<TransactionTemplate> templates) => _transactionTemplates = templates.ToList();
 
             public Task<List<Category>> GetCategoriesAsync() => Task.FromResult(_categories.ToList());
+            public Task<List<Account>> GetAccountsAsync() => Task.FromResult(_accounts.ToList());
             public Task SaveCategoryAsync(Category category)
             {
                 var idx = _categories.FindIndex(c => c.Id == category.Id);
@@ -361,6 +373,14 @@ namespace Finanzuebersicht.Tests.Services
             }
             public Task DeleteCategoryAsync(string id) { _categories.RemoveAll(c => c.Id == id); return Task.CompletedTask; }
             public Task ReplaceAllCategoriesAsync(IEnumerable<Category> categories) { _categories = categories.ToList(); return Task.CompletedTask; }
+            public Task SaveAccountAsync(Account account)
+            {
+                var idx = _accounts.FindIndex(a => a.Id == account.Id);
+                if (idx >= 0) _accounts[idx] = account; else _accounts.Add(account);
+                return Task.CompletedTask;
+            }
+            public Task DeleteAccountAsync(string id) { _accounts.RemoveAll(a => a.Id == id); return Task.CompletedTask; }
+            public Task ReplaceAllAccountsAsync(IEnumerable<Account> accounts) { _accounts = accounts.ToList(); return Task.CompletedTask; }
 
             public Task<List<Transaction>> GetTransactionsAsync(DateTime vonDatum, DateTime bisDatum)
                 => Task.FromResult(_transactions.Where(t => t.Datum >= vonDatum && t.Datum <= bisDatum).ToList());
@@ -438,22 +458,26 @@ namespace Finanzuebersicht.Tests.Services
         /// Used to test the scenario where restore fails AND rollback also fails.
         /// </summary>
 #pragma warning disable CS0618
-        private class FailingMockDataService : IDataService
+        private class FailingMockDataService : IDataService, IAccountRepository
         {
             public Task<List<Category>> GetCategoriesAsync() => Task.FromResult(new List<Category>());
+            public Task<List<Account>> GetAccountsAsync() => Task.FromResult(new List<Account>());
             public Task<List<Transaction>> GetTransactionsAsync(DateTime v, DateTime b) => Task.FromResult(new List<Transaction>());
             public Task<List<RecurringTransaction>> GetRecurringTransactionsAsync() => Task.FromResult(new List<RecurringTransaction>());
             public Task<List<CategoryBudget>> GetBudgetsAsync() => Task.FromResult(new List<CategoryBudget>());
             public Task<List<SparZiel>> GetSparZieleAsync() => Task.FromResult(new List<SparZiel>());
 
             public Task ReplaceAllCategoriesAsync(IEnumerable<Category> c) => Task.FromException(new InvalidOperationException("Simulated write failure"));
+            public Task ReplaceAllAccountsAsync(IEnumerable<Account> a) => Task.FromException(new InvalidOperationException("Simulated write failure"));
             public Task ReplaceAllTransactionsAsync(IEnumerable<Transaction> t) => Task.FromException(new InvalidOperationException("Simulated write failure"));
             public Task ReplaceAllRecurringTransactionsAsync(IEnumerable<RecurringTransaction> r) => Task.FromException(new InvalidOperationException("Simulated write failure"));
             public Task ReplaceAllBudgetsAsync(IEnumerable<CategoryBudget> b) => Task.FromException(new InvalidOperationException("Simulated write failure"));
             public Task ReplaceAllSparZieleAsync(IEnumerable<SparZiel> s) => Task.FromException(new InvalidOperationException("Simulated write failure"));
 
             public Task SaveCategoryAsync(Category c) => Task.CompletedTask;
+            public Task SaveAccountAsync(Account a) => Task.CompletedTask;
             public Task DeleteCategoryAsync(string id) => Task.CompletedTask;
+            public Task DeleteAccountAsync(string id) => Task.CompletedTask;
             public Task SaveTransactionAsync(Transaction t) => Task.CompletedTask;
             public Task DeleteTransactionAsync(string id) => Task.CompletedTask;
             public Task<Category?> GetMostCommonCategoryForPayeeAsync(string p, double c = 0.5, CancellationToken ct = default) => Task.FromResult<Category?>(null);

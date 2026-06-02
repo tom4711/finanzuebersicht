@@ -64,6 +64,16 @@
                         FontSize="16" />
             </VerticalStackLayout>
 
+            <!-- Konto -->
+            <VerticalStackLayout Spacing="4">
+                <Label Text="{loc:Translate Lbl_Konto}" FontSize="13" TextColor="Gray" />
+                <Picker ItemsSource="{Binding Accounts}"
+                        SelectedItem="{Binding SelectedAccount}"
+                        ItemDisplayBinding="{Binding Name}"
+                        Title="{loc:Translate Hint_KontoWaehlen}"
+                        FontSize="16" />
+            </VerticalStackLayout>
+
             <!-- Speichern -->
             <Button Text="{loc:Translate Btn_Speichern}" Command="{Binding SaveCommand}"
                     BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" TextColor="White"

@@ -12,6 +12,7 @@ public static class InfrastructureServiceCollectionExtensions
 
         // Backup
         services.AddSingleton<IDataMigrator, Finanzuebersicht.Core.Services.Migrations.V1ToV2Migrator>();
+        services.AddSingleton<IDataMigrator, Finanzuebersicht.Core.Services.Migrations.V2ToV3Migrator>();
         services.AddSingleton<DataMigrationService>(sp =>
             new DataMigrationService(sp.GetServices<IDataMigrator>()));
         services.AddSingleton<IBackupService, BackupService>();
@@ -30,6 +31,11 @@ public static class InfrastructureServiceCollectionExtensions
             new CategoryStore(
                 GetDataDir(sp),
                 sp.GetService<ILogger<CategoryStore>>()));
+
+        services.AddSingleton<AccountStore>(sp =>
+            new AccountStore(
+                GetDataDir(sp),
+                sp.GetService<ILogger<AccountStore>>()));
 
         services.AddSingleton<TransactionStore>(sp =>
             new TransactionStore(
@@ -62,6 +68,7 @@ public static class InfrastructureServiceCollectionExtensions
         services.AddSingleton<LocalDataService>(sp =>
             new LocalDataService(
                 sp.GetRequiredService<CategoryStore>(),
+                sp.GetRequiredService<AccountStore>(),
                 sp.GetRequiredService<TransactionStore>(),
                 sp.GetRequiredService<RecurringStore>(),
                 sp.GetRequiredService<BudgetStore>(),
@@ -71,6 +78,7 @@ public static class InfrastructureServiceCollectionExtensions
 
         // Expose the LocalDataService instance via the repository interfaces it implements
         services.AddSingleton<ICategoryRepository>(sp => sp.GetRequiredService<LocalDataService>());
+        services.AddSingleton<IAccountRepository>(sp => sp.GetRequiredService<LocalDataService>());
         services.AddSingleton<ITransactionRepository>(sp => sp.GetRequiredService<LocalDataService>());
         services.AddSingleton<IRecurringTransactionRepository>(sp => sp.GetRequiredService<LocalDataService>());
         services.AddSingleton<IBudgetRepository>(sp => sp.GetRequiredService<LocalDataService>());

@@ -39,7 +39,7 @@ namespace Finanzuebersicht.Tests.Services
         public async Task CreateBackupAsync_CreatesValidZipFile()
         {
             // Arrange
-            var service = new BackupService(_mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockSettingsService, new DataMigrationService([new V1ToV2Migrator()]));
+            var service = new BackupService(_mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockSettingsService, new DataMigrationService([new V1ToV2Migrator(), new V2ToV3Migrator()]));
             _mockDataService.SetCategories(new[]
             {
                 new Category { Id = "cat1", Name = "Test", Icon = "🏠", Color = "#000" }
@@ -64,7 +64,7 @@ namespace Finanzuebersicht.Tests.Services
         public async Task CreateBackupAsync_ZipContainsAllRequiredFiles()
         {
             // Arrange
-            var service = new BackupService(_mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockSettingsService, new DataMigrationService([new V1ToV2Migrator()]));
+            var service = new BackupService(_mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockSettingsService, new DataMigrationService([new V1ToV2Migrator(), new V2ToV3Migrator()]));
             _mockDataService.SetCategories(new[] { new Category { Id = "1", Name = "Test", Icon = "🏠", Color = "#000" } });
 
             // Act
@@ -75,6 +75,7 @@ namespace Finanzuebersicht.Tests.Services
             using (var zipArchive = ZipFile.OpenRead(zipPath))
             {
                 Assert.NotNull(zipArchive.GetEntry("categories.json"));
+                Assert.NotNull(zipArchive.GetEntry("accounts.json"));
                 Assert.NotNull(zipArchive.GetEntry("transactions.json"));
                 Assert.NotNull(zipArchive.GetEntry("recurring.json"));
                 Assert.NotNull(zipArchive.GetEntry("budgets.json"));
@@ -88,10 +89,14 @@ namespace Finanzuebersicht.Tests.Services
         public async Task CreateBackupAsync_MetadataHasCorrectEntityCounts()
         {
             // Arrange
-            var service = new BackupService(_mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockSettingsService, new DataMigrationService([new V1ToV2Migrator()]));
+            var service = new BackupService(_mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockSettingsService, new DataMigrationService([new V1ToV2Migrator(), new V2ToV3Migrator()]));
             var categories = new[] { 
                 new Category { Id = "1", Name = "Cat1", Icon = "🏠", Color = "#000" },
                 new Category { Id = "2", Name = "Cat2", Icon = "🛒", Color = "#111" }
+            };
+            var accounts = new[]
+            {
+                new Account { Id = "a1", Name = "Girokonto", Type = AccountType.Girokonto }
             };
             var transactions = new[] {
                 new Transaction { Id = "t1", Titel = "T1", Betrag = 100m, Datum = DateTime.Now, KategorieId = "1" },
@@ -103,6 +108,7 @@ namespace Finanzuebersicht.Tests.Services
             };
 
             _mockDataService.SetCategories(categories);
+            _mockDataService.SetAccounts(accounts);
             _mockDataService.SetTransactions(transactions);
             _mockDataService.SetRecurring(recurring);
 
@@ -111,6 +117,7 @@ namespace Finanzuebersicht.Tests.Services
 
             // Assert
             Assert.Equal(2, metadata.EntityCounts["categories"]);
+            Assert.Equal(1, metadata.EntityCounts["accounts"]);
             Assert.Equal(3, metadata.EntityCounts["transactions"]);
             Assert.Equal(1, metadata.EntityCounts["recurring"]);
         }
@@ -119,7 +126,7 @@ namespace Finanzuebersicht.Tests.Services
         public async Task CreateBackupAsync_ZipContainsBudgetsAndSparZiele()
         {
             // Arrange
-            var service = new BackupService(_mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockSettingsService, new DataMigrationService([new V1ToV2Migrator()]));
+            var service = new BackupService(_mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockSettingsService, new DataMigrationService([new V1ToV2Migrator(), new V2ToV3Migrator()]));
             _mockDataService.SetBudgets(new[]
             {
                 new CategoryBudget { Id = "b1", KategorieId = "cat1", Betrag = 200m, Jahr = 2026, Monat = 1 },
@@ -150,7 +157,7 @@ namespace Finanzuebersicht.Tests.Services
         public async Task ListBackupsAsync_ReturnsBackupsInReverseChronologicalOrder()
         {
             // Arrange
-            var service = new BackupService(_mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockSettingsService, new DataMigrationService([new V1ToV2Migrator()]));
+            var service = new BackupService(_mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockSettingsService, new DataMigrationService([new V1ToV2Migrator(), new V2ToV3Migrator()]));
             _mockDataService.SetCategories(new[] { new Category { Id = "1", Name = "Test", Icon = "🏠", Color = "#000" } });
 
             // Create backups with small delays
@@ -170,7 +177,7 @@ namespace Finanzuebersicht.Tests.Services
         public async Task ListBackupsAsync_ReturnsEmptyWhenDirectoryDoesNotExist()
         {
             // Arrange
-            var service = new BackupService(_mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockSettingsService, new DataMigrationService([new V1ToV2Migrator()]));
+            var service = new BackupService(_mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockSettingsService, new DataMigrationService([new V1ToV2Migrator(), new V2ToV3Migrator()]));
             var nonExistentPath = Path.Combine(_testBackupDir, "nonexistent");
 
             // Act
@@ -184,7 +191,7 @@ namespace Finanzuebersicht.Tests.Services
         public async Task RestoreBackupAsync_FailsWhenFileDoesNotExist()
         {
             // Arrange
-            var service = new BackupService(_mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockSettingsService, new DataMigrationService([new V1ToV2Migrator()]));
+            var service = new BackupService(_mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockSettingsService, new DataMigrationService([new V1ToV2Migrator(), new V2ToV3Migrator()]));
 
             // Act
             var result = await service.RestoreBackupAsync(_testBackupDir, "nonexistent_id");
@@ -198,7 +205,7 @@ namespace Finanzuebersicht.Tests.Services
         public async Task RestoreBackupAsync_ValidatesZipIntegrity()
         {
             // Arrange
-            var service = new BackupService(_mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockSettingsService, new DataMigrationService([new V1ToV2Migrator()]));
+            var service = new BackupService(_mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockSettingsService, new DataMigrationService([new V1ToV2Migrator(), new V2ToV3Migrator()]));
             var corruptedZipPath = Path.Combine(_testBackupDir, "backup_corrupted.zip");
             File.WriteAllText(corruptedZipPath, "This is not a valid ZIP file");
 
@@ -214,7 +221,7 @@ namespace Finanzuebersicht.Tests.Services
         public async Task RestoreBackupAsync_DetectsMissingRequiredFiles()
         {
             // Arrange
-            var service = new BackupService(_mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockSettingsService, new DataMigrationService([new V1ToV2Migrator()]));
+            var service = new BackupService(_mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockSettingsService, new DataMigrationService([new V1ToV2Migrator(), new V2ToV3Migrator()]));
             var incompleteZipPath = Path.Combine(_testBackupDir, "backup_incomplete.zip");
 
             // Create incomplete ZIP (missing files)
@@ -226,6 +233,14 @@ namespace Finanzuebersicht.Tests.Services
                 {
                     writer.Write("[]");
                 }
+                WriteJsonToZip(zipArchive, "backup.metadata.json", new BackupMetadata
+                {
+                    Id = "incomplete",
+                    CreatedAt = DateTime.UtcNow,
+                    SchemaVersion = 3,
+                    FileName = "backup_incomplete.zip",
+                    EntityCounts = new Dictionary<string, int>()
+                });
             }
 
             // Act
@@ -240,7 +255,7 @@ namespace Finanzuebersicht.Tests.Services
         public async Task RestoreBackupAsync_ValidatesSchemaVersion()
         {
             // Arrange
-            var service = new BackupService(_mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockSettingsService, new DataMigrationService([new V1ToV2Migrator()]));
+            var service = new BackupService(_mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockSettingsService, new DataMigrationService([new V1ToV2Migrator(), new V2ToV3Migrator()]));
             var wrongVersionZipPath = Path.Combine(_testBackupDir, "backup_wrongversion.zip");
 
             // Create backup with wrong schema version
@@ -273,7 +288,7 @@ namespace Finanzuebersicht.Tests.Services
         public async Task ExportAsCSVAsync_CreatesValidCsvStream()
         {
             // Arrange
-            var service = new BackupService(_mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockSettingsService, new DataMigrationService([new V1ToV2Migrator()]));
+            var service = new BackupService(_mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockSettingsService, new DataMigrationService([new V1ToV2Migrator(), new V2ToV3Migrator()]));
             var categories = new[] { new Category { Id = "1", Name = "Lebensmittel", Icon = "🛒", Color = "#000" } };
             var transactions = new[] {
                 new Transaction { Id = "t1", Titel = "Supermarkt", Betrag = 50.50m, Datum = new DateTime(2026, 3, 11), 
@@ -302,7 +317,7 @@ namespace Finanzuebersicht.Tests.Services
         public async Task ExportAsCSVAsync_EscapesCsvSpecialCharacters()
         {
             // Arrange
-            var service = new BackupService(_mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockSettingsService, new DataMigrationService([new V1ToV2Migrator()]));
+            var service = new BackupService(_mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockSettingsService, new DataMigrationService([new V1ToV2Migrator(), new V2ToV3Migrator()]));
             var categories = new[] { new Category { Id = "1", Name = "Test", Icon = "🏠", Color = "#000" } };
             var transactions = new[] {
                 new Transaction { Id = "t1", Titel = "Titel \"mit Anführungszeichen\"", Betrag = 100m, 
@@ -327,7 +342,7 @@ namespace Finanzuebersicht.Tests.Services
         public async Task DeleteBackupAsync_RemovesBackupFile()
         {
             // Arrange
-            var service = new BackupService(_mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockSettingsService, new DataMigrationService([new V1ToV2Migrator()]));
+            var service = new BackupService(_mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockDataService, _mockSettingsService, new DataMigrationService([new V1ToV2Migrator(), new V2ToV3Migrator()]));
             _mockDataService.SetCategories(new[] { new Category { Id = "1", Name = "Test", Icon = "🏠", Color = "#000" } });
             var metadata = await service.CreateBackupAsync(_testBackupDir);
             var zipPath = Path.Combine(_testBackupDir, metadata.FileName);
@@ -358,15 +373,17 @@ namespace Finanzuebersicht.Tests.Services
     // ========== Mock-Implementierungen ==========
 
 #pragma warning disable CS0618
-    internal class MockDataService : IDataService
+    internal class MockDataService : IDataService, IAccountRepository
     {
         private List<Category> _categories = [];
+        private List<Account> _accounts = [];
         private List<Transaction> _transactions = [];
         private List<RecurringTransaction> _recurring = [];
         private List<CategoryBudget> _budgets = [];
         private List<SparZiel> _sparziele = [];
 
         public void SetCategories(IEnumerable<Category> categories) => _categories = categories.ToList();
+        public void SetAccounts(IEnumerable<Account> accounts) => _accounts = accounts.ToList();
         public void SetTransactions(IEnumerable<Transaction> transactions) => _transactions = transactions.ToList();
         public void SetRecurring(IEnumerable<RecurringTransaction> recurring) => _recurring = recurring.ToList();
         public void SetBudgets(IEnumerable<CategoryBudget> budgets) => _budgets = budgets.ToList();
@@ -374,9 +391,13 @@ namespace Finanzuebersicht.Tests.Services
 
         // ICategoryRepository
         public Task<List<Category>> GetCategoriesAsync() => Task.FromResult(_categories);
+        public Task<List<Account>> GetAccountsAsync() => Task.FromResult(_accounts);
         public Task SaveCategoryAsync(Category category) => Task.CompletedTask;
         public Task DeleteCategoryAsync(string id) => Task.CompletedTask;
         public Task ReplaceAllCategoriesAsync(IEnumerable<Category> categories) { _categories = categories.ToList(); return Task.CompletedTask; }
+        public Task SaveAccountAsync(Account account) => Task.CompletedTask;
+        public Task DeleteAccountAsync(string id) => Task.CompletedTask;
+        public Task ReplaceAllAccountsAsync(IEnumerable<Account> accounts) { _accounts = accounts.ToList(); return Task.CompletedTask; }
 
         // ITransactionRepository
         public Task<List<Transaction>> GetTransactionsAsync(DateTime vonDatum, DateTime bisDatum) 

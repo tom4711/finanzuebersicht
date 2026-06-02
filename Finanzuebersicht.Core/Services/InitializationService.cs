@@ -2,12 +2,19 @@ using Finanzuebersicht.Models;
 
 namespace Finanzuebersicht.Core.Services;
 
-public class InitializationService(ICategoryRepository categoryRepository)
+public class InitializationService(
+    ICategoryRepository categoryRepository,
+    IAccountRepository accountRepository,
+    ITransactionRepository transactionRepository)
 {
     private readonly ICategoryRepository _categoryRepository = categoryRepository;
+    private readonly IAccountRepository _accountRepository = accountRepository;
+    private readonly ITransactionRepository _transactionRepository = transactionRepository;
 
     public async Task InitializeAsync()
     {
+        await EnsureDefaultAccountAsync();
+
         var kategorien = await _categoryRepository.GetCategoriesAsync();
         if (kategorien.Count > 0) return;
 
@@ -25,6 +32,41 @@ public class InitializationService(ICategoryRepository categoryRepository)
         foreach (var kategorie in standardKategorien)
         {
             await _categoryRepository.SaveCategoryAsync(kategorie);
+        }
+    }
+
+    private async Task EnsureDefaultAccountAsync()
+    {
+        var accounts = await _accountRepository.GetAccountsAsync();
+        var defaultAccount = accounts.FirstOrDefault(a => a.SystemKey == Finanzuebersicht.Constants.SystemAccountKeys.Default)
+            ?? accounts.FirstOrDefault();
+
+        if (defaultAccount == null)
+        {
+            defaultAccount = new Account
+            {
+                Name = "Girokonto",
+                Type = AccountType.Girokonto,
+                SystemKey = Finanzuebersicht.Constants.SystemAccountKeys.Default
+            };
+            await _accountRepository.SaveAccountAsync(defaultAccount);
+        }
+
+        var transactions = await _transactionRepository.GetTransactionsAsync(DateTime.MinValue, DateTime.MaxValue);
+        var migrated = false;
+
+        foreach (var transaction in transactions)
+        {
+            if (string.IsNullOrWhiteSpace(transaction.AccountId))
+            {
+                transaction.AccountId = defaultAccount.Id;
+                migrated = true;
+            }
+        }
+
+        if (migrated)
+        {
+            await _transactionRepository.ReplaceAllTransactionsAsync(transactions);
         }
     }
 }
