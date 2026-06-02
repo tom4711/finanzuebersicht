@@ -6,6 +6,7 @@ public class RecurringTransaction
     public decimal Betrag { get; set; }
     public string Titel { get; set; } = string.Empty;
     public string KategorieId { get; set; } = string.Empty;
+    public string? AccountId { get; set; }
     public TransactionType Typ { get; set; } = TransactionType.Ausgabe;
     public DateTime Startdatum { get; set; } = DateTime.Today;
     public DateTime? Enddatum { get; set; }

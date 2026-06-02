@@ -56,6 +56,15 @@
                         FontSize="16" />
             </VerticalStackLayout>
 
+            <VerticalStackLayout Spacing="4">
+                <Label Text="{loc:Translate Lbl_Konto}" FontSize="13" TextColor="Gray" />
+                <Picker ItemsSource="{Binding Accounts}"
+                        SelectedItem="{Binding SelectedAccount}"
+                        ItemDisplayBinding="{Binding Name}"
+                        Title="{loc:Translate Hint_KontoWaehlen}"
+                        FontSize="16" />
+            </VerticalStackLayout>
+
             <!-- Startdatum -->
             <VerticalStackLayout Spacing="4">
                 <Label Text="{loc:Translate Lbl_Startdatum}" FontSize="13" TextColor="Gray" />

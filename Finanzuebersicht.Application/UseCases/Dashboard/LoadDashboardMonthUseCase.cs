@@ -38,6 +38,7 @@ public class LoadDashboardMonthUseCase(
                             Betrag = da.Betrag,
                             Titel = da.Titel,
                             KategorieId = da.KategorieId,
+                            AccountId = da.AccountId,
                             Typ = da.Typ,
                             Datum = von,
                             DauerauftragId = da.Id

@@ -47,6 +47,9 @@ public partial class RecurringTransactionDetailViewModel(
     private Category? selectedKategorie;
 
     [ObservableProperty]
+    private Account? selectedAccount;
+
+    [ObservableProperty]
     private TransactionType typ = TransactionType.Ausgabe;
 
     [ObservableProperty]
@@ -66,6 +69,9 @@ public partial class RecurringTransactionDetailViewModel(
 
     [ObservableProperty]
     private ObservableCollection<Category> kategorien = [];
+
+    [ObservableProperty]
+    private ObservableCollection<Account> accounts = [];
 
     [ObservableProperty]
     private RecurrenceInterval interval = RecurrenceInterval.Monthly;
@@ -109,6 +115,7 @@ public partial class RecurringTransactionDetailViewModel(
                 }
 
                 _ = SetKategorieAsync(value.KategorieId);
+                _ = SetAccountAsync(value.AccountId);
                 Interval = value.Interval;
                 IntervalFactor = value.IntervalFactor;
                 IntervalFactorText = value.IntervalFactor.ToString();
@@ -128,10 +135,13 @@ public partial class RecurringTransactionDetailViewModel(
     [RelayCommand]
     private async Task LoadKategorien()
     {
-        var currentId = SelectedKategorie?.Id ?? _existing?.KategorieId;
-        var data = await _loadRecurringTransactionDetailDataUseCase.ExecuteAsync(currentId);
+        var currentCategoryId = SelectedKategorie?.Id ?? _existing?.KategorieId;
+        var currentAccountId = SelectedAccount?.Id ?? _existing?.AccountId;
+        var data = await _loadRecurringTransactionDetailDataUseCase.ExecuteAsync(currentCategoryId, currentAccountId);
         Kategorien = new ObservableCollection<Category>(data.Kategorien);
+        Accounts = new ObservableCollection<Account>(data.Accounts);
         SelectedKategorie = data.SelectedKategorie;
+        SelectedAccount = data.SelectedAccount;
     }
 
     [RelayCommand]
@@ -189,6 +199,7 @@ public partial class RecurringTransactionDetailViewModel(
             betrag,
             Titel,
             SelectedKategorie!.Id,
+            SelectedAccount?.Id,
             Typ,
             Startdatum,
             HatEnddatum ? EnddatumWert : null,
@@ -289,6 +300,23 @@ public partial class RecurringTransactionDetailViewModel(
         catch (Exception ex)
         {
             _logger?.LogWarning(ex, "Fehler beim Laden der Kategorie");
+        }
+    }
+
+    private async Task SetAccountAsync(string? accountId)
+    {
+        try
+        {
+            if (Accounts.Count == 0)
+                await LoadKategorien();
+
+            SelectedAccount = Accounts.FirstOrDefault(a => a.Id == accountId)
+                ?? Accounts.FirstOrDefault(a => a.SystemKey == Finanzuebersicht.Constants.SystemAccountKeys.Default)
+                ?? Accounts.FirstOrDefault();
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogWarning(ex, "Fehler beim Laden des Kontos");
         }
     }
 }

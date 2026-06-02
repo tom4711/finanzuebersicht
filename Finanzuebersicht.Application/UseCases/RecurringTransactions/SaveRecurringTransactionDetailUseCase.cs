@@ -14,6 +14,7 @@ public class SaveRecurringTransactionDetailUseCase(
         decimal betrag,
         string titel,
         string kategorieId,
+        string? accountId,
         TransactionType typ,
         DateTime startdatum,
         DateTime? enddatum,
@@ -29,6 +30,7 @@ public class SaveRecurringTransactionDetailUseCase(
         recurring.Betrag = betrag;
         recurring.Titel = titel;
         recurring.KategorieId = kategorieId;
+        recurring.AccountId = accountId;
         recurring.Typ = typ;
         recurring.Startdatum = startdatum;
         recurring.Enddatum = enddatum;
