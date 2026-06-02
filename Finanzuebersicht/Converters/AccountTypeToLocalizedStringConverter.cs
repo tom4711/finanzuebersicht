@@ -1,5 +1,6 @@
 using System.Globalization;
 using Finanzuebersicht.Models;
+using Finanzuebersicht.Services;
 using Microsoft.Maui.Controls;
 
 namespace Finanzuebersicht.Converters;
