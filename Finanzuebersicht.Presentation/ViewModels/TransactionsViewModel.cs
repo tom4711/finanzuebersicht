@@ -20,6 +20,7 @@ public partial class TransactionsViewModel(
     IDialogService dialogService,
     ILocalizationService localizationService,
     ICategoryRepository categoryRepository,
+    IAccountRepository accountRepository,
     IMainThreadDispatcher dispatcher,
     IFilePicker filePicker,
     IAppEvents appEvents,
@@ -39,6 +40,7 @@ public partial class TransactionsViewModel(
     private readonly IDialogService _dialogService = dialogService;
     private readonly ILocalizationService _loc = localizationService;
     private readonly ICategoryRepository _categoryRepository = categoryRepository;
+    private readonly IAccountRepository _accountRepository = accountRepository;
     private readonly IMainThreadDispatcher _dispatcher = dispatcher;
     private readonly IFilePicker _filePicker = filePicker;
     private readonly IAppEvents _appEvents = appEvents;
@@ -66,6 +68,9 @@ public partial class TransactionsViewModel(
 
     [ObservableProperty]
     private Dictionary<string, string> iconMap = [];
+
+    [ObservableProperty]
+    private Dictionary<string, string> accountMap = [];
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasTransactionTemplates))]
@@ -129,8 +134,12 @@ public partial class TransactionsViewModel(
     [ObservableProperty]
     private ObservableCollection<KategorieFilterItem> availableKategorien = [];
 
+    [ObservableProperty]
+    private ObservableCollection<KategorieFilterItem> availableKonten = [];
+
     public bool IsFilterActive =>
         SelectedKategorieId != null ||
+        SelectedAccountId != null ||
         SelectedTypFilter != TransactionTypeFilter.Alle ||
         IsDateFilterEnabled;
 
@@ -153,6 +162,12 @@ public partial class TransactionsViewModel(
 
     [ObservableProperty]
     private KategorieFilterItem? selectedKategorieFilterItem;
+
+    [ObservableProperty]
+    private KategorieFilterItem? selectedKontoFilterItem;
+
+    [ObservableProperty]
+    private string? selectedAccountId = null;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsFilterActive))]
@@ -191,6 +206,11 @@ public partial class TransactionsViewModel(
         SelectedKategorieId = value?.Id;
     }
 
+    partial void OnSelectedKontoFilterItemChanged(KategorieFilterItem? value)
+    {
+        SelectedAccountId = value?.Id;
+    }
+
     partial void OnIsDateFilterEnabledChanged(bool value)
     {
         VonDatum = value ? VonDatumPicker : null;
@@ -212,6 +232,7 @@ public partial class TransactionsViewModel(
 
     partial void OnSearchTextChanged(string value) => TriggerSearchDebounced();
     partial void OnSelectedKategorieIdChanged(string? value) => TriggerSearchDebounced();
+    partial void OnSelectedAccountIdChanged(string? value) => TriggerSearchDebounced();
     partial void OnSelectedTypFilterChanged(TransactionTypeFilter value) => TriggerSearchDebounced();
     partial void OnVonDatumChanged(DateTime? value) => TriggerSearchDebounced();
     partial void OnBisDatumChanged(DateTime? value) => TriggerSearchDebounced();
@@ -250,6 +271,7 @@ public partial class TransactionsViewModel(
             var query = new SearchTransactionsQuery(
                 SearchText: SearchText.Trim(),
                 KategorieId: SelectedKategorieId,
+                AccountId: SelectedAccountId,
                 Typ: SelectedTypFilter,
                 VonDatum: VonDatum,
                 BisDatum: BisDatum);
@@ -258,6 +280,7 @@ public partial class TransactionsViewModel(
             SearchErgebnisGruppen = new ObservableCollection<TransactionGroup>(result.Gruppen);
             TotalSearchCount = result.TotalCount;
             IconMap = result.IconMap;
+            AccountMap = result.AccountMap;
         }
         catch (Exception ex)
         {
@@ -287,6 +310,8 @@ public partial class TransactionsViewModel(
         SearchText = string.Empty;
         SelectedKategorieId = null;
         SelectedKategorieFilterItem = AvailableKategorien.FirstOrDefault();
+        SelectedAccountId = null;
+        SelectedKontoFilterItem = AvailableKonten.FirstOrDefault();
         SelectedTypFilter = TransactionTypeFilter.Alle;
         SelectedTypIndex = 0;
         IsDateFilterEnabled = false;
@@ -313,6 +338,19 @@ public partial class TransactionsViewModel(
         SelectedKategorieFilterItem = items[0];
     }
 
+    private async Task LoadKontenAsync()
+    {
+        var konten = await _accountRepository.GetAccountsAsync();
+        var items = new ObservableCollection<KategorieFilterItem>
+        {
+            new(null, _loc.GetString(ResourceKeys.Lbl_AlleKonten))
+        };
+        foreach (var konto in konten.OrderBy(k => k.Name))
+            items.Add(new KategorieFilterItem(konto.Id, konto.Name));
+        AvailableKonten = items;
+        SelectedKontoFilterItem = items.FirstOrDefault(i => i.Id == SelectedAccountId) ?? items[0];
+    }
+
     [RelayCommand]
     private async Task LoadTransaktionen()
     {
@@ -321,12 +359,15 @@ public partial class TransactionsViewModel(
 
         try
         {
-            var data = await _loadTransactionsMonthUseCase.ExecuteAsync(AktuellerMonat);
+            var data = await _loadTransactionsMonthUseCase.ExecuteAsync(AktuellerMonat, SelectedAccountId);
             TransaktionsGruppen = new ObservableCollection<TransactionGroup>(data.Gruppen);
             IconMap = data.IconMap;
+            AccountMap = data.AccountMap;
 
             if (AvailableKategorien.Count == 0)
                 await LoadKategorienAsync();
+            if (AvailableKonten.Count == 0)
+                await LoadKontenAsync();
 
             await LoadTemplatesAsync();
         }
@@ -481,7 +522,7 @@ public partial class TransactionsViewModel(
             if (result == null) return;
 
             using var stream = await result.OpenReadAsync();
-            var preview = await _importService.AnalyzeCsvAsync(stream);
+            var preview = await _importService.AnalyzeCsvAsync(stream, SelectedAccountId);
 
             if (!preview.Success)
             {

@@ -8,7 +8,8 @@ public class SearchTransactionsUseCaseTests
 {
     private static SearchTransactionsUseCase CreateSut(
         IEnumerable<Transaction>? transactions = null,
-        IEnumerable<Category>? categories = null)
+        IEnumerable<Category>? categories = null,
+        IEnumerable<Account>? accounts = null)
     {
         var allTransactions = (transactions ?? []).ToList();
         var transactionRepo = Substitute.For<ITransactionRepository>();
@@ -24,7 +25,11 @@ public class SearchTransactionsUseCaseTests
         categoryRepo.GetCategoriesAsync()
             .Returns((categories ?? []).ToList());
 
-        return new SearchTransactionsUseCase(transactionRepo, categoryRepo);
+        var accountRepo = Substitute.For<IAccountRepository>();
+        accountRepo.GetAccountsAsync()
+            .Returns((accounts ?? []).ToList());
+
+        return new SearchTransactionsUseCase(transactionRepo, categoryRepo, accountRepo);
     }
 
     private static Transaction MakeTransaction(
@@ -232,5 +237,29 @@ public class SearchTransactionsUseCaseTests
 
         Assert.True(result.IconMap.ContainsKey("kat-1"));
         Assert.Equal("🛒", result.IconMap["kat-1"]);
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_FilterNachKonto_OnlyReturnsMatchingAccount()
+    {
+        var transactions = new[]
+        {
+            MakeTransaction("1", "Supermarkt", datum: new DateTime(2026, 1, 1)),
+            MakeTransaction("2", "Gehalt", datum: new DateTime(2026, 1, 2))
+        };
+        transactions[0].AccountId = "acc-1";
+        transactions[1].AccountId = "acc-2";
+
+        var sut = CreateSut(transactions, accounts: new[]
+        {
+            new Account { Id = "acc-1", Name = "Girokonto" },
+            new Account { Id = "acc-2", Name = "Tagesgeld" }
+        });
+
+        var result = await sut.ExecuteAsync(new SearchTransactionsQuery(AccountId: "acc-1"));
+
+        Assert.Equal(1, result.TotalCount);
+        Assert.All(result.Gruppen.SelectMany(g => g), t => Assert.Equal("acc-1", t.AccountId));
+        Assert.Equal("Girokonto", result.AccountMap["acc-1"]);
     }
 }

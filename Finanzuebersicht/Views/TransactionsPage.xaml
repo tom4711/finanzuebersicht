@@ -14,6 +14,7 @@
         <conv:TransactionTypToColorConverter x:Key="TypToColor" />
         <conv:BetragDisplayConverter x:Key="BetragDisplay" />
         <conv:KategorieIdToIconConverter x:Key="KategorieIdToIcon" />
+        <conv:AccountIdToNameConverter x:Key="AccountIdToName" />
         <conv:InvertBoolConverter x:Key="InvertBool" />
 
         <!-- Shared transaction row layout (tap-only, no swipe).
@@ -46,6 +47,16 @@
                            LineBreakMode="TailTruncation" />
                     <Label Text="{Binding Verwendungszweck}" FontSize="12" TextColor="Gray"
                            LineBreakMode="TailTruncation" />
+                    <Label FontSize="11" TextColor="{AppThemeBinding Light={StaticResource TextTertiary}, Dark={StaticResource Gray600}}"
+                           LineBreakMode="TailTruncation">
+                        <Label.Text>
+                            <MultiBinding Converter="{StaticResource AccountIdToName}">
+                                <Binding Path="AccountId" />
+                                <Binding Source="{RelativeSource AncestorType={x:Type views:BaseContentPage}}"
+                                         Path="BindingContext.AccountMap" />
+                            </MultiBinding>
+                        </Label.Text>
+                    </Label>
                 </VerticalStackLayout>
                 <Label Grid.Column="2"
                        Text="{Binding ., Converter={StaticResource BetragDisplay}}"
@@ -121,6 +132,17 @@
                             ItemsSource="{Binding AvailableKategorien}"
                             ItemDisplayBinding="{Binding DisplayName}"
                             SelectedItem="{Binding SelectedKategorieFilterItem}"
+                            FontSize="14" />
+                </Grid>
+
+                <!-- Konto-Filter -->
+                <Grid ColumnDefinitions="80, *" ColumnSpacing="8">
+                    <Label Grid.Column="0" Text="{loc:Translate Lbl_Konto}"
+                           FontSize="13" TextColor="Gray" VerticalTextAlignment="Center" />
+                    <Picker Grid.Column="1"
+                            ItemsSource="{Binding AvailableKonten}"
+                            ItemDisplayBinding="{Binding DisplayName}"
+                            SelectedItem="{Binding SelectedKontoFilterItem}"
                             FontSize="14" />
                 </Grid>
 

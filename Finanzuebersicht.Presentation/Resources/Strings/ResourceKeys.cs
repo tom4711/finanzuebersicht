@@ -215,6 +215,7 @@ public static class ResourceKeys
     public const string Lbl_ForecastNaechsterMonat = nameof(Lbl_ForecastNaechsterMonat);
     public const string Lbl_SuchergebnisseAnzahl = nameof(Lbl_SuchergebnisseAnzahl);
     public const string Lbl_AlleKategorien = nameof(Lbl_AlleKategorien);
+    public const string Lbl_AlleKonten = nameof(Lbl_AlleKonten);
     public const string Lbl_AlleTypen = nameof(Lbl_AlleTypen);
     public const string Lbl_VonDatum = nameof(Lbl_VonDatum);
     public const string Lbl_BisDatum = nameof(Lbl_BisDatum);
