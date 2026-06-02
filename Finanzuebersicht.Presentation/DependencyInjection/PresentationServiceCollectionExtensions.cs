@@ -22,6 +22,7 @@ public static class PresentationServiceCollectionExtensions
         services.AddTransient<DashboardViewModel>();
         services.AddTransient<CategoriesViewModel>();
         services.AddTransient<CategoryDetailViewModel>();
+        services.AddTransient<AccountDetailViewModel>();
         services.AddTransient<TransactionsViewModel>();
         services.AddTransient<TransactionDetailViewModel>();
         services.AddTransient<RecurringTransactionsViewModel>();

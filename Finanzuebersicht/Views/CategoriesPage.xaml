@@ -7,62 +7,123 @@
              xmlns:loc="clr-namespace:Finanzuebersicht.Extensions"
              x:Class="Finanzuebersicht.Views.CategoriesPage"
              x:DataType="vm:CategoriesViewModel"
-             Title="Kategorien">
+             Title="Verwaltung">
 
     <Grid>
-        <RefreshView Command="{Binding LoadKategorienCommand}"
-                     IsRefreshing="{Binding IsLoading}">
-        <CollectionView ItemsSource="{Binding Kategorien}"
-                        SelectionMode="None">
-            <CollectionView.EmptyView>
-                <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Padding="20">
-                    <Label Text="{loc:Translate Empty_KeineKategorien}" FontSize="16"
-                           HorizontalTextAlignment="Center" TextColor="Gray" />
-                </VerticalStackLayout>
-            </CollectionView.EmptyView>
+        <Grid RowDefinitions="Auto, *">
+            <Grid Grid.Row="0" ColumnDefinitions="*,*" Padding="16,12" ColumnSpacing="8">
+                <Button Text="{loc:Translate Nav_Kategorien}"
+                        Command="{Binding ShowKategorienCommand}" />
+                <Button Grid.Column="1"
+                        Text="{loc:Translate Lbl_Konto}"
+                        Command="{Binding ShowKontenCommand}" />
+            </Grid>
 
-            <CollectionView.ItemTemplate>
-                <DataTemplate x:DataType="models:Category">
-                    <SwipeView>
-                        <SwipeView.RightItems>
-                            <SwipeItems>
-                                <SwipeItem Text="{loc:Translate Btn_Loeschen}"
-                                           BackgroundColor="{AppThemeBinding Light={StaticResource Ausgabe}, Dark={StaticResource AusgabeDark}}"
-                                           Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CategoriesViewModel}}, Path=DeleteKategorieCommand}"
-                                           CommandParameter="{Binding .}" />
-                            </SwipeItems>
-                        </SwipeView.RightItems>
-
-                        <Grid ColumnDefinitions="50, *, Auto" Padding="16,12" ColumnSpacing="12">
-                            <Grid.GestureRecognizers>
-                                <TapGestureRecognizer
-                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CategoriesViewModel}}, Path=GoToDetailCommand}"
-                                    CommandParameter="{Binding .}" />
-                            </Grid.GestureRecognizers>
-                            <Border Grid.Column="0" BackgroundColor="{Binding Color}"
-                                    StrokeShape="RoundRectangle 12"
-                                    Stroke="Transparent"
-                                    WidthRequest="44" HeightRequest="44"
-                                    Padding="0" HorizontalOptions="Center" VerticalOptions="Center">
-                                <Label Text="{Binding Icon}" FontSize="20"
-                                       HorizontalOptions="Center" VerticalOptions="Center" />
-                            </Border>
-
-                            <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
-                                <Label Text="{Binding Name}" FontSize="16" FontAttributes="Bold" />
-                                <Label Text="{Binding Typ}" FontSize="13" TextColor="Gray" />
+            <Grid Grid.Row="1">
+                <RefreshView Command="{Binding LoadKategorienCommand}"
+                             IsRefreshing="{Binding IsLoading}"
+                             IsVisible="{Binding IsKategorienVisible}">
+                    <CollectionView ItemsSource="{Binding Kategorien}"
+                                    SelectionMode="None">
+                        <CollectionView.EmptyView>
+                            <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Padding="20">
+                                <Label Text="{loc:Translate Empty_KeineKategorien}" FontSize="16"
+                                       HorizontalTextAlignment="Center" TextColor="Gray" />
                             </VerticalStackLayout>
+                        </CollectionView.EmptyView>
 
-                            <Label Grid.Column="2" Text="{loc:Translate Btn_Next}" FontSize="24" TextColor="Gray"
-                                VerticalOptions="Center" />
-                        </Grid>
-                    </SwipeView>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
-    </RefreshView>
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="models:Category">
+                                <SwipeView>
+                                    <SwipeView.RightItems>
+                                        <SwipeItems>
+                                            <SwipeItem Text="{loc:Translate Btn_Loeschen}"
+                                                       BackgroundColor="{AppThemeBinding Light={StaticResource Ausgabe}, Dark={StaticResource AusgabeDark}}"
+                                                       Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CategoriesViewModel}}, Path=DeleteKategorieCommand}"
+                                                       CommandParameter="{Binding .}" />
+                                        </SwipeItems>
+                                    </SwipeView.RightItems>
 
-        <!-- FAB -->
+                                    <Grid ColumnDefinitions="50, *, Auto" Padding="16,12" ColumnSpacing="12">
+                                        <Grid.GestureRecognizers>
+                                            <TapGestureRecognizer
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CategoriesViewModel}}, Path=GoToDetailCommand}"
+                                                CommandParameter="{Binding .}" />
+                                        </Grid.GestureRecognizers>
+                                        <Border Grid.Column="0" BackgroundColor="{Binding Color}"
+                                                StrokeShape="RoundRectangle 12"
+                                                Stroke="Transparent"
+                                                WidthRequest="44" HeightRequest="44"
+                                                Padding="0" HorizontalOptions="Center" VerticalOptions="Center">
+                                            <Label Text="{Binding Icon}" FontSize="20"
+                                                   HorizontalOptions="Center" VerticalOptions="Center" />
+                                        </Border>
+
+                                        <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
+                                            <Label Text="{Binding Name}" FontSize="16" FontAttributes="Bold" />
+                                            <Label Text="{Binding Typ}" FontSize="13" TextColor="Gray" />
+                                        </VerticalStackLayout>
+
+                                        <Label Grid.Column="2" Text="{loc:Translate Btn_Next}" FontSize="24" TextColor="Gray"
+                                            VerticalOptions="Center" />
+                                    </Grid>
+                                </SwipeView>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </RefreshView>
+
+                <RefreshView Command="{Binding LoadKategorienCommand}"
+                             IsRefreshing="{Binding IsLoading}"
+                             IsVisible="{Binding IsKontenVisible}">
+                    <CollectionView ItemsSource="{Binding Konten}"
+                                    SelectionMode="None">
+                        <CollectionView.EmptyView>
+                            <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Padding="20">
+                                <Label Text="{loc:Translate Lbl_Konto}" FontSize="16"
+                                       HorizontalTextAlignment="Center" TextColor="Gray" />
+                            </VerticalStackLayout>
+                        </CollectionView.EmptyView>
+
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="models:Account">
+                                <Grid ColumnDefinitions="50, *, Auto" Padding="16,12" ColumnSpacing="12">
+                                    <Grid.GestureRecognizers>
+                                        <TapGestureRecognizer
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CategoriesViewModel}}, Path=GoToDetailCommand}"
+                                            CommandParameter="{Binding .}" />
+                                    </Grid.GestureRecognizers>
+                                    <Border Grid.Column="0"
+                                            BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray900}}"
+                                            StrokeShape="RoundRectangle 12"
+                                            Stroke="Transparent"
+                                            WidthRequest="44" HeightRequest="44"
+                                            Padding="0" HorizontalOptions="Center" VerticalOptions="Center">
+                                        <Label Text="🏦" FontSize="20"
+                                               HorizontalOptions="Center" VerticalOptions="Center" />
+                                    </Border>
+
+                                    <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
+                                        <Label Text="{Binding Name}" FontSize="16" FontAttributes="Bold" />
+                                        <Label Text="{Binding Type}" FontSize="13" TextColor="Gray" />
+                                    </VerticalStackLayout>
+
+                                    <Button Grid.Column="2"
+                                            Text="{loc:Translate Btn_Loeschen}"
+                                            IsVisible="{Binding CanDelete}"
+                                            BackgroundColor="Transparent"
+                                            TextColor="{AppThemeBinding Light={StaticResource Ausgabe}, Dark={StaticResource AusgabeDark}}"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CategoriesViewModel}}, Path=DeleteKontoCommand}"
+                                            CommandParameter="{Binding .}" />
+                                </Grid>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </RefreshView>
+            </Grid>
+
+        </Grid>
+
         <Button Text="{loc:Translate Btn_Hinzufuegen}"
                 FontSize="28" TextColor="White"
                 BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"

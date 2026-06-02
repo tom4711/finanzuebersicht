@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using Finanzuebersicht.Application.UseCases.Categories;
+using Finanzuebersicht.Application.UseCases.Accounts;
 using Finanzuebersicht.Models;
 using Finanzuebersicht.Navigation;
 using Finanzuebersicht.ViewModels;
@@ -22,6 +23,8 @@ public class CategoriesViewModelTests
             categoryRepository,
             Substitute.For<ITransactionRepository>(),
             Substitute.For<IRecurringTransactionRepository>(),
+            Substitute.For<IAccountRepository>(),
+            Substitute.For<ITransactionTemplateRepository>(),
             out _);
 
         await sut.LoadKategorienCommand.ExecuteAsync(null);
@@ -48,11 +51,19 @@ public class CategoriesViewModelTests
         var recurringTransactionRepository = Substitute.For<IRecurringTransactionRepository>();
         recurringTransactionRepository.GetRecurringTransactionsAsync()
             .Returns(Task.FromResult(new List<RecurringTransaction>()));
+        var accountRepository = Substitute.For<IAccountRepository>();
+        accountRepository.GetAccountsAsync().Returns(Task.FromResult(new List<Account>
+        {
+            new() { Id = "acc-1", Name = "Girokonto", Type = AccountType.Girokonto, SystemKey = Finanzuebersicht.Constants.SystemAccountKeys.Default }
+        }));
+        var templateRepository = Substitute.For<ITransactionTemplateRepository>();
 
         var sut = CreateSut(
             categoryRepository,
             transactionRepository,
             recurringTransactionRepository,
+            accountRepository,
+            templateRepository,
             out var dialogService);
 
         sut.Kategorien = new ObservableCollection<Category> { categoryToDelete };
@@ -74,6 +85,8 @@ public class CategoriesViewModelTests
             categoryRepository,
             Substitute.For<ITransactionRepository>(),
             Substitute.For<IRecurringTransactionRepository>(),
+            Substitute.For<IAccountRepository>(),
+            Substitute.For<ITransactionTemplateRepository>(),
             out var dialogService);
 
         sut.Kategorien = new ObservableCollection<Category> { categoryToDelete };
@@ -94,6 +107,8 @@ public class CategoriesViewModelTests
             Substitute.For<ICategoryRepository>(),
             Substitute.For<ITransactionRepository>(),
             Substitute.For<IRecurringTransactionRepository>(),
+            Substitute.For<IAccountRepository>(),
+            Substitute.For<ITransactionTemplateRepository>(),
             out _,
             out var navigationService);
 
@@ -111,6 +126,8 @@ public class CategoriesViewModelTests
         ICategoryRepository categoryRepository,
         ITransactionRepository transactionRepository,
         IRecurringTransactionRepository recurringTransactionRepository,
+        IAccountRepository accountRepository,
+        ITransactionTemplateRepository templateRepository,
         out IDialogService dialogService,
         out INavigationService navigationService)
     {
@@ -129,6 +146,8 @@ public class CategoriesViewModelTests
         return new CategoriesViewModel(
             new DeleteCategoryUseCase(categoryRepository, transactionRepository, recurringTransactionRepository),
             new LoadCategoriesUseCase(categoryRepository),
+            new LoadAccountsUseCase(accountRepository),
+            new DeleteAccountUseCase(accountRepository, transactionRepository, templateRepository),
             localizationService,
             navigationService,
             dialogService);
@@ -138,12 +157,16 @@ public class CategoriesViewModelTests
         ICategoryRepository categoryRepository,
         ITransactionRepository transactionRepository,
         IRecurringTransactionRepository recurringTransactionRepository,
+        IAccountRepository accountRepository,
+        ITransactionTemplateRepository templateRepository,
         out IDialogService dialogService)
     {
         return CreateSut(
             categoryRepository,
             transactionRepository,
             recurringTransactionRepository,
+            accountRepository,
+            templateRepository,
             out dialogService,
             out _);
     }

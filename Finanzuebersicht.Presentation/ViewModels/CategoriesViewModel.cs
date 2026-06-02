@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Finanzuebersicht.Application.UseCases.Accounts;
 using Finanzuebersicht.Application.UseCases.Categories;
 using Finanzuebersicht.Models;
 using Finanzuebersicht.Navigation;
@@ -12,6 +13,8 @@ namespace Finanzuebersicht.ViewModels;
 public partial class CategoriesViewModel(
     DeleteCategoryUseCase deleteCategoryUseCase,
     LoadCategoriesUseCase loadCategoriesUseCase,
+    LoadAccountsUseCase loadAccountsUseCase,
+    DeleteAccountUseCase deleteAccountUseCase,
     ILocalizationService localizationService,
     INavigationService navigationService,
     IDialogService dialogService,
@@ -19,6 +22,8 @@ public partial class CategoriesViewModel(
 {
     private readonly DeleteCategoryUseCase _deleteCategoryUseCase = deleteCategoryUseCase;
     private readonly LoadCategoriesUseCase _loadCategoriesUseCase = loadCategoriesUseCase;
+    private readonly LoadAccountsUseCase _loadAccountsUseCase = loadAccountsUseCase;
+    private readonly DeleteAccountUseCase _deleteAccountUseCase = deleteAccountUseCase;
     private readonly ILocalizationService _loc = localizationService;
     private readonly INavigationService _navigationService = navigationService;
     private readonly IDialogService _dialogService = dialogService;
@@ -30,7 +35,24 @@ public partial class CategoriesViewModel(
     private ObservableCollection<Category> kategorien = [];
 
     [ObservableProperty]
+    private ObservableCollection<Account> konten = [];
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsKategorienVisible))]
+    [NotifyPropertyChangedFor(nameof(IsKontenVisible))]
+    private int selectedSectionIndex;
+
+    public bool IsKategorienVisible => SelectedSectionIndex == 0;
+    public bool IsKontenVisible => SelectedSectionIndex == 1;
+
+    [ObservableProperty]
     private bool isLoading;
+
+    [RelayCommand]
+    private void ShowKategorien() => SelectedSectionIndex = 0;
+
+    [RelayCommand]
+    private void ShowKonten() => SelectedSectionIndex = 1;
 
     [RelayCommand]
     private async Task LoadKategorien()
@@ -42,6 +64,8 @@ public partial class CategoriesViewModel(
         {
             var liste = await _loadCategoriesUseCase.ExecuteAsync();
             Kategorien = new ObservableCollection<Category>(liste);
+            var accounts = await _loadAccountsUseCase.ExecuteAsync();
+            Konten = new ObservableCollection<Account>(accounts.OrderBy(a => a.Name));
         }
         catch (Exception ex)
         {
@@ -82,10 +106,52 @@ public partial class CategoriesViewModel(
     }
 
     [RelayCommand]
-    private async Task GoToDetail(Category? kategorie = null)
+    private async Task DeleteKonto(Account konto)
     {
+        if (!konto.CanDelete) return;
+
+        var confirm = await _dialogService.ShowConfirmationAsync(
+            "Konto löschen",
+            $"\"{konto.Name}\" wirklich löschen?",
+            _loc.GetString(ResourceKeys.Btn_Ja), _loc.GetString(ResourceKeys.Btn_Nein));
+        if (!confirm) return;
+
+        try
+        {
+            await _deleteAccountUseCase.ExecuteAsync(konto.Id);
+            Konten.Remove(konto);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "CategoriesViewModel: {Context}", nameof(DeleteKonto));
+            await _dialogService.ShowAlertAsync(
+                _loc.GetString(ResourceKeys.Err_Titel),
+                _loc.GetString(ResourceKeys.Err_LoeschenFehlgeschlagen, ex.Message),
+                _loc.GetString(ResourceKeys.Btn_OK));
+        }
+    }
+
+    [RelayCommand]
+    private async Task GoToDetail(object? item = null)
+    {
+        if (item is Account konto)
+        {
+            var kontoParameter = new Dictionary<string, object>
+            {
+                ["Account"] = konto
+            };
+            await _navigationService.GoToAsync(Routes.AccountDetail, kontoParameter);
+            return;
+        }
+
+        if (item == null && IsKontenVisible)
+        {
+            await _navigationService.GoToAsync(Routes.AccountDetail);
+            return;
+        }
+
         var parameter = new Dictionary<string, object>();
-        if (kategorie != null)
+        if (item is Category kategorie)
             parameter["Category"] = kategorie;
 
         await _navigationService.GoToAsync(Routes.CategoryDetail, parameter);

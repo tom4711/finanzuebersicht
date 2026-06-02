@@ -1,4 +1,5 @@
 using Finanzuebersicht.Application.UseCases.Categories;
+using Finanzuebersicht.Application.UseCases.Accounts;
 using Finanzuebersicht.Application.UseCases.Dashboard;
 using Finanzuebersicht.Application.UseCases.RecurringTransactions;
 using Finanzuebersicht.Application.UseCases.SparZiele;
@@ -15,6 +16,9 @@ public static class ApplicationServiceCollectionExtensions
         services.AddTransient<LoadCategoriesUseCase>();
         services.AddTransient<SaveCategoryDetailUseCase>();
         services.AddTransient<SaveCategoryBudgetUseCase>();
+        services.AddTransient<LoadAccountsUseCase>();
+        services.AddTransient<SaveAccountDetailUseCase>();
+        services.AddTransient<DeleteAccountUseCase>();
 
         services.AddTransient<LoadDashboardMonthUseCase>();
         services.AddTransient<LoadDashboardYearUseCase>();
