@@ -10,6 +10,7 @@ public static class ResourceKeys
     public const string Nav_Transaktionen = nameof(Nav_Transaktionen);
     public const string Nav_Dauerauftraege = nameof(Nav_Dauerauftraege);
     public const string Nav_Kategorien = nameof(Nav_Kategorien);
+    public const string Nav_Verwaltung = nameof(Nav_Verwaltung);
     public const string Nav_Einstellungen = nameof(Nav_Einstellungen);
 
     // Page Titles
