@@ -21,8 +21,8 @@ public class LoadDashboardMonthUseCaseTests
         transactionRepository.GetTransactionsAsync(Arg.Any<DateTime>(), Arg.Any<DateTime>())
             .Returns(new List<Transaction>
             {
-                new() { Typ = TransactionType.Einnahme, Betrag = 2000m, KategorieId = "cat-a" },
-                new() { Typ = TransactionType.Ausgabe, Betrag = 800m, KategorieId = "cat-b" }
+                new() { Typ = TransactionType.Einnahme, Betrag = 2000m, KategorieId = "cat-a", AccountId = "acc-1" },
+                new() { Typ = TransactionType.Ausgabe, Betrag = 800m, KategorieId = "cat-b", AccountId = "acc-2" }
             });
 
         var useCase = new LoadDashboardMonthUseCase(categoryRepository, transactionRepository, recurringRepository, Substitute.For<IBudgetRepository>());
