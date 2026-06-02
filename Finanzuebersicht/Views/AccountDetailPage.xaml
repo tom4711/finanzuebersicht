@@ -19,9 +19,28 @@
             <VerticalStackLayout Spacing="4">
                 <Label Text="{loc:Translate Lbl_Typ}" FontSize="13" TextColor="Gray" />
                 <Picker ItemsSource="{Binding VerfuegbareTypen}"
-                        SelectedItem="{Binding Type}"
+                        SelectedItem="{Binding SelectedTypeOption}"
+                        ItemDisplayBinding="{Binding DisplayName}"
                         FontSize="16" />
             </VerticalStackLayout>
+
+            <Grid ColumnDefinitions="*, Auto" ColumnSpacing="8">
+                <Label Text="Archiviert"
+                       FontSize="16"
+                       VerticalTextAlignment="Center" />
+                <Switch Grid.Column="1"
+                        IsToggled="{Binding IsArchived}"
+                        IsEnabled="{Binding CanArchive}" />
+            </Grid>
+
+            <Label Text="{Binding ArchiveStatusText}"
+                   FontSize="12"
+                   TextColor="Gray" />
+
+            <Label Text="{Binding SystemAccountHint}"
+                   FontSize="12"
+                   TextColor="Gray"
+                   IsVisible="{Binding IsSystemAccount}" />
 
             <Button Text="{loc:Translate Btn_Speichern}"
                     Command="{Binding SaveCommand}"

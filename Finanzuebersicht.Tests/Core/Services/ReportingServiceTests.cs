@@ -90,4 +90,29 @@ public class ReportingServiceTests
         Assert.Single(summary.ByCategory);
         Assert.Equal("Essen", summary.ByCategory[0].CategoryName);
     }
+
+    [Fact]
+    public async Task GetMonthSummaryAsync_ExcludesTransfers()
+    {
+        var transactionRepository = Substitute.For<ITransactionRepository>();
+        var categoryRepository = Substitute.For<ICategoryRepository>();
+
+        categoryRepository.GetCategoriesAsync().Returns(new List<Category>
+        {
+            new() { Id = "c1", Name = "Essen", Color = "#FF0000", Icon = "🛒" }
+        });
+
+        transactionRepository.GetTransactionsAsync(Arg.Any<DateTime>(), Arg.Any<DateTime>())
+            .Returns(new List<Transaction>
+            {
+                new() { Betrag = 25m, KategorieId = "c1", Typ = TransactionType.Ausgabe, Datum = new DateTime(2025, 6, 5), IsTransfer = false },
+                new() { Betrag = 40m, KategorieId = "c1", Typ = TransactionType.Ausgabe, Datum = new DateTime(2025, 6, 6), IsTransfer = true }
+            });
+
+        var service = new ReportingService(transactionRepository, categoryRepository);
+
+        var summary = await service.GetMonthSummaryAsync(2025, 6);
+
+        Assert.Equal(25m, summary.Total);
+    }
 }

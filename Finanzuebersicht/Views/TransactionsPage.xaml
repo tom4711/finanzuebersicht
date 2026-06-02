@@ -361,10 +361,18 @@
 
         <!-- FABs (immer sichtbar, über Row 4) -->
         <Grid Grid.Row="4" HorizontalOptions="Fill" VerticalOptions="End" Padding="20,0,20,20">
-            <Button Text="{loc:Translate Btn_Import}" FontSize="14" TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
-                    BackgroundColor="Transparent"
-                    HorizontalOptions="Start" VerticalOptions="End"
-                    Command="{Binding ImportCsvCommand}" />
+            <HorizontalStackLayout Spacing="12" HorizontalOptions="Start" VerticalOptions="End">
+                <Button Text="{loc:Translate Btn_Import}" FontSize="14" TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                        BackgroundColor="Transparent"
+                        Command="{Binding ImportCsvCommand}" />
+                <Button Text="↔"
+                        FontSize="20"
+                        TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                        BackgroundColor="Transparent"
+                        WidthRequest="44"
+                        HeightRequest="44"
+                        Command="{Binding GoToTransferCommand}" />
+            </HorizontalStackLayout>
             <Button Text="{loc:Translate Btn_Hinzufuegen}"
                     FontSize="28" TextColor="White"
                     BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"

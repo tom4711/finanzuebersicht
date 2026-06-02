@@ -11,7 +11,9 @@ public class SaveRecurringTransactionDetailUseCaseTests
     {
         var recurringRepository = Substitute.For<IRecurringTransactionRepository>();
         var recurringGenerationService = Substitute.For<IRecurringGenerationService>();
-        var sut = new SaveRecurringTransactionDetailUseCase(recurringRepository, recurringGenerationService);
+        var accountRepository = Substitute.For<IAccountRepository>();
+        accountRepository.GetAccountsAsync().Returns(new List<Account> { new() { Id = "acc-1", IsArchived = false } });
+        var sut = new SaveRecurringTransactionDetailUseCase(recurringRepository, recurringGenerationService, accountRepository);
 
         await sut.ExecuteAsync(
             existing: null,
@@ -42,6 +44,8 @@ public class SaveRecurringTransactionDetailUseCaseTests
     {
         var recurringRepository = Substitute.For<IRecurringTransactionRepository>();
         var recurringGenerationService = Substitute.For<IRecurringGenerationService>();
+        var accountRepository = Substitute.For<IAccountRepository>();
+        accountRepository.GetAccountsAsync().Returns(new List<Account> { new() { Id = "acc-2", IsArchived = false } });
         var existing = new RecurringTransaction
         {
             Id = "r-1",
@@ -53,7 +57,7 @@ public class SaveRecurringTransactionDetailUseCaseTests
             Enddatum = null,
             Aktiv = false
         };
-        var sut = new SaveRecurringTransactionDetailUseCase(recurringRepository, recurringGenerationService);
+        var sut = new SaveRecurringTransactionDetailUseCase(recurringRepository, recurringGenerationService, accountRepository);
 
         await sut.ExecuteAsync(
             existing,

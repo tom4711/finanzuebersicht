@@ -286,4 +286,10 @@ Bitte starte die App neu.</value></data>
   <data name="A11y_HintBetrag" xml:space="preserve"><value>Betrag eingeben, z. B. 12,50</value></data>
   <data name="A11y_HintTitel" xml:space="preserve"><value>Kurze Beschreibung der Transaktion</value></data>
   <data name="A11y_HintBudget" xml:space="preserve"><value>Leer lassen für kein Budgetlimit</value></data>
+  <data name="AccountType_Girokonto" xml:space="preserve"><value>Girokonto</value></data>
+  <data name="AccountType_Tagesgeld" xml:space="preserve"><value>Tagesgeld</value></data>
+  <data name="AccountType_Kreditkarte" xml:space="preserve"><value>Kreditkarte</value></data>
+  <data name="AccountType_Bargeld" xml:space="preserve"><value>Bargeld</value></data>
+  <data name="AccountType_Depot" xml:space="preserve"><value>Wertpapierdepot</value></data>
+  <data name="AccountType_Sonstiges" xml:space="preserve"><value>Sonstiges</value></data>
 </root>

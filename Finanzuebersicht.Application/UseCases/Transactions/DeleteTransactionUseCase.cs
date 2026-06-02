@@ -9,4 +9,10 @@ public class DeleteTransactionUseCase(ITransactionRepository transactionReposito
     {
         await _transactionRepository.DeleteTransactionAsync(transactionId);
     }
+
+    public async Task ExecuteTransferGroupAsync(string transferGroupId, CancellationToken cancellationToken = default)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        await _transactionRepository.DeleteTransferGroupAsync(transferGroupId);
+    }
 }

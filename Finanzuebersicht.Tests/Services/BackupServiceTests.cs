@@ -403,7 +403,9 @@ namespace Finanzuebersicht.Tests.Services
         public Task<List<Transaction>> GetTransactionsAsync(DateTime vonDatum, DateTime bisDatum) 
             => Task.FromResult(_transactions.Where(t => t.Datum >= vonDatum && t.Datum <= bisDatum).ToList());
         public Task SaveTransactionAsync(Transaction transaction) => Task.CompletedTask;
+        public Task SaveTransactionsAsync(IEnumerable<Transaction> transactions) => Task.CompletedTask;
         public Task DeleteTransactionAsync(string id) => Task.CompletedTask;
+        public Task DeleteTransferGroupAsync(string transferGroupId) => Task.CompletedTask;
         public Task ReplaceAllTransactionsAsync(IEnumerable<Transaction> transactions) { _transactions = transactions.ToList(); return Task.CompletedTask; }
         public Task<Category?> GetMostCommonCategoryForPayeeAsync(
             string payee,

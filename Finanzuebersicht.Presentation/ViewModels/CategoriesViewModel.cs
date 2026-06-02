@@ -14,6 +14,7 @@ public partial class CategoriesViewModel(
     DeleteCategoryUseCase deleteCategoryUseCase,
     LoadCategoriesUseCase loadCategoriesUseCase,
     LoadAccountsUseCase loadAccountsUseCase,
+    ToggleAccountArchiveUseCase toggleAccountArchiveUseCase,
     DeleteAccountUseCase deleteAccountUseCase,
     ILocalizationService localizationService,
     INavigationService navigationService,
@@ -23,6 +24,7 @@ public partial class CategoriesViewModel(
     private readonly DeleteCategoryUseCase _deleteCategoryUseCase = deleteCategoryUseCase;
     private readonly LoadCategoriesUseCase _loadCategoriesUseCase = loadCategoriesUseCase;
     private readonly LoadAccountsUseCase _loadAccountsUseCase = loadAccountsUseCase;
+    private readonly ToggleAccountArchiveUseCase _toggleAccountArchiveUseCase = toggleAccountArchiveUseCase;
     private readonly DeleteAccountUseCase _deleteAccountUseCase = deleteAccountUseCase;
     private readonly ILocalizationService _loc = localizationService;
     private readonly INavigationService _navigationService = navigationService;
@@ -65,7 +67,7 @@ public partial class CategoriesViewModel(
             var liste = await _loadCategoriesUseCase.ExecuteAsync();
             Kategorien = new ObservableCollection<Category>(liste);
             var accounts = await _loadAccountsUseCase.ExecuteAsync();
-            Konten = new ObservableCollection<Account>(accounts.OrderBy(a => a.Name));
+            Konten = new ObservableCollection<Account>(accounts.OrderBy(a => a.IsArchived).ThenBy(a => a.Name));
         }
         catch (Exception ex)
         {
@@ -127,6 +129,38 @@ public partial class CategoriesViewModel(
             await _dialogService.ShowAlertAsync(
                 _loc.GetString(ResourceKeys.Err_Titel),
                 _loc.GetString(ResourceKeys.Err_LoeschenFehlgeschlagen, ex.Message),
+                _loc.GetString(ResourceKeys.Btn_OK));
+        }
+    }
+
+    [RelayCommand]
+    private async Task ToggleKontoArchivierung(Account konto)
+    {
+        if (!konto.CanArchive) return;
+
+        var setArchived = !konto.IsArchived;
+        var confirmTitle = setArchived ? "Konto archivieren" : "Konto reaktivieren";
+        var confirmBody = setArchived
+            ? $"\"{konto.Name}\" archivieren? Konto steht dann nicht mehr für neue Buchungen zur Auswahl."
+            : $"\"{konto.Name}\" wieder aktivieren?";
+        var confirm = await _dialogService.ShowConfirmationAsync(
+            confirmTitle,
+            confirmBody,
+            _loc.GetString(ResourceKeys.Btn_Ja),
+            _loc.GetString(ResourceKeys.Btn_Nein));
+        if (!confirm) return;
+
+        try
+        {
+            await _toggleAccountArchiveUseCase.ExecuteAsync(konto, setArchived);
+            await LoadKategorien();
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "CategoriesViewModel: {Context}", nameof(ToggleKontoArchivierung));
+            await _dialogService.ShowAlertAsync(
+                _loc.GetString(ResourceKeys.Err_Titel),
+                _loc.GetString(ResourceKeys.Err_SpeichernFehlgeschlagen, ex.Message),
                 _loc.GetString(ResourceKeys.Btn_OK));
         }
     }

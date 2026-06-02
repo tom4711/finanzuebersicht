@@ -10,6 +10,7 @@ public class SaveAccountDetailUseCase(IAccountRepository accountRepository)
         Account? existingAccount,
         string name,
         AccountType type,
+        bool isArchived = false,
         CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
@@ -17,6 +18,7 @@ public class SaveAccountDetailUseCase(IAccountRepository accountRepository)
         var account = existingAccount ?? new Account();
         account.Name = name;
         account.Type = type;
+        account.IsArchived = account.IsSystemAccount ? false : isArchived;
 
         await _accountRepository.SaveAccountAsync(account);
         return account;

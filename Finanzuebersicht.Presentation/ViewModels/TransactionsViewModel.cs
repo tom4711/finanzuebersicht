@@ -396,22 +396,34 @@ public partial class TransactionsViewModel(
     [RelayCommand]
     private async Task DeleteTransaktion(Transaction transaktion)
     {
+        var dialogTitle = transaktion.IsTransfer
+            ? "Umbuchung löschen"
+            : _loc.GetString(ResourceKeys.Dlg_TransaktionLoeschen);
+        var dialogText = transaktion.IsTransfer
+            ? $"Umbuchung \"{transaktion.Titel}\" wirklich löschen? Beide Buchungen werden entfernt."
+            : _loc.GetString(ResourceKeys.Dlg_TransaktionLoeschenFrage, transaktion.Titel);
         var confirm = await _dialogService.ShowConfirmationAsync(
-            _loc.GetString(ResourceKeys.Dlg_TransaktionLoeschen),
-            _loc.GetString(ResourceKeys.Dlg_TransaktionLoeschenFrage, transaktion.Titel),
+            dialogTitle,
+            dialogText,
             _loc.GetString(ResourceKeys.Btn_Ja), _loc.GetString(ResourceKeys.Btn_Nein));
         if (!confirm) return;
 
         try
         {
+            if (transaktion.IsTransfer && !string.IsNullOrWhiteSpace(transaktion.TransferGroupId))
+            {
+                await _deleteTransactionUseCase.ExecuteTransferGroupAsync(transaktion.TransferGroupId);
+                await LoadTransaktionen();
+                return;
+            }
+
             await _deleteTransactionUseCase.ExecuteAsync(transaktion.Id);
             var gruppe = TransaktionsGruppen.FirstOrDefault(g => g.Contains(transaktion));
-            if (gruppe != null)
-            {
-                gruppe.Remove(transaktion);
-                if (gruppe.Count == 0)
-                    TransaktionsGruppen.Remove(gruppe);
-            }
+            if (gruppe == null) return;
+
+            gruppe.Remove(transaktion);
+            if (gruppe.Count == 0)
+                TransaktionsGruppen.Remove(gruppe);
         }
         catch (Exception ex)
         {
@@ -428,6 +440,15 @@ public partial class TransactionsViewModel(
     {
         try
         {
+            if (transaktion?.IsTransfer == true)
+            {
+                await _dialogService.ShowAlertAsync(
+                    _loc.GetString(ResourceKeys.Err_Titel),
+                    "Umbuchungen können nicht als Einzelbuchung bearbeitet werden.",
+                    _loc.GetString(ResourceKeys.Btn_OK));
+                return;
+            }
+
             _logger?.LogDebug("GoToDetail called for transaction {Id}", transaktion?.Id ?? "(new)");
 
             var parameter = new Dictionary<string, object>();
@@ -476,6 +497,12 @@ public partial class TransactionsViewModel(
         {
             ["TransactionTemplate"] = template
         });
+    }
+
+    [RelayCommand]
+    private async Task GoToTransfer()
+    {
+        await _navigationService.GoToAsync(Routes.TransferDetail);
     }
 
     [RelayCommand]

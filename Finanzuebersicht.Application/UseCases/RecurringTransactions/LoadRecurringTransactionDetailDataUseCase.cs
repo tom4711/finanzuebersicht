@@ -24,12 +24,20 @@ public class LoadRecurringTransactionDetailDataUseCase(
             : accounts.FirstOrDefault(a => a.Id == selectedAccountId);
 
         selectedAccount ??= accounts.FirstOrDefault(a => a.SystemKey == Finanzuebersicht.Constants.SystemAccountKeys.Default)
+            ?? accounts.FirstOrDefault(a => !a.IsArchived)
             ?? accounts.FirstOrDefault();
+
+        var visibleAccounts = accounts
+            .Where(a => !a.IsArchived)
+            .ToList();
+
+        if (selectedAccount?.IsArchived == true && visibleAccounts.All(a => a.Id != selectedAccount.Id))
+            visibleAccounts.Add(selectedAccount);
 
         return new RecurringTransactionDetailData
         {
             Kategorien = categories,
-            Accounts = accounts,
+            Accounts = visibleAccounts.OrderBy(a => a.Name).ToList(),
             SelectedKategorie = selectedCategory,
             SelectedAccount = selectedAccount
         };

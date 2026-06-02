@@ -190,6 +190,37 @@ public class TransactionsViewModelTests
     }
 
     [Fact]
+    public async Task DeleteTransaktion_WhenTransfer_DeletesWholeGroup()
+    {
+        var deleteRepository = Substitute.For<ITransactionRepository>();
+        deleteRepository.DeleteTransferGroupAsync(Arg.Any<string>()).Returns(Task.CompletedTask);
+        deleteRepository.GetTransactionsAsync(Arg.Any<DateTime>(), Arg.Any<DateTime>())
+            .Returns(Task.FromResult(new List<Transaction>()));
+
+        var viewModel = CreateSut(
+            deleteRepository,
+            Substitute.For<ICategoryRepository>(),
+            Substitute.For<ITransactionRepository>(),
+            Substitute.For<ICategoryRepository>(),
+            Substitute.For<IAccountRepository>(),
+            Substitute.For<IAccountRepository>(),
+            out var dialogService,
+            out _,
+            out _,
+            out _,
+            deleteRepository);
+
+        dialogService.ShowConfirmationAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+            .Returns(Task.FromResult(true));
+
+        var transaction = new Transaction { Id = "tx-1", Titel = "Umbuchung", IsTransfer = true, TransferGroupId = "grp-1" };
+
+        await viewModel.DeleteTransaktionCommand.ExecuteAsync(transaction);
+
+        await deleteRepository.Received(1).DeleteTransferGroupAsync("grp-1");
+    }
+
+    [Fact]
     public async Task ImportCsv_NavigatesToPreviewRoute()
     {
         var parser = Substitute.For<IStatementParser>();

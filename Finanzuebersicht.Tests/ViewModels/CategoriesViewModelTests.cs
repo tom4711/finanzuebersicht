@@ -122,6 +122,29 @@ public class CategoriesViewModelTests
                 object.ReferenceEquals(parameters["Category"], category)));
     }
 
+    [Fact]
+    public async Task ToggleKontoArchivierung_WhenConfirmed_UpdatesAccount()
+    {
+        var accountRepository = Substitute.For<IAccountRepository>();
+        var account = new Account { Id = "acc-1", Name = "Giro", IsArchived = false };
+        accountRepository.GetAccountsAsync().Returns(new List<Account> { account });
+
+        var sut = CreateSut(
+            Substitute.For<ICategoryRepository>(),
+            Substitute.For<ITransactionRepository>(),
+            Substitute.For<IRecurringTransactionRepository>(),
+            accountRepository,
+            Substitute.For<ITransactionTemplateRepository>(),
+            out var dialogService);
+
+        dialogService.ShowConfirmationAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+            .Returns(Task.FromResult(true));
+
+        await sut.ToggleKontoArchivierungCommand.ExecuteAsync(account);
+
+        await accountRepository.Received(1).SaveAccountAsync(Arg.Is<Account>(a => a.Id == "acc-1" && a.IsArchived));
+    }
+
     private static CategoriesViewModel CreateSut(
         ICategoryRepository categoryRepository,
         ITransactionRepository transactionRepository,
@@ -147,6 +170,7 @@ public class CategoriesViewModelTests
             new DeleteCategoryUseCase(categoryRepository, transactionRepository, recurringTransactionRepository),
             new LoadCategoriesUseCase(categoryRepository),
             new LoadAccountsUseCase(accountRepository),
+            new ToggleAccountArchiveUseCase(accountRepository),
             new DeleteAccountUseCase(accountRepository, transactionRepository, templateRepository),
             localizationService,
             navigationService,

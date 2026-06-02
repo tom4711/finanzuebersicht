@@ -110,8 +110,14 @@ public class LocalDataService : IDataService, IAccountRepository, ITransactionTe
     public async Task SaveTransactionAsync(Transaction transaction)
         => await _transactionStore.SaveTransactionAsync(transaction);
 
+    public async Task SaveTransactionsAsync(IEnumerable<Transaction> transactions)
+        => await _transactionStore.SaveTransactionsAsync(transactions);
+
     public async Task DeleteTransactionAsync(string id)
         => await _transactionStore.DeleteTransactionAsync(id);
+
+    public async Task DeleteTransferGroupAsync(string transferGroupId)
+        => await _transactionStore.DeleteTransferGroupAsync(transferGroupId);
 
     public Task ReplaceAllTransactionsAsync(IEnumerable<Transaction> transactions)
         => _transactionStore.ReplaceAllTransactionsAsync(transactions);

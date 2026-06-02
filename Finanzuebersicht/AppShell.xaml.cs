@@ -10,6 +10,7 @@ public partial class AppShell : Shell
 		InitializeComponent();
 
 		Routing.RegisterRoute(Routes.TransactionDetail, typeof(TransactionDetailPage));
+		Routing.RegisterRoute(Routes.TransferDetail, typeof(TransferDetailPage));
 		Routing.RegisterRoute(Routes.RecurringTransactionDetail, typeof(RecurringTransactionDetailPage));
 		Routing.RegisterRoute(Routes.CategoryDetail, typeof(CategoryDetailPage));
 		Routing.RegisterRoute(Routes.AccountDetail, typeof(AccountDetailPage));

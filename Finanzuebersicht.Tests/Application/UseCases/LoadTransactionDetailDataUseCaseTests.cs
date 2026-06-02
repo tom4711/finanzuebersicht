@@ -84,4 +84,28 @@ public class LoadTransactionDetailDataUseCaseTests
         Assert.NotNull(result.SelectedKategorie);
         Assert.Equal("cat-1", result.SelectedKategorie!.Id);
     }
+
+    [Fact]
+    public async Task ExecuteAsync_HidesArchivedAccounts_ButKeepsSelectedArchived()
+    {
+        var categoryRepository = Substitute.For<ICategoryRepository>();
+        var accountRepository = Substitute.For<IAccountRepository>();
+        categoryRepository.GetCategoriesAsync().Returns(new List<Category>
+        {
+            new() { Id = "cat-1", Name = "Lebensmittel" }
+        });
+        accountRepository.GetAccountsAsync().Returns(new List<Account>
+        {
+            new() { Id = "acc-1", Name = "Aktivkonto", IsArchived = false },
+            new() { Id = "acc-2", Name = "Altkonto", IsArchived = true }
+        });
+
+        var sut = new LoadTransactionDetailDataUseCase(categoryRepository, accountRepository);
+
+        var result = await sut.ExecuteAsync("cat-1", "acc-2");
+
+        Assert.Equal("acc-2", result.SelectedAccount!.Id);
+        Assert.Equal(2, result.Accounts.Count);
+        Assert.Contains(result.Accounts, a => a.Id == "acc-2");
+    }
 }

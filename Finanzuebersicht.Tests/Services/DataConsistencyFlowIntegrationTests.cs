@@ -317,9 +317,27 @@ namespace Finanzuebersicht.Tests.Services
                 return Task.CompletedTask;
             }
 
+            public Task SaveTransactionsAsync(IEnumerable<Transaction> transactions)
+            {
+                foreach (var transaction in transactions)
+                {
+                    var existing = _transactions.FirstOrDefault(t => t.Id == transaction.Id);
+                    if (existing != null)
+                        _transactions.Remove(existing);
+                    _transactions.Add(transaction);
+                }
+                return Task.CompletedTask;
+            }
+
             public Task DeleteTransactionAsync(string id)
             {
                 _transactions.RemoveAll(t => t.Id == id);
+                return Task.CompletedTask;
+            }
+
+            public Task DeleteTransferGroupAsync(string transferGroupId)
+            {
+                _transactions.RemoveAll(t => t.TransferGroupId == transferGroupId);
                 return Task.CompletedTask;
             }
 

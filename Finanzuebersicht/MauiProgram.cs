@@ -74,6 +74,7 @@ public static class MauiProgram
 		builder.Services.AddTransient<DashboardPage>();
 		builder.Services.AddTransient<TransactionsPage>();
 		builder.Services.AddTransient<TransactionDetailPage>();
+		builder.Services.AddTransient<TransferDetailPage>();
 		builder.Services.AddTransient<RecurringTransactionsPage>();
 		builder.Services.AddTransient<RecurringTransactionDetailPage>();
         builder.Services.AddTransient<RecurringInstanceShiftPage>();

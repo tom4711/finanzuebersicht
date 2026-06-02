@@ -211,4 +211,33 @@ public class LoadDashboardMonthUseCaseTests
         Assert.False(hint.IstWarnung);
         Assert.False(hint.IstAusgeschoepft);
     }
+
+    [Fact]
+    public async Task ExecuteAsync_ExcludesTransfers_AndAppliesAccountFilter()
+    {
+        var categoryRepository = Substitute.For<ICategoryRepository>();
+        var transactionRepository = Substitute.For<ITransactionRepository>();
+        var recurringRepository = Substitute.For<IRecurringTransactionRepository>();
+        var budgetRepository = Substitute.For<IBudgetRepository>();
+
+        categoryRepository.GetCategoriesAsync().Returns(new List<Category>
+        {
+            new() { Id = "cat-food", Name = "Food", Typ = TransactionType.Ausgabe }
+        });
+        transactionRepository.GetTransactionsAsync(Arg.Any<DateTime>(), Arg.Any<DateTime>())
+            .Returns(new List<Transaction>
+            {
+                new() { Typ = TransactionType.Ausgabe, Betrag = 100m, KategorieId = "cat-food", AccountId = "acc-1", IsTransfer = false },
+                new() { Typ = TransactionType.Ausgabe, Betrag = 40m, KategorieId = "cat-food", AccountId = "acc-1", IsTransfer = true },
+                new() { Typ = TransactionType.Ausgabe, Betrag = 30m, KategorieId = "cat-food", AccountId = "acc-2", IsTransfer = false }
+            });
+
+        var useCase = new LoadDashboardMonthUseCase(categoryRepository, transactionRepository, recurringRepository, budgetRepository);
+
+        var result = await useCase.ExecuteAsync(new DateTime(2026, 3, 1), new DateTime(2026, 3, 15), "acc-1");
+
+        Assert.Equal(100m, result.GesamtAusgaben);
+        Assert.Single(result.KategorieAusgaben);
+        Assert.Equal(100m, result.KategorieAusgaben[0].Total);
+    }
 }

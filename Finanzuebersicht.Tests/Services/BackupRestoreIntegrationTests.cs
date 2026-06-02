@@ -390,7 +390,17 @@ namespace Finanzuebersicht.Tests.Services
                 if (idx >= 0) _transactions[idx] = transaction; else _transactions.Add(transaction);
                 return Task.CompletedTask;
             }
+            public Task SaveTransactionsAsync(IEnumerable<Transaction> transactions)
+            {
+                foreach (var transaction in transactions)
+                {
+                    var idx = _transactions.FindIndex(t => t.Id == transaction.Id);
+                    if (idx >= 0) _transactions[idx] = transaction; else _transactions.Add(transaction);
+                }
+                return Task.CompletedTask;
+            }
             public Task DeleteTransactionAsync(string id) { _transactions.RemoveAll(t => t.Id == id); return Task.CompletedTask; }
+            public Task DeleteTransferGroupAsync(string transferGroupId) { _transactions.RemoveAll(t => t.TransferGroupId == transferGroupId); return Task.CompletedTask; }
             public Task ReplaceAllTransactionsAsync(IEnumerable<Transaction> transactions) { _transactions = transactions.ToList(); return Task.CompletedTask; }
             public Task<Category?> GetMostCommonCategoryForPayeeAsync(
                 string payee,
@@ -479,7 +489,9 @@ namespace Finanzuebersicht.Tests.Services
             public Task DeleteCategoryAsync(string id) => Task.CompletedTask;
             public Task DeleteAccountAsync(string id) => Task.CompletedTask;
             public Task SaveTransactionAsync(Transaction t) => Task.CompletedTask;
+            public Task SaveTransactionsAsync(IEnumerable<Transaction> transactions) => Task.CompletedTask;
             public Task DeleteTransactionAsync(string id) => Task.CompletedTask;
+            public Task DeleteTransferGroupAsync(string transferGroupId) => Task.CompletedTask;
             public Task<Category?> GetMostCommonCategoryForPayeeAsync(string p, double c = 0.5, CancellationToken ct = default) => Task.FromResult<Category?>(null);
             public Task SaveRecurringTransactionAsync(RecurringTransaction r) => Task.CompletedTask;
             public Task DeleteRecurringTransactionAsync(string id) => Task.CompletedTask;
