@@ -11,5 +11,4 @@ public class Account
     public bool IsSystemAccount => !string.IsNullOrWhiteSpace(SystemKey);
     public bool CanDelete => !IsSystemAccount;
     public bool CanArchive => !IsSystemAccount;
-    public string ArchiveActionText => IsArchived ? "Aktivieren" : "Archivieren";
 }

@@ -1,4 +1,5 @@
 using Finanzuebersicht.Application.UseCases.Transactions;
+using Finanzuebersicht.Constants;
 using Finanzuebersicht.Models;
 using NSubstitute;
 
@@ -72,6 +73,30 @@ public class SaveTransactionDetailUseCaseTests
         Assert.Equal("acc-2", existing.AccountId);
         Assert.Equal(TransactionType.Einnahme, existing.Typ);
         Assert.Equal("Gehaltszahlung", existing.Verwendungszweck);
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_UsesDefaultAccount_WhenAccountIdIsNull()
+    {
+        var transactionRepository = Substitute.For<ITransactionRepository>();
+        var accountRepository = Substitute.For<IAccountRepository>();
+        var defaultAccount = new Account { Id = "acc-default", SystemKey = SystemAccountKeys.Default };
+        accountRepository.GetAccountsAsync().Returns(new List<Account> { defaultAccount });
+
+        var sut = new SaveTransactionDetailUseCase(transactionRepository, accountRepository);
+
+        await sut.ExecuteAsync(
+            existingTransaction: null,
+            betrag: 50m,
+            titel: "Test",
+            datum: new DateTime(2026, 3, 1),
+            kategorieId: "cat-1",
+            accountId: null,
+            typ: TransactionType.Ausgabe,
+            verwendungszweck: string.Empty);
+
+        await transactionRepository.Received(1).SaveTransactionAsync(
+            Arg.Is<Transaction>(t => t.AccountId == "acc-default"));
     }
 
     [Fact]

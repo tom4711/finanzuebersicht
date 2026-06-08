@@ -371,6 +371,7 @@
                         BackgroundColor="Transparent"
                         WidthRequest="44"
                         HeightRequest="44"
+                        SemanticProperties.Description="{loc:Translate A11y_UmbuchungHinzufuegen}"
                         Command="{Binding GoToTransferCommand}" />
             </HorizontalStackLayout>
             <Button Text="{loc:Translate Btn_Hinzufuegen}"

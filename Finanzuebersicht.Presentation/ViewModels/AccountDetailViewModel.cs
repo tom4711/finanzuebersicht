@@ -32,12 +32,20 @@ public partial class AccountDetailViewModel(
     [ObservableProperty]
     private AccountTypeOption? selectedTypeOption;
 
-    public string PageTitle => _existingAccount == null ? "Konto hinzufügen" : "Konto bearbeiten";
+    public string PageTitle => _existingAccount == null
+        ? _loc.GetString(ResourceKeys.Title_KontoHinzufuegen)
+        : _loc.GetString(ResourceKeys.Title_KontoBearbeiten);
 
     public bool IsSystemAccount => _existingAccount?.IsSystemAccount == true;
     public bool CanArchive => !IsSystemAccount;
-    public string ArchiveStatusText => IsArchived ? "Archiviert" : "Aktiv";
-    public string SystemAccountHint => IsSystemAccount ? "Systemkonto kann nicht archiviert oder gelöscht werden." : string.Empty;
+    public string ArchiveStatusText => IsArchived
+        ? _loc.GetString(ResourceKeys.Lbl_Archiviert)
+        : _loc.GetString(ResourceKeys.Lbl_Aktiv);
+    public string SystemAccountHint => IsSystemAccount
+        ? _loc.GetString(ResourceKeys.Hint_Systemkonto)
+        : string.Empty;
+
+    partial void OnIsArchivedChanged(bool value) => OnPropertyChanged(nameof(ArchiveStatusText));
 
     public List<AccountTypeOption> VerfuegbareTypen =>
     [

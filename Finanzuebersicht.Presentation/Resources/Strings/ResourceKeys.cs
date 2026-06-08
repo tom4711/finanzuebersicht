@@ -19,6 +19,9 @@ public static class ResourceKeys
     public const string Title_NeueKategorie = nameof(Title_NeueKategorie);
     public const string Title_KategorieBearbeiten = nameof(Title_KategorieBearbeiten);
     public const string Title_Jahresansicht = nameof(Title_Jahresansicht);
+    public const string Title_Umbuchung = nameof(Title_Umbuchung);
+    public const string Title_KontoHinzufuegen = nameof(Title_KontoHinzufuegen);
+    public const string Title_KontoBearbeiten = nameof(Title_KontoBearbeiten);
 
     // Labels
     public const string Lbl_Name = nameof(Lbl_Name);
@@ -86,6 +89,8 @@ public static class ResourceKeys
     public const string Empty_KeineDashboardDaten = nameof(Empty_KeineDashboardDaten);
     public const string Empty_KeineJahresDaten = nameof(Empty_KeineJahresDaten);
     public const string Empty_NochKeineTransaktionen = nameof(Empty_NochKeineTransaktionen);
+    public const string Empty_KeineKonten = nameof(Empty_KeineKonten);
+    public const string Empty_KontenHinweis = nameof(Empty_KontenHinweis);
     public const string Btn_ZuTransaktionen = nameof(Btn_ZuTransaktionen);
 
     // Error Messages
@@ -97,6 +102,7 @@ public static class ResourceKeys
     public const string Err_SpeichernFehlgeschlagen = nameof(Err_SpeichernFehlgeschlagen);
     public const string Err_LoeschenFehlgeschlagen = nameof(Err_LoeschenFehlgeschlagen);
     public const string Err_LadenFehlgeschlagen = nameof(Err_LadenFehlgeschlagen);
+    public const string Err_TransferKontenUnterschiedlich = nameof(Err_TransferKontenUnterschiedlich);
     public const string Err_OrdnerNichtWaehlbar = nameof(Err_OrdnerNichtWaehlbar);
     public const string Err_SucheFehlgeschlagen = nameof(Err_SucheFehlgeschlagen);
 
@@ -217,6 +223,12 @@ public static class ResourceKeys
     public const string Lbl_SuchergebnisseAnzahl = nameof(Lbl_SuchergebnisseAnzahl);
     public const string Lbl_AlleKategorien = nameof(Lbl_AlleKategorien);
     public const string Lbl_AlleKonten = nameof(Lbl_AlleKonten);
+    public const string Lbl_Archiviert = nameof(Lbl_Archiviert);
+    public const string Lbl_VonKonto = nameof(Lbl_VonKonto);
+    public const string Lbl_NachKonto = nameof(Lbl_NachKonto);
+    public const string Btn_Archivieren = nameof(Btn_Archivieren);
+    public const string Btn_Aktivieren = nameof(Btn_Aktivieren);
+    public const string Hint_Systemkonto = nameof(Hint_Systemkonto);
     public const string Lbl_AlleTypen = nameof(Lbl_AlleTypen);
     public const string Lbl_VonDatum = nameof(Lbl_VonDatum);
     public const string Lbl_BisDatum = nameof(Lbl_BisDatum);
@@ -275,6 +287,7 @@ public static class ResourceKeys
     public const string A11y_VorherigesJahr = nameof(A11y_VorherigesJahr);
     public const string A11y_NaechstesJahr = nameof(A11y_NaechstesJahr);
     public const string A11y_TransaktionHinzufuegen = nameof(A11y_TransaktionHinzufuegen);
+    public const string A11y_UmbuchungHinzufuegen = nameof(A11y_UmbuchungHinzufuegen);
     public const string A11y_KategorieHinzufuegen = nameof(A11y_KategorieHinzufuegen);
     public const string A11y_SparZielHinzufuegen = nameof(A11y_SparZielHinzufuegen);
     public const string A11y_DauerauftragHinzufuegen = nameof(A11y_DauerauftragHinzufuegen);

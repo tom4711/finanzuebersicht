@@ -13,7 +13,6 @@ public partial class TransactionDetailViewModel(
     SaveTransactionDetailUseCase saveTransactionDetailUseCase,
     LoadTransactionDetailDataUseCase loadTransactionDetailDataUseCase,
     ITransactionValidationService validationService,
-    IAccountRepository accountRepository,
     ILocalizationService localizationService,
     INavigationService navigationService,
     IDialogService dialogService,
@@ -24,7 +23,6 @@ public partial class TransactionDetailViewModel(
     private readonly SaveTransactionDetailUseCase _saveTransactionDetailUseCase = saveTransactionDetailUseCase;
     private readonly LoadTransactionDetailDataUseCase _loadTransactionDetailDataUseCase = loadTransactionDetailDataUseCase;
     private readonly ITransactionValidationService _validationService = validationService;
-    private readonly IAccountRepository _accountRepository = accountRepository;
     private Transaction? _existingTransaction;
     private string? _selectedKategorieId;
     private string? _selectedAccountId;

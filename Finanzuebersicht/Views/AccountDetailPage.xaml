@@ -25,7 +25,7 @@
             </VerticalStackLayout>
 
             <Grid ColumnDefinitions="*, Auto" ColumnSpacing="8">
-                <Label Text="Archiviert"
+                <Label Text="{loc:Translate Lbl_Archiviert}"
                        FontSize="16"
                        VerticalTextAlignment="Center" />
                 <Switch Grid.Column="1"

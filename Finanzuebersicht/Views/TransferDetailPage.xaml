@@ -7,12 +7,12 @@
              xmlns:loc="clr-namespace:Finanzuebersicht.Extensions"
              x:Class="Finanzuebersicht.Views.TransferDetailPage"
              x:DataType="vm:TransferDetailViewModel"
-             Title="Umbuchung">
+             Title="{loc:Translate Title_Umbuchung}">
 
     <ScrollView Padding="16">
         <VerticalStackLayout Spacing="20">
             <VerticalStackLayout Spacing="4">
-                <Label Text="Von Konto" FontSize="13" TextColor="Gray" />
+                <Label Text="{loc:Translate Lbl_VonKonto}" FontSize="13" TextColor="Gray" />
                 <Picker ItemsSource="{Binding Accounts}"
                         SelectedItem="{Binding SourceAccount}"
                         ItemDisplayBinding="{Binding Name}"
@@ -20,7 +20,7 @@
             </VerticalStackLayout>
 
             <VerticalStackLayout Spacing="4">
-                <Label Text="Nach Konto" FontSize="13" TextColor="Gray" />
+                <Label Text="{loc:Translate Lbl_NachKonto}" FontSize="13" TextColor="Gray" />
                 <Picker ItemsSource="{Binding Accounts}"
                         SelectedItem="{Binding TargetAccount}"
                         ItemDisplayBinding="{Binding Name}"

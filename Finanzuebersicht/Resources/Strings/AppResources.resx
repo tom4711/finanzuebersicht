@@ -10,6 +10,7 @@
   <data name="Nav_Transaktionen" xml:space="preserve"><value>Transactions</value></data>
   <data name="Nav_Dauerauftraege" xml:space="preserve"><value>Recurring</value></data>
   <data name="Nav_Kategorien" xml:space="preserve"><value>Categories</value></data>
+  <data name="Nav_Verwaltung" xml:space="preserve"><value>Management</value></data>
   <data name="Nav_Einstellungen" xml:space="preserve"><value>Settings</value></data>
 
   <!-- Page Titles -->
@@ -18,6 +19,9 @@
   <data name="Title_NeueKategorie" xml:space="preserve"><value>New Category</value></data>
   <data name="Title_KategorieBearbeiten" xml:space="preserve"><value>Edit Category</value></data>
   <data name="Title_Jahresansicht" xml:space="preserve"><value>Year Overview</value></data>
+  <data name="Title_Umbuchung" xml:space="preserve"><value>Transfer</value></data>
+  <data name="Title_KontoHinzufuegen" xml:space="preserve"><value>Add account</value></data>
+  <data name="Title_KontoBearbeiten" xml:space="preserve"><value>Edit account</value></data>
 
   <!-- Labels -->
   <data name="Lbl_Name" xml:space="preserve"><value>Name</value></data>
@@ -29,6 +33,12 @@
   <data name="Lbl_Kategorie" xml:space="preserve"><value>Category</value></data>
   <data name="Lbl_Konto" xml:space="preserve"><value>Account</value></data>
   <data name="Lbl_AlleKonten" xml:space="preserve"><value>All Accounts</value></data>
+  <data name="Lbl_Archiviert" xml:space="preserve"><value>Archived</value></data>
+  <data name="Lbl_VonKonto" xml:space="preserve"><value>From account</value></data>
+  <data name="Lbl_NachKonto" xml:space="preserve"><value>To account</value></data>
+  <data name="Btn_Archivieren" xml:space="preserve"><value>Archive</value></data>
+  <data name="Btn_Aktivieren" xml:space="preserve"><value>Activate</value></data>
+  <data name="Hint_Systemkonto" xml:space="preserve"><value>System account cannot be archived or deleted.</value></data>
   <data name="Lbl_Datum" xml:space="preserve"><value>Date</value></data>
   <data name="Lbl_Startdatum" xml:space="preserve"><value>Start Date</value></data>
   <data name="Lbl_Enddatum" xml:space="preserve"><value>End Date</value></data>
@@ -85,6 +95,8 @@
   <data name="Empty_KeineDashboardDaten" xml:space="preserve"><value>No data for this period</value></data>
   <data name="Empty_KeineJahresDaten" xml:space="preserve"><value>No data for this year</value></data>
   <data name="Empty_NochKeineTransaktionen" xml:space="preserve"><value>No transactions yet</value></data>
+  <data name="Empty_KeineKonten" xml:space="preserve"><value>No accounts yet</value></data>
+  <data name="Empty_KontenHinweis" xml:space="preserve"><value>Create an account to assign transactions and recurring items.</value></data>
   <data name="Btn_ZuTransaktionen" xml:space="preserve"><value>Add First Transaction</value></data>
 
   <!-- Error Messages -->
@@ -96,6 +108,7 @@
   <data name="Err_SpeichernFehlgeschlagen" xml:space="preserve"><value>Error saving: {0}</value></data>
   <data name="Err_LoeschenFehlgeschlagen" xml:space="preserve"><value>Error deleting: {0}</value></data>
   <data name="Err_LadenFehlgeschlagen" xml:space="preserve"><value>Error loading data: {0}</value></data>
+  <data name="Err_TransferKontenUnterschiedlich" xml:space="preserve"><value>Please select different source and target accounts.</value></data>
   <data name="Err_OrdnerNichtWaehlbar" xml:space="preserve"><value>Folder could not be selected: {0}</value></data>
   <data name="Err_SucheFehlgeschlagen" xml:space="preserve"><value>The search could not be completed.</value></data>
 
@@ -277,6 +290,7 @@ Please restart the app.</value></data>
   <data name="A11y_VorherigesJahr" xml:space="preserve"><value>Previous year</value></data>
   <data name="A11y_NaechstesJahr" xml:space="preserve"><value>Next year</value></data>
   <data name="A11y_TransaktionHinzufuegen" xml:space="preserve"><value>Add new transaction</value></data>
+  <data name="A11y_UmbuchungHinzufuegen" xml:space="preserve"><value>Add new transfer</value></data>
   <data name="A11y_KategorieHinzufuegen" xml:space="preserve"><value>Add new category</value></data>
   <data name="A11y_SparZielHinzufuegen" xml:space="preserve"><value>Add new savings goal</value></data>
   <data name="A11y_DauerauftragHinzufuegen" xml:space="preserve"><value>Add new recurring transaction</value></data>

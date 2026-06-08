@@ -8,10 +8,11 @@
              xmlns:loc="clr-namespace:Finanzuebersicht.Extensions"
              x:Class="Finanzuebersicht.Views.CategoriesPage"
              x:DataType="vm:CategoriesViewModel"
-             Title="Verwaltung">
+             Title="{loc:Translate Nav_Verwaltung}">
 
     <views:BaseContentPage.Resources>
         <conv:AccountTypeToLocalizedStringConverter x:Key="AccountTypeToLocalizedStringConverter" />
+        <conv:AccountArchiveActionConverter x:Key="AccountArchiveActionConverter" />
     </views:BaseContentPage.Resources>
 
     <Grid>
@@ -85,9 +86,9 @@
                                     SelectionMode="None">
                         <CollectionView.EmptyView>
                             <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Padding="20">
-                               <Label Text="Keine Konten vorhanden" FontSize="16"
+                               <Label Text="{loc:Translate Empty_KeineKonten}" FontSize="16"
                                        HorizontalTextAlignment="Center" TextColor="Gray" />
-                               <Label Text="Lege ein Konto an, um Transaktionen und Daueraufträge zuzuordnen."
+                               <Label Text="{loc:Translate Empty_KontenHinweis}"
                                       Margin="0,6,0,0"
                                       FontSize="13"
                                       HorizontalTextAlignment="Center"
@@ -117,11 +118,11 @@
                                         <Label Text="{Binding Name}" FontSize="16" FontAttributes="Bold" />
                                        <Label Text="{Binding Type, Converter={StaticResource AccountTypeToLocalizedStringConverter}}" FontSize="13" TextColor="Gray" />
                                        <HorizontalStackLayout Spacing="6">
-                                           <Label Text="System"
+                                           <Label Text="{loc:Translate Btn_System}"
                                                   IsVisible="{Binding IsSystemAccount}"
                                                   FontSize="11"
                                                   TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
-                                           <Label Text="Archiviert"
+                                           <Label Text="{loc:Translate Lbl_Archiviert}"
                                                   IsVisible="{Binding IsArchived}"
                                                   FontSize="11"
                                                   TextColor="Gray" />
@@ -136,7 +137,7 @@
                                                 TextColor="{AppThemeBinding Light={StaticResource Ausgabe}, Dark={StaticResource AusgabeDark}}"
                                                 Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CategoriesViewModel}}, Path=DeleteKontoCommand}"
                                                 CommandParameter="{Binding .}" />
-                                        <Button Text="{Binding ArchiveActionText}"
+                                        <Button Text="{Binding IsArchived, Converter={StaticResource AccountArchiveActionConverter}}"
                                                 IsVisible="{Binding CanArchive}"
                                                 BackgroundColor="Transparent"
                                                 FontSize="12"

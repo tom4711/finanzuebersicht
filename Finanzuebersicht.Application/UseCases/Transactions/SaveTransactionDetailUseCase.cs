@@ -1,3 +1,4 @@
+using Finanzuebersicht.Constants;
 using Finanzuebersicht.Models;
 
 namespace Finanzuebersicht.Application.UseCases.Transactions;
@@ -36,10 +37,30 @@ public class SaveTransactionDetailUseCase(
         transaction.Titel = titel;
         transaction.Datum = datum;
         transaction.KategorieId = kategorieId;
-        transaction.AccountId = accountId ?? transaction.AccountId ?? string.Empty;
+        transaction.AccountId = await ResolveAccountIdAsync(accountId, transaction.AccountId, cancellationToken)
+            .ConfigureAwait(false);
         transaction.Typ = typ;
         transaction.Verwendungszweck = verwendungszweck ?? string.Empty;
 
         await _transactionRepository.SaveTransactionAsync(transaction);
+    }
+
+    private async Task<string> ResolveAccountIdAsync(
+        string? requestedAccountId,
+        string? existingAccountId,
+        CancellationToken cancellationToken)
+    {
+        if (!string.IsNullOrWhiteSpace(requestedAccountId))
+            return requestedAccountId;
+
+        if (!string.IsNullOrWhiteSpace(existingAccountId))
+            return existingAccountId;
+
+        cancellationToken.ThrowIfCancellationRequested();
+        var accounts = await _accountRepository.GetAccountsAsync().ConfigureAwait(false);
+        var defaultAccount = accounts.FirstOrDefault(a => a.SystemKey == SystemAccountKeys.Default && !a.IsArchived)
+            ?? accounts.FirstOrDefault(a => !a.IsArchived);
+
+        return defaultAccount?.Id ?? string.Empty;
     }
 }

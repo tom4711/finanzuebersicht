@@ -41,17 +41,21 @@ public partial class TransferDetailViewModel(
     private string amountText = string.Empty;
 
     [ObservableProperty]
-    private string title = "Umbuchung";
+    private string title = string.Empty;
 
     [ObservableProperty]
     private string note = string.Empty;
 
     [ObservableProperty]
-    private DateTime date = Finanzuebersicht.Core.Services.SystemClock.Instance.Today;
+    private DateTime date;
 
     [RelayCommand]
     private async Task LoadAccounts()
     {
+        Date = _clock.Today;
+        if (string.IsNullOrWhiteSpace(Title))
+            Title = _loc.GetString(ResourceKeys.Title_Umbuchung);
+
         var accounts = await _accountRepository.GetAccountsAsync();
         var active = accounts.Where(a => !a.IsArchived).OrderBy(a => a.Name).ToList();
         Accounts = new ObservableCollection<Account>(active);
@@ -77,7 +81,7 @@ public partial class TransferDetailViewModel(
         {
             await _dialogService.ShowAlertAsync(
                 _loc.GetString(ResourceKeys.Err_Titel),
-                "Bitte unterschiedliche Quell- und Zielkonten auswählen.",
+                _loc.GetString(ResourceKeys.Err_TransferKontenUnterschiedlich),
                 _loc.GetString(ResourceKeys.Btn_OK));
             return;
         }
