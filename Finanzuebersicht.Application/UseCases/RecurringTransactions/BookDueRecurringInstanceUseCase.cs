@@ -24,6 +24,12 @@ public class BookDueRecurringInstanceUseCase(
         var effectiveDate = RecurringScheduleCalculator.ApplyExceptions(recurring, instanceDate.Date);
         var amount = amountOverride ?? recurring.Betrag;
 
+        var existing = await transactionRepository.GetTransactionsAsync(
+            effectiveDate.Date,
+            effectiveDate.Date.AddDays(1).AddTicks(-1));
+        if (existing.Any(t => t.DauerauftragId == recurring.Id))
+            throw new InvalidOperationException("This recurring instance has already been booked.");
+
         var accountId = recurring.AccountId;
         if (string.IsNullOrWhiteSpace(accountId))
         {

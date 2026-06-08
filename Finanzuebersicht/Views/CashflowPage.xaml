@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:views="clr-namespace:Finanzuebersicht.Views"
              xmlns:vm="clr-namespace:Finanzuebersicht.ViewModels"
+             xmlns:dash="clr-namespace:Finanzuebersicht.Application.UseCases.Dashboard;assembly=Finanzuebersicht.Application"
              xmlns:conv="clr-namespace:Finanzuebersicht.Converters"
              xmlns:loc="clr-namespace:Finanzuebersicht.Extensions"
              x:Class="Finanzuebersicht.Views.CashflowPage"
@@ -44,11 +45,23 @@
 
                 <VerticalStackLayout Spacing="12" BindableLayout.ItemsSource="{Binding Days}">
                     <BindableLayout.ItemTemplate>
-                        <DataTemplate>
+                        <DataTemplate x:DataType="dash:CashflowDayGroup">
                             <Border StrokeShape="RoundRectangle 10"
-                                    Stroke="{AppThemeBinding Light=#E5E5EA, Dark=#3A3A3C}"
-                                    BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1C1C1E}"
                                     Padding="12">
+                                <Border.Triggers>
+                                    <DataTrigger TargetType="Border"
+                                                 Binding="{Binding IsNotable}"
+                                                 Value="True">
+                                        <Setter Property="Stroke" Value="{StaticResource ReminderBannerBorder}" />
+                                        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource ReminderBannerBackground}, Dark={StaticResource ReminderBannerBackgroundDark}}" />
+                                    </DataTrigger>
+                                    <DataTrigger TargetType="Border"
+                                                 Binding="{Binding IsNotable}"
+                                                 Value="False">
+                                        <Setter Property="Stroke" Value="{AppThemeBinding Light=#E5E5EA, Dark=#3A3A3C}" />
+                                        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=#FFFFFF, Dark=#1C1C1E}" />
+                                    </DataTrigger>
+                                </Border.Triggers>
                                 <VerticalStackLayout Spacing="8">
                                     <Grid ColumnDefinitions="*, Auto">
                                         <Label Grid.Column="0"
@@ -61,7 +74,7 @@
                                     </Grid>
                                     <VerticalStackLayout Spacing="4" BindableLayout.ItemsSource="{Binding Entries}">
                                         <BindableLayout.ItemTemplate>
-                                            <DataTemplate>
+                                            <DataTemplate x:DataType="dash:CashflowEntry">
                                                 <Grid ColumnDefinitions="*, Auto">
                                                     <Label Grid.Column="0" Text="{Binding Title}" FontSize="13" />
                                                     <Label Grid.Column="1"

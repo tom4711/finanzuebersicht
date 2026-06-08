@@ -23,6 +23,8 @@ public class BookDueRecurringInstanceUseCaseTests
         recurringRepository.GetRecurringTransactionsAsync().Returns(new List<RecurringTransaction> { recurring });
 
         var transactionRepository = Substitute.For<ITransactionRepository>();
+        transactionRepository.GetTransactionsAsync(Arg.Any<DateTime>(), Arg.Any<DateTime>())
+            .Returns(new List<Transaction>());
         var accountRepository = Substitute.For<IAccountRepository>();
 
         var sut = new BookDueRecurringInstanceUseCase(recurringRepository, transactionRepository, accountRepository);
@@ -55,6 +57,8 @@ public class BookDueRecurringInstanceUseCaseTests
         recurringRepository.GetRecurringTransactionsAsync().Returns(new List<RecurringTransaction> { recurring });
 
         var transactionRepository = Substitute.For<ITransactionRepository>();
+        transactionRepository.GetTransactionsAsync(Arg.Any<DateTime>(), Arg.Any<DateTime>())
+            .Returns(new List<Transaction>());
         var accountRepository = Substitute.For<IAccountRepository>();
         accountRepository.GetAccountsAsync().Returns(new List<Account>
         {
@@ -66,5 +70,36 @@ public class BookDueRecurringInstanceUseCaseTests
         await sut.ExecuteAsync("rec-1", new DateTime(2026, 3, 1));
 
         await transactionRepository.Received(1).SaveTransactionAsync(Arg.Is<Transaction>(t => t.AccountId == "acc-default"));
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_Throws_WhenInstanceAlreadyBooked()
+    {
+        var instanceDate = new DateTime(2026, 3, 1);
+        var recurring = new RecurringTransaction
+        {
+            Id = "rec-1",
+            Titel = "Miete",
+            Betrag = 800m,
+            KategorieId = "cat-rent",
+            AccountId = "acc-1",
+            Typ = TransactionType.Ausgabe
+        };
+
+        var recurringRepository = Substitute.For<IRecurringTransactionRepository>();
+        recurringRepository.GetRecurringTransactionsAsync().Returns(new List<RecurringTransaction> { recurring });
+
+        var transactionRepository = Substitute.For<ITransactionRepository>();
+        transactionRepository.GetTransactionsAsync(Arg.Any<DateTime>(), Arg.Any<DateTime>())
+            .Returns(new List<Transaction>
+            {
+                new() { DauerauftragId = "rec-1", Datum = instanceDate, Betrag = 800m }
+            });
+
+        var accountRepository = Substitute.For<IAccountRepository>();
+        var sut = new BookDueRecurringInstanceUseCase(recurringRepository, transactionRepository, accountRepository);
+
+        await Assert.ThrowsAsync<InvalidOperationException>(() => sut.ExecuteAsync("rec-1", instanceDate));
+        await transactionRepository.DidNotReceive().SaveTransactionAsync(Arg.Any<Transaction>());
     }
 }

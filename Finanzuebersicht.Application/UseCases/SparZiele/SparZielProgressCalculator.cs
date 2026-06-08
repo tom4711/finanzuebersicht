@@ -6,7 +6,7 @@ internal static class SparZielProgressCalculator
 {
     public static Dictionary<string, decimal> SumLinkedAmounts(IEnumerable<Transaction> transactions)
         => transactions
-            .Where(t => !string.IsNullOrWhiteSpace(t.SparZielId))
+            .Where(t => !string.IsNullOrWhiteSpace(t.SparZielId) && t.Typ == TransactionType.Einnahme)
             .GroupBy(t => t.SparZielId!)
             .ToDictionary(g => g.Key, g => g.Sum(t => Math.Abs(t.Betrag)));
 

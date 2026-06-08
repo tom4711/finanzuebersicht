@@ -10,6 +10,7 @@ public class LoadCashflowOutlookUseCase(
 {
     private readonly Finanzuebersicht.Core.Services.IClock _clock = clock ?? SystemClock.Instance;
     private const decimal NotableDayThreshold = 100m;
+    private const int RecurringDedupLookbackDays = 120;
 
     public async Task<CashflowOutlookData> ExecuteAsync(
         int horizonDays = 30,
@@ -22,11 +23,13 @@ public class LoadCashflowOutlookUseCase(
         var to = from.AddDays(Math.Max(1, horizonDays));
         var entries = new List<CashflowEntry>();
 
-        var transactions = await transactionRepository.GetTransactionsAsync(from, to);
+        var allTransactions = await transactionRepository.GetTransactionsAsync(
+            from.AddDays(-RecurringDedupLookbackDays),
+            to);
         if (!string.IsNullOrWhiteSpace(accountId))
-            transactions = transactions.Where(t => t.AccountId == accountId).ToList();
+            allTransactions = allTransactions.Where(t => t.AccountId == accountId).ToList();
 
-        foreach (var transaction in transactions.Where(t => !t.IsTransfer))
+        foreach (var transaction in allTransactions.Where(t => !t.IsTransfer && t.Datum.Date >= from))
         {
             entries.Add(new CashflowEntry
             {
@@ -39,23 +42,20 @@ public class LoadCashflowOutlookUseCase(
         }
 
         var recurringItems = await recurringTransactionRepository.GetRecurringTransactionsAsync();
-        var bookedRecurringKeys = transactions
-            .Where(t => !string.IsNullOrWhiteSpace(t.DauerauftragId))
-            .Select(t => $"{t.DauerauftragId}:{t.Datum.Date:yyyy-MM-dd}")
-            .ToHashSet();
 
         foreach (var recurring in recurringItems.Where(r => r.Aktiv))
         {
             if (!string.IsNullOrWhiteSpace(accountId) && recurring.AccountId != accountId)
                 continue;
 
+            TryAddOverdueRecurring(entries, recurring, allTransactions, from);
+
             for (var day = from; day <= to; day = day.AddDays(1))
             {
                 if (!OccursOnDate(recurring, day))
                     continue;
 
-                var key = $"{recurring.Id}:{day:yyyy-MM-dd}";
-                if (bookedRecurringKeys.Contains(key))
+                if (IsRecurringBooked(allTransactions, recurring.Id, day))
                     continue;
 
                 entries.Add(new CashflowEntry
@@ -96,6 +96,52 @@ public class LoadCashflowOutlookUseCase(
             ProjectedExpenses = entries.Where(e => e.Typ == TransactionType.Ausgabe).Sum(e => e.Amount)
         };
     }
+
+    private static void TryAddOverdueRecurring(
+        List<CashflowEntry> entries,
+        RecurringTransaction recurring,
+        List<Transaction> transactions,
+        DateTime from)
+    {
+        if (!RecurringScheduleCalculator.IsWithinActiveRange(recurring, from))
+            return;
+
+        if (IsRecurringBooked(transactions, recurring.Id, from))
+            return;
+
+        var candidate = recurring.LetzteAusfuehrung.HasValue
+            ? RecurringScheduleCalculator.GetNextInstance(recurring, recurring.LetzteAusfuehrung.Value)
+            : recurring.Startdatum.Date;
+
+        DateTime? latestUnbookedDue = null;
+        while (candidate < from)
+        {
+            var effective = RecurringScheduleCalculator.ApplyExceptions(recurring, candidate);
+            if (!IsRecurringBooked(transactions, recurring.Id, effective))
+                latestUnbookedDue = effective;
+
+            candidate = RecurringScheduleCalculator.GetNextInstance(recurring, candidate);
+        }
+
+        if (latestUnbookedDue is null)
+            return;
+
+        if (entries.Any(e => e.IsProjected && e.Title == recurring.Titel && e.Date == from))
+            return;
+
+        entries.Add(new CashflowEntry
+        {
+            Date = from,
+            Title = recurring.Titel,
+            Amount = Math.Abs(recurring.Betrag),
+            Typ = recurring.Typ,
+            IsProjected = true,
+            IsOverdue = true
+        });
+    }
+
+    private static bool IsRecurringBooked(IEnumerable<Transaction> transactions, string recurringId, DateTime day)
+        => transactions.Any(t => t.DauerauftragId == recurringId && t.Datum.Date == day.Date);
 
     private static bool OccursOnDate(RecurringTransaction recurring, DateTime date)
     {
