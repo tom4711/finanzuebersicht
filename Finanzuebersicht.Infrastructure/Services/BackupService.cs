@@ -16,6 +16,7 @@ namespace Finanzuebersicht.Infrastructure.Services
     public class BackupService : IBackupService
     {
         private readonly ICategoryRepository _categoryRepository;
+        private readonly IAccountRepository _accountRepository;
         private readonly ITransactionRepository _transactionRepository;
         private readonly IRecurringTransactionRepository _recurringRepository;
         private readonly IBudgetRepository _budgetRepository;
@@ -33,10 +34,11 @@ namespace Finanzuebersicht.Infrastructure.Services
         };
 
         private const string BackupMetadataFileName = "backup.metadata.json";
-        private const int CurrentSchemaVersion = 2;
+        private const int CurrentSchemaVersion = 3;
 
         public BackupService(
             ICategoryRepository categoryRepository,
+            IAccountRepository accountRepository,
             ITransactionRepository transactionRepository,
             IRecurringTransactionRepository recurringRepository,
             IBudgetRepository budgetRepository,
@@ -48,6 +50,7 @@ namespace Finanzuebersicht.Infrastructure.Services
             Finanzuebersicht.Core.Services.IClock? clock = null)
         {
             _categoryRepository = categoryRepository ?? throw new ArgumentNullException(nameof(categoryRepository));
+            _accountRepository = accountRepository ?? throw new ArgumentNullException(nameof(accountRepository));
             _transactionRepository = transactionRepository ?? throw new ArgumentNullException(nameof(transactionRepository));
             _recurringRepository = recurringRepository ?? throw new ArgumentNullException(nameof(recurringRepository));
             _budgetRepository = budgetRepository ?? throw new ArgumentNullException(nameof(budgetRepository));
@@ -76,6 +79,7 @@ namespace Finanzuebersicht.Infrastructure.Services
 
                 // Lade alle Daten
                 var categories = await _categoryRepository.GetCategoriesAsync();
+                var accounts = await _accountRepository.GetAccountsAsync();
                 var transactions = await _transactionRepository.GetTransactionsAsync(DateTime.MinValue, DateTime.MaxValue);
                 var recurring = await _recurringRepository.GetRecurringTransactionsAsync();
                 var budgets = await _budgetRepository.GetBudgetsAsync();
@@ -94,6 +98,7 @@ namespace Finanzuebersicht.Infrastructure.Services
                     EntityCounts = new Dictionary<string, int>
                     {
                         { "categories", categories.Count() },
+                        { "accounts", accounts.Count() },
                         { "transactions", transactions.Count() },
                         { "recurring", recurring.Count() },
                         { "budgets", budgets.Count },
@@ -107,6 +112,7 @@ namespace Finanzuebersicht.Infrastructure.Services
                 {
                     // Schreibe Daten-Dateien
                     WriteJsonToZip(zipArchive, "categories.json", categories);
+                    WriteJsonToZip(zipArchive, "accounts.json", accounts);
                     WriteJsonToZip(zipArchive, "transactions.json", transactions);
                     WriteJsonToZip(zipArchive, "recurring.json", recurring);
                     WriteJsonToZip(zipArchive, "budgets.json", budgets);
@@ -217,17 +223,18 @@ namespace Finanzuebersicht.Infrastructure.Services
 
                 // Deserialisiere die (ggf. migrierten) Daten in konkrete Typen
                 var categories = DeserializeFile<List<Category>>(archiveData, "categories.json");
+                var accounts = DeserializeFile<List<Account>>(archiveData, "accounts.json");
                 var transactions = DeserializeFile<List<Transaction>>(archiveData, "transactions.json");
                 var recurring = DeserializeFile<List<RecurringTransaction>>(archiveData, "recurring.json");
                 var budgets = DeserializeFile<List<CategoryBudget>>(archiveData, "budgets.json");
                 var sparziele = DeserializeFile<List<SparZiel>>(archiveData, "sparziele.json");
                 var transactionTemplates = DeserializeFile<List<TransactionTemplate>>(archiveData, "transaction-templates.json") ?? [];
 
-                if (categories == null || transactions == null || recurring == null || budgets == null || sparziele == null)
+                if (categories == null || accounts == null || transactions == null || recurring == null || budgets == null || sparziele == null)
                     return new RestoreResult { Success = false, ErrorMessage = "ZIP-Datei ist beschädigt oder unvollständig" };
 
                 // Atomare Restore mit Rollback-Capability
-                var restoreSuccess = await AtomicRestoreAsync(categories, transactions, recurring, budgets, sparziele, transactionTemplates);
+                var restoreSuccess = await AtomicRestoreAsync(categories, accounts, transactions, recurring, budgets, sparziele, transactionTemplates);
 
                 if (!restoreSuccess)
                     return new RestoreResult { Success = false, ErrorMessage = "Fehler beim Speichern der wiederhergestellten Daten" };
@@ -273,6 +280,7 @@ namespace Finanzuebersicht.Infrastructure.Services
         /// </summary>
         private async Task<bool> AtomicRestoreAsync(
             List<Category> categories,
+            List<Account> accounts,
             List<Transaction> transactions,
             List<RecurringTransaction> recurring,
             List<CategoryBudget> budgets,
@@ -283,6 +291,7 @@ namespace Finanzuebersicht.Infrastructure.Services
             // Wenn dieser Schritt fehlschlägt (z.B. DataCorruptionException), bricht der Restore
             // ab bevor irgendetwas überschrieben wurde — das ist das gewünschte Verhalten.
             var snapshotCategories = await _categoryRepository.GetCategoriesAsync();
+            var snapshotAccounts = await _accountRepository.GetAccountsAsync();
             var snapshotTransactions = await _transactionRepository.GetTransactionsAsync(DateTime.MinValue, DateTime.MaxValue);
             var snapshotRecurring = await _recurringRepository.GetRecurringTransactionsAsync();
             var snapshotBudgets = await _budgetRepository.GetBudgetsAsync();
@@ -297,6 +306,7 @@ namespace Finanzuebersicht.Infrastructure.Services
                     categories.Count, transactions.Count, recurring.Count, budgets.Count, sparziele.Count, transactionTemplates.Count);
 
                 await _categoryRepository.ReplaceAllCategoriesAsync(categories);
+                await _accountRepository.ReplaceAllAccountsAsync(accounts);
                 await _transactionRepository.ReplaceAllTransactionsAsync(transactions);
                 await _recurringRepository.ReplaceAllRecurringTransactionsAsync(recurring);
                 await _budgetRepository.ReplaceAllBudgetsAsync(budgets);
@@ -309,13 +319,14 @@ namespace Finanzuebersicht.Infrastructure.Services
             catch (Exception ex)
             {
                 _logger?.LogError(ex, "Fehler bei der Wiederherstellung – starte Rollback");
-                await RollbackAsync(snapshotCategories, snapshotTransactions, snapshotRecurring, snapshotBudgets, snapshotSparziele, snapshotTransactionTemplates);
+                await RollbackAsync(snapshotCategories, snapshotAccounts, snapshotTransactions, snapshotRecurring, snapshotBudgets, snapshotSparziele, snapshotTransactionTemplates);
                 return false;
             }
         }
 
         private async Task RollbackAsync(
             List<Category> categories,
+            List<Account> accounts,
             List<Transaction> transactions,
             List<RecurringTransaction> recurring,
             List<CategoryBudget> budgets,
@@ -325,6 +336,7 @@ namespace Finanzuebersicht.Infrastructure.Services
             try
             {
                 await _categoryRepository.ReplaceAllCategoriesAsync(categories);
+                await _accountRepository.ReplaceAllAccountsAsync(accounts);
                 await _transactionRepository.ReplaceAllTransactionsAsync(transactions);
                 await _recurringRepository.ReplaceAllRecurringTransactionsAsync(recurring);
                 await _budgetRepository.ReplaceAllBudgetsAsync(budgets);
@@ -445,18 +457,6 @@ namespace Finanzuebersicht.Infrastructure.Services
             {
                 using (var zipArchive = ZipFile.OpenRead(zipPath))
                 {
-                    var requiredFiles = new[] { "categories.json", "transactions.json", "recurring.json", BackupMetadataFileName };
-                    var missingFiles = requiredFiles.Where(f => zipArchive.GetEntry(f) == null).ToList();
-
-                    if (missingFiles.Count != 0)
-                    {
-                        return new RestoreResult
-                        {
-                            Success = false,
-                            ErrorMessage = $"Backup unvollständig. Fehlende Dateien: {string.Join(", ", missingFiles)}"
-                        };
-                    }
-
                     // Validiere Metadaten-Schema: ältere Versionen werden migriert, neuere abgelehnt
                     var metadata = ReadJsonFromZip<BackupMetadata>(zipArchive, BackupMetadataFileName);
                     if (metadata == null || metadata.SchemaVersion > CurrentSchemaVersion)
@@ -467,9 +467,23 @@ namespace Finanzuebersicht.Infrastructure.Services
                             ErrorMessage = $"Schema-Version nicht kompatibel. Backup: v{metadata?.SchemaVersion}, App: v{CurrentSchemaVersion}"
                         };
                     }
-                }
 
-                return new RestoreResult { Success = true };
+                    var requiredFiles = new List<string> { "categories.json", "transactions.json", "recurring.json", BackupMetadataFileName };
+                    if (metadata.SchemaVersion >= 3)
+                        requiredFiles.Add("accounts.json");
+
+                    var missingFiles = requiredFiles.Where(f => zipArchive.GetEntry(f) == null).ToList();
+                    if (missingFiles.Count != 0)
+                    {
+                        return new RestoreResult
+                        {
+                            Success = false,
+                            ErrorMessage = $"Backup unvollständig. Fehlende Dateien: {string.Join(", ", missingFiles)}"
+                        };
+                    }
+
+                    return new RestoreResult { Success = true };
+                }
             }
             catch (Exception ex)
             {

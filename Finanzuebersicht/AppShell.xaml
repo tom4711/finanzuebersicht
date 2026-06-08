@@ -30,7 +30,7 @@
             Route="RecurringTransactionsPage" />
 
         <ShellContent
-            Title="{loc:Translate Nav_Kategorien}"
+            Title="{loc:Translate Nav_Verwaltung}"
             Icon="categories.png"
             ContentTemplate="{DataTemplate views:CategoriesPage}"
             Route="CategoriesPage" />

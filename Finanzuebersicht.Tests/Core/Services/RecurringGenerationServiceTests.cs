@@ -46,6 +46,7 @@ public class RecurringGenerationServiceTests
             Assert.Equal(recurring.Id, t.DauerauftragId);
             Assert.Equal("Weekly", t.Titel);
             Assert.Equal(10m, t.Betrag);
+            Assert.Null(t.AccountId);
         });
 
         // expected last candidate: advance by 7 days until <= today
@@ -170,6 +171,44 @@ public class RecurringGenerationServiceTests
 
         Assert.Contains(saved, t => t.Datum.Date == shifted.Date && t.DauerauftragId == recurring.Id);
         await recurringRepository.Received(1).SaveRecurringTransactionAsync(Arg.Is<RecurringTransaction>(r => r.LetzteAusfuehrung.HasValue));
+    }
+
+    [Fact]
+    public async Task GeneratesTransaction_WithFallbackDefaultAccount_WhenRecurringHasNoAccount()
+    {
+        var recurringRepository = Substitute.For<IRecurringTransactionRepository>();
+        var transactionRepository = Substitute.For<ITransactionRepository>();
+        var accountRepository = Substitute.For<IAccountRepository>();
+
+        var recurring = new RecurringTransaction
+        {
+            Id = Guid.NewGuid().ToString(),
+            Titel = "Monthly",
+            Betrag = 20m,
+            Typ = TransactionType.Ausgabe,
+            Startdatum = DateTime.Today.AddMonths(-1),
+            Aktiv = true,
+            KategorieId = "cat-a",
+            Interval = RecurrenceInterval.Monthly,
+            IntervalFactor = 1
+        };
+
+        recurringRepository.GetRecurringTransactionsAsync().Returns(new List<RecurringTransaction> { recurring });
+        accountRepository.GetAccountsAsync().Returns(new List<Account>
+        {
+            new() { Id = "acc-default", Name = "Girokonto", SystemKey = Finanzuebersicht.Constants.SystemAccountKeys.Default }
+        });
+
+        var saved = new List<Transaction>();
+        transactionRepository.When(x => x.SaveTransactionAsync(Arg.Any<Transaction>()))
+            .Do(call => saved.Add(call.Arg<Transaction>()));
+
+        var service = new RecurringGenerationService(recurringRepository, transactionRepository, accountRepository: accountRepository);
+        await service.GeneratePendingRecurringTransactionsAsync();
+
+        Assert.NotEmpty(saved);
+        Assert.All(saved, t => Assert.Equal("acc-default", t.AccountId));
+        await recurringRepository.Received(1).SaveRecurringTransactionAsync(Arg.Is<RecurringTransaction>(r => r.AccountId == "acc-default"));
     }
 
     [Fact]

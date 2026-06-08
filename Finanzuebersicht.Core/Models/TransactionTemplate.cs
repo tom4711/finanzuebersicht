@@ -7,6 +7,7 @@ public class TransactionTemplate
     public string Titel { get; set; } = string.Empty;
     public decimal Betrag { get; set; }
     public string KategorieId { get; set; } = string.Empty;
+    public string? AccountId { get; set; }
     public TransactionType Typ { get; set; } = TransactionType.Ausgabe;
     public string Verwendungszweck { get; set; } = string.Empty;
     public DateTime? LastUsedAt { get; set; }

@@ -1,5 +1,6 @@
 using Finanzuebersicht.Application.UseCases.Dashboard;
 using Finanzuebersicht.Application.UseCases.RecurringTransactions;
+using Finanzuebersicht.Models;
 using Finanzuebersicht.Tests.TestHelpers;
 using Finanzuebersicht.ViewModels;
 
@@ -30,6 +31,8 @@ public class DashboardViewModelTests
         var recurringTransactionRepository = Substitute.For<IRecurringTransactionRepository>();
         var budgetRepository = Substitute.For<IBudgetRepository>();
         var reportingService = Substitute.For<IReportingService>();
+        var accountRepository = Substitute.For<IAccountRepository>();
+        accountRepository.GetAccountsAsync().Returns(Task.FromResult(new List<Account>()));
         var localizationService = Substitute.For<ILocalizationService>();
         var navigationService = Substitute.For<INavigationService>();
         var forecastService = Substitute.For<IForecastService>();
@@ -37,14 +40,14 @@ public class DashboardViewModelTests
 
         return new DashboardViewModel(
             new LoadDashboardMonthUseCase(categoryRepository, transactionRepository, recurringTransactionRepository, budgetRepository),
-            new LoadDashboardYearUseCase(reportingService),
+            new LoadDashboardYearUseCase(transactionRepository, categoryRepository),
             new LoadForecastUseCase(forecastService),
             new GetDueRecurringWithHintsUseCase(recurringTransactionRepository),
             budgetRepository,
-            reportingService,
             localizationService,
             navigationService,
             transactionRepository,
+            accountRepository,
             clock);
     }
 }

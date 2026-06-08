@@ -38,8 +38,14 @@ public class DataServiceFacade(
     public Task SaveTransactionAsync(Transaction transaction)
         => _transactionRepository.SaveTransactionAsync(transaction);
 
+    public Task SaveTransactionsAsync(IEnumerable<Transaction> transactions)
+        => _transactionRepository.SaveTransactionsAsync(transactions);
+
     public Task DeleteTransactionAsync(string id)
         => _transactionRepository.DeleteTransactionAsync(id);
+
+    public Task DeleteTransferGroupAsync(string transferGroupId)
+        => _transactionRepository.DeleteTransferGroupAsync(transferGroupId);
 
     public Task ReplaceAllTransactionsAsync(IEnumerable<Transaction> transactions)
         => _transactionRepository.ReplaceAllTransactionsAsync(transactions);

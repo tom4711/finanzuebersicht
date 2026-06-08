@@ -25,6 +25,7 @@ public partial class TransactionDetailViewModel(
     private readonly ITransactionValidationService _validationService = validationService;
     private Transaction? _existingTransaction;
     private string? _selectedKategorieId;
+    private string? _selectedAccountId;
     private readonly ILocalizationService _loc = localizationService;
     private readonly INavigationService _navigationService = navigationService;
     private readonly IDialogService _dialogService = dialogService;
@@ -50,10 +51,16 @@ public partial class TransactionDetailViewModel(
     private Category? selectedKategorie;
 
     [ObservableProperty]
+    private Account? selectedAccount;
+
+    [ObservableProperty]
     private TransactionType typ = TransactionType.Ausgabe;
 
     [ObservableProperty]
     private ObservableCollection<Category> kategorien = [];
+
+    [ObservableProperty]
+    private ObservableCollection<Account> accounts = [];
 
     public Transaction? Transaction
     {
@@ -63,6 +70,7 @@ public partial class TransactionDetailViewModel(
             {
                 _existingTransaction = value;
                 _selectedKategorieId = value.KategorieId;
+                _selectedAccountId = value.AccountId;
                 BetragText = value.Betrag.ToString("F2", System.Globalization.CultureInfo.CurrentCulture);
                 Titel = value.Titel;
                 Verwendungszweck = value.Verwendungszweck ?? string.Empty;
@@ -94,9 +102,13 @@ public partial class TransactionDetailViewModel(
     [RelayCommand]
     private async Task LoadKategorien()
     {
-        var data = await _loadTransactionDetailDataUseCase.ExecuteAsync(_selectedKategorieId ?? _existingTransaction?.KategorieId);
+        var data = await _loadTransactionDetailDataUseCase.ExecuteAsync(
+            _selectedKategorieId ?? _existingTransaction?.KategorieId,
+            _selectedAccountId ?? _existingTransaction?.AccountId);
         Kategorien = new ObservableCollection<Category>(data.Kategorien);
         SelectedKategorie = data.SelectedKategorie;
+        Accounts = new ObservableCollection<Account>(data.Accounts);
+        SelectedAccount = data.SelectedAccount;
     }
 
     [RelayCommand]
@@ -140,6 +152,7 @@ public partial class TransactionDetailViewModel(
                 Titel,
                 Datum,
                 SelectedKategorie!.Id,
+                _selectedAccountId ?? SelectedAccount?.Id,
                 Typ,
                 Verwendungszweck);
             await _navigationService.GoBackAsync();
@@ -189,6 +202,7 @@ public partial class TransactionDetailViewModel(
             Titel = Titel,
             Betrag = betrag,
             KategorieId = SelectedKategorie!.Id,
+            AccountId = _selectedAccountId ?? SelectedAccount?.Id,
             Typ = Typ,
             Verwendungszweck = Verwendungszweck ?? string.Empty
         };
@@ -219,6 +233,31 @@ public partial class TransactionDetailViewModel(
         }
     }
 
+    private async Task SetAccountAsync(string? accountId)
+    {
+        _selectedAccountId = accountId;
+
+        try
+        {
+            if (Accounts.Count == 0)
+            {
+                await LoadKategorien();
+                return;
+            }
+
+            SelectedAccount = accountId == null
+                ? Accounts.FirstOrDefault(a => a.SystemKey == Finanzuebersicht.Constants.SystemAccountKeys.Default)
+                    ?? Accounts.FirstOrDefault()
+                : Accounts.FirstOrDefault(a => a.Id == accountId)
+                    ?? Accounts.FirstOrDefault(a => a.SystemKey == Finanzuebersicht.Constants.SystemAccountKeys.Default)
+                    ?? Accounts.FirstOrDefault();
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogWarning(ex, "Fehler beim Laden des Kontos");
+        }
+    }
+
     private void ApplyTransactionDraft(Transaction source, DateTime datum)
     {
         _existingTransaction = null;
@@ -228,7 +267,9 @@ public partial class TransactionDetailViewModel(
         Datum = datum;
         Typ = source.Typ;
         _selectedKategorieId = source.KategorieId;
+        _selectedAccountId = source.AccountId;
         _ = SetKategorieAsync(source.KategorieId);
+        _ = SetAccountAsync(source.AccountId);
     }
 
     private void ApplyTemplateDraft(TransactionTemplate template)
@@ -240,6 +281,8 @@ public partial class TransactionDetailViewModel(
         Datum = _clock.Today;
         Typ = template.Typ;
         _selectedKategorieId = template.KategorieId;
+        _selectedAccountId = template.AccountId;
         _ = SetKategorieAsync(template.KategorieId);
+        _ = SetAccountAsync(template.AccountId);
     }
 }

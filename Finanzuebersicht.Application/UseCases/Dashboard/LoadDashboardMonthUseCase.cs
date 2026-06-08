@@ -14,13 +14,16 @@ public class LoadDashboardMonthUseCase(
     private readonly IRecurringTransactionRepository _recurringTransactionRepository = recurringTransactionRepository;
     private readonly IBudgetRepository _budgetRepository = budgetRepository;
 
-    public async Task<DashboardMonthData> ExecuteAsync(DateTime aktuellerMonat, DateTime today, CancellationToken cancellationToken = default)
+    public async Task<DashboardMonthData> ExecuteAsync(DateTime aktuellerMonat, DateTime today, string? accountId = null, CancellationToken cancellationToken = default)
     {
         var kategorien = await _categoryRepository.GetCategoriesAsync();
 
         var von = aktuellerMonat;
         var bis = aktuellerMonat.AddMonths(1).AddDays(-1);
         var transaktionen = await _transactionRepository.GetTransactionsAsync(von, bis);
+        transaktionen = transaktionen.Where(t => !t.IsTransfer).ToList();
+        if (!string.IsNullOrWhiteSpace(accountId))
+            transaktionen = transaktionen.Where(t => t.AccountId == accountId).ToList();
 
         var istPrognose = aktuellerMonat > new DateTime(today.Year, today.Month, 1);
         if (istPrognose)
@@ -28,6 +31,9 @@ public class LoadDashboardMonthUseCase(
             var dauerauftraege = await _recurringTransactionRepository.GetRecurringTransactionsAsync();
             foreach (var da in dauerauftraege.Where(d => d.Aktiv))
             {
+                if (!string.IsNullOrWhiteSpace(accountId) && da.AccountId != accountId)
+                    continue;
+
                 if (da.Startdatum <= bis && (!da.Enddatum.HasValue || da.Enddatum.Value >= von))
                 {
                     // Only add a forecast transaction for this month if the recurrence actually occurs in the month
@@ -38,6 +44,7 @@ public class LoadDashboardMonthUseCase(
                             Betrag = da.Betrag,
                             Titel = da.Titel,
                             KategorieId = da.KategorieId,
+                            AccountId = da.AccountId,
                             Typ = da.Typ,
                             Datum = von,
                             DauerauftragId = da.Id

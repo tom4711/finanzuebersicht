@@ -6,7 +6,9 @@ public interface ITransactionRepository
 {
     Task<List<Transaction>> GetTransactionsAsync(DateTime vonDatum, DateTime bisDatum);
     Task SaveTransactionAsync(Transaction transaction);
+    Task SaveTransactionsAsync(IEnumerable<Transaction> transactions);
     Task DeleteTransactionAsync(string id);
+    Task DeleteTransferGroupAsync(string transferGroupId);
     Task ReplaceAllTransactionsAsync(IEnumerable<Transaction> transactions);
 
     /// <summary>

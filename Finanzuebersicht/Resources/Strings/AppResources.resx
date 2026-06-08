@@ -10,6 +10,7 @@
   <data name="Nav_Transaktionen" xml:space="preserve"><value>Transactions</value></data>
   <data name="Nav_Dauerauftraege" xml:space="preserve"><value>Recurring</value></data>
   <data name="Nav_Kategorien" xml:space="preserve"><value>Categories</value></data>
+  <data name="Nav_Verwaltung" xml:space="preserve"><value>Management</value></data>
   <data name="Nav_Einstellungen" xml:space="preserve"><value>Settings</value></data>
 
   <!-- Page Titles -->
@@ -18,6 +19,9 @@
   <data name="Title_NeueKategorie" xml:space="preserve"><value>New Category</value></data>
   <data name="Title_KategorieBearbeiten" xml:space="preserve"><value>Edit Category</value></data>
   <data name="Title_Jahresansicht" xml:space="preserve"><value>Year Overview</value></data>
+  <data name="Title_Umbuchung" xml:space="preserve"><value>Transfer</value></data>
+  <data name="Title_KontoHinzufuegen" xml:space="preserve"><value>Add account</value></data>
+  <data name="Title_KontoBearbeiten" xml:space="preserve"><value>Edit account</value></data>
 
   <!-- Labels -->
   <data name="Lbl_Name" xml:space="preserve"><value>Name</value></data>
@@ -27,6 +31,14 @@
   <data name="Lbl_Betrag" xml:space="preserve"><value>Amount</value></data>
   <data name="Lbl_Titel" xml:space="preserve"><value>Title</value></data>
   <data name="Lbl_Kategorie" xml:space="preserve"><value>Category</value></data>
+  <data name="Lbl_Konto" xml:space="preserve"><value>Account</value></data>
+  <data name="Lbl_AlleKonten" xml:space="preserve"><value>All Accounts</value></data>
+  <data name="Lbl_Archiviert" xml:space="preserve"><value>Archived</value></data>
+  <data name="Lbl_VonKonto" xml:space="preserve"><value>From account</value></data>
+  <data name="Lbl_NachKonto" xml:space="preserve"><value>To account</value></data>
+  <data name="Btn_Archivieren" xml:space="preserve"><value>Archive</value></data>
+  <data name="Btn_Aktivieren" xml:space="preserve"><value>Activate</value></data>
+  <data name="Hint_Systemkonto" xml:space="preserve"><value>System account cannot be archived or deleted.</value></data>
   <data name="Lbl_Datum" xml:space="preserve"><value>Date</value></data>
   <data name="Lbl_Startdatum" xml:space="preserve"><value>Start Date</value></data>
   <data name="Lbl_Enddatum" xml:space="preserve"><value>End Date</value></data>
@@ -72,6 +84,7 @@
   <data name="Hint_Beschreibung" xml:space="preserve"><value>Description</value></data>
   <data name="Hint_Titelbeispiel" xml:space="preserve"><value>e.g. Rent, Netflix, Salary</value></data>
   <data name="Hint_KategorieWaehlen" xml:space="preserve"><value>Select Category</value></data>
+  <data name="Hint_KontoWaehlen" xml:space="preserve"><value>Select Account</value></data>
   <data name="Hint_iCloudTipp" xml:space="preserve"><value>💡 Tip: Choose a folder in iCloud Drive to automatically back up your data.</value></data>
 
   <!-- Empty States -->
@@ -82,6 +95,8 @@
   <data name="Empty_KeineDashboardDaten" xml:space="preserve"><value>No data for this period</value></data>
   <data name="Empty_KeineJahresDaten" xml:space="preserve"><value>No data for this year</value></data>
   <data name="Empty_NochKeineTransaktionen" xml:space="preserve"><value>No transactions yet</value></data>
+  <data name="Empty_KeineKonten" xml:space="preserve"><value>No accounts yet</value></data>
+  <data name="Empty_KontenHinweis" xml:space="preserve"><value>Create an account to assign transactions and recurring items.</value></data>
   <data name="Btn_ZuTransaktionen" xml:space="preserve"><value>Add First Transaction</value></data>
 
   <!-- Error Messages -->
@@ -93,6 +108,8 @@
   <data name="Err_SpeichernFehlgeschlagen" xml:space="preserve"><value>Error saving: {0}</value></data>
   <data name="Err_LoeschenFehlgeschlagen" xml:space="preserve"><value>Error deleting: {0}</value></data>
   <data name="Err_LadenFehlgeschlagen" xml:space="preserve"><value>Error loading data: {0}</value></data>
+  <data name="Err_TransferKontenUnterschiedlich" xml:space="preserve"><value>Please select different source and target accounts.</value></data>
+  <data name="Err_UmbuchungNichtBearbeitbar" xml:space="preserve"><value>Transfers cannot be edited as a single transaction.</value></data>
   <data name="Err_OrdnerNichtWaehlbar" xml:space="preserve"><value>Folder could not be selected: {0}</value></data>
   <data name="Err_SucheFehlgeschlagen" xml:space="preserve"><value>The search could not be completed.</value></data>
 
@@ -103,6 +120,8 @@
   <data name="Dlg_DauerauftragLoeschenFrage" xml:space="preserve"><value>Really delete "{0}"?</value></data>
   <data name="Dlg_TransaktionLoeschen" xml:space="preserve"><value>Delete Transaction</value></data>
   <data name="Dlg_TransaktionLoeschenFrage" xml:space="preserve"><value>Really delete "{0}"?</value></data>
+  <data name="Dlg_UmbuchungLoeschen" xml:space="preserve"><value>Delete Transfer</value></data>
+  <data name="Dlg_UmbuchungLoeschenFrage" xml:space="preserve"><value>Really delete transfer "{0}"? Both entries will be removed.</value></data>
   <data name="Dlg_SparZielLoeschen" xml:space="preserve"><value>Delete Savings Goal</value></data>
   <data name="Dlg_SparZielLoeschenFrage" xml:space="preserve"><value>Really delete "{0}"?</value></data>
 
@@ -274,6 +293,7 @@ Please restart the app.</value></data>
   <data name="A11y_VorherigesJahr" xml:space="preserve"><value>Previous year</value></data>
   <data name="A11y_NaechstesJahr" xml:space="preserve"><value>Next year</value></data>
   <data name="A11y_TransaktionHinzufuegen" xml:space="preserve"><value>Add new transaction</value></data>
+  <data name="A11y_UmbuchungHinzufuegen" xml:space="preserve"><value>Add new transfer</value></data>
   <data name="A11y_KategorieHinzufuegen" xml:space="preserve"><value>Add new category</value></data>
   <data name="A11y_SparZielHinzufuegen" xml:space="preserve"><value>Add new savings goal</value></data>
   <data name="A11y_DauerauftragHinzufuegen" xml:space="preserve"><value>Add new recurring transaction</value></data>
@@ -283,4 +303,10 @@ Please restart the app.</value></data>
   <data name="A11y_HintBetrag" xml:space="preserve"><value>Enter amount, e.g. 12.50</value></data>
   <data name="A11y_HintTitel" xml:space="preserve"><value>Short description of the transaction</value></data>
   <data name="A11y_HintBudget" xml:space="preserve"><value>Leave empty for no budget limit</value></data>
+  <data name="AccountType_Girokonto" xml:space="preserve"><value>Checking account</value></data>
+  <data name="AccountType_Tagesgeld" xml:space="preserve"><value>Savings account</value></data>
+  <data name="AccountType_Kreditkarte" xml:space="preserve"><value>Credit card</value></data>
+  <data name="AccountType_Bargeld" xml:space="preserve"><value>Cash</value></data>
+  <data name="AccountType_Depot" xml:space="preserve"><value>Securities account</value></data>
+  <data name="AccountType_Sonstiges" xml:space="preserve"><value>Other</value></data>
 </root>

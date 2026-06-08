@@ -16,7 +16,7 @@ public partial class DashboardViewModel : MonthNavigationViewModel
     private readonly LoadForecastUseCase _loadForecastUseCase;
     private readonly GetDueRecurringWithHintsUseCase _getDueRecurringUseCase;
     private readonly IBudgetRepository _budgetRepository;
-    private readonly IReportingService _reportingService;
+    private readonly IAccountRepository _accountRepository;
     private readonly ILocalizationService _loc;
     private readonly INavigationService _navigationService;
     private readonly IClock _clock;
@@ -115,6 +115,15 @@ public partial class DashboardViewModel : MonthNavigationViewModel
     private bool isLoading;
 
     [ObservableProperty]
+    private ObservableCollection<KategorieFilterItem> availableKonten = [];
+
+    [ObservableProperty]
+    private KategorieFilterItem? selectedKontoFilterItem;
+
+    [ObservableProperty]
+    private string? selectedAccountId;
+
+    [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsYearView))]
     [NotifyPropertyChangedFor(nameof(ShowMonthView))]
     [NotifyPropertyChangedFor(nameof(ShowYearView))]
@@ -153,16 +162,26 @@ public partial class DashboardViewModel : MonthNavigationViewModel
     private bool _minJahrLoaded;
     private bool _foundTransactions;
 
+    partial void OnSelectedKontoFilterItemChanged(KategorieFilterItem? value)
+    {
+        SelectedAccountId = value?.Id;
+    }
+
+    partial void OnSelectedAccountIdChanged(string? value)
+    {
+        _ = LoadDashboard();
+    }
+
     public DashboardViewModel(
         LoadDashboardMonthUseCase loadDashboardMonthUseCase,
         LoadDashboardYearUseCase loadDashboardYearUseCase,
         LoadForecastUseCase loadForecastUseCase,
         GetDueRecurringWithHintsUseCase getDueRecurringUseCase,
         IBudgetRepository budgetRepository,
-        IReportingService reportingService,
         ILocalizationService localizationService,
         INavigationService navigationService,
         ITransactionRepository transactionRepository,
+        IAccountRepository accountRepository,
         IClock? clock = null,
         ILogger<DashboardViewModel>? logger = null) : base(clock)
     {
@@ -174,10 +193,10 @@ public partial class DashboardViewModel : MonthNavigationViewModel
         _loadForecastUseCase = loadForecastUseCase;
         _getDueRecurringUseCase = getDueRecurringUseCase;
         _budgetRepository = budgetRepository;
-        _reportingService = reportingService;
         _loc = localizationService;
         _navigationService = navigationService;
         _transactionRepository = transactionRepository;
+        _accountRepository = accountRepository;
         _logger = logger;
         UpdateJahrAnzeige();
     }
@@ -192,6 +211,7 @@ public partial class DashboardViewModel : MonthNavigationViewModel
         try
         {
             await EnsureMinJahrLoadedAsync();
+            await EnsureAccountFilterLoadedAsync();
             if (IsMonthView)
             {
                 await LadeMonatAsync();
@@ -201,7 +221,7 @@ public partial class DashboardViewModel : MonthNavigationViewModel
                 await LadeJahrAsync();
             }
             await LadeFaelligeDauerauftraegeAsync();
-            HasAnyDataLoaded = _foundTransactions || HasMonthData || HasYearData;
+            HasAnyDataLoaded = HasMonthData || HasYearData;
         }
         finally
         {
@@ -233,9 +253,26 @@ public partial class DashboardViewModel : MonthNavigationViewModel
         PreviousYearCommand.NotifyCanExecuteChanged();
     }
 
+    private async Task EnsureAccountFilterLoadedAsync()
+    {
+        if (AvailableKonten.Count > 0) return;
+
+        var accounts = await _accountRepository.GetAccountsAsync();
+        var items = new ObservableCollection<KategorieFilterItem>
+        {
+            new(null, _loc.GetString(ResourceKeys.Lbl_AlleKonten))
+        };
+
+        foreach (var account in accounts.Where(a => !a.IsArchived).OrderBy(a => a.Name))
+            items.Add(new KategorieFilterItem(account.Id, account.Name));
+
+        AvailableKonten = items;
+        SelectedKontoFilterItem = items[0];
+    }
+
     private async Task LadeMonatAsync()
     {
-        var data = await _loadDashboardMonthUseCase.ExecuteAsync(AktuellerMonat, _clock.Today);
+        var data = await _loadDashboardMonthUseCase.ExecuteAsync(AktuellerMonat, _clock.Today, SelectedAccountId);
 
         IstPrognose = data.IstPrognose;
         GesamtEinnahmen = data.GesamtEinnahmen;
@@ -255,10 +292,10 @@ public partial class DashboardViewModel : MonthNavigationViewModel
 
         // Vormonatsvergleich: nur Gesamt-Ausgaben via ReportingService (keine Kategorien nötig)
         var prevMonth = AktuellerMonat.AddMonths(-1);
-        var prevSummary = await _reportingService.GetMonthSummaryAsync(prevMonth.Year, prevMonth.Month);
-        if (prevSummary.Total > 0)
+        var prevData = await _loadDashboardMonthUseCase.ExecuteAsync(prevMonth, _clock.Today, SelectedAccountId);
+        if (prevData.GesamtAusgaben > 0)
         {
-            var pct = (GesamtAusgaben - prevSummary.Total) / prevSummary.Total * 100;
+            var pct = (GesamtAusgaben - prevData.GesamtAusgaben) / prevData.GesamtAusgaben * 100;
             TrendProzent = pct;
             TrendPositiv = pct < 0; // weniger Ausgaben = positiv (grün)
             TrendText = pct >= 0
@@ -290,7 +327,7 @@ public partial class DashboardViewModel : MonthNavigationViewModel
 
     private async Task LadeJahrAsync()
     {
-        var data = await _loadDashboardYearUseCase.ExecuteAsync(_aktuellesJahr);
+        var data = await _loadDashboardYearUseCase.ExecuteAsync(_aktuellesJahr, SelectedAccountId);
         JahrGesamtAusgaben = data.GesamtAusgaben;
         JahrMonate = data.Monate;
         JahrKategorien = new ObservableCollection<CategorySummary>(data.Kategorien);

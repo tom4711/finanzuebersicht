@@ -10,6 +10,7 @@ public class LoadTransactionsMonthUseCaseTests
     {
         var transactionRepository = Substitute.For<ITransactionRepository>();
         var categoryRepository = Substitute.For<ICategoryRepository>();
+        var accountRepository = Substitute.For<IAccountRepository>();
 
         transactionRepository.GetTransactionsAsync(Arg.Any<DateTime>(), Arg.Any<DateTime>())
             .Returns(new List<Transaction>
@@ -24,8 +25,13 @@ public class LoadTransactionsMonthUseCaseTests
             new() { Id = "c1", Icon = "🍔" },
             new() { Id = "c2", Icon = "🚗" }
         });
+        accountRepository.GetAccountsAsync().Returns(new List<Account>
+        {
+            new() { Id = "a1", Name = "Giro" },
+            new() { Id = "a2", Name = "Tagesgeld" }
+        });
 
-        var useCase = new LoadTransactionsMonthUseCase(transactionRepository, categoryRepository);
+        var useCase = new LoadTransactionsMonthUseCase(transactionRepository, categoryRepository, accountRepository);
 
         var result = await useCase.ExecuteAsync(new DateTime(2026, 3, 1));
 
@@ -42,6 +48,7 @@ public class LoadTransactionsMonthUseCaseTests
     {
         var transactionRepository = Substitute.For<ITransactionRepository>();
         var categoryRepository = Substitute.For<ICategoryRepository>();
+        var accountRepository = Substitute.For<IAccountRepository>();
 
         transactionRepository.GetTransactionsAsync(Arg.Any<DateTime>(), Arg.Any<DateTime>())
             .Returns(new List<Transaction>());
@@ -51,12 +58,14 @@ public class LoadTransactionsMonthUseCaseTests
             new() { Id = "c1", Icon = "💼" },
             new() { Id = "c2", Icon = null! }
         });
+        accountRepository.GetAccountsAsync().Returns(new List<Account>());
 
-        var useCase = new LoadTransactionsMonthUseCase(transactionRepository, categoryRepository);
+        var useCase = new LoadTransactionsMonthUseCase(transactionRepository, categoryRepository, accountRepository);
 
         var result = await useCase.ExecuteAsync(new DateTime(2026, 3, 1));
 
         Assert.Equal("💼", result.IconMap["c1"]);
         Assert.Equal("📁", result.IconMap["c2"]);
+        Assert.Empty(result.AccountMap);
     }
 }

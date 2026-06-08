@@ -74,11 +74,13 @@ public static class MauiProgram
 		builder.Services.AddTransient<DashboardPage>();
 		builder.Services.AddTransient<TransactionsPage>();
 		builder.Services.AddTransient<TransactionDetailPage>();
+		builder.Services.AddTransient<TransferDetailPage>();
 		builder.Services.AddTransient<RecurringTransactionsPage>();
 		builder.Services.AddTransient<RecurringTransactionDetailPage>();
         builder.Services.AddTransient<RecurringInstanceShiftPage>();
 		builder.Services.AddTransient<CategoriesPage>();
 		builder.Services.AddTransient<CategoryDetailPage>();
+		builder.Services.AddTransient<AccountDetailPage>();
 		builder.Services.AddTransient<SettingsPage>();
 		builder.Services.AddTransient<SparZielePage>();
 		builder.Services.AddTransient<BackupListPage>();
