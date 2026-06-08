@@ -63,6 +63,21 @@
                             SelectedItem="{Binding SelectedKontoFilterItem}" />
                 </Grid>
 
+                <Grid ColumnDefinitions="70,*" ColumnSpacing="8"
+                      IsVisible="{Binding HasSelectedAccountSaldo}">
+                    <Label Grid.Column="0"
+                           Text="{loc:Translate Lbl_Kontosaldo}"
+                           FontSize="13"
+                           TextColor="Gray"
+                           VerticalTextAlignment="Center" />
+                    <Label Grid.Column="1"
+                           Text="{Binding SelectedAccountSaldo, Converter={StaticResource Currency}}"
+                           FontSize="15"
+                           FontAttributes="Bold"
+                           TextColor="{Binding SelectedAccountSaldo, Converter={StaticResource BilanzColor}}"
+                           VerticalTextAlignment="Center" />
+                </Grid>
+
                 <!-- Global Empty State – keine Transaktionen vorhanden -->
                 <VerticalStackLayout Spacing="16" HorizontalOptions="Center" Margin="0,40,0,0"
                                      IsVisible="{Binding HasAnyData, Converter={StaticResource InvertBool}}">

@@ -33,6 +33,7 @@
   <data name="Lbl_Kategorie" xml:space="preserve"><value>Kategorie</value></data>
   <data name="Lbl_Konto" xml:space="preserve"><value>Konto</value></data>
   <data name="Lbl_AlleKonten" xml:space="preserve"><value>Alle Konten</value></data>
+  <data name="Lbl_Kontosaldo" xml:space="preserve"><value>Kontosaldo</value></data>
   <data name="Lbl_Archiviert" xml:space="preserve"><value>Archiviert</value></data>
   <data name="Lbl_VonKonto" xml:space="preserve"><value>Von Konto</value></data>
   <data name="Lbl_NachKonto" xml:space="preserve"><value>Nach Konto</value></data>

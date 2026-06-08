@@ -69,4 +69,56 @@ public class AccountUseCaseTests
 
         await Assert.ThrowsAsync<InvalidOperationException>(() => sut.ExecuteAsync("acc-default"));
     }
+
+    [Fact]
+    public async Task GetAccountBalancesUseCase_ComputesSaldoPerAccount()
+    {
+        var accountRepository = Substitute.For<IAccountRepository>();
+        accountRepository.GetAccountsAsync().Returns(new List<Account>
+        {
+            new() { Id = "acc-1", Name = "Giro" },
+            new() { Id = "acc-2", Name = "Sparkonto" }
+        });
+
+        var transactionRepository = Substitute.For<ITransactionRepository>();
+        transactionRepository.GetTransactionsAsync(Arg.Any<DateTime>(), Arg.Any<DateTime>())
+            .Returns(new List<Transaction>
+            {
+                new() { Typ = TransactionType.Einnahme, Betrag = 1000m, AccountId = "acc-1" },
+                new() { Typ = TransactionType.Ausgabe, Betrag = 200m, AccountId = "acc-1" },
+                new() { Typ = TransactionType.Einnahme, Betrag = 500m, AccountId = "acc-2" }
+            });
+
+        var sut = new GetAccountBalancesUseCase(accountRepository, transactionRepository);
+        var result = await sut.ExecuteAsync();
+
+        Assert.Equal(800m, result.First(b => b.AccountId == "acc-1").Saldo);
+        Assert.Equal(500m, result.First(b => b.AccountId == "acc-2").Saldo);
+    }
+
+    [Fact]
+    public async Task GetAccountBalancesUseCase_TransfersAffectBothAccounts()
+    {
+        var accountRepository = Substitute.For<IAccountRepository>();
+        accountRepository.GetAccountsAsync().Returns(new List<Account>
+        {
+            new() { Id = "acc-1", Name = "Giro" },
+            new() { Id = "acc-2", Name = "Tagesgeld" }
+        });
+
+        var transactionRepository = Substitute.For<ITransactionRepository>();
+        transactionRepository.GetTransactionsAsync(Arg.Any<DateTime>(), Arg.Any<DateTime>())
+            .Returns(new List<Transaction>
+            {
+                new() { Typ = TransactionType.Einnahme, Betrag = 1000m, AccountId = "acc-1" },
+                new() { Typ = TransactionType.Ausgabe, Betrag = 300m, AccountId = "acc-1", IsTransfer = true },
+                new() { Typ = TransactionType.Einnahme, Betrag = 300m, AccountId = "acc-2", IsTransfer = true }
+            });
+
+        var sut = new GetAccountBalancesUseCase(accountRepository, transactionRepository);
+        var result = await sut.ExecuteAsync();
+
+        Assert.Equal(700m, result.First(b => b.AccountId == "acc-1").Saldo);
+        Assert.Equal(300m, result.First(b => b.AccountId == "acc-2").Saldo);
+    }
 }

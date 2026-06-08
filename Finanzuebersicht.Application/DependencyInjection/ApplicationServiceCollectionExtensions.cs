@@ -20,6 +20,7 @@ public static class ApplicationServiceCollectionExtensions
         services.AddTransient<SaveAccountDetailUseCase>();
         services.AddTransient<ToggleAccountArchiveUseCase>();
         services.AddTransient<DeleteAccountUseCase>();
+        services.AddTransient<GetAccountBalancesUseCase>();
 
         services.AddTransient<LoadDashboardMonthUseCase>();
         services.AddTransient<LoadDashboardYearUseCase>();

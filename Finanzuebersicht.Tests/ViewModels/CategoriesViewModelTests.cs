@@ -140,7 +140,7 @@ public class CategoriesViewModelTests
         dialogService.ShowConfirmationAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
             .Returns(Task.FromResult(true));
 
-        await sut.ToggleKontoArchivierungCommand.ExecuteAsync(account);
+        await sut.ToggleKontoArchivierungCommand.ExecuteAsync(new AccountListItem(account, 0m));
 
         await accountRepository.Received(1).SaveAccountAsync(Arg.Is<Account>(a => a.Id == "acc-1" && a.IsArchived));
     }
@@ -170,6 +170,7 @@ public class CategoriesViewModelTests
             new DeleteCategoryUseCase(categoryRepository, transactionRepository, recurringTransactionRepository),
             new LoadCategoriesUseCase(categoryRepository),
             new LoadAccountsUseCase(accountRepository),
+            new GetAccountBalancesUseCase(accountRepository, transactionRepository),
             new ToggleAccountArchiveUseCase(accountRepository),
             new DeleteAccountUseCase(accountRepository, transactionRepository, templateRepository),
             localizationService,

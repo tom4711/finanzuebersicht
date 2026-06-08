@@ -13,6 +13,8 @@
     <views:BaseContentPage.Resources>
         <conv:AccountTypeToLocalizedStringConverter x:Key="AccountTypeToLocalizedStringConverter" />
         <conv:AccountArchiveActionConverter x:Key="AccountArchiveActionConverter" />
+        <conv:DecimalCurrencyConverter x:Key="Currency" />
+        <conv:BilanzColorConverter x:Key="BilanzColor" />
     </views:BaseContentPage.Resources>
 
     <Grid>
@@ -97,7 +99,7 @@
                         </CollectionView.EmptyView>
 
                         <CollectionView.ItemTemplate>
-                            <DataTemplate x:DataType="models:Account">
+                            <DataTemplate x:DataType="vm:AccountListItem">
                                 <Grid ColumnDefinitions="50, *, Auto" Padding="16,12" ColumnSpacing="12">
                                     <Grid.GestureRecognizers>
                                         <TapGestureRecognizer
@@ -130,6 +132,11 @@
                                     </VerticalStackLayout>
 
                                     <VerticalStackLayout Grid.Column="2" Spacing="4" VerticalOptions="Center">
+                                        <Label Text="{Binding Saldo, Converter={StaticResource Currency}}"
+                                               FontSize="14"
+                                               FontAttributes="Bold"
+                                               HorizontalTextAlignment="End"
+                                               TextColor="{Binding Saldo, Converter={StaticResource BilanzColor}}" />
                                         <Button Text="{loc:Translate Btn_Loeschen}"
                                                 IsVisible="{Binding CanDelete}"
                                                 BackgroundColor="Transparent"

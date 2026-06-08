@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Finanzuebersicht.Application.UseCases.Accounts;
 using Finanzuebersicht.Application.UseCases.Dashboard;
 using Finanzuebersicht.Application.UseCases.RecurringTransactions;
 using Finanzuebersicht.Models;
@@ -17,6 +18,7 @@ public partial class DashboardViewModel : MonthNavigationViewModel
     private readonly GetDueRecurringWithHintsUseCase _getDueRecurringUseCase;
     private readonly IBudgetRepository _budgetRepository;
     private readonly IAccountRepository _accountRepository;
+    private readonly GetAccountBalancesUseCase _getAccountBalancesUseCase;
     private readonly ILocalizationService _loc;
     private readonly INavigationService _navigationService;
     private readonly IClock _clock;
@@ -124,6 +126,12 @@ public partial class DashboardViewModel : MonthNavigationViewModel
     private string? selectedAccountId;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasSelectedAccountSaldo))]
+    private decimal selectedAccountSaldo;
+
+    public bool HasSelectedAccountSaldo => !string.IsNullOrWhiteSpace(SelectedAccountId);
+
+    [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsYearView))]
     [NotifyPropertyChangedFor(nameof(ShowMonthView))]
     [NotifyPropertyChangedFor(nameof(ShowYearView))]
@@ -182,6 +190,7 @@ public partial class DashboardViewModel : MonthNavigationViewModel
         INavigationService navigationService,
         ITransactionRepository transactionRepository,
         IAccountRepository accountRepository,
+        GetAccountBalancesUseCase getAccountBalancesUseCase,
         IClock? clock = null,
         ILogger<DashboardViewModel>? logger = null) : base(clock)
     {
@@ -197,6 +206,7 @@ public partial class DashboardViewModel : MonthNavigationViewModel
         _navigationService = navigationService;
         _transactionRepository = transactionRepository;
         _accountRepository = accountRepository;
+        _getAccountBalancesUseCase = getAccountBalancesUseCase;
         _logger = logger;
         UpdateJahrAnzeige();
     }
@@ -212,6 +222,7 @@ public partial class DashboardViewModel : MonthNavigationViewModel
         {
             await EnsureMinJahrLoadedAsync();
             await EnsureAccountFilterLoadedAsync();
+            await UpdateSelectedAccountSaldoAsync();
             if (IsMonthView)
             {
                 await LadeMonatAsync();
@@ -251,6 +262,18 @@ public partial class DashboardViewModel : MonthNavigationViewModel
             _logger?.LogError(ex, "DashboardViewModel: EnsureMinJahrLoadedAsync failed");
         }
         PreviousYearCommand.NotifyCanExecuteChanged();
+    }
+
+    private async Task UpdateSelectedAccountSaldoAsync()
+    {
+        if (string.IsNullOrWhiteSpace(SelectedAccountId))
+        {
+            SelectedAccountSaldo = 0;
+            return;
+        }
+
+        var balances = await _getAccountBalancesUseCase.ExecuteAsync();
+        SelectedAccountSaldo = balances.FirstOrDefault(b => b.AccountId == SelectedAccountId)?.Saldo ?? 0;
     }
 
     private async Task EnsureAccountFilterLoadedAsync()

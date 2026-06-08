@@ -1,3 +1,4 @@
+using Finanzuebersicht.Application.UseCases.Accounts;
 using Finanzuebersicht.Application.UseCases.Dashboard;
 using Finanzuebersicht.Application.UseCases.RecurringTransactions;
 using Finanzuebersicht.Models;
@@ -33,6 +34,8 @@ public class DashboardViewModelTests
         var reportingService = Substitute.For<IReportingService>();
         var accountRepository = Substitute.For<IAccountRepository>();
         accountRepository.GetAccountsAsync().Returns(Task.FromResult(new List<Account>()));
+        transactionRepository.GetTransactionsAsync(Arg.Any<DateTime>(), Arg.Any<DateTime>())
+            .Returns(Task.FromResult(new List<Transaction>()));
         var localizationService = Substitute.For<ILocalizationService>();
         var navigationService = Substitute.For<INavigationService>();
         var forecastService = Substitute.For<IForecastService>();
@@ -48,6 +51,7 @@ public class DashboardViewModelTests
             navigationService,
             transactionRepository,
             accountRepository,
+            new GetAccountBalancesUseCase(accountRepository, transactionRepository),
             clock);
     }
 }
