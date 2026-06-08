@@ -31,6 +31,9 @@ public class LoadDashboardMonthUseCase(
             var dauerauftraege = await _recurringTransactionRepository.GetRecurringTransactionsAsync();
             foreach (var da in dauerauftraege.Where(d => d.Aktiv))
             {
+                if (!string.IsNullOrWhiteSpace(accountId) && da.AccountId != accountId)
+                    continue;
+
                 if (da.Startdatum <= bis && (!da.Enddatum.HasValue || da.Enddatum.Value >= von))
                 {
                     // Only add a forecast transaction for this month if the recurrence actually occurs in the month

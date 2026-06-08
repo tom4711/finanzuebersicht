@@ -397,10 +397,10 @@ public partial class TransactionsViewModel(
     private async Task DeleteTransaktion(Transaction transaktion)
     {
         var dialogTitle = transaktion.IsTransfer
-            ? "Umbuchung löschen"
+            ? _loc.GetString(ResourceKeys.Dlg_UmbuchungLoeschen)
             : _loc.GetString(ResourceKeys.Dlg_TransaktionLoeschen);
         var dialogText = transaktion.IsTransfer
-            ? $"Umbuchung \"{transaktion.Titel}\" wirklich löschen? Beide Buchungen werden entfernt."
+            ? _loc.GetString(ResourceKeys.Dlg_UmbuchungLoeschenFrage, transaktion.Titel)
             : _loc.GetString(ResourceKeys.Dlg_TransaktionLoeschenFrage, transaktion.Titel);
         var confirm = await _dialogService.ShowConfirmationAsync(
             dialogTitle,
@@ -444,7 +444,7 @@ public partial class TransactionsViewModel(
             {
                 await _dialogService.ShowAlertAsync(
                     _loc.GetString(ResourceKeys.Err_Titel),
-                    "Umbuchungen können nicht als Einzelbuchung bearbeitet werden.",
+                    _loc.GetString(ResourceKeys.Err_UmbuchungNichtBearbeitbar),
                     _loc.GetString(ResourceKeys.Btn_OK));
                 return;
             }

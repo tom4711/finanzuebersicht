@@ -88,12 +88,16 @@ public partial class TransferDetailViewModel(
 
         try
         {
+            var title = string.IsNullOrWhiteSpace(Title)
+                ? _loc.GetString(ResourceKeys.Title_Umbuchung)
+                : Title.Trim();
+
             await _saveTransferUseCase.ExecuteAsync(
                 SourceAccount.Id,
                 TargetAccount.Id,
                 amount,
                 Date,
-                Title,
+                title,
                 Note);
 
             await _navigationService.GoBackAsync();

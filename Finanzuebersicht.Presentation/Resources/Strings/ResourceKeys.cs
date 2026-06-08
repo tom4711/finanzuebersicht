@@ -103,6 +103,7 @@ public static class ResourceKeys
     public const string Err_LoeschenFehlgeschlagen = nameof(Err_LoeschenFehlgeschlagen);
     public const string Err_LadenFehlgeschlagen = nameof(Err_LadenFehlgeschlagen);
     public const string Err_TransferKontenUnterschiedlich = nameof(Err_TransferKontenUnterschiedlich);
+    public const string Err_UmbuchungNichtBearbeitbar = nameof(Err_UmbuchungNichtBearbeitbar);
     public const string Err_OrdnerNichtWaehlbar = nameof(Err_OrdnerNichtWaehlbar);
     public const string Err_SucheFehlgeschlagen = nameof(Err_SucheFehlgeschlagen);
 
@@ -113,6 +114,8 @@ public static class ResourceKeys
     public const string Dlg_DauerauftragLoeschenFrage = nameof(Dlg_DauerauftragLoeschenFrage);
     public const string Dlg_TransaktionLoeschen = nameof(Dlg_TransaktionLoeschen);
     public const string Dlg_TransaktionLoeschenFrage = nameof(Dlg_TransaktionLoeschenFrage);
+    public const string Dlg_UmbuchungLoeschen = nameof(Dlg_UmbuchungLoeschen);
+    public const string Dlg_UmbuchungLoeschenFrage = nameof(Dlg_UmbuchungLoeschenFrage);
     public const string Dlg_VorlageLoeschen = nameof(Dlg_VorlageLoeschen);
     public const string Dlg_VorlageLoeschenFrage = nameof(Dlg_VorlageLoeschenFrage);
     public const string Dlg_SparZielLoeschen = nameof(Dlg_SparZielLoeschen);

@@ -36,7 +36,7 @@ public class SaveTransferUseCase(
             throw new InvalidOperationException("Archived accounts cannot be used for new transfers.");
 
         var transferGroupId = Guid.NewGuid().ToString();
-        var transferTitle = string.IsNullOrWhiteSpace(title) ? "Umbuchung" : title.Trim();
+        var transferTitle = string.IsNullOrWhiteSpace(title) ? string.Empty : title.Trim();
         var transferNote = note ?? string.Empty;
 
         var outgoing = new Transaction
