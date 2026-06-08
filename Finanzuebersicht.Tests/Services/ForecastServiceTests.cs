@@ -127,6 +127,42 @@ public class ForecastServiceTests
     }
 
     [Fact]
+    public async Task GetMovingAverageAsync_AppliesAccountFilter()
+    {
+        _categoryRepository.GetCategoriesAsync().Returns([
+            new Category { Id = "food", Name = "Food", Typ = TransactionType.Ausgabe }
+        ]);
+        _transactionRepository.GetTransactionsAsync(Arg.Any<DateTime>(), Arg.Any<DateTime>())
+            .Returns([
+                new Transaction { Typ = TransactionType.Ausgabe, Betrag = 100m, KategorieId = "food", AccountId = "acc-1" },
+                new Transaction { Typ = TransactionType.Ausgabe, Betrag = 50m, KategorieId = "food", AccountId = "acc-2" }
+            ]);
+
+        var service = CreateService();
+        var result = await service.GetMovingAverageAsync(2025, 4, lookbackMonths: 1, accountId: "acc-1");
+
+        Assert.Equal(100m, result.ForecastedTotal);
+    }
+
+    [Fact]
+    public async Task GetMovingAverageAsync_ExcludesTransfers()
+    {
+        _categoryRepository.GetCategoriesAsync().Returns([
+            new Category { Id = "food", Name = "Food", Typ = TransactionType.Ausgabe }
+        ]);
+        _transactionRepository.GetTransactionsAsync(Arg.Any<DateTime>(), Arg.Any<DateTime>())
+            .Returns([
+                new Transaction { Typ = TransactionType.Ausgabe, Betrag = 100m, KategorieId = "food", AccountId = "acc-1", IsTransfer = false },
+                new Transaction { Typ = TransactionType.Ausgabe, Betrag = 40m, KategorieId = "food", AccountId = "acc-1", IsTransfer = true }
+            ]);
+
+        var service = CreateService();
+        var result = await service.GetMovingAverageAsync(2025, 4, lookbackMonths: 1, accountId: "acc-1");
+
+        Assert.Equal(100m, result.ForecastedTotal);
+    }
+
+    [Fact]
     public async Task IncomeTransactions_NotIncludedInForecast()
     {
         _categoryRepository.GetCategoriesAsync().Returns([

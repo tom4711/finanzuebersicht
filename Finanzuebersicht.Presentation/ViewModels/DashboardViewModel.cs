@@ -315,7 +315,7 @@ public partial class DashboardViewModel : MonthNavigationViewModel
         if (isCurrentMonth)
         {
             var nextMonth = AktuellerMonat.AddMonths(1);
-            var forecast = await _loadForecastUseCase.ExecuteAsync(nextMonth.Year, nextMonth.Month);
+            var forecast = await _loadForecastUseCase.ExecuteAsync(nextMonth.Year, nextMonth.Month, accountId: SelectedAccountId);
             ForecastTotal = forecast.ForecastedTotal;
             HasForecast = forecast.ForecastedTotal > 0;
         }
@@ -347,7 +347,7 @@ public partial class DashboardViewModel : MonthNavigationViewModel
             var nextMonth = new DateTime(today.Year, today.Month, 1).AddMonths(1);
             if (nextMonth.Year == _aktuellesJahr)
             {
-                var forecast = await _loadForecastUseCase.ExecuteAsync(nextMonth.Year, nextMonth.Month);
+                var forecast = await _loadForecastUseCase.ExecuteAsync(nextMonth.Year, nextMonth.Month, accountId: SelectedAccountId);
                 ForecastBarMonth = nextMonth.Month;
                 ForecastBarValue = forecast.ForecastedTotal;
             }

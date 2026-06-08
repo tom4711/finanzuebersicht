@@ -289,4 +289,36 @@ public class LoadDashboardMonthUseCaseTests
         Assert.Single(result.KategorieAusgaben);
         Assert.Equal(100m, result.KategorieAusgaben[0].Total);
     }
+
+    [Fact]
+    public async Task ExecuteAsync_BudgetHinweise_AppliesAccountFilter()
+    {
+        var categoryRepository = Substitute.For<ICategoryRepository>();
+        var transactionRepository = Substitute.For<ITransactionRepository>();
+        var recurringRepository = Substitute.For<IRecurringTransactionRepository>();
+        var budgetRepository = Substitute.For<IBudgetRepository>();
+
+        categoryRepository.GetCategoriesAsync().Returns(new List<Category>
+        {
+            new() { Id = "cat-food", Name = "Food", Typ = TransactionType.Ausgabe }
+        });
+        transactionRepository.GetTransactionsAsync(Arg.Any<DateTime>(), Arg.Any<DateTime>())
+            .Returns(new List<Transaction>
+            {
+                new() { Typ = TransactionType.Ausgabe, Betrag = 80m, KategorieId = "cat-food", AccountId = "acc-1" },
+                new() { Typ = TransactionType.Ausgabe, Betrag = 200m, KategorieId = "cat-food", AccountId = "acc-2" }
+            });
+        budgetRepository.GetBudgetsAsync().Returns(new List<CategoryBudget>
+        {
+            new() { Id = "budget-food", KategorieId = "cat-food", Betrag = 300m }
+        });
+
+        var useCase = new LoadDashboardMonthUseCase(categoryRepository, transactionRepository, recurringRepository, budgetRepository);
+
+        var result = await useCase.ExecuteAsync(new DateTime(2026, 3, 1), new DateTime(2026, 3, 15), "acc-1");
+
+        var hint = Assert.Single(result.BudgetHinweise);
+        Assert.Equal(80m, hint.Verbrauch);
+        Assert.Equal(220m, hint.Restbudget);
+    }
 }
