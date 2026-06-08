@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:Finanzuebersicht.ViewModels"
              xmlns:models="clr-namespace:Finanzuebersicht.Models"
+             xmlns:recurring="clr-namespace:Finanzuebersicht.Application.UseCases.RecurringTransactions;assembly=Finanzuebersicht.Application"
              xmlns:conv="clr-namespace:Finanzuebersicht.Converters"
              xmlns:loc="clr-namespace:Finanzuebersicht.Extensions"
              x:Class="Finanzuebersicht.Views.DashboardPage"
@@ -55,7 +56,7 @@
                                      IsVisible="{Binding HasDueItems}"
                                      BindableLayout.ItemsSource="{Binding DueRecurringItems}">
                     <BindableLayout.ItemTemplate>
-                        <DataTemplate>
+                        <DataTemplate x:DataType="recurring:DueRecurringItem">
                             <Border StrokeShape="RoundRectangle 10"
                                     Stroke="{AppThemeBinding Light=#E5E5EA, Dark=#3A3A3C}"
                                     BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1C1C1E}"
