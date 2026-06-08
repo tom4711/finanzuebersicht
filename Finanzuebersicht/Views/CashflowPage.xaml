@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<views:BaseContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:views="clr-namespace:Finanzuebersicht.Views"
+             xmlns:vm="clr-namespace:Finanzuebersicht.ViewModels"
+             xmlns:conv="clr-namespace:Finanzuebersicht.Converters"
+             xmlns:loc="clr-namespace:Finanzuebersicht.Extensions"
+             x:Class="Finanzuebersicht.Views.CashflowPage"
+             x:DataType="vm:CashflowViewModel"
+             Title="{loc:Translate Title_Cashflow}">
+
+    <views:BaseContentPage.Resources>
+        <conv:DecimalCurrencyConverter x:Key="Currency" />
+        <conv:BilanzColorConverter x:Key="BilanzColor" />
+        <conv:InvertBoolConverter x:Key="InvertBool" />
+    </views:BaseContentPage.Resources>
+
+    <RefreshView Command="{Binding LoadCashflowCommand}" IsRefreshing="{Binding IsLoading}">
+        <ScrollView Padding="16">
+            <VerticalStackLayout Spacing="16">
+
+                <Grid ColumnDefinitions="70,*" ColumnSpacing="8">
+                    <Label Grid.Column="0" Text="{loc:Translate Lbl_Konto}" FontSize="13" TextColor="Gray" VerticalTextAlignment="Center" />
+                    <Picker Grid.Column="1"
+                            ItemsSource="{Binding AvailableKonten}"
+                            ItemDisplayBinding="{Binding DisplayName}"
+                            SelectedItem="{Binding SelectedKontoFilterItem}" />
+                </Grid>
+
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="12" IsVisible="{Binding HasDays}">
+                    <VerticalStackLayout Grid.Column="0" Spacing="4">
+                        <Label Text="{loc:Translate Lbl_Einnahmen}" FontSize="12" TextColor="Gray" />
+                        <Label Text="{Binding ProjectedIncome, Converter={StaticResource Currency}}" FontSize="16" FontAttributes="Bold" />
+                    </VerticalStackLayout>
+                    <VerticalStackLayout Grid.Column="1" Spacing="4">
+                        <Label Text="{loc:Translate Lbl_Ausgaben}" FontSize="12" TextColor="Gray" />
+                        <Label Text="{Binding ProjectedExpenses, Converter={StaticResource Currency}}" FontSize="16" FontAttributes="Bold" />
+                    </VerticalStackLayout>
+                </Grid>
+
+                <Label Text="{loc:Translate Empty_KeinCashflow}"
+                       IsVisible="{Binding HasDays, Converter={StaticResource InvertBool}}"
+                       FontSize="15" TextColor="Gray" HorizontalTextAlignment="Center" Margin="0,40,0,0" />
+
+                <VerticalStackLayout Spacing="12" BindableLayout.ItemsSource="{Binding Days}">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate>
+                            <Border StrokeShape="RoundRectangle 10"
+                                    Stroke="{AppThemeBinding Light=#E5E5EA, Dark=#3A3A3C}"
+                                    BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1C1C1E}"
+                                    Padding="12">
+                                <VerticalStackLayout Spacing="8">
+                                    <Grid ColumnDefinitions="*, Auto">
+                                        <Label Grid.Column="0"
+                                               Text="{Binding Date, StringFormat='{0:dddd, dd.MM.yyyy}'}"
+                                               FontSize="15" FontAttributes="Bold" />
+                                        <Label Grid.Column="1"
+                                               Text="{Binding NetAmount, Converter={StaticResource Currency}}"
+                                               FontAttributes="Bold"
+                                               TextColor="{Binding NetAmount, Converter={StaticResource BilanzColor}}" />
+                                    </Grid>
+                                    <VerticalStackLayout Spacing="4" BindableLayout.ItemsSource="{Binding Entries}">
+                                        <BindableLayout.ItemTemplate>
+                                            <DataTemplate>
+                                                <Grid ColumnDefinitions="*, Auto">
+                                                    <Label Grid.Column="0" Text="{Binding Title}" FontSize="13" />
+                                                    <Label Grid.Column="1"
+                                                           Text="{Binding Amount, Converter={StaticResource Currency}}"
+                                                           FontSize="13" />
+                                                </Grid>
+                                            </DataTemplate>
+                                        </BindableLayout.ItemTemplate>
+                                    </VerticalStackLayout>
+                                </VerticalStackLayout>
+                            </Border>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </VerticalStackLayout>
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </RefreshView>
+</views:BaseContentPage>

@@ -528,4 +528,10 @@ public partial class DashboardViewModel : MonthNavigationViewModel
     {
         await _navigationService.GoToAsync("//TransactionsPage");
     }
+
+    [RelayCommand]
+    private async Task NavigateToCashflow()
+    {
+        await _navigationService.GoToAsync(Routes.Cashflow);
+    }
 }

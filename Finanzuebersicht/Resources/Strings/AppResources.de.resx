@@ -12,6 +12,8 @@
   <data name="Nav_Kategorien" xml:space="preserve"><value>Kategorien</value></data>
   <data name="Nav_Verwaltung" xml:space="preserve"><value>Verwaltung</value></data>
   <data name="Nav_Einstellungen" xml:space="preserve"><value>Einstellungen</value></data>
+  <data name="Nav_Cashflow" xml:space="preserve"><value>Cashflow (30 Tage)</value></data>
+  <data name="Title_Cashflow" xml:space="preserve"><value>Cashflow-Vorschau</value></data>
 
   <!-- Page Titles -->
   <data name="Title_Transaktion" xml:space="preserve"><value>Transaktion</value></data>
@@ -96,6 +98,7 @@
   <data name="Empty_KeineDashboardDaten" xml:space="preserve"><value>Keine Daten für diesen Zeitraum</value></data>
   <data name="Empty_KeineJahresDaten" xml:space="preserve"><value>Keine Daten für dieses Jahr</value></data>
   <data name="Empty_NochKeineTransaktionen" xml:space="preserve"><value>Noch keine Transaktionen vorhanden</value></data>
+  <data name="Empty_KeinCashflow" xml:space="preserve"><value>Keine kommenden Einnahmen oder Ausgaben in den nächsten 30 Tagen.</value></data>
   <data name="Empty_KeineKonten" xml:space="preserve"><value>Keine Konten vorhanden</value></data>
   <data name="Empty_KontenHinweis" xml:space="preserve"><value>Lege ein Konto an, um Transaktionen und Daueraufträge zuzuordnen.</value></data>
   <data name="Btn_ZuTransaktionen" xml:space="preserve"><value>Erste Transaktion hinzufügen</value></data>

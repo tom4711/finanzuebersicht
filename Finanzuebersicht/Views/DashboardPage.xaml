@@ -110,6 +110,14 @@
                            VerticalTextAlignment="Center" />
                 </Grid>
 
+                <Button Text="{loc:Translate Nav_Cashflow}"
+                        Command="{Binding NavigateToCashflowCommand}"
+                        BackgroundColor="Transparent"
+                        TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                        FontSize="14"
+                        HorizontalOptions="Start"
+                        Padding="0" />
+
                 <!-- Global Empty State – keine Transaktionen vorhanden -->
                 <VerticalStackLayout Spacing="16" HorizontalOptions="Center" Margin="0,40,0,0"
                                      IsVisible="{Binding HasAnyData, Converter={StaticResource InvertBool}}">

@@ -25,6 +25,7 @@ public static class ApplicationServiceCollectionExtensions
         services.AddTransient<LoadDashboardMonthUseCase>();
         services.AddTransient<LoadDashboardYearUseCase>();
         services.AddTransient<LoadForecastUseCase>();
+        services.AddTransient<LoadCashflowOutlookUseCase>();
 
         services.AddTransient<DeleteRecurringTransactionUseCase>();
         services.AddTransient<LoadRecurringTransactionDetailDataUseCase>();

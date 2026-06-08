@@ -12,6 +12,7 @@ public static class ResourceKeys
     public const string Nav_Kategorien = nameof(Nav_Kategorien);
     public const string Nav_Verwaltung = nameof(Nav_Verwaltung);
     public const string Nav_Einstellungen = nameof(Nav_Einstellungen);
+    public const string Nav_Cashflow = nameof(Nav_Cashflow);
 
     // Page Titles
     public const string Title_Transaktion = nameof(Title_Transaktion);
@@ -22,6 +23,7 @@ public static class ResourceKeys
     public const string Title_Umbuchung = nameof(Title_Umbuchung);
     public const string Title_KontoHinzufuegen = nameof(Title_KontoHinzufuegen);
     public const string Title_KontoBearbeiten = nameof(Title_KontoBearbeiten);
+    public const string Title_Cashflow = nameof(Title_Cashflow);
 
     // Labels
     public const string Lbl_Name = nameof(Lbl_Name);
@@ -283,6 +285,7 @@ public static class ResourceKeys
     public const string Hint_BudgetNull = nameof(Hint_BudgetNull);
     public const string Hint_ZielTitel = nameof(Hint_ZielTitel);
     public const string Empty_KeineSparZiele = nameof(Empty_KeineSparZiele);
+    public const string Empty_KeinCashflow = nameof(Empty_KeinCashflow);
     public const string Btn_NeuesZiel = nameof(Btn_NeuesZiel);
     public const string Btn_ZielHinzufuegen = nameof(Btn_ZielHinzufuegen);
 

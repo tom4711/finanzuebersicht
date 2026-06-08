@@ -12,6 +12,8 @@
   <data name="Nav_Kategorien" xml:space="preserve"><value>Categories</value></data>
   <data name="Nav_Verwaltung" xml:space="preserve"><value>Management</value></data>
   <data name="Nav_Einstellungen" xml:space="preserve"><value>Settings</value></data>
+  <data name="Nav_Cashflow" xml:space="preserve"><value>Cashflow (30 days)</value></data>
+  <data name="Title_Cashflow" xml:space="preserve"><value>Cashflow Outlook</value></data>
 
   <!-- Page Titles -->
   <data name="Title_Transaktion" xml:space="preserve"><value>Transaction</value></data>
@@ -96,6 +98,7 @@
   <data name="Empty_KeineDashboardDaten" xml:space="preserve"><value>No data for this period</value></data>
   <data name="Empty_KeineJahresDaten" xml:space="preserve"><value>No data for this year</value></data>
   <data name="Empty_NochKeineTransaktionen" xml:space="preserve"><value>No transactions yet</value></data>
+  <data name="Empty_KeinCashflow" xml:space="preserve"><value>No upcoming income or expenses in the next 30 days.</value></data>
   <data name="Empty_KeineKonten" xml:space="preserve"><value>No accounts yet</value></data>
   <data name="Empty_KontenHinweis" xml:space="preserve"><value>Create an account to assign transactions and recurring items.</value></data>
   <data name="Btn_ZuTransaktionen" xml:space="preserve"><value>Add First Transaction</value></data>
