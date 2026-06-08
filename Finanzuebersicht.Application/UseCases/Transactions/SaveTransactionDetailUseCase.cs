@@ -18,7 +18,9 @@ public class SaveTransactionDetailUseCase(
         string kategorieId,
         string? accountId,
         TransactionType typ,
-        string verwendungszweck, CancellationToken cancellationToken = default)
+        string verwendungszweck,
+        string? sparZielId = null,
+        CancellationToken cancellationToken = default)
     {
         if (existingTransaction?.IsTransfer == true)
             throw new InvalidOperationException("Transfers must be edited through the transfer flow.");
@@ -41,6 +43,7 @@ public class SaveTransactionDetailUseCase(
             .ConfigureAwait(false);
         transaction.Typ = typ;
         transaction.Verwendungszweck = verwendungszweck ?? string.Empty;
+        transaction.SparZielId = string.IsNullOrWhiteSpace(sparZielId) ? null : sparZielId;
 
         await _transactionRepository.SaveTransactionAsync(transaction);
     }

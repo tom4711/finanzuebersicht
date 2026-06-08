@@ -228,6 +228,11 @@ public static class ResourceKeys
     public const string Lbl_AktuellerBetrag = nameof(Lbl_AktuellerBetrag);
     public const string Lbl_Faelligkeit = nameof(Lbl_Faelligkeit);
     public const string Lbl_Fortschritt = nameof(Lbl_Fortschritt);
+    public const string Lbl_SparZiel = nameof(Lbl_SparZiel);
+    public const string Hint_SparZielOptional = nameof(Hint_SparZielOptional);
+    public const string Lbl_MonatlicheSparrate = nameof(Lbl_MonatlicheSparrate);
+    public const string Lbl_VerknuepftAusBuchungen = nameof(Lbl_VerknuepftAusBuchungen);
+    public const string Lbl_PrognoseZielerreichung = nameof(Lbl_PrognoseZielerreichung);
     public const string Lbl_Forecast = nameof(Lbl_Forecast);
     public const string Lbl_ForecastNaechsterMonat = nameof(Lbl_ForecastNaechsterMonat);
     public const string Lbl_SuchergebnisseAnzahl = nameof(Lbl_SuchergebnisseAnzahl);

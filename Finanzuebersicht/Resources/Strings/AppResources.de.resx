@@ -243,6 +243,11 @@ Bitte starte die App neu.</value></data>
   <data name="Lbl_AktuellerBetrag" xml:space="preserve"><value>Aktueller Betrag</value></data>
   <data name="Lbl_Faelligkeit" xml:space="preserve"><value>Fälligkeit</value></data>
   <data name="Lbl_Fortschritt" xml:space="preserve"><value>Fortschritt</value></data>
+  <data name="Lbl_SparZiel" xml:space="preserve"><value>Sparziel</value></data>
+  <data name="Hint_SparZielOptional" xml:space="preserve"><value>Kein Sparziel</value></data>
+  <data name="Lbl_MonatlicheSparrate" xml:space="preserve"><value>Monatliche Sparrate</value></data>
+  <data name="Lbl_VerknuepftAusBuchungen" xml:space="preserve"><value>Aus Buchungen:</value></data>
+  <data name="Lbl_PrognoseZielerreichung" xml:space="preserve"><value>Prognose:</value></data>
   <data name="Lbl_Forecast" xml:space="preserve"><value>Prognose</value></data>
   <data name="Lbl_ForecastNaechsterMonat" xml:space="preserve"><value>Erwarteter nächster Monat (Ø 3M)</value></data>
   <data name="Lbl_SuchergebnisseAnzahl" xml:space="preserve"><value>{0} Ergebnis(se)</value></data>
