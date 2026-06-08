@@ -51,6 +51,38 @@
                     </Grid>
                 </Border>
 
+                <VerticalStackLayout Spacing="8"
+                                     IsVisible="{Binding HasDueItems}"
+                                     BindableLayout.ItemsSource="{Binding DueRecurringItems}">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate>
+                            <Border StrokeShape="RoundRectangle 10"
+                                    Stroke="{AppThemeBinding Light=#E5E5EA, Dark=#3A3A3C}"
+                                    BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1C1C1E}"
+                                    Padding="12">
+                                <VerticalStackLayout Spacing="8">
+                                    <Label Text="{Binding Recurring.Titel}" FontSize="15" FontAttributes="Bold" />
+                                    <Label Text="{Binding Hint}" FontSize="13" TextColor="Gray" />
+                                    <HorizontalStackLayout Spacing="8">
+                                        <Button Text="{loc:Translate Btn_AlsAusgefuehrtBuchen}"
+                                                FontSize="12"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:DashboardViewModel}}, Path=BookDueRecurringCommand}"
+                                                CommandParameter="{Binding .}" />
+                                        <Button Text="{loc:Translate Btn_TerminUeberspringen}"
+                                                FontSize="12"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:DashboardViewModel}}, Path=SkipDueRecurringCommand}"
+                                                CommandParameter="{Binding .}" />
+                                        <Button Text="{loc:Translate Btn_TerminVerschieben}"
+                                                FontSize="12"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:DashboardViewModel}}, Path=ShiftDueRecurringCommand}"
+                                                CommandParameter="{Binding .}" />
+                                    </HorizontalStackLayout>
+                                </VerticalStackLayout>
+                            </Border>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </VerticalStackLayout>
+
                 <Grid ColumnDefinitions="70,*" ColumnSpacing="8">
                     <Label Grid.Column="0"
                            Text="{loc:Translate Lbl_Konto}"

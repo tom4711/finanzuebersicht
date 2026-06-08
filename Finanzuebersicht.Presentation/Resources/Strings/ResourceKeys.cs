@@ -112,6 +112,13 @@ public static class ResourceKeys
     public const string Dlg_KategorieLoeschenFrage = nameof(Dlg_KategorieLoeschenFrage);
     public const string Dlg_DauerauftragLoeschen = nameof(Dlg_DauerauftragLoeschen);
     public const string Dlg_DauerauftragLoeschenFrage = nameof(Dlg_DauerauftragLoeschenFrage);
+    public const string Dlg_DauerauftragBuchen = nameof(Dlg_DauerauftragBuchen);
+    public const string Dlg_DauerauftragBuchenFrage = nameof(Dlg_DauerauftragBuchenFrage);
+    public const string Dlg_DauerauftragUeberspringen = nameof(Dlg_DauerauftragUeberspringen);
+    public const string Dlg_DauerauftragUeberspringenFrage = nameof(Dlg_DauerauftragUeberspringenFrage);
+    public const string Btn_AlsAusgefuehrtBuchen = nameof(Btn_AlsAusgefuehrtBuchen);
+    public const string Btn_TerminUeberspringen = nameof(Btn_TerminUeberspringen);
+    public const string Btn_TerminVerschieben = nameof(Btn_TerminVerschieben);
     public const string Dlg_TransaktionLoeschen = nameof(Dlg_TransaktionLoeschen);
     public const string Dlg_TransaktionLoeschenFrage = nameof(Dlg_TransaktionLoeschenFrage);
     public const string Dlg_UmbuchungLoeschen = nameof(Dlg_UmbuchungLoeschen);

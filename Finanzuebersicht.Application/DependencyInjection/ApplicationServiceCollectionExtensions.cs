@@ -34,6 +34,8 @@ public static class ApplicationServiceCollectionExtensions
         services.AddTransient<RemoveRecurringExceptionUseCase>();
         services.AddTransient<ShiftRecurringInstanceUseCase>();
         services.AddTransient<GetDueRecurringWithHintsUseCase>();
+        services.AddTransient<BookDueRecurringInstanceUseCase>();
+        services.AddTransient<SkipDueRecurringInstanceUseCase>();
 
         services.AddTransient<LoadTransactionDetailDataUseCase>();
         services.AddTransient<DeleteTransactionUseCase>();
