@@ -56,6 +56,28 @@ public class TransactionStore : JsonDataStoreBase, ITransactionRepository
         }
     }
 
+    public async Task SaveTransactionsAsync(IEnumerable<Transaction> transactions)
+    {
+        await StoreLock.WaitAsync();
+        try
+        {
+            var items = await LoadAsync<Transaction>(TransactionsFile);
+            foreach (var transaction in transactions)
+            {
+                var idx = items.FindIndex(t => t.Id == transaction.Id);
+                if (idx >= 0)
+                    items[idx] = transaction;
+                else
+                    items.Add(transaction);
+            }
+            await SaveAsync(TransactionsFile, items);
+        }
+        finally
+        {
+            StoreLock.Release();
+        }
+    }
+
     public async Task DeleteTransactionAsync(string id)
     {
         await StoreLock.WaitAsync();
@@ -63,6 +85,21 @@ public class TransactionStore : JsonDataStoreBase, ITransactionRepository
         {
             var items = await LoadAsync<Transaction>(TransactionsFile);
             items.RemoveAll(t => t.Id == id);
+            await SaveAsync(TransactionsFile, items);
+        }
+        finally
+        {
+            StoreLock.Release();
+        }
+    }
+
+    public async Task DeleteTransferGroupAsync(string transferGroupId)
+    {
+        await StoreLock.WaitAsync();
+        try
+        {
+            var items = await LoadAsync<Transaction>(TransactionsFile);
+            items.RemoveAll(t => t.TransferGroupId == transferGroupId);
             await SaveAsync(TransactionsFile, items);
         }
         finally

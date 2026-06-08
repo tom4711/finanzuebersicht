@@ -11,13 +11,16 @@ public class SaveRecurringTransactionDetailUseCaseTests
     {
         var recurringRepository = Substitute.For<IRecurringTransactionRepository>();
         var recurringGenerationService = Substitute.For<IRecurringGenerationService>();
-        var sut = new SaveRecurringTransactionDetailUseCase(recurringRepository, recurringGenerationService);
+        var accountRepository = Substitute.For<IAccountRepository>();
+        accountRepository.GetAccountsAsync().Returns(new List<Account> { new() { Id = "acc-1", IsArchived = false } });
+        var sut = new SaveRecurringTransactionDetailUseCase(recurringRepository, recurringGenerationService, accountRepository);
 
         await sut.ExecuteAsync(
             existing: null,
             betrag: 49.99m,
             titel: "Streaming",
             kategorieId: "cat-1",
+            accountId: "acc-1",
             typ: TransactionType.Ausgabe,
             startdatum: new DateTime(2026, 3, 1),
             enddatum: new DateTime(2026, 12, 31),
@@ -28,6 +31,7 @@ public class SaveRecurringTransactionDetailUseCaseTests
                 r.Betrag == 49.99m &&
                 r.Titel == "Streaming" &&
                 r.KategorieId == "cat-1" &&
+                r.AccountId == "acc-1" &&
                 r.Typ == TransactionType.Ausgabe &&
                 r.Startdatum == new DateTime(2026, 3, 1) &&
                 r.Enddatum == new DateTime(2026, 12, 31) &&
@@ -40,6 +44,8 @@ public class SaveRecurringTransactionDetailUseCaseTests
     {
         var recurringRepository = Substitute.For<IRecurringTransactionRepository>();
         var recurringGenerationService = Substitute.For<IRecurringGenerationService>();
+        var accountRepository = Substitute.For<IAccountRepository>();
+        accountRepository.GetAccountsAsync().Returns(new List<Account> { new() { Id = "acc-2", IsArchived = false } });
         var existing = new RecurringTransaction
         {
             Id = "r-1",
@@ -51,13 +57,14 @@ public class SaveRecurringTransactionDetailUseCaseTests
             Enddatum = null,
             Aktiv = false
         };
-        var sut = new SaveRecurringTransactionDetailUseCase(recurringRepository, recurringGenerationService);
+        var sut = new SaveRecurringTransactionDetailUseCase(recurringRepository, recurringGenerationService, accountRepository);
 
         await sut.ExecuteAsync(
             existing,
             betrag: 120m,
             titel: "Neu",
             kategorieId: "cat-2",
+            accountId: "acc-2",
             typ: TransactionType.Einnahme,
             startdatum: new DateTime(2026, 4, 1),
             enddatum: null,
@@ -68,6 +75,7 @@ public class SaveRecurringTransactionDetailUseCaseTests
         Assert.Equal(120m, existing.Betrag);
         Assert.Equal("Neu", existing.Titel);
         Assert.Equal("cat-2", existing.KategorieId);
+        Assert.Equal("acc-2", existing.AccountId);
         Assert.Equal(TransactionType.Einnahme, existing.Typ);
         Assert.Equal(new DateTime(2026, 4, 1), existing.Startdatum);
         Assert.Null(existing.Enddatum);

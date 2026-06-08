@@ -14,9 +14,10 @@ namespace Finanzuebersicht.Infrastructure.Services;
 /// - ReportingService: Transaction aggregations
 /// - RecurringGenerationService: Auto-generation of recurring transactions
 /// </summary>
-public class LocalDataService : IDataService, ITransactionTemplateRepository, IDisposable
+public class LocalDataService : IDataService, IAccountRepository, ITransactionTemplateRepository, IDisposable
 {
     private readonly CategoryStore _categoryStore;
+    private readonly AccountStore _accountStore;
     private readonly TransactionStore _transactionStore;
     private readonly RecurringStore _recurringStore;
     private readonly BudgetStore _budgetStore;
@@ -30,6 +31,7 @@ public class LocalDataService : IDataService, ITransactionTemplateRepository, ID
     /// </summary>
     public LocalDataService(
         CategoryStore categoryStore,
+        AccountStore accountStore,
         TransactionStore transactionStore,
         RecurringStore recurringStore,
         BudgetStore budgetStore,
@@ -38,6 +40,7 @@ public class LocalDataService : IDataService, ITransactionTemplateRepository, ID
         IClock clock)
     {
         _categoryStore = categoryStore;
+        _accountStore = accountStore;
         _transactionStore = transactionStore;
         _recurringStore = recurringStore;
         _budgetStore = budgetStore;
@@ -57,6 +60,7 @@ public class LocalDataService : IDataService, ITransactionTemplateRepository, ID
         var dataDir = string.IsNullOrWhiteSpace(customPath) ? defaultDataDir : customPath;
 
         _categoryStore = new CategoryStore(dataDir);
+        _accountStore = new AccountStore(dataDir);
         _transactionStore = new TransactionStore(dataDir, categoryStore: _categoryStore);
         _recurringStore = new RecurringStore(dataDir);
         _budgetStore = new BudgetStore(dataDir);
@@ -82,6 +86,22 @@ public class LocalDataService : IDataService, ITransactionTemplateRepository, ID
 
     #endregion
 
+    #region IAccountRepository delegation
+
+    public Task<List<Account>> GetAccountsAsync()
+        => _accountStore.GetAccountsAsync();
+
+    public Task SaveAccountAsync(Account account)
+        => _accountStore.SaveAccountAsync(account);
+
+    public Task DeleteAccountAsync(string id)
+        => _accountStore.DeleteAccountAsync(id);
+
+    public Task ReplaceAllAccountsAsync(IEnumerable<Account> accounts)
+        => _accountStore.ReplaceAllAccountsAsync(accounts);
+
+    #endregion
+
     #region ITransactionRepository delegation
 
     public async Task<List<Transaction>> GetTransactionsAsync(DateTime vonDatum, DateTime bisDatum)
@@ -90,8 +110,14 @@ public class LocalDataService : IDataService, ITransactionTemplateRepository, ID
     public async Task SaveTransactionAsync(Transaction transaction)
         => await _transactionStore.SaveTransactionAsync(transaction);
 
+    public async Task SaveTransactionsAsync(IEnumerable<Transaction> transactions)
+        => await _transactionStore.SaveTransactionsAsync(transactions);
+
     public async Task DeleteTransactionAsync(string id)
         => await _transactionStore.DeleteTransactionAsync(id);
+
+    public async Task DeleteTransferGroupAsync(string transferGroupId)
+        => await _transactionStore.DeleteTransferGroupAsync(transferGroupId);
 
     public Task ReplaceAllTransactionsAsync(IEnumerable<Transaction> transactions)
         => _transactionStore.ReplaceAllTransactionsAsync(transactions);

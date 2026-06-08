@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using Finanzuebersicht.Application.UseCases.Categories;
+using Finanzuebersicht.Application.UseCases.Accounts;
 using Finanzuebersicht.Models;
 using Finanzuebersicht.Navigation;
 using Finanzuebersicht.ViewModels;
@@ -22,6 +23,8 @@ public class CategoriesViewModelTests
             categoryRepository,
             Substitute.For<ITransactionRepository>(),
             Substitute.For<IRecurringTransactionRepository>(),
+            Substitute.For<IAccountRepository>(),
+            Substitute.For<ITransactionTemplateRepository>(),
             out _);
 
         await sut.LoadKategorienCommand.ExecuteAsync(null);
@@ -48,11 +51,19 @@ public class CategoriesViewModelTests
         var recurringTransactionRepository = Substitute.For<IRecurringTransactionRepository>();
         recurringTransactionRepository.GetRecurringTransactionsAsync()
             .Returns(Task.FromResult(new List<RecurringTransaction>()));
+        var accountRepository = Substitute.For<IAccountRepository>();
+        accountRepository.GetAccountsAsync().Returns(Task.FromResult(new List<Account>
+        {
+            new() { Id = "acc-1", Name = "Girokonto", Type = AccountType.Girokonto, SystemKey = Finanzuebersicht.Constants.SystemAccountKeys.Default }
+        }));
+        var templateRepository = Substitute.For<ITransactionTemplateRepository>();
 
         var sut = CreateSut(
             categoryRepository,
             transactionRepository,
             recurringTransactionRepository,
+            accountRepository,
+            templateRepository,
             out var dialogService);
 
         sut.Kategorien = new ObservableCollection<Category> { categoryToDelete };
@@ -74,6 +85,8 @@ public class CategoriesViewModelTests
             categoryRepository,
             Substitute.For<ITransactionRepository>(),
             Substitute.For<IRecurringTransactionRepository>(),
+            Substitute.For<IAccountRepository>(),
+            Substitute.For<ITransactionTemplateRepository>(),
             out var dialogService);
 
         sut.Kategorien = new ObservableCollection<Category> { categoryToDelete };
@@ -94,6 +107,8 @@ public class CategoriesViewModelTests
             Substitute.For<ICategoryRepository>(),
             Substitute.For<ITransactionRepository>(),
             Substitute.For<IRecurringTransactionRepository>(),
+            Substitute.For<IAccountRepository>(),
+            Substitute.For<ITransactionTemplateRepository>(),
             out _,
             out var navigationService);
 
@@ -107,10 +122,35 @@ public class CategoriesViewModelTests
                 object.ReferenceEquals(parameters["Category"], category)));
     }
 
+    [Fact]
+    public async Task ToggleKontoArchivierung_WhenConfirmed_UpdatesAccount()
+    {
+        var accountRepository = Substitute.For<IAccountRepository>();
+        var account = new Account { Id = "acc-1", Name = "Giro", IsArchived = false };
+        accountRepository.GetAccountsAsync().Returns(new List<Account> { account });
+
+        var sut = CreateSut(
+            Substitute.For<ICategoryRepository>(),
+            Substitute.For<ITransactionRepository>(),
+            Substitute.For<IRecurringTransactionRepository>(),
+            accountRepository,
+            Substitute.For<ITransactionTemplateRepository>(),
+            out var dialogService);
+
+        dialogService.ShowConfirmationAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+            .Returns(Task.FromResult(true));
+
+        await sut.ToggleKontoArchivierungCommand.ExecuteAsync(account);
+
+        await accountRepository.Received(1).SaveAccountAsync(Arg.Is<Account>(a => a.Id == "acc-1" && a.IsArchived));
+    }
+
     private static CategoriesViewModel CreateSut(
         ICategoryRepository categoryRepository,
         ITransactionRepository transactionRepository,
         IRecurringTransactionRepository recurringTransactionRepository,
+        IAccountRepository accountRepository,
+        ITransactionTemplateRepository templateRepository,
         out IDialogService dialogService,
         out INavigationService navigationService)
     {
@@ -129,6 +169,9 @@ public class CategoriesViewModelTests
         return new CategoriesViewModel(
             new DeleteCategoryUseCase(categoryRepository, transactionRepository, recurringTransactionRepository),
             new LoadCategoriesUseCase(categoryRepository),
+            new LoadAccountsUseCase(accountRepository),
+            new ToggleAccountArchiveUseCase(accountRepository),
+            new DeleteAccountUseCase(accountRepository, transactionRepository, templateRepository),
             localizationService,
             navigationService,
             dialogService);
@@ -138,12 +181,16 @@ public class CategoriesViewModelTests
         ICategoryRepository categoryRepository,
         ITransactionRepository transactionRepository,
         IRecurringTransactionRepository recurringTransactionRepository,
+        IAccountRepository accountRepository,
+        ITransactionTemplateRepository templateRepository,
         out IDialogService dialogService)
     {
         return CreateSut(
             categoryRepository,
             transactionRepository,
             recurringTransactionRepository,
+            accountRepository,
+            templateRepository,
             out dialogService,
             out _);
     }

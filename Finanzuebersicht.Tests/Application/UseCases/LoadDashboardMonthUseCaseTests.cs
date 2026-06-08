@@ -21,8 +21,8 @@ public class LoadDashboardMonthUseCaseTests
         transactionRepository.GetTransactionsAsync(Arg.Any<DateTime>(), Arg.Any<DateTime>())
             .Returns(new List<Transaction>
             {
-                new() { Typ = TransactionType.Einnahme, Betrag = 2000m, KategorieId = "cat-a" },
-                new() { Typ = TransactionType.Ausgabe, Betrag = 800m, KategorieId = "cat-b" }
+                new() { Typ = TransactionType.Einnahme, Betrag = 2000m, KategorieId = "cat-a", AccountId = "acc-1" },
+                new() { Typ = TransactionType.Ausgabe, Betrag = 800m, KategorieId = "cat-b", AccountId = "acc-2" }
             });
 
         var useCase = new LoadDashboardMonthUseCase(categoryRepository, transactionRepository, recurringRepository, Substitute.For<IBudgetRepository>());
@@ -210,5 +210,83 @@ public class LoadDashboardMonthUseCaseTests
         Assert.Equal(0m, hint.Tagesbudget);
         Assert.False(hint.IstWarnung);
         Assert.False(hint.IstAusgeschoepft);
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_ForecastRecurring_AppliesAccountFilter()
+    {
+        var categoryRepository = Substitute.For<ICategoryRepository>();
+        var transactionRepository = Substitute.For<ITransactionRepository>();
+        var recurringRepository = Substitute.For<IRecurringTransactionRepository>();
+
+        categoryRepository.GetCategoriesAsync().Returns(new List<Category>
+        {
+            new() { Id = "cat-a", Name = "Abo", Typ = TransactionType.Ausgabe }
+        });
+        transactionRepository.GetTransactionsAsync(Arg.Any<DateTime>(), Arg.Any<DateTime>())
+            .Returns(new List<Transaction>());
+        recurringRepository.GetRecurringTransactionsAsync().Returns(new List<RecurringTransaction>
+        {
+            new()
+            {
+                Id = "rec-1",
+                Titel = "Streaming",
+                Betrag = 15m,
+                KategorieId = "cat-a",
+                AccountId = "acc-1",
+                Typ = TransactionType.Ausgabe,
+                Aktiv = true,
+                Startdatum = new DateTime(2025, 1, 1)
+            },
+            new()
+            {
+                Id = "rec-2",
+                Titel = "Gym",
+                Betrag = 50m,
+                KategorieId = "cat-a",
+                AccountId = "acc-2",
+                Typ = TransactionType.Ausgabe,
+                Aktiv = true,
+                Startdatum = new DateTime(2025, 1, 1)
+            }
+        });
+
+        var useCase = new LoadDashboardMonthUseCase(categoryRepository, transactionRepository, recurringRepository, Substitute.For<IBudgetRepository>());
+
+        var result = await useCase.ExecuteAsync(new DateTime(2026, 4, 1), new DateTime(2026, 3, 15), "acc-1");
+
+        Assert.True(result.IstPrognose);
+        Assert.Equal(15m, result.GesamtAusgaben);
+        Assert.Single(result.KategorieAusgaben);
+        Assert.Equal(15m, result.KategorieAusgaben[0].Total);
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_ExcludesTransfers_AndAppliesAccountFilter()
+    {
+        var categoryRepository = Substitute.For<ICategoryRepository>();
+        var transactionRepository = Substitute.For<ITransactionRepository>();
+        var recurringRepository = Substitute.For<IRecurringTransactionRepository>();
+        var budgetRepository = Substitute.For<IBudgetRepository>();
+
+        categoryRepository.GetCategoriesAsync().Returns(new List<Category>
+        {
+            new() { Id = "cat-food", Name = "Food", Typ = TransactionType.Ausgabe }
+        });
+        transactionRepository.GetTransactionsAsync(Arg.Any<DateTime>(), Arg.Any<DateTime>())
+            .Returns(new List<Transaction>
+            {
+                new() { Typ = TransactionType.Ausgabe, Betrag = 100m, KategorieId = "cat-food", AccountId = "acc-1", IsTransfer = false },
+                new() { Typ = TransactionType.Ausgabe, Betrag = 40m, KategorieId = "cat-food", AccountId = "acc-1", IsTransfer = true },
+                new() { Typ = TransactionType.Ausgabe, Betrag = 30m, KategorieId = "cat-food", AccountId = "acc-2", IsTransfer = false }
+            });
+
+        var useCase = new LoadDashboardMonthUseCase(categoryRepository, transactionRepository, recurringRepository, budgetRepository);
+
+        var result = await useCase.ExecuteAsync(new DateTime(2026, 3, 1), new DateTime(2026, 3, 15), "acc-1");
+
+        Assert.Equal(100m, result.GesamtAusgaben);
+        Assert.Single(result.KategorieAusgaben);
+        Assert.Equal(100m, result.KategorieAusgaben[0].Total);
     }
 }

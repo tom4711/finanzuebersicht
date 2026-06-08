@@ -14,7 +14,7 @@ public class ReportingService(
         var from = new DateTime(year, month, 1);
         var to = from.AddMonths(1).AddTicks(-1);
         var items = await _transactionRepository.GetTransactionsAsync(from, to);
-        var expenditure = items.Where(t => t.Typ == TransactionType.Ausgabe).ToList();
+        var expenditure = items.Where(t => t.Typ == TransactionType.Ausgabe && !t.IsTransfer).ToList();
 
         var categories = await _categoryRepository.GetCategoriesAsync();
         var catDict = categories.ToDictionary(c => c.Id);
@@ -46,7 +46,7 @@ public class ReportingService(
         var from = new DateTime(year, 1, 1);
         var to = new DateTime(year, 12, 31, 23, 59, 59);
         var items = await _transactionRepository.GetTransactionsAsync(from, to);
-        var expenditure = items.Where(t => t.Typ == TransactionType.Ausgabe).ToList();
+        var expenditure = items.Where(t => t.Typ == TransactionType.Ausgabe && !t.IsTransfer).ToList();
 
         var categories = await _categoryRepository.GetCategoriesAsync();
         var catDict = categories.ToDictionary(c => c.Id);

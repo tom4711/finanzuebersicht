@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<views:BaseContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:views="clr-namespace:Finanzuebersicht.Views"
+             xmlns:vm="clr-namespace:Finanzuebersicht.ViewModels"
+             xmlns:models="clr-namespace:Finanzuebersicht.Models"
+             xmlns:loc="clr-namespace:Finanzuebersicht.Extensions"
+             x:Class="Finanzuebersicht.Views.TransferDetailPage"
+             x:DataType="vm:TransferDetailViewModel"
+             Title="{loc:Translate Title_Umbuchung}">
+
+    <ScrollView Padding="16">
+        <VerticalStackLayout Spacing="20">
+            <VerticalStackLayout Spacing="4">
+                <Label Text="{loc:Translate Lbl_VonKonto}" FontSize="13" TextColor="Gray" />
+                <Picker ItemsSource="{Binding Accounts}"
+                        SelectedItem="{Binding SourceAccount}"
+                        ItemDisplayBinding="{Binding Name}"
+                        FontSize="16" />
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Spacing="4">
+                <Label Text="{loc:Translate Lbl_NachKonto}" FontSize="13" TextColor="Gray" />
+                <Picker ItemsSource="{Binding Accounts}"
+                        SelectedItem="{Binding TargetAccount}"
+                        ItemDisplayBinding="{Binding Name}"
+                        FontSize="16" />
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Spacing="4">
+                <Label Text="{loc:Translate Lbl_Betrag}" FontSize="13" TextColor="Gray" />
+                <Entry Text="{Binding AmountText}" Placeholder="{loc:Translate Hint_Betrag}"
+                       Keyboard="Numeric" FontSize="28" FontAttributes="Bold"
+                       HorizontalTextAlignment="Center" />
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Spacing="4">
+                <Label Text="{loc:Translate Lbl_Titel}" FontSize="13" TextColor="Gray" />
+                <Entry Text="{Binding Title}" FontSize="16" />
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Spacing="4">
+                <Label Text="{loc:Translate Lbl_Verwendungszweck}" FontSize="13" TextColor="Gray" />
+                <Editor Text="{Binding Note}" HeightRequest="100" AutoSize="TextChanges" />
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Spacing="4">
+                <Label Text="{loc:Translate Lbl_Datum}" FontSize="13" TextColor="Gray" />
+                <DatePicker Date="{Binding Date}" FontSize="16"
+                            Format="dd. MMMM yyyy" />
+            </VerticalStackLayout>
+
+            <Button Text="{loc:Translate Btn_Speichern}" Command="{Binding SaveCommand}"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                    TextColor="White" CornerRadius="12" HeightRequest="50"
+                    FontSize="16" FontAttributes="Bold"
+                    Margin="0,20,0,0" />
+        </VerticalStackLayout>
+    </ScrollView>
+</views:BaseContentPage>

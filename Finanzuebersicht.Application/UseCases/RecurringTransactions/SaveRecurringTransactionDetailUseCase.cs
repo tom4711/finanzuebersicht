@@ -4,16 +4,19 @@ namespace Finanzuebersicht.Application.UseCases.RecurringTransactions;
 
 public class SaveRecurringTransactionDetailUseCase(
     IRecurringTransactionRepository recurringTransactionRepository,
-    IRecurringGenerationService recurringGenerationService)
+    IRecurringGenerationService recurringGenerationService,
+    IAccountRepository accountRepository)
 {
     private readonly IRecurringTransactionRepository _recurringTransactionRepository = recurringTransactionRepository;
     private readonly IRecurringGenerationService _recurringGenerationService = recurringGenerationService;
+    private readonly IAccountRepository _accountRepository = accountRepository;
 
     public async Task ExecuteAsync(
         RecurringTransaction? existing,
         decimal betrag,
         string titel,
         string kategorieId,
+        string? accountId,
         TransactionType typ,
         DateTime startdatum,
         DateTime? enddatum,
@@ -25,10 +28,20 @@ public class SaveRecurringTransactionDetailUseCase(
     {
         // logging removed: prefer centralized ILogger or conditional debug logging
 
+        if (!string.IsNullOrWhiteSpace(accountId))
+        {
+            var accounts = await _accountRepository.GetAccountsAsync();
+            var account = accounts.FirstOrDefault(a => a.Id == accountId)
+                ?? throw new InvalidOperationException("Selected account not found.");
+            if (account.IsArchived && (existing == null || existing.AccountId != accountId))
+                throw new InvalidOperationException("Archived account cannot be assigned to new recurring transactions.");
+        }
+
         var recurring = existing ?? new RecurringTransaction();
         recurring.Betrag = betrag;
         recurring.Titel = titel;
         recurring.KategorieId = kategorieId;
+        recurring.AccountId = accountId;
         recurring.Typ = typ;
         recurring.Startdatum = startdatum;
         recurring.Enddatum = enddatum;

@@ -7,6 +7,7 @@ public enum TransactionTypeFilter { Alle, Einnahme, Ausgabe }
 public record SearchTransactionsQuery(
     string SearchText = "",
     string? KategorieId = null,
+    string? AccountId = null,
     TransactionTypeFilter Typ = TransactionTypeFilter.Alle,
     DateTime? VonDatum = null,
     DateTime? BisDatum = null
@@ -16,15 +17,18 @@ public class SearchTransactionsResult
 {
     public List<TransactionGroup> Gruppen { get; set; } = [];
     public Dictionary<string, string> IconMap { get; set; } = [];
+    public Dictionary<string, string> AccountMap { get; set; } = [];
     public int TotalCount { get; set; }
 }
 
 public class SearchTransactionsUseCase(
     ITransactionRepository transactionRepository,
-    ICategoryRepository categoryRepository)
+    ICategoryRepository categoryRepository,
+    IAccountRepository accountRepository)
 {
     private readonly ITransactionRepository _transactionRepository = transactionRepository;
     private readonly ICategoryRepository _categoryRepository = categoryRepository;
+    private readonly IAccountRepository _accountRepository = accountRepository;
 
     public async Task<SearchTransactionsResult> ExecuteAsync(SearchTransactionsQuery query, CancellationToken cancellationToken = default)
     {
@@ -49,6 +53,9 @@ public class SearchTransactionsUseCase(
         if (query.KategorieId != null)
             gefiltert = gefiltert.Where(t => t.KategorieId == query.KategorieId);
 
+        if (query.AccountId != null)
+            gefiltert = gefiltert.Where(t => t.AccountId == query.AccountId);
+
         if (query.Typ == TransactionTypeFilter.Einnahme)
             gefiltert = gefiltert.Where(t => t.Typ == TransactionType.Einnahme);
         else if (query.Typ == TransactionTypeFilter.Ausgabe)
@@ -64,11 +71,14 @@ public class SearchTransactionsUseCase(
 
         var categories = await _categoryRepository.GetCategoriesAsync();
         var iconMap = categories.ToDictionary(c => c.Id, c => c.Icon ?? "📁");
+        var accounts = await _accountRepository.GetAccountsAsync();
+        var accountMap = accounts.ToDictionary(a => a.Id, a => a.Name);
 
         return new SearchTransactionsResult
         {
             Gruppen = gruppen,
             IconMap = iconMap,
+            AccountMap = accountMap,
             TotalCount = liste.Count
         };
     }

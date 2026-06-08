@@ -9,6 +9,8 @@ public static class Routes
     public static readonly string TransactionDetail = "TransactionDetailPage";
     public static readonly string RecurringTransactionDetail = "RecurringTransactionDetailPage";
     public static readonly string CategoryDetail = "CategoryDetailPage";
+    public static readonly string AccountDetail = "AccountDetailPage";
+    public static readonly string TransferDetail = "TransferDetailPage";
     public static readonly string RecurringInstanceShift = "RecurringInstanceShiftPage";
     public static readonly string Settings = "SettingsPage";
     public static readonly string BackupList = "BackupListPage";

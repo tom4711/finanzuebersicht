@@ -1,4 +1,5 @@
 using Finanzuebersicht.Application.UseCases.Transactions;
+using Finanzuebersicht.Constants;
 using Finanzuebersicht.Models;
 using NSubstitute;
 
@@ -10,7 +11,9 @@ public class SaveTransactionDetailUseCaseTests
     public async Task ExecuteAsync_CreatesNewTransaction_WhenExistingIsNull()
     {
         var transactionRepository = Substitute.For<ITransactionRepository>();
-        var sut = new SaveTransactionDetailUseCase(transactionRepository);
+        var accountRepository = Substitute.For<IAccountRepository>();
+        accountRepository.GetAccountsAsync().Returns(new List<Account> { new() { Id = "acc-1", IsArchived = false } });
+        var sut = new SaveTransactionDetailUseCase(transactionRepository, accountRepository);
 
         await sut.ExecuteAsync(
             existingTransaction: null,
@@ -18,6 +21,7 @@ public class SaveTransactionDetailUseCaseTests
             titel: "Einkauf",
             datum: new DateTime(2026, 3, 1),
             kategorieId: "cat-1",
+            accountId: "acc-1",
             typ: TransactionType.Ausgabe,
             verwendungszweck: "Zweck A");
 
@@ -27,6 +31,7 @@ public class SaveTransactionDetailUseCaseTests
                 t.Titel == "Einkauf" &&
                 t.Datum == new DateTime(2026, 3, 1) &&
                 t.KategorieId == "cat-1" &&
+                t.AccountId == "acc-1" &&
                 t.Typ == TransactionType.Ausgabe &&
                 t.Verwendungszweck == "Zweck A"));
     }
@@ -35,6 +40,8 @@ public class SaveTransactionDetailUseCaseTests
     public async Task ExecuteAsync_UpdatesExistingTransaction_WhenProvided()
     {
         var transactionRepository = Substitute.For<ITransactionRepository>();
+        var accountRepository = Substitute.For<IAccountRepository>();
+        accountRepository.GetAccountsAsync().Returns(new List<Account> { new() { Id = "acc-2", IsArchived = false } });
         var existing = new Transaction
         {
             Id = "tx-1",
@@ -45,7 +52,7 @@ public class SaveTransactionDetailUseCaseTests
             Datum = new DateTime(2026, 1, 1)
         };
 
-        var sut = new SaveTransactionDetailUseCase(transactionRepository);
+        var sut = new SaveTransactionDetailUseCase(transactionRepository, accountRepository);
 
         await sut.ExecuteAsync(
             existingTransaction: existing,
@@ -53,6 +60,7 @@ public class SaveTransactionDetailUseCaseTests
             titel: "Neu",
             datum: new DateTime(2026, 3, 2),
             kategorieId: "cat-2",
+            accountId: "acc-2",
             typ: TransactionType.Einnahme,
             verwendungszweck: "Gehaltszahlung");
 
@@ -62,7 +70,59 @@ public class SaveTransactionDetailUseCaseTests
         Assert.Equal("Neu", existing.Titel);
         Assert.Equal(new DateTime(2026, 3, 2), existing.Datum);
         Assert.Equal("cat-2", existing.KategorieId);
+        Assert.Equal("acc-2", existing.AccountId);
         Assert.Equal(TransactionType.Einnahme, existing.Typ);
         Assert.Equal("Gehaltszahlung", existing.Verwendungszweck);
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_UsesDefaultAccount_WhenAccountIdIsNull()
+    {
+        var transactionRepository = Substitute.For<ITransactionRepository>();
+        var accountRepository = Substitute.For<IAccountRepository>();
+        var defaultAccount = new Account { Id = "acc-default", SystemKey = SystemAccountKeys.Default };
+        accountRepository.GetAccountsAsync().Returns(new List<Account> { defaultAccount });
+
+        var sut = new SaveTransactionDetailUseCase(transactionRepository, accountRepository);
+
+        await sut.ExecuteAsync(
+            existingTransaction: null,
+            betrag: 50m,
+            titel: "Test",
+            datum: new DateTime(2026, 3, 1),
+            kategorieId: "cat-1",
+            accountId: null,
+            typ: TransactionType.Ausgabe,
+            verwendungszweck: string.Empty);
+
+        await transactionRepository.Received(1).SaveTransactionAsync(
+            Arg.Is<Transaction>(t => t.AccountId == "acc-default"));
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_ThrowsForTransferTransactions()
+    {
+        var transactionRepository = Substitute.For<ITransactionRepository>();
+        var accountRepository = Substitute.For<IAccountRepository>();
+        var existing = new Transaction
+        {
+            Id = "tx-transfer",
+            IsTransfer = true,
+            TransferGroupId = "grp-1"
+        };
+
+        var sut = new SaveTransactionDetailUseCase(transactionRepository, accountRepository);
+
+        await Assert.ThrowsAsync<InvalidOperationException>(() =>
+            sut.ExecuteAsync(
+                existing,
+                120m,
+                "Edit",
+                new DateTime(2026, 3, 2),
+                "cat-2",
+                "acc-2",
+                TransactionType.Einnahme,
+                "Zweck"));
+        await transactionRepository.DidNotReceive().SaveTransactionAsync(Arg.Any<Transaction>());
     }
 }

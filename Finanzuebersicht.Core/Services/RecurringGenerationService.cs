@@ -7,10 +7,12 @@ public class RecurringGenerationService(
     IRecurringTransactionRepository recurringRepository,
     ITransactionRepository transactionRepository,
     Finanzuebersicht.Core.Services.IClock? clock = null,
-    ILogger<RecurringGenerationService>? logger = null) : IRecurringGenerationService
+    ILogger<RecurringGenerationService>? logger = null,
+    IAccountRepository? accountRepository = null) : IRecurringGenerationService
 {
     private readonly IRecurringTransactionRepository _recurringRepository = recurringRepository;
     private readonly ITransactionRepository _transactionRepository = transactionRepository;
+    private readonly IAccountRepository? _accountRepository = accountRepository;
     private readonly Finanzuebersicht.Core.Services.IClock _clock = clock ?? Finanzuebersicht.Core.Services.SystemClock.Instance;
     private readonly ILogger<RecurringGenerationService>? _logger = logger;
     private const int MaxInstancesPerRun = 500;
@@ -18,6 +20,7 @@ public class RecurringGenerationService(
     public async Task GeneratePendingRecurringTransactionsAsync(CancellationToken cancellationToken = default)
     {
         var recurringItems = await _recurringRepository.GetRecurringTransactionsAsync();
+        var defaultAccountId = await ResolveDefaultAccountIdAsync(cancellationToken);
         var today = _clock.Today;
 
         foreach (var recurring in recurringItems.Where(item => item.Aktiv))
@@ -67,10 +70,12 @@ public class RecurringGenerationService(
                     Titel = recurring.Titel,
                     Datum = transactionDate,
                     KategorieId = recurring.KategorieId,
+                    AccountId = recurring.AccountId ?? defaultAccountId,
                     Typ = recurring.Typ,
                     DauerauftragId = recurring.Id
                 };
 
+                recurring.AccountId ??= defaultAccountId;
                 await _transactionRepository.SaveTransactionAsync(transaction);
                 generatedCount++;
 
@@ -90,6 +95,16 @@ public class RecurringGenerationService(
 
             await _recurringRepository.SaveRecurringTransactionAsync(recurring);
         }
+    }
+
+    private async Task<string?> ResolveDefaultAccountIdAsync(CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        if (_accountRepository == null) return null;
+
+        var accounts = await _accountRepository.GetAccountsAsync();
+        return accounts.FirstOrDefault(a => a.SystemKey == Finanzuebersicht.Constants.SystemAccountKeys.Default)?.Id
+            ?? accounts.FirstOrDefault()?.Id;
     }
 
     private static DateTime GetNextInstance(RecurringTransaction recurring, DateTime fromDate)

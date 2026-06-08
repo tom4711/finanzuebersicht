@@ -11,7 +11,8 @@ namespace Finanzuebersicht.Core.Services
         ITransactionRepository transactionRepository,
         ILogger<ImportService> logger,
         ICategoryRepository? categoryRepository = null,
-        CategorizationService? categorizationService = null)
+        CategorizationService? categorizationService = null,
+        IAccountRepository? accountRepository = null)
     {
         private const double HistoricalConfidenceThreshold = 0.5;
 
@@ -20,6 +21,7 @@ namespace Finanzuebersicht.Core.Services
         private readonly ILogger<ImportService> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         private readonly ICategoryRepository? _categoryRepository = categoryRepository;
         private readonly CategorizationService? _categorizationService = categorizationService;
+        private readonly IAccountRepository? _accountRepository = accountRepository;
 
         public async Task<ImportResult> ImportFromCsvAsync(
             Stream csvStream,
@@ -66,6 +68,7 @@ namespace Finanzuebersicht.Core.Services
 
             var dtos = parseResult.Dtos!;
             var categories = await LoadCategoriesAsync().ConfigureAwait(false);
+            var defaultAccountId = await ResolveDefaultAccountIdAsync(cancellationToken).ConfigureAwait(false);
             var existingInRange = await LoadExistingTransactionsForDtosAsync(dtos).ConfigureAwait(false);
             var historicalCategories = await BuildHistoricalCategoryMapAsync(dtos, categories, cancellationToken).ConfigureAwait(false);
 
@@ -102,7 +105,7 @@ namespace Finanzuebersicht.Core.Services
                     continue;
                 }
 
-                var transaction = CreateTransaction(dto, accountId);
+                var transaction = CreateTransaction(dto, accountId ?? defaultAccountId);
                 if (ContainsDuplicate(existingInRange, transaction) || ContainsDuplicate(batchTransactions, transaction))
                 {
                     rows.Add(new ImportPreviewRow
@@ -171,6 +174,7 @@ namespace Finanzuebersicht.Core.Services
                 .ToList();
 
             var existingInRange = await LoadExistingTransactionsForRowsAsync(rowsToCommit).ConfigureAwait(false);
+            var defaultAccountId = await ResolveDefaultAccountIdAsync(cancellationToken).ConfigureAwait(false);
             var imported = new List<Transaction>();
             var duplicates = new List<Transaction>();
             var saveErrors = new List<string>();
@@ -182,6 +186,8 @@ namespace Finanzuebersicht.Core.Services
                 cancellationToken.ThrowIfCancellationRequested();
 
                 var transaction = CloneTransaction(row.Transaction);
+                if (string.IsNullOrWhiteSpace(transaction.AccountId))
+                    transaction.AccountId = defaultAccountId;
                 if (string.IsNullOrWhiteSpace(transaction.KategorieId))
                 {
                     uncategorizedCategoryId ??= await EnsureUncategorizedCategoryAsync(cancellationToken).ConfigureAwait(false);
@@ -450,6 +456,26 @@ namespace Finanzuebersicht.Core.Services
             {
                 _logger.LogWarning(ex, "ImportService: failed to reload transactions for commit duplicate check");
                 return [];
+            }
+        }
+
+        private async Task<string?> ResolveDefaultAccountIdAsync(CancellationToken cancellationToken)
+        {
+            if (_accountRepository is null)
+                return null;
+
+            cancellationToken.ThrowIfCancellationRequested();
+
+            try
+            {
+                var accounts = await _accountRepository.GetAccountsAsync().ConfigureAwait(false);
+                return accounts.FirstOrDefault(a => a.SystemKey == Finanzuebersicht.Constants.SystemAccountKeys.Default)?.Id
+                    ?? accounts.FirstOrDefault()?.Id;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "ImportService: failed to load accounts for default selection");
+                return null;
             }
         }
 

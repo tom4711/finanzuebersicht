@@ -27,15 +27,25 @@ public class TransactionsViewModelTests
         categoryRepository.GetCategoriesAsync()
             .Returns(Task.FromResult(new List<Category>()));
 
+        var accountRepository = Substitute.For<IAccountRepository>();
+        accountRepository.GetAccountsAsync()
+            .Returns(Task.FromResult(new List<Account>()));
+
         var searchCategoryRepository = Substitute.For<ICategoryRepository>();
         searchCategoryRepository.GetCategoriesAsync()
             .Returns(Task.FromResult(new List<Category>()));
+
+        var searchAccountRepository = Substitute.For<IAccountRepository>();
+        searchAccountRepository.GetAccountsAsync()
+            .Returns(Task.FromResult(new List<Account>()));
 
         var viewModel = CreateSut(
             transactionRepository,
             categoryRepository,
             searchTransactionRepository,
             searchCategoryRepository,
+            accountRepository,
+            searchAccountRepository,
             out _,
             out _,
             out _,
@@ -86,15 +96,25 @@ public class TransactionsViewModelTests
         categoryRepository.GetCategoriesAsync()
             .Returns(Task.FromResult(new List<Category>()));
 
+        var accountRepository = Substitute.For<IAccountRepository>();
+        accountRepository.GetAccountsAsync()
+            .Returns(Task.FromResult(new List<Account>()));
+
         var searchCategoryRepository = Substitute.For<ICategoryRepository>();
         searchCategoryRepository.GetCategoriesAsync()
             .Returns(Task.FromResult(new List<Category>()));
+
+        var searchAccountRepository = Substitute.For<IAccountRepository>();
+        searchAccountRepository.GetAccountsAsync()
+            .Returns(Task.FromResult(new List<Account>()));
 
         var viewModel = CreateSut(
             transactionRepository,
             categoryRepository,
             searchTransactionRepository,
             searchCategoryRepository,
+            accountRepository,
+            searchAccountRepository,
             out _,
             out _,
             out _,
@@ -123,6 +143,8 @@ public class TransactionsViewModelTests
             Substitute.For<ICategoryRepository>(),
             Substitute.For<ITransactionRepository>(),
             Substitute.For<ICategoryRepository>(),
+            Substitute.For<IAccountRepository>(),
+            Substitute.For<IAccountRepository>(),
             out var dialogService,
             out _,
             out _,
@@ -149,6 +171,8 @@ public class TransactionsViewModelTests
             Substitute.For<ICategoryRepository>(),
             Substitute.For<ITransactionRepository>(),
             Substitute.For<ICategoryRepository>(),
+            Substitute.For<IAccountRepository>(),
+            Substitute.For<IAccountRepository>(),
             out var dialogService,
             out _,
             out _,
@@ -163,6 +187,37 @@ public class TransactionsViewModelTests
         await viewModel.DeleteTransaktionCommand.ExecuteAsync(transaction);
 
         await deleteRepository.DidNotReceive().DeleteTransactionAsync(Arg.Any<string>());
+    }
+
+    [Fact]
+    public async Task DeleteTransaktion_WhenTransfer_DeletesWholeGroup()
+    {
+        var deleteRepository = Substitute.For<ITransactionRepository>();
+        deleteRepository.DeleteTransferGroupAsync(Arg.Any<string>()).Returns(Task.CompletedTask);
+        deleteRepository.GetTransactionsAsync(Arg.Any<DateTime>(), Arg.Any<DateTime>())
+            .Returns(Task.FromResult(new List<Transaction>()));
+
+        var viewModel = CreateSut(
+            deleteRepository,
+            Substitute.For<ICategoryRepository>(),
+            Substitute.For<ITransactionRepository>(),
+            Substitute.For<ICategoryRepository>(),
+            Substitute.For<IAccountRepository>(),
+            Substitute.For<IAccountRepository>(),
+            out var dialogService,
+            out _,
+            out _,
+            out _,
+            deleteRepository);
+
+        dialogService.ShowConfirmationAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+            .Returns(Task.FromResult(true));
+
+        var transaction = new Transaction { Id = "tx-1", Titel = "Umbuchung", IsTransfer = true, TransferGroupId = "grp-1" };
+
+        await viewModel.DeleteTransaktionCommand.ExecuteAsync(transaction);
+
+        await deleteRepository.Received(1).DeleteTransferGroupAsync("grp-1");
     }
 
     [Fact]
@@ -181,8 +236,12 @@ public class TransactionsViewModelTests
         importCategoryRepository.GetCategoriesAsync()
             .Returns(Task.FromResult(new List<Category>()));
 
+        var importAccountRepository = Substitute.For<IAccountRepository>();
+        importAccountRepository.GetAccountsAsync()
+            .Returns(Task.FromResult(new List<Account>()));
+
         var importLogger = Substitute.For<ILogger<ImportService>>();
-        var importService = new ImportService([parser], importRepository, importLogger, importCategoryRepository);
+        var importService = new ImportService([parser], importRepository, importLogger, importCategoryRepository, null, importAccountRepository);
 
         var pickedFile = new PickFileResult("test.csv", () => Task.FromResult<Stream>(new MemoryStream()));
         var filePicker = Substitute.For<IFilePicker>();
@@ -195,6 +254,8 @@ public class TransactionsViewModelTests
             Substitute.For<ICategoryRepository>(),
             Substitute.For<ITransactionRepository>(),
             Substitute.For<ICategoryRepository>(),
+            Substitute.For<IAccountRepository>(),
+            Substitute.For<IAccountRepository>(),
             out _,
             out _,
             out _,
@@ -214,6 +275,8 @@ public class TransactionsViewModelTests
         ICategoryRepository loadCategoryRepository,
         ITransactionRepository searchTransactionRepository,
         ICategoryRepository searchCategoryRepository,
+        IAccountRepository loadAccountRepository,
+        IAccountRepository searchAccountRepository,
         out IDialogService dialogService,
         out ILocalizationService localizationService,
         out IMainThreadDispatcher dispatcher,
@@ -248,20 +311,23 @@ public class TransactionsViewModelTests
             [],
             Substitute.For<ITransactionRepository>(),
             Substitute.For<ILogger<ImportService>>(),
-            Substitute.For<ICategoryRepository>());
+            Substitute.For<ICategoryRepository>(),
+            null,
+            Substitute.For<IAccountRepository>());
 
         deleteTransactionRepository ??= Substitute.For<ITransactionRepository>();
         deleteTransactionRepository.DeleteTransactionAsync(Arg.Any<string>()).Returns(Task.CompletedTask);
 
         return new TransactionsViewModel(
             new DeleteTransactionUseCase(deleteTransactionRepository),
-            new LoadTransactionsMonthUseCase(loadTransactionRepository, loadCategoryRepository),
-            new SearchTransactionsUseCase(searchTransactionRepository, searchCategoryRepository),
+            new LoadTransactionsMonthUseCase(loadTransactionRepository, loadCategoryRepository, loadAccountRepository),
+            new SearchTransactionsUseCase(searchTransactionRepository, searchCategoryRepository, searchAccountRepository),
             navigationService,
             importService,
             dialogService,
             localizationService,
             loadCategoryRepository,
+            loadAccountRepository,
             dispatcher,
             filePicker,
             appEvents,
