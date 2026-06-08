@@ -89,6 +89,14 @@ public static class RecurringScheduleCalculator
     /// Returns null if the transaction is not active or outside its date range.
     /// </summary>
     public static DateTime? GetNextDueDate(RecurringTransaction recurring, DateTime referenceDate)
+        => GetNextDueInstance(recurring, referenceDate)?.EffectiveDate;
+
+    /// <summary>
+    /// Returns the next schedule instance and its effective date (after Skip/Shift exceptions).
+    /// </summary>
+    public static (DateTime InstanceDate, DateTime EffectiveDate)? GetNextDueInstance(
+        RecurringTransaction recurring,
+        DateTime referenceDate)
     {
         if (!recurring.Aktiv || !IsWithinActiveRange(recurring, referenceDate))
             return null;
@@ -100,7 +108,8 @@ public static class RecurringScheduleCalculator
         while (candidate.Date < referenceDate.Date)
             candidate = GetNextInstance(recurring, candidate);
 
-        return ApplyExceptions(recurring, candidate);
+        var effective = ApplyExceptions(recurring, candidate);
+        return (candidate.Date, effective);
     }
 
     /// <summary>

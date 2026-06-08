@@ -12,6 +12,8 @@
   <data name="Nav_Kategorien" xml:space="preserve"><value>Categories</value></data>
   <data name="Nav_Verwaltung" xml:space="preserve"><value>Management</value></data>
   <data name="Nav_Einstellungen" xml:space="preserve"><value>Settings</value></data>
+  <data name="Nav_Cashflow" xml:space="preserve"><value>Cashflow (30 days)</value></data>
+  <data name="Title_Cashflow" xml:space="preserve"><value>Cashflow Outlook</value></data>
 
   <!-- Page Titles -->
   <data name="Title_Transaktion" xml:space="preserve"><value>Transaction</value></data>
@@ -33,6 +35,7 @@
   <data name="Lbl_Kategorie" xml:space="preserve"><value>Category</value></data>
   <data name="Lbl_Konto" xml:space="preserve"><value>Account</value></data>
   <data name="Lbl_AlleKonten" xml:space="preserve"><value>All Accounts</value></data>
+  <data name="Lbl_Kontosaldo" xml:space="preserve"><value>Account Balance</value></data>
   <data name="Lbl_Archiviert" xml:space="preserve"><value>Archived</value></data>
   <data name="Lbl_VonKonto" xml:space="preserve"><value>From account</value></data>
   <data name="Lbl_NachKonto" xml:space="preserve"><value>To account</value></data>
@@ -95,6 +98,7 @@
   <data name="Empty_KeineDashboardDaten" xml:space="preserve"><value>No data for this period</value></data>
   <data name="Empty_KeineJahresDaten" xml:space="preserve"><value>No data for this year</value></data>
   <data name="Empty_NochKeineTransaktionen" xml:space="preserve"><value>No transactions yet</value></data>
+  <data name="Empty_KeinCashflow" xml:space="preserve"><value>No upcoming income or expenses in the next 30 days.</value></data>
   <data name="Empty_KeineKonten" xml:space="preserve"><value>No accounts yet</value></data>
   <data name="Empty_KontenHinweis" xml:space="preserve"><value>Create an account to assign transactions and recurring items.</value></data>
   <data name="Btn_ZuTransaktionen" xml:space="preserve"><value>Add First Transaction</value></data>
@@ -118,6 +122,13 @@
   <data name="Dlg_KategorieLoeschenFrage" xml:space="preserve"><value>Really delete "{0}"?</value></data>
   <data name="Dlg_DauerauftragLoeschen" xml:space="preserve"><value>Delete Recurring Transaction</value></data>
   <data name="Dlg_DauerauftragLoeschenFrage" xml:space="preserve"><value>Really delete "{0}"?</value></data>
+  <data name="Dlg_DauerauftragBuchen" xml:space="preserve"><value>Book Recurring Transaction</value></data>
+  <data name="Dlg_DauerauftragBuchenFrage" xml:space="preserve"><value>Book "{0}" for {1}?</value></data>
+  <data name="Dlg_DauerauftragUeberspringen" xml:space="preserve"><value>Skip Instance</value></data>
+  <data name="Dlg_DauerauftragUeberspringenFrage" xml:space="preserve"><value>Skip "{0}" for this due date?</value></data>
+  <data name="Btn_AlsAusgefuehrtBuchen" xml:space="preserve"><value>Book</value></data>
+  <data name="Btn_TerminUeberspringen" xml:space="preserve"><value>Skip</value></data>
+  <data name="Btn_TerminVerschieben" xml:space="preserve"><value>Reschedule</value></data>
   <data name="Dlg_TransaktionLoeschen" xml:space="preserve"><value>Delete Transaction</value></data>
   <data name="Dlg_TransaktionLoeschenFrage" xml:space="preserve"><value>Really delete "{0}"?</value></data>
   <data name="Dlg_UmbuchungLoeschen" xml:space="preserve"><value>Delete Transfer</value></data>
@@ -235,6 +246,11 @@ Please restart the app.</value></data>
   <data name="Lbl_AktuellerBetrag" xml:space="preserve"><value>Current Amount</value></data>
   <data name="Lbl_Faelligkeit" xml:space="preserve"><value>Due Date</value></data>
   <data name="Lbl_Fortschritt" xml:space="preserve"><value>Progress</value></data>
+  <data name="Lbl_SparZiel" xml:space="preserve"><value>Savings Goal</value></data>
+  <data name="Hint_SparZielOptional" xml:space="preserve"><value>No savings goal</value></data>
+  <data name="Lbl_MonatlicheSparrate" xml:space="preserve"><value>Monthly savings rate</value></data>
+  <data name="Lbl_VerknuepftAusBuchungen" xml:space="preserve"><value>From transactions:</value></data>
+  <data name="Lbl_PrognoseZielerreichung" xml:space="preserve"><value>Forecast:</value></data>
   <data name="Lbl_Forecast" xml:space="preserve"><value>Forecast</value></data>
   <data name="Lbl_ForecastNaechsterMonat" xml:space="preserve"><value>Expected next month (Ø 3M)</value></data>
   <data name="Lbl_SuchergebnisseAnzahl" xml:space="preserve"><value>{0} result(s)</value></data>

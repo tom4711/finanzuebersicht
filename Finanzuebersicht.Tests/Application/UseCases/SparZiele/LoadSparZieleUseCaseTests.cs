@@ -1,0 +1,69 @@
+using Finanzuebersicht.Application.UseCases.SparZiele;
+using Finanzuebersicht.Models;
+using Finanzuebersicht.Tests.TestHelpers;
+
+namespace Finanzuebersicht.Tests.Application.UseCases.SparZiele;
+
+public class LoadSparZieleUseCaseTests
+{
+    [Fact]
+    public async Task ExecuteAsync_IncludesLinkedTransactionAmountsAndForecast()
+    {
+        var sparZielRepository = Substitute.For<ISparZielRepository>();
+        sparZielRepository.GetSparZieleAsync().Returns(new List<SparZiel>
+        {
+            new()
+            {
+                Id = "goal-1",
+                Titel = "Urlaub",
+                ZielBetrag = 1000m,
+                AktuellerBetrag = 100m,
+                MonatlicheSparrate = 200m
+            }
+        });
+
+        var transactionRepository = Substitute.For<ITransactionRepository>();
+        transactionRepository.GetTransactionsAsync(Arg.Any<DateTime>(), Arg.Any<DateTime>())
+            .Returns(new List<Transaction>
+            {
+                new() { SparZielId = "goal-1", Betrag = 150m, Typ = TransactionType.Einnahme }
+            });
+
+        var clock = new FixedClock(new DateTime(2026, 3, 1));
+        var sut = new LoadSparZieleUseCase(sparZielRepository, transactionRepository, clock);
+
+        var result = await sut.ExecuteAsync();
+        var summary = Assert.Single(result);
+
+        Assert.Equal(150m, summary.VerknuepfterBetrag);
+        Assert.Equal(250m, summary.GesamtFortschritt);
+        Assert.NotNull(summary.PrognostiziertesDatum);
+        Assert.Equal(new DateTime(2026, 7, 1), summary.PrognostiziertesDatum);
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_IgnoresLinkedAusgabenForProgress()
+    {
+        var sparZielRepository = Substitute.For<ISparZielRepository>();
+        sparZielRepository.GetSparZieleAsync().Returns(new List<SparZiel>
+        {
+            new() { Id = "goal-1", Titel = "Urlaub", ZielBetrag = 1000m, AktuellerBetrag = 0m }
+        });
+
+        var transactionRepository = Substitute.For<ITransactionRepository>();
+        transactionRepository.GetTransactionsAsync(Arg.Any<DateTime>(), Arg.Any<DateTime>())
+            .Returns(new List<Transaction>
+            {
+                new() { SparZielId = "goal-1", Betrag = 200m, Typ = TransactionType.Einnahme },
+                new() { SparZielId = "goal-1", Betrag = 500m, Typ = TransactionType.Ausgabe }
+            });
+
+        var sut = new LoadSparZieleUseCase(sparZielRepository, transactionRepository, new FixedClock(new DateTime(2026, 3, 1)));
+
+        var result = await sut.ExecuteAsync();
+        var summary = Assert.Single(result);
+
+        Assert.Equal(200m, summary.VerknuepfterBetrag);
+        Assert.Equal(200m, summary.GesamtFortschritt);
+    }
+}

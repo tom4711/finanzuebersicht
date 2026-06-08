@@ -17,4 +17,6 @@ public class Transaction
 
     // Detaillierter Verwendungszweck / Beschreibung aus dem Kontoauszug
     public string Verwendungszweck { get; set; } = string.Empty;
+
+    public string? SparZielId { get; set; }
 }

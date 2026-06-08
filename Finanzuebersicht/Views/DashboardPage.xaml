@@ -51,6 +51,38 @@
                     </Grid>
                 </Border>
 
+                <VerticalStackLayout Spacing="8"
+                                     IsVisible="{Binding HasDueItems}"
+                                     BindableLayout.ItemsSource="{Binding DueRecurringItems}">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate>
+                            <Border StrokeShape="RoundRectangle 10"
+                                    Stroke="{AppThemeBinding Light=#E5E5EA, Dark=#3A3A3C}"
+                                    BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1C1C1E}"
+                                    Padding="12">
+                                <VerticalStackLayout Spacing="8">
+                                    <Label Text="{Binding Recurring.Titel}" FontSize="15" FontAttributes="Bold" />
+                                    <Label Text="{Binding Hint}" FontSize="13" TextColor="Gray" />
+                                    <HorizontalStackLayout Spacing="8">
+                                        <Button Text="{loc:Translate Btn_AlsAusgefuehrtBuchen}"
+                                                FontSize="12"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:DashboardViewModel}}, Path=BookDueRecurringCommand}"
+                                                CommandParameter="{Binding .}" />
+                                        <Button Text="{loc:Translate Btn_TerminUeberspringen}"
+                                                FontSize="12"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:DashboardViewModel}}, Path=SkipDueRecurringCommand}"
+                                                CommandParameter="{Binding .}" />
+                                        <Button Text="{loc:Translate Btn_TerminVerschieben}"
+                                                FontSize="12"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:DashboardViewModel}}, Path=ShiftDueRecurringCommand}"
+                                                CommandParameter="{Binding .}" />
+                                    </HorizontalStackLayout>
+                                </VerticalStackLayout>
+                            </Border>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </VerticalStackLayout>
+
                 <Grid ColumnDefinitions="70,*" ColumnSpacing="8">
                     <Label Grid.Column="0"
                            Text="{loc:Translate Lbl_Konto}"
@@ -62,6 +94,29 @@
                             ItemDisplayBinding="{Binding DisplayName}"
                             SelectedItem="{Binding SelectedKontoFilterItem}" />
                 </Grid>
+
+                <Grid ColumnDefinitions="70,*" ColumnSpacing="8"
+                      IsVisible="{Binding HasSelectedAccountSaldo}">
+                    <Label Grid.Column="0"
+                           Text="{loc:Translate Lbl_Kontosaldo}"
+                           FontSize="13"
+                           TextColor="Gray"
+                           VerticalTextAlignment="Center" />
+                    <Label Grid.Column="1"
+                           Text="{Binding SelectedAccountSaldo, Converter={StaticResource Currency}}"
+                           FontSize="15"
+                           FontAttributes="Bold"
+                           TextColor="{Binding SelectedAccountSaldo, Converter={StaticResource BilanzColor}}"
+                           VerticalTextAlignment="Center" />
+                </Grid>
+
+                <Button Text="{loc:Translate Nav_Cashflow}"
+                        Command="{Binding NavigateToCashflowCommand}"
+                        BackgroundColor="Transparent"
+                        TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                        FontSize="14"
+                        HorizontalOptions="Start"
+                        Padding="0" />
 
                 <!-- Global Empty State – keine Transaktionen vorhanden -->
                 <VerticalStackLayout Spacing="16" HorizontalOptions="Center" Margin="0,40,0,0"

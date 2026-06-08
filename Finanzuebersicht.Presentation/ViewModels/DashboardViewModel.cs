@@ -2,9 +2,11 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Finanzuebersicht.Application.UseCases.Accounts;
 using Finanzuebersicht.Application.UseCases.Dashboard;
 using Finanzuebersicht.Application.UseCases.RecurringTransactions;
 using Finanzuebersicht.Models;
+using Finanzuebersicht.Navigation;
 using Finanzuebersicht.Resources.Strings;
 using Microsoft.Extensions.Logging;
 
@@ -15,8 +17,12 @@ public partial class DashboardViewModel : MonthNavigationViewModel
     private readonly LoadDashboardYearUseCase _loadDashboardYearUseCase;
     private readonly LoadForecastUseCase _loadForecastUseCase;
     private readonly GetDueRecurringWithHintsUseCase _getDueRecurringUseCase;
+    private readonly BookDueRecurringInstanceUseCase _bookDueRecurringUseCase;
+    private readonly SkipDueRecurringInstanceUseCase _skipDueRecurringUseCase;
+    private readonly IDialogService _dialogService;
     private readonly IBudgetRepository _budgetRepository;
     private readonly IAccountRepository _accountRepository;
+    private readonly GetAccountBalancesUseCase _getAccountBalancesUseCase;
     private readonly ILocalizationService _loc;
     private readonly INavigationService _navigationService;
     private readonly IClock _clock;
@@ -124,6 +130,12 @@ public partial class DashboardViewModel : MonthNavigationViewModel
     private string? selectedAccountId;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasSelectedAccountSaldo))]
+    private decimal selectedAccountSaldo;
+
+    public bool HasSelectedAccountSaldo => !string.IsNullOrWhiteSpace(SelectedAccountId);
+
+    [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsYearView))]
     [NotifyPropertyChangedFor(nameof(ShowMonthView))]
     [NotifyPropertyChangedFor(nameof(ShowYearView))]
@@ -149,6 +161,9 @@ public partial class DashboardViewModel : MonthNavigationViewModel
     [NotifyPropertyChangedFor(nameof(HasDueItems))]
     [NotifyPropertyChangedFor(nameof(DueRecurringText))]
     private int dueRecurringCount;
+
+    [ObservableProperty]
+    private ObservableCollection<DueRecurringItem> dueRecurringItems = [];
 
     public bool HasDueItems => DueRecurringCount > 0;
 
@@ -177,11 +192,15 @@ public partial class DashboardViewModel : MonthNavigationViewModel
         LoadDashboardYearUseCase loadDashboardYearUseCase,
         LoadForecastUseCase loadForecastUseCase,
         GetDueRecurringWithHintsUseCase getDueRecurringUseCase,
+        BookDueRecurringInstanceUseCase bookDueRecurringUseCase,
+        SkipDueRecurringInstanceUseCase skipDueRecurringUseCase,
         IBudgetRepository budgetRepository,
         ILocalizationService localizationService,
         INavigationService navigationService,
+        IDialogService dialogService,
         ITransactionRepository transactionRepository,
         IAccountRepository accountRepository,
+        GetAccountBalancesUseCase getAccountBalancesUseCase,
         IClock? clock = null,
         ILogger<DashboardViewModel>? logger = null) : base(clock)
     {
@@ -192,11 +211,15 @@ public partial class DashboardViewModel : MonthNavigationViewModel
         _loadDashboardYearUseCase = loadDashboardYearUseCase;
         _loadForecastUseCase = loadForecastUseCase;
         _getDueRecurringUseCase = getDueRecurringUseCase;
+        _bookDueRecurringUseCase = bookDueRecurringUseCase;
+        _skipDueRecurringUseCase = skipDueRecurringUseCase;
         _budgetRepository = budgetRepository;
         _loc = localizationService;
         _navigationService = navigationService;
+        _dialogService = dialogService;
         _transactionRepository = transactionRepository;
         _accountRepository = accountRepository;
+        _getAccountBalancesUseCase = getAccountBalancesUseCase;
         _logger = logger;
         UpdateJahrAnzeige();
     }
@@ -212,6 +235,7 @@ public partial class DashboardViewModel : MonthNavigationViewModel
         {
             await EnsureMinJahrLoadedAsync();
             await EnsureAccountFilterLoadedAsync();
+            await UpdateSelectedAccountSaldoAsync();
             if (IsMonthView)
             {
                 await LadeMonatAsync();
@@ -251,6 +275,18 @@ public partial class DashboardViewModel : MonthNavigationViewModel
             _logger?.LogError(ex, "DashboardViewModel: EnsureMinJahrLoadedAsync failed");
         }
         PreviousYearCommand.NotifyCanExecuteChanged();
+    }
+
+    private async Task UpdateSelectedAccountSaldoAsync()
+    {
+        if (string.IsNullOrWhiteSpace(SelectedAccountId))
+        {
+            SelectedAccountSaldo = 0;
+            return;
+        }
+
+        var balances = await _getAccountBalancesUseCase.ExecuteAsync();
+        SelectedAccountSaldo = balances.FirstOrDefault(b => b.AccountId == SelectedAccountId)?.Saldo ?? 0;
     }
 
     private async Task EnsureAccountFilterLoadedAsync()
@@ -315,7 +351,7 @@ public partial class DashboardViewModel : MonthNavigationViewModel
         if (isCurrentMonth)
         {
             var nextMonth = AktuellerMonat.AddMonths(1);
-            var forecast = await _loadForecastUseCase.ExecuteAsync(nextMonth.Year, nextMonth.Month);
+            var forecast = await _loadForecastUseCase.ExecuteAsync(nextMonth.Year, nextMonth.Month, accountId: SelectedAccountId);
             ForecastTotal = forecast.ForecastedTotal;
             HasForecast = forecast.ForecastedTotal > 0;
         }
@@ -347,7 +383,7 @@ public partial class DashboardViewModel : MonthNavigationViewModel
             var nextMonth = new DateTime(today.Year, today.Month, 1).AddMonths(1);
             if (nextMonth.Year == _aktuellesJahr)
             {
-                var forecast = await _loadForecastUseCase.ExecuteAsync(nextMonth.Year, nextMonth.Month);
+                var forecast = await _loadForecastUseCase.ExecuteAsync(nextMonth.Year, nextMonth.Month, accountId: SelectedAccountId);
                 ForecastBarMonth = nextMonth.Month;
                 ForecastBarValue = forecast.ForecastedTotal;
             }
@@ -410,7 +446,75 @@ public partial class DashboardViewModel : MonthNavigationViewModel
     private async Task LadeFaelligeDauerauftraegeAsync()
     {
         var items = await _getDueRecurringUseCase.ExecuteAsync(_clock.Today);
-        DueRecurringCount = items.Count(i => i.Hint != null);
+        var actionable = items.Where(i => i.Hint != null).ToList();
+        DueRecurringCount = actionable.Count;
+        DueRecurringItems = new ObservableCollection<DueRecurringItem>(actionable);
+    }
+
+    [RelayCommand]
+    private async Task BookDueRecurring(DueRecurringItem? item)
+    {
+        if (item == null) return;
+
+        var confirm = await _dialogService.ShowConfirmationAsync(
+            _loc.GetString(ResourceKeys.Dlg_DauerauftragBuchen),
+            _loc.GetString(ResourceKeys.Dlg_DauerauftragBuchenFrage, item.Recurring.Titel, item.DueDate.ToString("d")),
+            _loc.GetString(ResourceKeys.Btn_Ja),
+            _loc.GetString(ResourceKeys.Btn_Nein));
+        if (!confirm) return;
+
+        try
+        {
+            await _bookDueRecurringUseCase.ExecuteAsync(item.Recurring.Id, item.InstanceDate);
+            await LoadDashboard();
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "BookDueRecurring failed");
+            await _dialogService.ShowAlertAsync(
+                _loc.GetString(ResourceKeys.Err_Titel),
+                _loc.GetString(ResourceKeys.Err_SpeichernFehlgeschlagen, ex.Message),
+                _loc.GetString(ResourceKeys.Btn_OK));
+        }
+    }
+
+    [RelayCommand]
+    private async Task SkipDueRecurring(DueRecurringItem? item)
+    {
+        if (item == null) return;
+
+        var confirm = await _dialogService.ShowConfirmationAsync(
+            _loc.GetString(ResourceKeys.Dlg_DauerauftragUeberspringen),
+            _loc.GetString(ResourceKeys.Dlg_DauerauftragUeberspringenFrage, item.Recurring.Titel),
+            _loc.GetString(ResourceKeys.Btn_Ja),
+            _loc.GetString(ResourceKeys.Btn_Nein));
+        if (!confirm) return;
+
+        try
+        {
+            await _skipDueRecurringUseCase.ExecuteAsync(item.Recurring.Id, item.InstanceDate);
+            await LoadDashboard();
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "SkipDueRecurring failed");
+            await _dialogService.ShowAlertAsync(
+                _loc.GetString(ResourceKeys.Err_Titel),
+                _loc.GetString(ResourceKeys.Err_SpeichernFehlgeschlagen, ex.Message),
+                _loc.GetString(ResourceKeys.Btn_OK));
+        }
+    }
+
+    [RelayCommand]
+    private async Task ShiftDueRecurring(DueRecurringItem? item)
+    {
+        if (item == null) return;
+
+        await _navigationService.GoToAsync(Routes.RecurringInstanceShift, new Dictionary<string, object>
+        {
+            ["RecurringId"] = item.Recurring.Id,
+            ["InstanceDate"] = item.InstanceDate
+        });
     }
 
     [RelayCommand]
@@ -423,5 +527,11 @@ public partial class DashboardViewModel : MonthNavigationViewModel
     private async Task NavigateToTransaktionen()
     {
         await _navigationService.GoToAsync("//TransactionsPage");
+    }
+
+    [RelayCommand]
+    private async Task NavigateToCashflow()
+    {
+        await _navigationService.GoToAsync(Routes.Cashflow);
     }
 }

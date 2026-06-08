@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using Microsoft.Extensions.Logging;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Finanzuebersicht.Application.UseCases.SparZiele;
 using Finanzuebersicht.Application.UseCases.Transactions;
 using Finanzuebersicht.Models;
 using Finanzuebersicht.Navigation;
@@ -12,6 +13,7 @@ namespace Finanzuebersicht.ViewModels;
 public partial class TransactionDetailViewModel(
     SaveTransactionDetailUseCase saveTransactionDetailUseCase,
     LoadTransactionDetailDataUseCase loadTransactionDetailDataUseCase,
+    LoadSparZieleUseCase loadSparZieleUseCase,
     ITransactionValidationService validationService,
     ILocalizationService localizationService,
     INavigationService navigationService,
@@ -22,10 +24,12 @@ public partial class TransactionDetailViewModel(
 {
     private readonly SaveTransactionDetailUseCase _saveTransactionDetailUseCase = saveTransactionDetailUseCase;
     private readonly LoadTransactionDetailDataUseCase _loadTransactionDetailDataUseCase = loadTransactionDetailDataUseCase;
+    private readonly LoadSparZieleUseCase _loadSparZieleUseCase = loadSparZieleUseCase;
     private readonly ITransactionValidationService _validationService = validationService;
     private Transaction? _existingTransaction;
     private string? _selectedKategorieId;
     private string? _selectedAccountId;
+    private string? _selectedSparZielId;
     private readonly ILocalizationService _loc = localizationService;
     private readonly INavigationService _navigationService = navigationService;
     private readonly IDialogService _dialogService = dialogService;
@@ -62,6 +66,15 @@ public partial class TransactionDetailViewModel(
     [ObservableProperty]
     private ObservableCollection<Account> accounts = [];
 
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasSparZiele))]
+    private ObservableCollection<SparZiel> sparZiele = [];
+
+    public bool HasSparZiele => SparZiele.Count > 0;
+
+    [ObservableProperty]
+    private SparZiel? selectedSparZiel;
+
     public Transaction? Transaction
     {
         set
@@ -71,6 +84,7 @@ public partial class TransactionDetailViewModel(
                 _existingTransaction = value;
                 _selectedKategorieId = value.KategorieId;
                 _selectedAccountId = value.AccountId;
+                _selectedSparZielId = value.SparZielId;
                 BetragText = value.Betrag.ToString("F2", System.Globalization.CultureInfo.CurrentCulture);
                 Titel = value.Titel;
                 Verwendungszweck = value.Verwendungszweck ?? string.Empty;
@@ -109,6 +123,10 @@ public partial class TransactionDetailViewModel(
         SelectedKategorie = data.SelectedKategorie;
         Accounts = new ObservableCollection<Account>(data.Accounts);
         SelectedAccount = data.SelectedAccount;
+
+        var summaries = await _loadSparZieleUseCase.ExecuteAsync();
+        SparZiele = new ObservableCollection<SparZiel>(summaries.Select(s => s.SparZiel));
+        SelectedSparZiel = SparZiele.FirstOrDefault(z => z.Id == _selectedSparZielId);
     }
 
     [RelayCommand]
@@ -154,7 +172,8 @@ public partial class TransactionDetailViewModel(
                 SelectedKategorie!.Id,
                 _selectedAccountId ?? SelectedAccount?.Id,
                 Typ,
-                Verwendungszweck);
+                Verwendungszweck,
+                SelectedSparZiel?.Id);
             await _navigationService.GoBackAsync();
         }
         catch (Exception ex)

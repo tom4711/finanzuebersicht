@@ -14,6 +14,7 @@ public partial class CategoriesViewModel(
     DeleteCategoryUseCase deleteCategoryUseCase,
     LoadCategoriesUseCase loadCategoriesUseCase,
     LoadAccountsUseCase loadAccountsUseCase,
+    GetAccountBalancesUseCase getAccountBalancesUseCase,
     ToggleAccountArchiveUseCase toggleAccountArchiveUseCase,
     DeleteAccountUseCase deleteAccountUseCase,
     ILocalizationService localizationService,
@@ -24,6 +25,7 @@ public partial class CategoriesViewModel(
     private readonly DeleteCategoryUseCase _deleteCategoryUseCase = deleteCategoryUseCase;
     private readonly LoadCategoriesUseCase _loadCategoriesUseCase = loadCategoriesUseCase;
     private readonly LoadAccountsUseCase _loadAccountsUseCase = loadAccountsUseCase;
+    private readonly GetAccountBalancesUseCase _getAccountBalancesUseCase = getAccountBalancesUseCase;
     private readonly ToggleAccountArchiveUseCase _toggleAccountArchiveUseCase = toggleAccountArchiveUseCase;
     private readonly DeleteAccountUseCase _deleteAccountUseCase = deleteAccountUseCase;
     private readonly ILocalizationService _loc = localizationService;
@@ -37,7 +39,7 @@ public partial class CategoriesViewModel(
     private ObservableCollection<Category> kategorien = [];
 
     [ObservableProperty]
-    private ObservableCollection<Account> konten = [];
+    private ObservableCollection<AccountListItem> konten = [];
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsKategorienVisible))]
@@ -67,7 +69,13 @@ public partial class CategoriesViewModel(
             var liste = await _loadCategoriesUseCase.ExecuteAsync();
             Kategorien = new ObservableCollection<Category>(liste);
             var accounts = await _loadAccountsUseCase.ExecuteAsync();
-            Konten = new ObservableCollection<Account>(accounts.OrderBy(a => a.IsArchived).ThenBy(a => a.Name));
+            var balances = await _getAccountBalancesUseCase.ExecuteAsync();
+            var balanceById = balances.ToDictionary(b => b.AccountId, b => b.Saldo);
+            Konten = new ObservableCollection<AccountListItem>(
+                accounts
+                    .OrderBy(a => a.IsArchived)
+                    .ThenBy(a => a.Name)
+                    .Select(a => new AccountListItem(a, balanceById.GetValueOrDefault(a.Id))));
         }
         catch (Exception ex)
         {
@@ -108,7 +116,7 @@ public partial class CategoriesViewModel(
     }
 
     [RelayCommand]
-    private async Task DeleteKonto(Account konto)
+    private async Task DeleteKonto(AccountListItem konto)
     {
         if (!konto.CanDelete) return;
 
@@ -120,7 +128,7 @@ public partial class CategoriesViewModel(
 
         try
         {
-            await _deleteAccountUseCase.ExecuteAsync(konto.Id);
+            await _deleteAccountUseCase.ExecuteAsync(konto.Account.Id);
             Konten.Remove(konto);
         }
         catch (Exception ex)
@@ -134,7 +142,7 @@ public partial class CategoriesViewModel(
     }
 
     [RelayCommand]
-    private async Task ToggleKontoArchivierung(Account konto)
+    private async Task ToggleKontoArchivierung(AccountListItem konto)
     {
         if (!konto.CanArchive) return;
 
@@ -152,7 +160,7 @@ public partial class CategoriesViewModel(
 
         try
         {
-            await _toggleAccountArchiveUseCase.ExecuteAsync(konto, setArchived);
+            await _toggleAccountArchiveUseCase.ExecuteAsync(konto.Account, setArchived);
             await LoadKategorien();
         }
         catch (Exception ex)
@@ -168,11 +176,11 @@ public partial class CategoriesViewModel(
     [RelayCommand]
     private async Task GoToDetail(object? item = null)
     {
-        if (item is Account konto)
+        if (item is AccountListItem kontoItem)
         {
             var kontoParameter = new Dictionary<string, object>
             {
-                ["Account"] = konto
+                ["Account"] = kontoItem.Account
             };
             await _navigationService.GoToAsync(Routes.AccountDetail, kontoParameter);
             return;

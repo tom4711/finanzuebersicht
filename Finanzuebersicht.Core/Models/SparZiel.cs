@@ -8,4 +8,5 @@ public class SparZiel
     public decimal ZielBetrag { get; set; }
     public decimal AktuellerBetrag { get; set; }
     public DateTime? Faelligkeitsdatum { get; set; }
+    public decimal? MonatlicheSparrate { get; set; }
 }

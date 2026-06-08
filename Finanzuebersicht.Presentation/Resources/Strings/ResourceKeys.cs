@@ -12,6 +12,7 @@ public static class ResourceKeys
     public const string Nav_Kategorien = nameof(Nav_Kategorien);
     public const string Nav_Verwaltung = nameof(Nav_Verwaltung);
     public const string Nav_Einstellungen = nameof(Nav_Einstellungen);
+    public const string Nav_Cashflow = nameof(Nav_Cashflow);
 
     // Page Titles
     public const string Title_Transaktion = nameof(Title_Transaktion);
@@ -22,6 +23,7 @@ public static class ResourceKeys
     public const string Title_Umbuchung = nameof(Title_Umbuchung);
     public const string Title_KontoHinzufuegen = nameof(Title_KontoHinzufuegen);
     public const string Title_KontoBearbeiten = nameof(Title_KontoBearbeiten);
+    public const string Title_Cashflow = nameof(Title_Cashflow);
 
     // Labels
     public const string Lbl_Name = nameof(Lbl_Name);
@@ -112,6 +114,13 @@ public static class ResourceKeys
     public const string Dlg_KategorieLoeschenFrage = nameof(Dlg_KategorieLoeschenFrage);
     public const string Dlg_DauerauftragLoeschen = nameof(Dlg_DauerauftragLoeschen);
     public const string Dlg_DauerauftragLoeschenFrage = nameof(Dlg_DauerauftragLoeschenFrage);
+    public const string Dlg_DauerauftragBuchen = nameof(Dlg_DauerauftragBuchen);
+    public const string Dlg_DauerauftragBuchenFrage = nameof(Dlg_DauerauftragBuchenFrage);
+    public const string Dlg_DauerauftragUeberspringen = nameof(Dlg_DauerauftragUeberspringen);
+    public const string Dlg_DauerauftragUeberspringenFrage = nameof(Dlg_DauerauftragUeberspringenFrage);
+    public const string Btn_AlsAusgefuehrtBuchen = nameof(Btn_AlsAusgefuehrtBuchen);
+    public const string Btn_TerminUeberspringen = nameof(Btn_TerminUeberspringen);
+    public const string Btn_TerminVerschieben = nameof(Btn_TerminVerschieben);
     public const string Dlg_TransaktionLoeschen = nameof(Dlg_TransaktionLoeschen);
     public const string Dlg_TransaktionLoeschenFrage = nameof(Dlg_TransaktionLoeschenFrage);
     public const string Dlg_UmbuchungLoeschen = nameof(Dlg_UmbuchungLoeschen);
@@ -221,11 +230,17 @@ public static class ResourceKeys
     public const string Lbl_AktuellerBetrag = nameof(Lbl_AktuellerBetrag);
     public const string Lbl_Faelligkeit = nameof(Lbl_Faelligkeit);
     public const string Lbl_Fortschritt = nameof(Lbl_Fortschritt);
+    public const string Lbl_SparZiel = nameof(Lbl_SparZiel);
+    public const string Hint_SparZielOptional = nameof(Hint_SparZielOptional);
+    public const string Lbl_MonatlicheSparrate = nameof(Lbl_MonatlicheSparrate);
+    public const string Lbl_VerknuepftAusBuchungen = nameof(Lbl_VerknuepftAusBuchungen);
+    public const string Lbl_PrognoseZielerreichung = nameof(Lbl_PrognoseZielerreichung);
     public const string Lbl_Forecast = nameof(Lbl_Forecast);
     public const string Lbl_ForecastNaechsterMonat = nameof(Lbl_ForecastNaechsterMonat);
     public const string Lbl_SuchergebnisseAnzahl = nameof(Lbl_SuchergebnisseAnzahl);
     public const string Lbl_AlleKategorien = nameof(Lbl_AlleKategorien);
     public const string Lbl_AlleKonten = nameof(Lbl_AlleKonten);
+    public const string Lbl_Kontosaldo = nameof(Lbl_Kontosaldo);
     public const string Lbl_Archiviert = nameof(Lbl_Archiviert);
     public const string Lbl_VonKonto = nameof(Lbl_VonKonto);
     public const string Lbl_NachKonto = nameof(Lbl_NachKonto);
@@ -270,6 +285,7 @@ public static class ResourceKeys
     public const string Hint_BudgetNull = nameof(Hint_BudgetNull);
     public const string Hint_ZielTitel = nameof(Hint_ZielTitel);
     public const string Empty_KeineSparZiele = nameof(Empty_KeineSparZiele);
+    public const string Empty_KeinCashflow = nameof(Empty_KeinCashflow);
     public const string Btn_NeuesZiel = nameof(Btn_NeuesZiel);
     public const string Btn_ZielHinzufuegen = nameof(Btn_ZielHinzufuegen);
 

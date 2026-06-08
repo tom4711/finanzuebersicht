@@ -1,5 +1,7 @@
+using Finanzuebersicht.Application.UseCases.Accounts;
 using Finanzuebersicht.Application.UseCases.Dashboard;
 using Finanzuebersicht.Application.UseCases.RecurringTransactions;
+using Finanzuebersicht.Navigation;
 using Finanzuebersicht.Models;
 using Finanzuebersicht.Tests.TestHelpers;
 using Finanzuebersicht.ViewModels;
@@ -33,6 +35,8 @@ public class DashboardViewModelTests
         var reportingService = Substitute.For<IReportingService>();
         var accountRepository = Substitute.For<IAccountRepository>();
         accountRepository.GetAccountsAsync().Returns(Task.FromResult(new List<Account>()));
+        transactionRepository.GetTransactionsAsync(Arg.Any<DateTime>(), Arg.Any<DateTime>())
+            .Returns(Task.FromResult(new List<Transaction>()));
         var localizationService = Substitute.For<ILocalizationService>();
         var navigationService = Substitute.For<INavigationService>();
         var forecastService = Substitute.For<IForecastService>();
@@ -43,11 +47,15 @@ public class DashboardViewModelTests
             new LoadDashboardYearUseCase(transactionRepository, categoryRepository),
             new LoadForecastUseCase(forecastService),
             new GetDueRecurringWithHintsUseCase(recurringTransactionRepository),
+            new BookDueRecurringInstanceUseCase(recurringTransactionRepository, transactionRepository, accountRepository),
+            new SkipDueRecurringInstanceUseCase(new AddRecurringExceptionUseCase(recurringTransactionRepository)),
             budgetRepository,
             localizationService,
             navigationService,
+            Substitute.For<IDialogService>(),
             transactionRepository,
             accountRepository,
+            new GetAccountBalancesUseCase(accountRepository, transactionRepository),
             clock);
     }
 }

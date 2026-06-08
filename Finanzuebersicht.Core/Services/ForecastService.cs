@@ -7,7 +7,7 @@ public class ForecastService(
     ICategoryRepository categoryRepository,
     IBudgetRepository budgetRepository) : IForecastService
 {
-    public async Task<ForecastResult> GetMovingAverageAsync(int year, int month, int lookbackMonths = 3)
+    public async Task<ForecastResult> GetMovingAverageAsync(int year, int month, int lookbackMonths = 3, string? accountId = null)
     {
         if (lookbackMonths < 1)
             throw new ArgumentOutOfRangeException(nameof(lookbackMonths), "lookbackMonths must be >= 1");
@@ -26,7 +26,12 @@ public class ForecastService(
             allTransactions.AddRange(monthTx);
         }
 
-        var expenditure = allTransactions.Where(t => t.Typ == TransactionType.Ausgabe).ToList();
+        var expenditure = allTransactions
+            .Where(t => t.Typ == TransactionType.Ausgabe && !t.IsTransfer)
+            .ToList();
+
+        if (!string.IsNullOrWhiteSpace(accountId))
+            expenditure = expenditure.Where(t => t.AccountId == accountId).ToList();
 
         // Moving average per category
         var byCategory = expenditure

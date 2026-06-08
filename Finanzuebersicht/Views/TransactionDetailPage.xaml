@@ -74,6 +74,16 @@
                         FontSize="16" />
             </VerticalStackLayout>
 
+            <!-- Sparziel -->
+            <VerticalStackLayout Spacing="4" IsVisible="{Binding HasSparZiele}">
+                <Label Text="{loc:Translate Lbl_SparZiel}" FontSize="13" TextColor="Gray" />
+                <Picker ItemsSource="{Binding SparZiele}"
+                        SelectedItem="{Binding SelectedSparZiel}"
+                        ItemDisplayBinding="{Binding Titel}"
+                        Title="{loc:Translate Hint_SparZielOptional}"
+                        FontSize="16" />
+            </VerticalStackLayout>
+
             <!-- Speichern -->
             <Button Text="{loc:Translate Btn_Speichern}" Command="{Binding SaveCommand}"
                     BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" TextColor="White"

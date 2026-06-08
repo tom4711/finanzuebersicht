@@ -64,11 +64,16 @@ namespace Finanzuebersicht.Models
     public class SparZielSummary
     {
         public SparZiel SparZiel { get; set; } = new();
+        public decimal VerknuepfterBetrag { get; set; }
+        public decimal GesamtFortschritt => SparZiel.AktuellerBetrag + VerknuepfterBetrag;
         public decimal FortschrittProzent => SparZiel.ZielBetrag > 0
-            ? Math.Min(SparZiel.AktuellerBetrag / SparZiel.ZielBetrag * 100, 100)
+            ? Math.Min(GesamtFortschritt / SparZiel.ZielBetrag * 100, 100)
             : 0;
         public double FortschrittDecimal => (double)(FortschrittProzent / 100);
-        public decimal FehlenderBetrag => Math.Max(SparZiel.ZielBetrag - SparZiel.AktuellerBetrag, 0);
+        public decimal FehlenderBetrag => Math.Max(SparZiel.ZielBetrag - GesamtFortschritt, 0);
+        public DateTime? PrognostiziertesDatum { get; set; }
+        public bool HatPrognose => PrognostiziertesDatum.HasValue;
+        public bool HatVerknuepfungen => VerknuepfterBetrag > 0;
     }
 
     public class MonthSummary

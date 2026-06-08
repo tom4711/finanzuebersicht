@@ -20,10 +20,12 @@ public static class ApplicationServiceCollectionExtensions
         services.AddTransient<SaveAccountDetailUseCase>();
         services.AddTransient<ToggleAccountArchiveUseCase>();
         services.AddTransient<DeleteAccountUseCase>();
+        services.AddTransient<GetAccountBalancesUseCase>();
 
         services.AddTransient<LoadDashboardMonthUseCase>();
         services.AddTransient<LoadDashboardYearUseCase>();
         services.AddTransient<LoadForecastUseCase>();
+        services.AddTransient<LoadCashflowOutlookUseCase>();
 
         services.AddTransient<DeleteRecurringTransactionUseCase>();
         services.AddTransient<LoadRecurringTransactionDetailDataUseCase>();
@@ -33,6 +35,8 @@ public static class ApplicationServiceCollectionExtensions
         services.AddTransient<RemoveRecurringExceptionUseCase>();
         services.AddTransient<ShiftRecurringInstanceUseCase>();
         services.AddTransient<GetDueRecurringWithHintsUseCase>();
+        services.AddTransient<BookDueRecurringInstanceUseCase>();
+        services.AddTransient<SkipDueRecurringInstanceUseCase>();
 
         services.AddTransient<LoadTransactionDetailDataUseCase>();
         services.AddTransient<DeleteTransactionUseCase>();

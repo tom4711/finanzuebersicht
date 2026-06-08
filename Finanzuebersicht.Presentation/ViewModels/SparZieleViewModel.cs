@@ -44,6 +44,9 @@ public partial class SparZieleViewModel : ObservableObject, IAutoLoadViewModel
     private DateTime? neueFaelligkeit;
 
     [ObservableProperty]
+    private decimal neueMonatlicheSparrate;
+
+    [ObservableProperty]
     private bool showAddForm;
 
     public SparZieleViewModel(
@@ -86,6 +89,7 @@ public partial class SparZieleViewModel : ObservableObject, IAutoLoadViewModel
             NeuesZielBetrag = 0;
             NeuerAktuellerBetrag = 0;
             NeueFaelligkeit = null;
+            NeueMonatlicheSparrate = 0;
         }
     }
 
@@ -125,7 +129,8 @@ public partial class SparZieleViewModel : ObservableObject, IAutoLoadViewModel
                 Icon = string.IsNullOrWhiteSpace(NeuerIcon) ? "🎯" : NeuerIcon,
                 ZielBetrag = NeuesZielBetrag,
                 AktuellerBetrag = NeuerAktuellerBetrag,
-                Faelligkeitsdatum = NeueFaelligkeit
+                Faelligkeitsdatum = NeueFaelligkeit,
+                MonatlicheSparrate = NeueMonatlicheSparrate > 0 ? NeueMonatlicheSparrate : null
             };
 
             await _saveUseCase.ExecuteAsync(ziel);

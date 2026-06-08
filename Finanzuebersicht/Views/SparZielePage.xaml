@@ -45,7 +45,7 @@
                                                    FontSize="16" FontAttributes="Bold"
                                                    VerticalTextAlignment="Center" />
                                             <VerticalStackLayout Grid.Column="2" HorizontalOptions="End">
-                                                <Label Text="{Binding SparZiel.AktuellerBetrag, Converter={StaticResource Currency}}"
+                                                <Label Text="{Binding GesamtFortschritt, Converter={StaticResource Currency}}"
                                                        FontSize="15" FontAttributes="Bold"
                                                        TextColor="{AppThemeBinding Light={StaticResource Einnahme}, Dark={StaticResource EinnahmeDark}}" HorizontalTextAlignment="End" />
                                                 <Label Text="{Binding SparZiel.ZielBetrag, Converter={StaticResource Currency}}"
@@ -71,6 +71,18 @@
                                                          BackgroundColor="{AppThemeBinding Light=#E5E5EA, Dark=#3A3A3C}"
                                                          SemanticProperties.Description="{loc:Translate A11y_SparZielBalken}" />
                                         </VerticalStackLayout>
+
+                                        <HorizontalStackLayout Spacing="4" IsVisible="{Binding HatVerknuepfungen}">
+                                            <Label FontSize="12" TextColor="Gray" Text="{loc:Translate Lbl_VerknuepftAusBuchungen}" />
+                                            <Label FontSize="12" TextColor="Gray"
+                                                   Text="{Binding VerknuepfterBetrag, Converter={StaticResource Currency}}" />
+                                        </HorizontalStackLayout>
+
+                                        <HorizontalStackLayout Spacing="4" IsVisible="{Binding HatPrognose}">
+                                            <Label FontSize="12" TextColor="Gray" Text="{loc:Translate Lbl_PrognoseZielerreichung}" />
+                                            <Label FontSize="12" TextColor="Gray"
+                                                   Text="{Binding PrognostiziertesDatum, StringFormat='{0:dd.MM.yyyy}'}" />
+                                        </HorizontalStackLayout>
 
                                         <!-- Löschen-Button -->
                                         <Button Text="{loc:Translate Btn_Loeschen}"
@@ -129,6 +141,14 @@
                                 <Label Text="{loc:Translate Lbl_AktuellerBetrag}" FontSize="13"
                                        TextColor="{AppThemeBinding Light=#8E8E93, Dark=#636366}" />
                                 <Entry Text="{Binding NeuerAktuellerBetrag}"
+                                       Keyboard="Numeric" FontSize="16" />
+                            </VerticalStackLayout>
+
+                            <!-- Monatliche Sparrate -->
+                            <VerticalStackLayout Spacing="4">
+                                <Label Text="{loc:Translate Lbl_MonatlicheSparrate}" FontSize="13"
+                                       TextColor="{AppThemeBinding Light=#8E8E93, Dark=#636366}" />
+                                <Entry Text="{Binding NeueMonatlicheSparrate}"
                                        Keyboard="Numeric" FontSize="16" />
                             </VerticalStackLayout>
 

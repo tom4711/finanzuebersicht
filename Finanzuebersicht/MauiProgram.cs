@@ -85,6 +85,7 @@ public static class MauiProgram
 		builder.Services.AddTransient<SparZielePage>();
 		builder.Services.AddTransient<BackupListPage>();
 		builder.Services.AddTransient<ImportPreviewPage>();
+		builder.Services.AddTransient<CashflowPage>();
 
 #if DEBUG
 		builder.Logging.AddDebug();

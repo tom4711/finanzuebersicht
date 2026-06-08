@@ -76,8 +76,12 @@ public class SparZieleViewModelTests
         localizationService.GetString(Arg.Any<string>()).Returns(call => call.Arg<string>());
         localizationService.GetString(Arg.Any<string>(), Arg.Any<object[]>()).Returns(call => call.Arg<string>());
 
+        var transactionRepository = Substitute.For<ITransactionRepository>();
+        transactionRepository.GetTransactionsAsync(Arg.Any<DateTime>(), Arg.Any<DateTime>())
+            .Returns(Task.FromResult(new List<Transaction>()));
+
         return new SparZieleViewModel(
-            new LoadSparZieleUseCase(repository),
+            new LoadSparZieleUseCase(repository, transactionRepository),
             new SaveSparZielUseCase(repository),
             new DeleteSparZielUseCase(repository),
             dialogService,

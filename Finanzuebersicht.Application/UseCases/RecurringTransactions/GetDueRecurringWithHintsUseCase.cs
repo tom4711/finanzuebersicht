@@ -8,6 +8,8 @@ namespace Finanzuebersicht.Application.UseCases.RecurringTransactions;
 public class DueRecurringItem
 {
     public RecurringTransaction Recurring { get; set; } = null!;
+    public DateTime InstanceDate { get; set; }
+    public DateTime DueDate { get; set; }
     public bool IsDue { get; set; }
     public string? Hint { get; set; }
 }
@@ -29,11 +31,12 @@ public class GetDueRecurringWithHintsUseCase(
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            var dueDate = RecurringScheduleCalculator.GetNextDueDate(r, referenceDate);
-            if (dueDate is null)
+            var dueInstance = RecurringScheduleCalculator.GetNextDueInstance(r, referenceDate);
+            if (dueInstance is null)
                 continue;
 
-            var daysUntil = (dueDate.Value.Date - referenceDate.Date).Days;
+            var dueDate = dueInstance.Value.EffectiveDate;
+            var daysUntil = (dueDate.Date - referenceDate.Date).Days;
             var isDue = daysUntil <= 0;
             string? hint = daysUntil switch
             {
@@ -43,7 +46,14 @@ public class GetDueRecurringWithHintsUseCase(
                 _ => null,
             };
 
-            result.Add(new DueRecurringItem { Recurring = r, IsDue = isDue, Hint = hint });
+            result.Add(new DueRecurringItem
+            {
+                Recurring = r,
+                InstanceDate = dueInstance.Value.InstanceDate,
+                DueDate = dueDate,
+                IsDue = isDue,
+                Hint = hint
+            });
         }
 
         return result;
