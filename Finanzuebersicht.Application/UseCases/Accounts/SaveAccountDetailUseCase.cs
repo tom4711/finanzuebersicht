@@ -11,6 +11,8 @@ public class SaveAccountDetailUseCase(IAccountRepository accountRepository)
         string name,
         AccountType type,
         bool isArchived = false,
+        decimal openingBalance = 0m,
+        DateTime? openingBalanceDate = null,
         CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
@@ -19,6 +21,8 @@ public class SaveAccountDetailUseCase(IAccountRepository accountRepository)
         account.Name = name;
         account.Type = type;
         account.IsArchived = account.IsSystemAccount ? false : isArchived;
+        account.OpeningBalance = openingBalance;
+        account.OpeningBalanceDate = openingBalanceDate;
 
         await _accountRepository.SaveAccountAsync(account);
         return account;

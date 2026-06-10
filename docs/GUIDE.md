@@ -26,17 +26,28 @@ dotnet workload install maui
 
 ### Mac Catalyst (lokal starten)
 
+`dotnet run` und `-t:Run` scheitern wegen macOS-Sandboxing — die `.app` nach `/Applications` kopieren:
+
 ```bash
 dotnet build Finanzuebersicht/Finanzuebersicht.csproj -f net10.0-maccatalyst
-cp -R "Finanzuebersicht/bin/Debug/net10.0-maccatalyst/maccatalyst-x64/Finanzübersicht.app" "/Applications/Finanzübersicht.app"
-open "/Applications/Finanzübersicht.app"
+
+# Apple Silicon (arm64) — typisch auf modernen Macs
+cp -R Finanzuebersicht/bin/Debug/net10.0-maccatalyst/maccatalyst-arm64/Finanzübersicht.app /Applications/
+open /Applications/Finanzübersicht.app
+
+# Intel (x64)
+cp -R Finanzuebersicht/bin/Debug/net10.0-maccatalyst/maccatalyst-x64/Finanzübersicht.app /Applications/
 ```
 
-**Ein-Liner nach jedem Build:**
+**Ein-Liner nach jedem Build (arm64):**
 
 ```bash
-dotnet build Finanzuebersicht/Finanzuebersicht.csproj -f net10.0-maccatalyst && cp -R Finanzuebersicht/bin/Debug/net10.0-maccatalyst/maccatalyst-x64/Finanzübersicht.app /Applications/ && open /Applications/Finanzübersicht.app
+dotnet build Finanzuebersicht/Finanzuebersicht.csproj -f net10.0-maccatalyst \
+  && cp -R Finanzuebersicht/bin/Debug/net10.0-maccatalyst/maccatalyst-arm64/Finanzübersicht.app /Applications/ \
+  && open /Applications/Finanzübersicht.app
 ```
+
+> Nur das MAUI-Projekt bauen, nicht die ganze Solution mit `-f net10.0-maccatalyst` — sonst werden auch `net10.0`-only-Projekte (Tests, Core, …) auf das Plattform-TFM gezwungen.
 
 ### iOS (Simulator)
 
@@ -50,14 +61,17 @@ dotnet build Finanzuebersicht/Finanzuebersicht.csproj -f net10.0-ios
 dotnet test Finanzuebersicht.Tests
 ```
 
+Aktuell ~280 Unit-Tests (Core, Application, Infrastructure, Presentation).
+
 ## 5. Wichtige Pfade & Ressourcen
 
 | Element | Pfad |
 |---------|------|
-| Lokale Datenspeicherung | Einstellung `DataPath` (Settings) |
-| Kategorisierungs-Regeln | `Finanzuebersicht.Core/Data/categorization-rules.json` → siehe [docs/CATEGORIZATION_RULES.md](CATEGORIZATION_RULES.md) |
-| UI-Texte (Deutsch) | `Finanzuebersicht/Resources/Strings/AppResources.resx` |
-| UI-Texte (Englisch) | `Finanzuebersicht/Resources/Strings/AppResources.en.resx` |
+| Lokale Datenspeicherung | Einstellung `DataPath` (Settings) — Standard: `~/Library/Application Support/Finanzuebersicht` |
+| Kategorisierungs-Regeln | `Finanzuebersicht.Core/Data/categorization-rules.json` → siehe [CATEGORIZATION_RULES.md](CATEGORIZATION_RULES.md) |
+| UI-Texte (Englisch, Fallback) | `Finanzuebersicht/Resources/Strings/AppResources.resx` |
+| UI-Texte (Deutsch) | `Finanzuebersicht/Resources/Strings/AppResources.de.resx` |
+| Lokalisierungs-Schlüssel | `Finanzuebersicht.Presentation/Resources/Strings/ResourceKeys.cs` |
 | Farbdefinitionen | `Finanzuebersicht/Resources/Styles/Colors.xaml` |
 
 ## 6. Projektstruktur (Clean Architecture)
@@ -70,54 +84,64 @@ Directory.Build.props              ← Shared MSBuild properties
 Finanzuebersicht/                  ← MAUI app entry point (net10.0-ios, net10.0-maccatalyst, net10.0-windows)
 ├── MauiProgram.cs                ← thin DI orchestrator; calls Add*() extension methods
 ├── App.xaml / App.xaml.cs         ← App lifecycle
-├── AppShell.xaml / AppShell.xaml.cs ← Shell navigation
+├── AppShell.xaml / AppShell.xaml.cs ← Shell navigation (5 Tabs)
 ├── Services/                      ← MAUI-specific concrete services (LocalizationService, ShellDialogService, etc.)
-├── Views/                         ← XAML pages (DashboardPage, TransactionsPage, etc.)
+├── Views/                         ← XAML pages (DashboardPage, TransactionsPage, CashflowPage, etc.)
 ├── Converters/                    ← Value converters (BetragDisplayConverter, etc.)
-├── Resources/Strings/             ← AppResources.resx (German), AppResources.en.resx (English)
+├── Resources/Strings/             ← AppResources.resx + AppResources.de.resx
 ├── Resources/Styles/              ← Colors.xaml, Styles.xaml
 ├── Charts/                        ← Custom chart implementations
 └── Platforms/                     ← iOS, MacCatalyst, Windows platform code
 
 Finanzuebersicht.Presentation/     ← Presentation Layer (net10.0) - MVVM ViewModels & UI abstractions
 ├── DependencyInjection/           ← AddPresentationViewModels(...)
-├── ViewModels/                    ← DashboardViewModel, TransactionsViewModel, SettingsViewModel, etc.
+├── ViewModels/                    ← DashboardViewModel, CashflowViewModel, TransactionsViewModel, etc.
 │   └── Settings/                  ← AppearanceViewModel, BackupViewModel, StorageViewModel, AboutViewModel
-├── Navigation/                    ← Shell navigation helpers
-├── Services/                      ← namespace Finanzuebersicht.Presentation.Services (IDialogService, INavigationService, ILocalizationService, etc.)
-└── Resources/                     ← App-wide resources
+├── Navigation/                    ← Routes.cs, INavigationService
+├── Services/                      ← IDialogService, ILocalizationService, etc.
+└── Resources/Strings/             ← ResourceKeys.cs
 
-Finanzuebersicht.Application/      ← Application / Use Cases Layer (net10.0) - Business logic orchestration
+Finanzuebersicht.Application/      ← Application / Use Cases Layer (net10.0)
 ├── DependencyInjection/           ← AddApplicationUseCases()
-└── UseCases/                      ← namespace Finanzuebersicht.Application.UseCases.*
+└── UseCases/                      ← Dashboard, Accounts, Transactions, Recurring, SparZiele, Cashflow, …
 
-Finanzuebersicht.Infrastructure/   ← Infrastructure Layer (net10.0) - persistence & wiring
+Finanzuebersicht.Infrastructure/   ← Infrastructure Layer (net10.0)
 ├── DependencyInjection/           ← AddInfrastructureServices()
-└── Services/                      ← namespace Finanzuebersicht.Infrastructure.Services
-    ├── SettingsService            ← implements ISettingsService
-    ├── BackupService              ← implements IBackupService
-    ├── LocalDataService           ← implements repository interfaces (+ legacy IDataService facade)
-    └── *Store.cs                  ← CategoryStore, TransactionStore, RecurringStore, etc.
+└── Services/                      ← SettingsService, BackupService, LocalDataService, *Store.cs
 
-Finanzuebersicht.Core/             ← Domain Layer (net10.0) - Models & domain services
-├── Models/                        ← namespace Finanzuebersicht.Models
-├── Services/                      ← namespace Finanzuebersicht.Core.Services
-│   ├── Interfaces                 ← ISettingsService, IBackupService, ICategoryRepository, etc.
-│   ├── Domain services            ← CategorizationService, RecurringGenerationService, ReportingService, etc.
-│   ├── AppPaths.cs                ← pure path helper (no file I/O)
-│   └── Migrations/                ← namespace Finanzuebersicht.Core.Services.Migrations
-└── Data/                          ← Embedded data files (categorization-rules.json)
+Finanzuebersicht.Core/             ← Domain Layer (net10.0)
+├── Models/                        ← Transaction, Category, Account, SparZiel, …
+├── Services/                      ← I*Repository, CategorizationService, RecurringGenerationService, …
+│   └── Migrations/                ← V1ToV2Migrator, V2ToV3Migrator
+└── Data/                          ← categorization-rules.json
 
 Finanzuebersicht.Tests/            ← xUnit tests (net10.0)
 └── Tests for all layers (Application, Infrastructure, Presentation, Core)
 ```
 
-## 7. Entwicklungs-Konventionen
+## 7. App-Navigation
+
+**5 Tabs** (`AppShell.xaml`):
+
+| Tab | Seite | Funktion |
+|-----|-------|----------|
+| Dashboard | `DashboardPage` | Monat/Jahr, Budgets, fällige Daueraufträge, Kontenübersicht, Cashflow-Link |
+| Transaktionen | `TransactionsPage` | Liste, Suche, Filter, Vorlagen, Umbuchung |
+| Daueraufträge | `RecurringTransactionsPage` | Wiederkehrende Buchungen |
+| Verwaltung | `CategoriesPage` | Umschaltbar: Kategorien / Konten |
+| Sparziele | `SparZielePage` | Sparziele mit Fortschritt |
+
+**Toolbar:** Einstellungen → `SettingsPage`
+
+**Weitere Routen** (`Routes.cs`): TransactionDetail, TransferDetail, Cashflow, ImportPreview, AccountDetail, CategoryDetail, RecurringTransactionDetail, RecurringInstanceShift, BackupList
+
+## 8. Entwicklungs-Konventionen
 
 ### MVVM-Architektur
 
 - **Framework:** CommunityToolkit.Mvvm mit Source Generators (kein manuelles `INotifyPropertyChanged`)
-- **DI:** `MauiProgram.cs` bleibt schlank und orchestriert `AddInfrastructureServices()`, `AddApplicationUseCases()` und `AddPresentationViewModels()`
+- **DI:** `MauiProgram.cs` orchestriert `AddInfrastructureServices()`, `AddApplicationUseCases()` und `AddPresentationViewModels()`
+- **Neue ViewModels:** In `PresentationServiceCollectionExtensions.cs` registrieren
 - **Pages:** Erhalten ViewModel via Constructor Injection
 - **Data Loading:** Triggern via Command in `OnAppearing()`
 
@@ -126,7 +150,7 @@ Finanzuebersicht.Tests/            ← xUnit tests (net10.0)
 - **Dezimalzahlen:** `decimal` für Geldbeträge, formatiert mit `CultureInfo.CurrentCulture`
 - **UI-Elemente:** `Border` mit `StrokeShape="RoundRectangle"` statt deprecated `Frame`
 - **Farben:** Über `Colors.xaml` (Apple System Colors), nutze `AppThemeBinding` für Light/Dark Mode
-- **Texte:** `ILocalizationService` oder ResX in ViewModels verwenden
+- **Texte:** `ILocalizationService` + `ResourceKeys` — Keys in beiden `.resx`-Dateien pflegen
 - **Dialoge:** `IDialogService` für alle Benutzerdialoge
 
 ### Git-Workflow
@@ -143,78 +167,62 @@ develop   → main     (PR, wenn ein Milestone abgeschlossen ist)
 main      → v1.x-Tag (löst release.yml aus)
 ```
 
-Beispiel-Commit:
-
-```
-✨ feat(viewmodel): add recurring transaction filter
-
-- Add FilterRecurringTransactions method to DashboardViewModel
-- Users can now filter by category and date range
-- Include unit tests for new filter logic
-
-Affected: DashboardViewModel.cs, DashboardViewModel.Tests.cs, DashboardPage.xaml.cs
-
-Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>
-```
-
-## 8. Datenspeicherung
+## 9. Datenspeicherung
 
 - **Lokal:** JSON-Dateien via `LocalDataService` (Standard, keine externe Abhängigkeit)
-- **Repos:** Neue Features arbeiten gegen spezifische Repository-Interfaces; `IDataService` bleibt nur für Legacy-Kompatibilität erhalten
-- **Pfad:** Standardmäßig `LocalApplicationData/Finanzuebersicht`, konfigurierbar über `ISettingsService` / `Infrastructure.Services.SettingsService`
-- **CloudKit:** Code vorhanden (`CloudKitDataService`), aber deaktiviert (erfordert kostenpflichtiges Apple Developer Account)
-- **Daueraufträge:** Automatische Generierung läuft auf `App.OnStart()` und `Window.Resumed`
+- **Stores:** `CategoryStore`, `AccountStore`, `TransactionStore`, `RecurringStore`, `BudgetStore`, `SparZielStore`, `TransactionTemplateStore`
+- **Repos:** Neue Features arbeiten gegen spezifische `I*Repository`-Interfaces; `IDataService` bleibt nur Legacy
+- **Pfad:** Standardmäßig `~/Library/Application Support/Finanzuebersicht`, konfigurierbar über Einstellungen
+- **Konten & Salden:** `GetAccountBalancesUseCase` — Saldo = Anfangssaldo + Σ Buchungen (Umbuchungen auf beiden Konten)
+- **CloudKit:** Code vorhanden, aber deaktiviert (erfordert kostenpflichtiges Apple Developer Account)
+- **Daueraufträge:** Automatische Generierung auf `App.OnStart()` und `Window.Resumed`
 
-## 9. Backup & Restore
+## 10. Backup & Restore
 
 Nutzer können in den Einstellungen:
-- ✅ Backup erstellen (ZIP-Export mit allen Daten inkl. Budgets & Sparziele)
-- ✅ Backup wiederherstellen mit automatischer Schema-Migration
-- ✅ CSV-Import durchführen (mit Auto-Kategorisierung)
+- Backup erstellen (ZIP-Export mit allen Daten)
+- Backup wiederherstellen mit automatischer Schema-Migration
+- CSV-Import durchführen (mit Auto-Kategorisierung)
 
 ### Schema-Versionierung
 
-Backups sind versioniert (`SchemaVersion` in den Metadaten). Der `DataMigrationService` migriert ältere Backups beim Restore automatisch auf die aktuelle Version:
+Backups sind versioniert (`SchemaVersion` in den Metadaten). Der `DataMigrationService` migriert ältere Backups beim Restore automatisch:
 
 | Version | Inhalt |
 |---------|--------|
 | v1 | categories, transactions, recurring |
 | v2 | + budgets, sparziele |
+| v3 | + accounts |
 
-Neue Migratoren können als `IDataMigrator`-Implementierungen in DI registriert werden.
+Neue Migratoren als `IDataMigrator`-Implementierungen in DI registrieren.
 
-## 10. Versionierung
+## 11. Versionierung
 
-- **System:** Nerdbank.GitVersioning (`version.json`)
-- **Format:** `<major>.<minor>.<git-height>` (z.B. `0.1.5` = 5 Commits seit 0.1.0)
+- **System:** Nerdbank.GitVersioning (`version.json`, aktuell Basis `1.11`)
+- **Format:** `<major>.<minor>.<git-height>` (z.B. `1.11.9`)
 - **MAUI-Version:** Automatisch gesetzt via `ApplicationDisplayVersion` und `ApplicationVersion` zur Buildzeit
-- **Release-Branches:** `main` und `release/v*` produzieren Stable-Versionen
-
-**Aktuellen Version abfragen:**
 
 ```bash
-nbgv get-version
+nbgv get-version          # aktuelle Version
+nbgv set-version <version> # Version bumpen
 ```
 
-**Version bumpen:**
+## 12. CI/CD
 
-```bash
-nbgv set-version <new-version>
-```
+- **Quick Checks:** Unit Tests auf Ubuntu — bei jedem Push auf `develop`, `main`, `feature/*` und PRs
+- **Full MAUI Build:** PRs gegen `main` und `main`-Pushes (macOS-Runner); Label `run-maui` für expliziten Build
+- **Pre-Release:** Actions → "Pre-Release" → Tag z.B. `v1.2.0-beta.1`
+- **Release:** Tag-Push `v*` → Artifacts (macOS + Windows) am GitHub Release
 
-## 11. CI/CD
+## 13. Weitere Dokumentation
 
-- **Quick Checks:** Unit Tests auf Ubuntu (schnell, günstig) — bei jedem Push auf `develop`, `main`, `feature/*` und PRs
-- **Full MAUI Build:** Nur für PRs gegen `main` und `main`-Pushes (macOS-Runner)
-- **Pre-Release:** Manuell über Actions → "Pre-Release" → Run workflow (Tag z.B. `v1.2.0-beta.1`)
-- **Release:** Bei Tag-Push `v*` oder manuellem Trigger → Artifacts werden an GitHub Release angehängt
-
-## 12. Fragen & Mitwirken
-
-- **Issues:** Öffne Issues für Bugs oder Feature-Requests
-- **PR-Format:** Siehe Git-Workflow oben
-- **Technische Docs:** 
-  - [Kategorisierungs-Regeln](CATEGORIZATION_RULES.md)
-  - [Daueraufträge-UI](RECURRING_UI.md)
+| Dokument | Inhalt |
+|----------|--------|
+| [QUICK_START.md](QUICK_START.md) | Englische Kurzreferenz |
+| [ROADMAP.md](ROADMAP.md) | Geplante Features |
+| [CATEGORIZATION_RULES.md](CATEGORIZATION_RULES.md) | CSV Auto-Kategorisierung |
+| [RECURRING_UI.md](RECURRING_UI.md) | Dauerauftrag Instanz verschieben |
+| [ARCHITECTURE_CLEAN_CODE_REVIEW.md](ARCHITECTURE_CLEAN_CODE_REVIEW.md) | Historisches Architektur-Review |
+| [copilot-instructions.md](../.github/copilot-instructions.md) | Zentrale AI-/Entwickler-Referenz |
 
 Viel Erfolg! 🚀

@@ -54,6 +54,7 @@ public static class ResourceKeys
     public const string Lbl_Speicherort = nameof(Lbl_Speicherort);
     public const string Lbl_Ueber = nameof(Lbl_Ueber);
     public const string Lbl_VerwendeteBibliotheken = nameof(Lbl_VerwendeteBibliotheken);
+    public const string Lbl_Verwendungszweck = nameof(Lbl_Verwendungszweck);
     public const string Lbl_DatenWerdenGespeichert = nameof(Lbl_DatenWerdenGespeichert);
     public const string Lbl_Sprache = nameof(Lbl_Sprache);
     public const string Lbl_KategorienColon = nameof(Lbl_KategorienColon);
@@ -241,6 +242,14 @@ public static class ResourceKeys
     public const string Lbl_AlleKategorien = nameof(Lbl_AlleKategorien);
     public const string Lbl_AlleKonten = nameof(Lbl_AlleKonten);
     public const string Lbl_Kontosaldo = nameof(Lbl_Kontosaldo);
+    public const string Lbl_Anfangssaldo = nameof(Lbl_Anfangssaldo);
+    public const string Lbl_AnfangssaldoStichtag = nameof(Lbl_AnfangssaldoStichtag);
+    public const string Hint_Anfangssaldo = nameof(Hint_Anfangssaldo);
+    public const string Fmt_KontoSaldoAufschluesselung = nameof(Fmt_KontoSaldoAufschluesselung);
+    public const string Lbl_KontenUebersicht = nameof(Lbl_KontenUebersicht);
+    public const string Lbl_Gesamtsaldo = nameof(Lbl_Gesamtsaldo);
+    public const string Lbl_GesamtsaldoAktiv = nameof(Lbl_GesamtsaldoAktiv);
+    public const string A11y_KontoUebersichtTippen = nameof(A11y_KontoUebersichtTippen);
     public const string Lbl_Archiviert = nameof(Lbl_Archiviert);
     public const string Lbl_VonKonto = nameof(Lbl_VonKonto);
     public const string Lbl_NachKonto = nameof(Lbl_NachKonto);

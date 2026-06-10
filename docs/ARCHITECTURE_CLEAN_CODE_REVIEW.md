@@ -1,9 +1,14 @@
 # Architektur-, Clean-Code- und .NET-Best-Practices-Review
 
+> **Hinweis (Juni 2026):** Dieses Dokument ist ein **historischer Snapshot** vom Mai 2026.
+> Viele Maßnahmen aus dem Review (v1.6 Layering, DI-Modularisierung, ViewModel-Tests) sind umgesetzt.
+> Für den **aktuellen Stand** siehe [.github/copilot-instructions.md](../.github/copilot-instructions.md) und [GUIDE.md](GUIDE.md).
+> Teststand im Review: 161 Tests — aktuell ~280 Tests.
+
 Stand: `develop` bei Commit `0e1041e`  
 Datum: 2026-05-12
 
-Dieses Review bewertet den aktuellen Projektstand mit Schwerpunkt Architektur,
+Dieses Review bewertet den Projektstand **zum Erstellungszeitpunkt** mit Schwerpunkt Architektur,
 Clean Code, Testbarkeit, .NET/MAUI-Best-Practices und Wartbarkeit. Es ist so
 strukturiert, dass daraus direkt GitHub-Issues mit Beschreibung,
 Akzeptanzkriterien und betroffenen Dateien erstellt werden können.

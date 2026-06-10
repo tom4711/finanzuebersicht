@@ -19,18 +19,82 @@ Kurz: .NET 10 + MAUI, Multi-Language UI (Deutsch & Englisch), MVVM-Architektur.
 
 ## Kern-Features
 
-- Dashboard mit Monatsübersicht und Trend-Indikator
-- Transaktionen anlegen, editieren und filtern
-- Wiederkehrende Buchungen (Daueraufträge)
-- Kategorien mit Icon und Farbe
-- **Monatsbudgets** pro Kategorie mit Fortschrittsanzeige
-- **Sparziele** mit Fortschrittsbalken
-- **Backup & Restore** mit automatischer Schema-Migration (v1 → v2+)
+- Dashboard mit Monats- und Jahresübersicht, Budget-Hinweisen, Trend-Indikator und **Kontenübersicht** (Gesamtsaldo)
+- **30-Tage-Cashflow-Vorschau** inkl. geplanter Daueraufträge
+- **Mehrere Konten** mit Anfangssaldo, Saldo pro Konto und **Umbuchungen** zwischen Konten
+- Transaktionen anlegen, editieren, suchen, filtern, duplizieren und als Vorlage speichern
+- CSV-Import (DKB-Format) mit Vorschau, Auto-Kategorisierung und Duplikat-Erkennung
+- Wiederkehrende Buchungen (Daueraufträge) mit Instanz-Verschieben und Ausnahmen
+- Kategorien mit Icon, Farbe und monatlichem Budget
+- **Sparziele** mit Fortschrittsbalken und Prognose
+- **Backup & Restore** mit automatischer Schema-Migration (v1 → v3)
 - Accessibility / VoiceOver-Unterstützung (iOS & macOS)
 - Dark Mode Unterstützung
 - Multi-Language Support (Deutsch & Englisch)
 
 Hinweis: Die Benutzeroberfläche unterstützt Deutsch und Englisch; weitere Sprachen sind möglich, werden aber nicht aktiv gepflegt.
+
+## Screenshots
+
+*Dark Mode auf macOS (Mac Catalyst)*
+
+### Dashboard
+
+Kontenübersicht mit Gesamtsaldo, Monatsansicht mit Budget-Hinweisen und Kategorie-Charts, Jahresansicht mit Monatsbalken.
+
+| Kontenübersicht | Monatsansicht | Jahresansicht |
+|:---:|:---:|:---:|
+| ![Dashboard mit Kontenübersicht](docs/screenshots/dashboard-kontenuebersicht.png) | ![Dashboard Monatsansicht](docs/screenshots/dashboard-monat.png) | ![Dashboard Jahresansicht](docs/screenshots/dashboard-jahr.png) |
+
+Cashflow-Vorschau für die nächsten 30 Tage (inkl. geplanter Daueraufträge):
+
+![Cashflow-Vorschau](docs/screenshots/cashflow.png)
+
+### Transaktionen & Import
+
+Liste mit Vorlagen, Filter, Swipe-Aktionen, Umbuchung zwischen Konten und CSV-Import mit Duplikat-Erkennung.
+
+| Transaktionsliste | Filter & Suche | Swipe-Aktionen |
+|:---:|:---:|:---:|
+| ![Transaktionsliste](docs/screenshots/transaktionen.png) | ![Filter](docs/screenshots/transaktionen-filter.png) | ![Swipe](docs/screenshots/transaktionen-swipe.png) |
+
+| Neue Transaktion | Umbuchung | Import-Vorschau |
+|:---:|:---:|:---:|
+| ![Transaktion erfassen](docs/screenshots/transaktion-detail.png) | ![Umbuchung](docs/screenshots/umbuchung.png) | ![Import-Vorschau](docs/screenshots/import-vorschau.png) |
+
+### Daueraufträge
+
+Übersicht wiederkehrender Buchungen und Detailansicht mit Intervall und Erinnerung.
+
+| Übersicht | Detail |
+|:---:|:---:|
+| ![Daueraufträge](docs/screenshots/dauerauftraege.png) | ![Dauerauftrag bearbeiten](docs/screenshots/dauerauftrag-detail.png) |
+
+### Verwaltung
+
+Kategorien und Konten verwalten — inkl. Gesamtsaldo und Anfangssaldo.
+
+| Kategorien | Konten | Konto bearbeiten |
+|:---:|:---:|:---:|
+| ![Kategorien](docs/screenshots/verwaltung-kategorien.png) | ![Konten](docs/screenshots/verwaltung-konten.png) | ![Anfangssaldo](docs/screenshots/konto-bearbeiten.png) |
+
+Neue Kategorie mit Icon, Farbe und optionalem Monatsbudget:
+
+![Neue Kategorie](docs/screenshots/kategorie-neu.png)
+
+### Sparziele
+
+Fortschritt zu Sparzielen und neues Ziel anlegen.
+
+| Übersicht | Neues Ziel |
+|:---:|:---:|
+| ![Sparziele](docs/screenshots/sparziele.png) | ![Neues Sparziel](docs/screenshots/sparziel-neu.png) |
+
+### Einstellungen
+
+Darstellung, Sprache, Speicherort, Backup & Restore und App-Info.
+
+![Einstellungen](docs/screenshots/einstellungen.png)
 
 ## Plattformen
 
@@ -68,7 +132,8 @@ Build & Start (Mac Catalyst):
 
 ```bash
 dotnet build Finanzuebersicht/Finanzuebersicht.csproj -f net10.0-maccatalyst
-cp -R "Finanzuebersicht/bin/Debug/net10.0-maccatalyst/maccatalyst-x64/Finanzübersicht.app" "/Applications/Finanzübersicht.app"
+# Apple Silicon: maccatalyst-arm64 · Intel: maccatalyst-x64
+cp -R "Finanzuebersicht/bin/Debug/net10.0-maccatalyst/maccatalyst-arm64/Finanzübersicht.app" "/Applications/Finanzübersicht.app"
 open "/Applications/Finanzübersicht.app"
 
 # Tests
@@ -120,21 +185,28 @@ Finanzuebersicht.Tests/            ← xUnit Tests (net10.0)
 
 ## Lokalisierung & Ressourcen
 
-- UI‑Texte werden über Ressourcenfiles (`Resources/Strings/AppResources.resx`) verwaltet.
-- Unterstützte Sprachen: Deutsch (Standard) und Englisch. Weitere Sprachen sind möglich, werden aber nicht aktiv gewartet.
+- UI-Texte: `Finanzuebersicht/Resources/Strings/AppResources.resx` (Englisch, Fallback) und `AppResources.de.resx` (Deutsch)
+- Schlüssel-Konstanten: `Finanzuebersicht.Presentation/Resources/Strings/ResourceKeys.cs`
+- Sprache: Systemsprache oder manuell in den Einstellungen (Deutsch / Englisch)
 
 ## Dokumentation
 
-- Roadmap & geplante Features: [docs/ROADMAP.md](docs/ROADMAP.md)
-- Kategorisierungs-Regeln: [docs/CATEGORIZATION_RULES.md](docs/CATEGORIZATION_RULES.md)
-- (Einige alte Docs wurden entfernt oder zusammengeführt.)
+| Dokument | Inhalt |
+|----------|--------|
+| [docs/GUIDE.md](docs/GUIDE.md) | Entwickler-Leitfaden (Deutsch): Setup, Architektur, Konventionen |
+| [docs/QUICK_START.md](docs/QUICK_START.md) | Quick Start (Englisch) |
+| [docs/ROADMAP.md](docs/ROADMAP.md) | Geplante Features und Milestones |
+| [docs/CATEGORIZATION_RULES.md](docs/CATEGORIZATION_RULES.md) | Auto-Kategorisierung beim CSV-Import |
+| [docs/RECURRING_UI.md](docs/RECURRING_UI.md) | Dauerauftrag: Instanz verschieben |
+| [docs/ARCHITECTURE_CLEAN_CODE_REVIEW.md](docs/ARCHITECTURE_CLEAN_CODE_REVIEW.md) | Historisches Architektur-Review (Mai 2026) |
+| [.github/copilot-instructions.md](.github/copilot-instructions.md) | Zentrale AI-/Entwickler-Referenz |
 
 ## Versionierung & CI
 
-- Nerdbank.GitVersioning (`version.json`) steuert Versionsnummern
+- Nerdbank.GitVersioning (`version.json`) steuert Versionsnummern (aktuell Basis `1.11`)
 - CI / Pre-Release / Release Workflows in `.github/workflows/`
 
-Full MAUI build (macCatalyst)
+### Full MAUI build (macCatalyst)
 
 - Quick checks (unit tests, linters) werden bei Push auf Branches ausgeführt (ubuntu runner) — das spart macOS-Runner-Minuten.
 - Der vollständige MAUI macCatalyst-Build läuft für Pull Requests gegen `main` und für `main`-Pushes. Dadurch werden macOS-Ressourcen nur bei echten Integrationsprüfungen verwendet.

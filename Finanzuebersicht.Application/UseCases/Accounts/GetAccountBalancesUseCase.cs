@@ -33,12 +33,18 @@ public class GetAccountBalancesUseCase(
         }
 
         return accounts
-            .Select(a => new AccountBalanceSummary
+            .Select(a =>
             {
-                AccountId = a.Id,
-                AccountName = a.Name,
-                IsArchived = a.IsArchived,
-                Saldo = balances[a.Id]
+                var transactionBalance = balances[a.Id];
+                return new AccountBalanceSummary
+                {
+                    AccountId = a.Id,
+                    AccountName = a.Name,
+                    IsArchived = a.IsArchived,
+                    OpeningBalance = a.OpeningBalance,
+                    TransactionBalance = transactionBalance,
+                    Saldo = a.OpeningBalance + transactionBalance
+                };
             })
             .OrderBy(a => a.IsArchived)
             .ThenBy(a => a.AccountName)
@@ -51,5 +57,7 @@ public class AccountBalanceSummary
     public string AccountId { get; set; } = string.Empty;
     public string AccountName { get; set; } = string.Empty;
     public bool IsArchived { get; set; }
+    public decimal OpeningBalance { get; set; }
+    public decimal TransactionBalance { get; set; }
     public decimal Saldo { get; set; }
 }

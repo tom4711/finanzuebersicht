@@ -84,6 +84,58 @@
                     </BindableLayout.ItemTemplate>
                 </VerticalStackLayout>
 
+                <Border StrokeShape="RoundRectangle 12"
+                        Stroke="{AppThemeBinding Light=#E5E5EA, Dark=#3A3A3C}"
+                        BackgroundColor="{AppThemeBinding Light={StaticResource CardBackground}, Dark={StaticResource CardBackgroundDark}}"
+                        Padding="14"
+                        IsVisible="{Binding HasKontenUebersicht}">
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="{loc:Translate Lbl_KontenUebersicht}"
+                               FontSize="16"
+                               FontAttributes="Bold" />
+                        <Grid ColumnDefinitions="*, Auto">
+                            <Label Text="{loc:Translate Lbl_Gesamtsaldo}"
+                                   FontSize="14"
+                                   TextColor="Gray"
+                                   VerticalTextAlignment="Center" />
+                            <Label Grid.Column="1"
+                                   Text="{Binding GesamtSaldo, Converter={StaticResource Currency}}"
+                                   FontSize="20"
+                                   FontAttributes="Bold"
+                                   TextColor="{Binding GesamtSaldo, Converter={StaticResource BilanzColor}}" />
+                        </Grid>
+                        <VerticalStackLayout BindableLayout.ItemsSource="{Binding KontenUebersicht}"
+                                             Spacing="10">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="vm:AccountOverviewItem">
+                                    <VerticalStackLayout Spacing="4"
+                                                         SemanticProperties.Hint="{loc:Translate A11y_KontoUebersichtTippen}">
+                                        <VerticalStackLayout.GestureRecognizers>
+                                            <TapGestureRecognizer
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:DashboardViewModel}}, Path=SelectKontoFromOverviewCommand}"
+                                                CommandParameter="{Binding .}" />
+                                        </VerticalStackLayout.GestureRecognizers>
+                                        <Grid ColumnDefinitions="*, Auto">
+                                            <Label Text="{Binding Name}"
+                                                   FontSize="14"
+                                                   VerticalTextAlignment="Center" />
+                                            <Label Grid.Column="1"
+                                                   Text="{Binding Saldo, Converter={StaticResource Currency}}"
+                                                   FontSize="14"
+                                                   FontAttributes="Bold"
+                                                   TextColor="{Binding Saldo, Converter={StaticResource BilanzColor}}" />
+                                        </Grid>
+                                        <ProgressBar
+                                            Progress="{Binding AnteilProzent, Converter={StaticResource ProzentToWidth}}"
+                                            ProgressColor="{Binding Saldo, Converter={StaticResource BilanzColor}}"
+                                            BackgroundColor="{AppThemeBinding Light=#E5E5EA, Dark=#3A3A3C}" />
+                                    </VerticalStackLayout>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </VerticalStackLayout>
+                    </VerticalStackLayout>
+                </Border>
+
                 <Grid ColumnDefinitions="70,*" ColumnSpacing="8">
                     <Label Grid.Column="0"
                            Text="{loc:Translate Lbl_Konto}"
