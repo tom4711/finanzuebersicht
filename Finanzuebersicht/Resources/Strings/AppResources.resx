@@ -71,6 +71,7 @@
   <data name="Lbl_Speicherort" xml:space="preserve"><value>Data Storage</value></data>
   <data name="Lbl_Ueber" xml:space="preserve"><value>About</value></data>
   <data name="Lbl_VerwendeteBibliotheken" xml:space="preserve"><value>Used Libraries</value></data>
+  <data name="Lbl_Verwendungszweck" xml:space="preserve"><value>Purpose</value></data>
   <data name="Lbl_DatenWerdenGespeichert" xml:space="preserve"><value>Data is stored here:</value></data>
   <data name="Lbl_Sprache" xml:space="preserve"><value>Language</value></data>
   <data name="Lbl_KategorienColon" xml:space="preserve"><value>Categories:</value></data>

@@ -19,7 +19,7 @@ Kurz: .NET 10 + MAUI, Multi-Language UI (Deutsch & Englisch), MVVM-Architektur.
 
 ## Kern-Features
 
-- Dashboard mit Monats- und Jahresübersicht, Budget-Hinweisen und Trend-Indikator
+- Dashboard mit Monats- und Jahresübersicht, Budget-Hinweisen, Trend-Indikator und 30-Tage-Cashflow
 - **Kontenübersicht** mit Gesamtsaldo und Anfangssaldo pro Konto
 - Transaktionen anlegen, editieren, filtern und als Vorlage speichern
 - CSV-Import mit Vorschau und Duplikat-Erkennung
@@ -45,13 +45,21 @@ Kontenübersicht mit Gesamtsaldo, Monatsansicht mit Budget-Hinweisen und Kategor
 |:---:|:---:|:---:|
 | ![Dashboard mit Kontenübersicht](docs/screenshots/dashboard-kontenuebersicht.png) | ![Dashboard Monatsansicht](docs/screenshots/dashboard-monat.png) | ![Dashboard Jahresansicht](docs/screenshots/dashboard-jahr.png) |
 
+Cashflow-Vorschau für die nächsten 30 Tage (inkl. geplanter Daueraufträge):
+
+![Cashflow-Vorschau](docs/screenshots/cashflow.png)
+
 ### Transaktionen & Import
 
-Transaktionsliste mit Vorlagen, Buchungsmaske und Import-Vorschau inkl. Duplikat-Erkennung.
+Liste mit Vorlagen, Filter, Swipe-Aktionen, Umbuchung zwischen Konten und CSV-Import mit Duplikat-Erkennung.
 
-| Transaktionen | Neue Transaktion | Import-Vorschau |
+| Transaktionsliste | Filter & Suche | Swipe-Aktionen |
 |:---:|:---:|:---:|
-| ![Transaktionsliste](docs/screenshots/transaktionen.png) | ![Transaktion erfassen](docs/screenshots/transaktion-detail.png) | ![Import-Vorschau](docs/screenshots/import-vorschau.png) |
+| ![Transaktionsliste](docs/screenshots/transaktionen.png) | ![Filter](docs/screenshots/transaktionen-filter.png) | ![Swipe](docs/screenshots/transaktionen-swipe.png) |
+
+| Neue Transaktion | Umbuchung | Import-Vorschau |
+|:---:|:---:|:---:|
+| ![Transaktion erfassen](docs/screenshots/transaktion-detail.png) | ![Umbuchung](docs/screenshots/umbuchung.png) | ![Import-Vorschau](docs/screenshots/import-vorschau.png) |
 
 ### Daueraufträge
 

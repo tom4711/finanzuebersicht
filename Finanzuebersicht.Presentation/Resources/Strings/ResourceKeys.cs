@@ -54,6 +54,7 @@ public static class ResourceKeys
     public const string Lbl_Speicherort = nameof(Lbl_Speicherort);
     public const string Lbl_Ueber = nameof(Lbl_Ueber);
     public const string Lbl_VerwendeteBibliotheken = nameof(Lbl_VerwendeteBibliotheken);
+    public const string Lbl_Verwendungszweck = nameof(Lbl_Verwendungszweck);
     public const string Lbl_DatenWerdenGespeichert = nameof(Lbl_DatenWerdenGespeichert);
     public const string Lbl_Sprache = nameof(Lbl_Sprache);
     public const string Lbl_KategorienColon = nameof(Lbl_KategorienColon);
