@@ -7,6 +7,8 @@ public class Account
     public AccountType Type { get; set; } = AccountType.Girokonto;
     public string? SystemKey { get; set; }
     public bool IsArchived { get; set; }
+    public decimal OpeningBalance { get; set; }
+    public DateTime? OpeningBalanceDate { get; set; }
 
     public bool IsSystemAccount => !string.IsNullOrWhiteSpace(SystemKey);
     public bool CanDelete => !IsSystemAccount;

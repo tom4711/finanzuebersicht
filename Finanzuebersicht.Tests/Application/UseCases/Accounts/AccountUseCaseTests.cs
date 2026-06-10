@@ -121,4 +121,74 @@ public class AccountUseCaseTests
         Assert.Equal(700m, result.First(b => b.AccountId == "acc-1").Saldo);
         Assert.Equal(300m, result.First(b => b.AccountId == "acc-2").Saldo);
     }
+
+    [Fact]
+    public async Task GetAccountBalancesUseCase_IncludesOpeningBalance()
+    {
+        var accountRepository = Substitute.For<IAccountRepository>();
+        accountRepository.GetAccountsAsync().Returns(new List<Account>
+        {
+            new() { Id = "acc-1", Name = "Giro", OpeningBalance = 1000m }
+        });
+
+        var transactionRepository = Substitute.For<ITransactionRepository>();
+        transactionRepository.GetTransactionsAsync(Arg.Any<DateTime>(), Arg.Any<DateTime>())
+            .Returns(new List<Transaction>
+            {
+                new() { Typ = TransactionType.Ausgabe, Betrag = 200m, AccountId = "acc-1" }
+            });
+
+        var sut = new GetAccountBalancesUseCase(accountRepository, transactionRepository);
+        var result = await sut.ExecuteAsync();
+        var balance = result.Single();
+
+        Assert.Equal(1000m, balance.OpeningBalance);
+        Assert.Equal(-200m, balance.TransactionBalance);
+        Assert.Equal(800m, balance.Saldo);
+    }
+
+    [Fact]
+    public async Task GetAccountBalancesUseCase_LegacyAccountDefaultsOpeningBalanceToZero()
+    {
+        var accountRepository = Substitute.For<IAccountRepository>();
+        accountRepository.GetAccountsAsync().Returns(new List<Account>
+        {
+            new() { Id = "acc-1", Name = "Giro" }
+        });
+
+        var transactionRepository = Substitute.For<ITransactionRepository>();
+        transactionRepository.GetTransactionsAsync(Arg.Any<DateTime>(), Arg.Any<DateTime>())
+            .Returns(new List<Transaction>
+            {
+                new() { Typ = TransactionType.Einnahme, Betrag = 150m, AccountId = "acc-1" }
+            });
+
+        var sut = new GetAccountBalancesUseCase(accountRepository, transactionRepository);
+        var result = await sut.ExecuteAsync();
+        var balance = result.Single();
+
+        Assert.Equal(0m, balance.OpeningBalance);
+        Assert.Equal(150m, balance.TransactionBalance);
+        Assert.Equal(150m, balance.Saldo);
+    }
+
+    [Fact]
+    public async Task SaveAccountDetailUseCase_PersistsOpeningBalance()
+    {
+        var repository = Substitute.For<IAccountRepository>();
+        repository.SaveAccountAsync(Arg.Any<Account>()).Returns(Task.CompletedTask);
+
+        var sut = new SaveAccountDetailUseCase(repository);
+        var stichtag = new DateTime(2026, 1, 1);
+
+        var saved = await sut.ExecuteAsync(null, "Tagesgeld", AccountType.Tagesgeld, false, 2500m, stichtag);
+
+        await repository.Received(1).SaveAccountAsync(Arg.Is<Account>(a =>
+            a.Name == "Tagesgeld" &&
+            a.Type == AccountType.Tagesgeld &&
+            a.OpeningBalance == 2500m &&
+            a.OpeningBalanceDate == stichtag));
+        Assert.Equal(2500m, saved.OpeningBalance);
+        Assert.Equal(stichtag, saved.OpeningBalanceDate);
+    }
 }
