@@ -19,11 +19,12 @@ Kurz: .NET 10 + MAUI, Multi-Language UI (Deutsch & Englisch), MVVM-Architektur.
 
 ## Kern-Features
 
-- Dashboard mit Monatsübersicht und Trend-Indikator
-- Transaktionen anlegen, editieren und filtern
+- Dashboard mit Monats- und Jahresübersicht, Budget-Hinweisen und Trend-Indikator
+- **Kontenübersicht** mit Gesamtsaldo und Anfangssaldo pro Konto
+- Transaktionen anlegen, editieren, filtern und als Vorlage speichern
+- CSV-Import mit Vorschau und Duplikat-Erkennung
 - Wiederkehrende Buchungen (Daueraufträge)
-- Kategorien mit Icon und Farbe
-- **Monatsbudgets** pro Kategorie mit Fortschrittsanzeige
+- Kategorien mit Icon, Farbe und monatlichem Budget
 - **Sparziele** mit Fortschrittsbalken
 - **Backup & Restore** mit automatischer Schema-Migration (v1 → v2+)
 - Accessibility / VoiceOver-Unterstützung (iOS & macOS)
@@ -31,6 +32,60 @@ Kurz: .NET 10 + MAUI, Multi-Language UI (Deutsch & Englisch), MVVM-Architektur.
 - Multi-Language Support (Deutsch & Englisch)
 
 Hinweis: Die Benutzeroberfläche unterstützt Deutsch und Englisch; weitere Sprachen sind möglich, werden aber nicht aktiv gepflegt.
+
+## Screenshots
+
+*Dark Mode auf macOS (Mac Catalyst)*
+
+### Dashboard
+
+Kontenübersicht mit Gesamtsaldo, Monatsansicht mit Budget-Hinweisen und Kategorie-Charts, Jahresansicht mit Monatsbalken.
+
+| Kontenübersicht | Monatsansicht | Jahresansicht |
+|:---:|:---:|:---:|
+| ![Dashboard mit Kontenübersicht](docs/screenshots/dashboard-kontenuebersicht.png) | ![Dashboard Monatsansicht](docs/screenshots/dashboard-monat.png) | ![Dashboard Jahresansicht](docs/screenshots/dashboard-jahr.png) |
+
+### Transaktionen & Import
+
+Transaktionsliste mit Vorlagen, Buchungsmaske und Import-Vorschau inkl. Duplikat-Erkennung.
+
+| Transaktionen | Neue Transaktion | Import-Vorschau |
+|:---:|:---:|:---:|
+| ![Transaktionsliste](docs/screenshots/transaktionen.png) | ![Transaktion erfassen](docs/screenshots/transaktion-detail.png) | ![Import-Vorschau](docs/screenshots/import-vorschau.png) |
+
+### Daueraufträge
+
+Übersicht wiederkehrender Buchungen und Detailansicht mit Intervall und Erinnerung.
+
+| Übersicht | Detail |
+|:---:|:---:|
+| ![Daueraufträge](docs/screenshots/dauerauftraege.png) | ![Dauerauftrag bearbeiten](docs/screenshots/dauerauftrag-detail.png) |
+
+### Verwaltung
+
+Kategorien und Konten verwalten — inkl. Gesamtsaldo und Anfangssaldo.
+
+| Kategorien | Konten | Konto bearbeiten |
+|:---:|:---:|:---:|
+| ![Kategorien](docs/screenshots/verwaltung-kategorien.png) | ![Konten](docs/screenshots/verwaltung-konten.png) | ![Anfangssaldo](docs/screenshots/konto-bearbeiten.png) |
+
+Neue Kategorie mit Icon, Farbe und optionalem Monatsbudget:
+
+![Neue Kategorie](docs/screenshots/kategorie-neu.png)
+
+### Sparziele
+
+Fortschritt zu Sparzielen und neues Ziel anlegen.
+
+| Übersicht | Neues Ziel |
+|:---:|:---:|
+| ![Sparziele](docs/screenshots/sparziele.png) | ![Neues Sparziel](docs/screenshots/sparziel-neu.png) |
+
+### Einstellungen
+
+Darstellung, Sprache, Speicherort, Backup & Restore und App-Info.
+
+![Einstellungen](docs/screenshots/einstellungen.png)
 
 ## Plattformen
 
@@ -68,7 +123,8 @@ Build & Start (Mac Catalyst):
 
 ```bash
 dotnet build Finanzuebersicht/Finanzuebersicht.csproj -f net10.0-maccatalyst
-cp -R "Finanzuebersicht/bin/Debug/net10.0-maccatalyst/maccatalyst-x64/Finanzübersicht.app" "/Applications/Finanzübersicht.app"
+# Apple Silicon: maccatalyst-arm64 · Intel: maccatalyst-x64
+cp -R "Finanzuebersicht/bin/Debug/net10.0-maccatalyst/maccatalyst-arm64/Finanzübersicht.app" "/Applications/Finanzübersicht.app"
 open "/Applications/Finanzübersicht.app"
 
 # Tests
