@@ -78,7 +78,7 @@
       "description": "Medical, pharmacy, fitness"
     },
     {
-      "categoryName": "Freizeit",
+      "categoryName": "Unterhaltung",
       "patterns": [
         "KINO",
         "THEATER",

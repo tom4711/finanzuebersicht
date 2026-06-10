@@ -1,34 +1,44 @@
-Kurzbeschreibung
----------------
-Diese Notiz beschreibt die neu hinzugefügte UI-Funktion zum Verschieben einzelner Instanzen eines Dauerauftrags.
+# Daueraufträge — Instanz verschieben
 
-Wo die Änderung liegt
-- Detailseite: [Finanzuebersicht/Views/RecurringTransactionDetailPage.xaml](Finanzuebersicht/Views/RecurringTransactionDetailPage.xaml)
-- Detail-ViewModel: [Finanzuebersicht/ViewModels/RecurringTransactionDetailViewModel.cs](Finanzuebersicht/ViewModels/RecurringTransactionDetailViewModel.cs)
-- Neue Shift-Seite: [Finanzuebersicht/Views/RecurringInstanceShiftPage.xaml](Finanzuebersicht/Views/RecurringInstanceShiftPage.xaml)
-- Shift-ViewModel: [Finanzuebersicht/ViewModels/RecurringInstanceShiftViewModel.cs](Finanzuebersicht/ViewModels/RecurringInstanceShiftViewModel.cs)
+Kurzbeschreibung der UI-Funktion zum Verschieben einzelner Instanzen eines Dauerauftrags.
 
-Wie man die Funktion benutzt (manuell testen)
-1. Projekt wie gewohnt bauen:
+## Betroffene Dateien
+
+| Rolle | Pfad |
+|-------|------|
+| Detailseite | `Finanzuebersicht/Views/RecurringTransactionDetailPage.xaml` |
+| Detail-ViewModel | `Finanzuebersicht.Presentation/ViewModels/RecurringTransactionDetailViewModel.cs` |
+| Shift-Seite | `Finanzuebersicht/Views/RecurringInstanceShiftPage.xaml` |
+| Shift-ViewModel | `Finanzuebersicht.Presentation/ViewModels/RecurringInstanceShiftViewModel.cs` |
+| Use Case | `Finanzuebersicht.Application/UseCases/RecurringTransactions/ShiftRecurringInstanceUseCase.cs` |
+
+## Manuell testen
+
+1. Projekt bauen:
 
 ```bash
-dotnet build -f net10.0-maccatalyst
+dotnet build Finanzuebersicht/Finanzuebersicht.csproj -f net10.0-maccatalyst
 ```
 
-2. App für Mac Catalyst installieren und starten (siehe .github/copilot-instructions.md für Hinweise):
+2. App installieren und starten:
 
 ```bash
-cp -R Finanzuebersicht/bin/Debug/net10.0-maccatalyst/maccatalyst-x64/Finanzuebersicht.app /Applications/
-open /Applications/Finanzuebersicht.app
+cp -R Finanzuebersicht/bin/Debug/net10.0-maccatalyst/maccatalyst-arm64/Finanzübersicht.app /Applications/
+open /Applications/Finanzübersicht.app
 ```
 
-3. In der App: "Daueraufträge" öffnen → Dauerauftrag auswählen → "Instanz verschieben" drücken.
-   - Das Formular zeigt das Originaldatum, erlaubt ein neues Datum und eine optionale Notiz.
-   - Speichern ruft `ShiftRecurringInstanceUseCase` auf und persistiert eine `RecurringException` vom Typ `Shift`.
+3. In der App: **Daueraufträge** → Dauerauftrag auswählen → **Instanz verschieben**
+   - Formular zeigt Originaldatum, neues Datum und optionale Notiz
+   - Speichern ruft `ShiftRecurringInstanceUseCase` auf und persistiert eine `RecurringException` vom Typ `Shift`
 
-Anmerkungen für Entwickler
-- Navigation: die Seite wird über DI-registrierte Route `RecurringInstanceShiftPage` geöffnet. Die Übergabeparameter sind `RecurringId` und `InstanceDate`.
-- Die Detailseite bietet außerdem Buttons zum Überspringen der nächsten Instanz (`Skip`) und zum direkten Anlegen einer Ausnahme.
-- Unit-Tests: bestehende Tests wurden ergänzt und neue Tests hinzugefügt (z. B. `RecurringGenerationServiceTests`); alle Tests laufen lokal (siehe `Finanzuebersicht.Tests`).
+## Entwickler-Hinweise
 
-Weiteres: Wenn ihr UI-Tests (z. B. Appium / WinAppDriver) hinzufügen wollt, empfehle ich einen separaten kleinen Test-Plan für macCatalyst oder iOS-Simulator, da MAUI UI-Tests plattformabhängig sind.
+- **Navigation:** Route `RecurringInstanceShift` (`Routes.cs`); Parameter: `RecurringId`, `InstanceDate`
+- **Weitere Aktionen** auf der Detailseite: nächste Instanz überspringen (`Skip`), Ausnahme anlegen
+- **Tests:** `ShiftRecurringInstanceUseCaseTests`, `RecurringGenerationServiceTests` in `Finanzuebersicht.Tests`
+
+## Weitere Dauerauftrag-Features
+
+- Automatische Instanz-Generierung bei App-Start und Window-Resume
+- Fällige Daueraufträge im Dashboard (buchen / überspringen / verschieben)
+- Cashflow-Vorschau berücksichtigt geplante Daueraufträge

@@ -19,14 +19,15 @@ Kurz: .NET 10 + MAUI, Multi-Language UI (Deutsch & Englisch), MVVM-Architektur.
 
 ## Kern-Features
 
-- Dashboard mit Monats- und Jahresübersicht, Budget-Hinweisen, Trend-Indikator und 30-Tage-Cashflow
-- **Kontenübersicht** mit Gesamtsaldo und Anfangssaldo pro Konto
-- Transaktionen anlegen, editieren, filtern und als Vorlage speichern
-- CSV-Import mit Vorschau und Duplikat-Erkennung
-- Wiederkehrende Buchungen (Daueraufträge)
+- Dashboard mit Monats- und Jahresübersicht, Budget-Hinweisen, Trend-Indikator und **Kontenübersicht** (Gesamtsaldo)
+- **30-Tage-Cashflow-Vorschau** inkl. geplanter Daueraufträge
+- **Mehrere Konten** mit Anfangssaldo, Saldo pro Konto und **Umbuchungen** zwischen Konten
+- Transaktionen anlegen, editieren, suchen, filtern, duplizieren und als Vorlage speichern
+- CSV-Import (DKB-Format) mit Vorschau, Auto-Kategorisierung und Duplikat-Erkennung
+- Wiederkehrende Buchungen (Daueraufträge) mit Instanz-Verschieben und Ausnahmen
 - Kategorien mit Icon, Farbe und monatlichem Budget
-- **Sparziele** mit Fortschrittsbalken
-- **Backup & Restore** mit automatischer Schema-Migration (v1 → v2+)
+- **Sparziele** mit Fortschrittsbalken und Prognose
+- **Backup & Restore** mit automatischer Schema-Migration (v1 → v3)
 - Accessibility / VoiceOver-Unterstützung (iOS & macOS)
 - Dark Mode Unterstützung
 - Multi-Language Support (Deutsch & Englisch)
@@ -184,21 +185,28 @@ Finanzuebersicht.Tests/            ← xUnit Tests (net10.0)
 
 ## Lokalisierung & Ressourcen
 
-- UI‑Texte werden über Ressourcenfiles (`Resources/Strings/AppResources.resx`) verwaltet.
-- Unterstützte Sprachen: Deutsch (Standard) und Englisch. Weitere Sprachen sind möglich, werden aber nicht aktiv gewartet.
+- UI-Texte: `Finanzuebersicht/Resources/Strings/AppResources.resx` (Englisch, Fallback) und `AppResources.de.resx` (Deutsch)
+- Schlüssel-Konstanten: `Finanzuebersicht.Presentation/Resources/Strings/ResourceKeys.cs`
+- Sprache: Systemsprache oder manuell in den Einstellungen (Deutsch / Englisch)
 
 ## Dokumentation
 
-- Roadmap & geplante Features: [docs/ROADMAP.md](docs/ROADMAP.md)
-- Kategorisierungs-Regeln: [docs/CATEGORIZATION_RULES.md](docs/CATEGORIZATION_RULES.md)
-- (Einige alte Docs wurden entfernt oder zusammengeführt.)
+| Dokument | Inhalt |
+|----------|--------|
+| [docs/GUIDE.md](docs/GUIDE.md) | Entwickler-Leitfaden (Deutsch): Setup, Architektur, Konventionen |
+| [docs/QUICK_START.md](docs/QUICK_START.md) | Quick Start (Englisch) |
+| [docs/ROADMAP.md](docs/ROADMAP.md) | Geplante Features und Milestones |
+| [docs/CATEGORIZATION_RULES.md](docs/CATEGORIZATION_RULES.md) | Auto-Kategorisierung beim CSV-Import |
+| [docs/RECURRING_UI.md](docs/RECURRING_UI.md) | Dauerauftrag: Instanz verschieben |
+| [docs/ARCHITECTURE_CLEAN_CODE_REVIEW.md](docs/ARCHITECTURE_CLEAN_CODE_REVIEW.md) | Historisches Architektur-Review (Mai 2026) |
+| [.github/copilot-instructions.md](.github/copilot-instructions.md) | Zentrale AI-/Entwickler-Referenz |
 
 ## Versionierung & CI
 
-- Nerdbank.GitVersioning (`version.json`) steuert Versionsnummern
+- Nerdbank.GitVersioning (`version.json`) steuert Versionsnummern (aktuell Basis `1.11`)
 - CI / Pre-Release / Release Workflows in `.github/workflows/`
 
-Full MAUI build (macCatalyst)
+### Full MAUI build (macCatalyst)
 
 - Quick checks (unit tests, linters) werden bei Push auf Branches ausgeführt (ubuntu runner) — das spart macOS-Runner-Minuten.
 - Der vollständige MAUI macCatalyst-Build läuft für Pull Requests gegen `main` und für `main`-Pushes. Dadurch werden macOS-Ressourcen nur bei echten Integrationsprüfungen verwendet.

@@ -93,10 +93,11 @@ Layered clean architecture with MVVM (`CommunityToolkit.Mvvm` source generators)
 ## Feature Domains (quick reference)
 
 ### Accounts & balances
-- `GetAccountBalancesUseCase` — Saldo = Σ transactions per account (transfers affect both sides)
-- Account list with balance: **Verwaltung → Konten** (`CategoriesViewModel`, `AccountListItem`)
-- Dashboard shows single-account balance when filter is set (not total overview yet)
-- **Planned:** Opening balance (#212), dashboard overview (#213), manual reconciliation (#214)
+- `GetAccountBalancesUseCase` — Saldo = `OpeningBalance` + Σ transactions per account (transfers affect both sides)
+- Account list with balance breakdown: **Verwaltung → Konten** (`CategoriesViewModel`, `AccountListItem`)
+- Dashboard **Kontenübersicht** card with total balance and per-account bars (#213)
+- Opening balance per account in **Konto bearbeiten** (#212) — no fake transactions
+- **Open:** Manual reconciliation (#214) — compare calculated vs. actual balance without bank API
 
 ### Dashboard
 - `LoadDashboardMonthUseCase`, `LoadDashboardYearUseCase`, `LoadForecastUseCase`
@@ -242,10 +243,10 @@ Finanzuebersicht.Tests/              ← net10.0
 - Breaking changes: `BREAKING CHANGE:` in footer
 - Include `Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>` when pair-programming with Copilot
 
-## Open Issues (accounts — do not re-analyse from scratch)
+## Account-related issues
 
-| Issue | Topic |
-|-------|-------|
-| [#212](https://github.com/tom4711/finanzuebersicht/issues/212) | Opening balance per account |
-| [#213](https://github.com/tom4711/finanzuebersicht/issues/213) | Dashboard account overview with total balance |
-| [#214](https://github.com/tom4711/finanzuebersicht/issues/214) | Manual balance reconciliation (no bank API) |
+| Issue | Topic | Status |
+|-------|-------|--------|
+| [#212](https://github.com/tom4711/finanzuebersicht/issues/212) | Opening balance per account | ✅ Done |
+| [#213](https://github.com/tom4711/finanzuebersicht/issues/213) | Dashboard account overview with total balance | ✅ Done |
+| [#214](https://github.com/tom4711/finanzuebersicht/issues/214) | Manual balance reconciliation (no bank API) | Open |

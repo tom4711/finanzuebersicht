@@ -39,6 +39,24 @@ Alle 10 Issues des Milestones sind geschlossen.
 
 ---
 
+## ✅ v1.11 — Konten & Salden *(abgeschlossen)*
+
+Fokus: Mehrkonten-Verwaltung, Saldo-Berechnung und Dashboard-Übersicht.
+
+| Issue | Thema | Status |
+|-------|-------|--------|
+| [#212](https://github.com/tom4711/finanzuebersicht/issues/212) | Anfangssaldo pro Konto (ohne Fake-Transaktionen) | ✅ Closed |
+| [#213](https://github.com/tom4711/finanzuebersicht/issues/213) | Dashboard-Kontenübersicht mit Gesamtsaldo | ✅ Closed |
+
+**Weitere Umsetzungen in diesem Release-Zyklus:**
+- 30-Tage-Cashflow-Vorschau (`CashflowPage`, `LoadCashflowOutlookUseCase`)
+- Umbuchungen zwischen Konten (`TransferDetailPage`)
+- Transaktionen: Suche, Filter, Swipe-Aktionen (Löschen/Duplizieren)
+
+**Offener Follow-up:** [#214](https://github.com/tom4711/finanzuebersicht/issues/214) — manueller Saldo-Abgleich (ohne Bank-API)
+
+---
+
 ## 🔧 v1.1 — Qualität & Performance *(geplant)* · [Milestone](https://github.com/tom4711/finanzuebersicht/milestone/5)
 
 Fokus: Code-Qualität, technische Schulden abbauen, Performance verbessern.
@@ -77,10 +95,12 @@ Fokus: Größere Architekturänderungen – eigener Release-Zyklus.
 
 Features, die diskutiert wurden aber noch keinen Milestone haben:
 
+- [#214](https://github.com/tom4711/finanzuebersicht/issues/214) Manueller Saldo-Abgleich (Ist-Saldo vs. berechneter Saldo)
 - CloudKit-Sync (erfordert Apple Developer Membership)
 - Widget für iOS/macOS
 - Wiederkehrende Transaktionen mit variablem Betrag
 - Kategorien-Hierarchie (Ober-/Unterkategorien)
+- Open Banking / automatischer Bank-Import (aktuell nur CSV)
 
 ---
 

@@ -18,9 +18,11 @@ alwaysApply: true
 ## Konten & Salden
 
 - `GetAccountBalancesUseCase`: Saldo = Anfangssaldo + Σ Buchungen (Transfers korrekt)
-- Liste mit Saldo: Verwaltung → Konten; Dashboard: Kontenübersicht-Karte + Gesamtsaldo
+- Anfangssaldo: Konto bearbeiten (#212 ✅)
+- Dashboard: Kontenübersicht-Karte mit Gesamtsaldo (#213 ✅)
+- Cashflow: 30-Tage-Vorschau (`CashflowPage`, vom Dashboard)
 - Manueller Abgleich (ohne Bank-API) → Issue #214 (offen)
 
 ## Nicht wiederholen
 
-Vor Konten-/Saldo-Feature-Vorschlägen: `copilot-instructions.md` + Issues #212–#214 prüfen.
+#212 und #213 sind umgesetzt. Vor neuen Konten-/Saldo-Vorschlägen: `copilot-instructions.md` + #214 prüfen.

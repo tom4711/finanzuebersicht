@@ -47,13 +47,13 @@ Das Regelwerk ist eine **JSON-Datei** mit folgender Struktur:
 
 ```json
 {
-  "categoryName": "Freizeit",
+  "categoryName": "Unterhaltung",
   "patterns": [
     "KINO",
     "NETFLIX",
     "SPOTIFY",
     "STEAM",
-    "CINEMA"  // ← Neu hinzugefügt
+    "CINEMA"
   ]
 }
 ```
@@ -75,14 +75,15 @@ Falls du eine neue Kategorie brauchst, ergänze ein neues Objekt:
 ```
 
 ### 3. Kategorie umbenennen
-⚠️ **Wichtig**: Der `categoryName` muss **exakt** mit einer existierenden Kategorie in der App übereinstimmen. Die Standard-Kategorien sind:
+⚠️ **Wichtig**: Der `categoryName` muss **exakt** mit einer existierenden Kategorie in der App übereinstimmen. Die Standard-Kategorien bei Erststart sind:
 - Lebensmittel
 - Transport
-- Sonstiges
 - Wohnen
+- Unterhaltung *(nicht „Freizeit“ — ältere Regeln ggf. anpassen)*
 - Gesundheit
-- Freizeit
-- Unkategorisiert (System-Kategorie)
+- Gehalt (Einnahme)
+- Sonstiges
+- Unkategorisiert (System-Kategorie, wird bei Import automatisch angelegt falls fehlend)
 
 ## 🧪 Testen
 
@@ -132,7 +133,7 @@ Basierend auf den Transaktionen aus deiner Test-CSV:
 
 ```json
 {
-  "categoryName": "Freizeit",
+  "categoryName": "Unterhaltung",
   "patterns": [
     "GASTHOF",
     "RESTAURANT"
