@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Finanzuebersicht.Application.UseCases.Accounts;
@@ -70,12 +71,24 @@ public partial class CategoriesViewModel(
             Kategorien = new ObservableCollection<Category>(liste);
             var accounts = await _loadAccountsUseCase.ExecuteAsync();
             var balances = await _getAccountBalancesUseCase.ExecuteAsync();
-            var balanceById = balances.ToDictionary(b => b.AccountId, b => b.Saldo);
+            var balanceById = balances.ToDictionary(b => b.AccountId);
             Konten = new ObservableCollection<AccountListItem>(
                 accounts
                     .OrderBy(a => a.IsArchived)
                     .ThenBy(a => a.Name)
-                    .Select(a => new AccountListItem(a, balanceById.GetValueOrDefault(a.Id))));
+                    .Select(a =>
+                    {
+                        balanceById.TryGetValue(a.Id, out var summary);
+                        return new AccountListItem(a, summary)
+                        {
+                            BalanceBreakdownText = summary is { OpeningBalance: not 0 }
+                                ? _loc.GetString(
+                                    ResourceKeys.Fmt_KontoSaldoAufschluesselung,
+                                    summary.OpeningBalance.ToString("C", CultureInfo.CurrentCulture),
+                                    summary.TransactionBalance.ToString("C", CultureInfo.CurrentCulture))
+                                : null
+                        };
+                    }));
         }
         catch (Exception ex)
         {

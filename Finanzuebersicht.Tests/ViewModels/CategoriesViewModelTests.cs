@@ -140,7 +140,7 @@ public class CategoriesViewModelTests
         dialogService.ShowConfirmationAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
             .Returns(Task.FromResult(true));
 
-        await sut.ToggleKontoArchivierungCommand.ExecuteAsync(new AccountListItem(account, 0m));
+        await sut.ToggleKontoArchivierungCommand.ExecuteAsync(new AccountListItem(account));
 
         await accountRepository.Received(1).SaveAccountAsync(Arg.Is<Account>(a => a.Id == "acc-1" && a.IsArchived));
     }

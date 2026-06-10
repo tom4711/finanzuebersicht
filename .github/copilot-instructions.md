@@ -1,128 +1,209 @@
 # Copilot Instructions – Finanzübersicht
 
+> **Für AI-Assistenten (Copilot & Cursor):** Diese Datei ist die zentrale Projektreferenz.
+> Cursor lädt zusätzlich `.cursor/rules/app-domain.mdc` (kompakter Domänenindex mit Issue-Links).
+> Vor Feature-Analysen: hier lesen, nicht von Null starten.
+
 ## Project Overview
 
-A personal finance overview app built with **.NET 10 and .NET MAUI**, targeting **iOS and macOS** (Mac Catalyst). Data is persisted locally via JSON files (`LocalDataService`); CloudKit support requires a paid Apple Developer account. Architecture follows **MVVM**. Languages: German and English supported; additional languages possible but not actively maintained.
+Personal finance app built with **.NET 10** and **.NET MAUI**, targeting **macOS (Mac Catalyst)** and **iOS**.
+Data is persisted locally as JSON. Architecture: **Clean Architecture + MVVM**.
+Languages: **German and English** (`AppResources.resx` / `AppResources.de.resx`).
+
+Current version baseline: `version.json` → `1.11` (patch = git height via Nerdbank.GitVersioning).
 
 ## Build & Run
 
 ```bash
 dotnet restore
 
-# Build for macOS (Mac Catalyst)
-dotnet build -f net10.0-maccatalyst
+# Tests (CI quick path — no MAUI workload required)
+dotnet test Finanzuebersicht.Tests/Finanzuebersicht.Tests.csproj -c Release
+
+# Build macOS (Mac Catalyst) — build MAUI project only, not whole solution
+dotnet build Finanzuebersicht/Finanzuebersicht.csproj -f net10.0-maccatalyst -c Debug
 
 # Build for iOS
-dotnet build -f net10.0-ios
-
-# Run tests
-dotnet test Finanzuebersicht.Tests
+dotnet build Finanzuebersicht/Finanzuebersicht.csproj -f net10.0-ios
 ```
 
-> Xcode version validation is disabled in the `.csproj` (`ValidateXcodeVersion=false`) due to SDK/Xcode version mismatch.
+> `ValidateXcodeVersion=false` in the `.csproj` due to SDK/Xcode version tolerance.
+> `TreatWarningsAsErrors=true` globally in `Directory.Build.props`.
 
 ### Running on macOS (Mac Catalyst)
 
-`dotnet run` and `-t:Run` fail due to macOS sandboxing. To launch the app, copy it to `/Applications` first:
+`dotnet run` and `-t:Run` fail due to macOS sandboxing. Copy the `.app` to `/Applications` first:
 
 ```bash
-cp -R Finanzuebersicht/bin/Debug/net10.0-maccatalyst/maccatalyst-x64/Finanzübersicht.app /Applications/
+# Apple Silicon (arm64) — typical on modern Macs
+cp -R Finanzuebersicht/bin/Debug/net10.0-maccatalyst/maccatalyst-arm64/Finanzübersicht.app /Applications/
 open /Applications/Finanzübersicht.app
+
+# Intel (x64)
+cp -R Finanzuebersicht/bin/Debug/net10.0-maccatalyst/maccatalyst-x64/Finanzübersicht.app /Applications/
 ```
 
-For a one-liner after every build:
+One-liner after build (adjust `arm64` / `x64` as needed):
 
 ```bash
-dotnet build -f net10.0-maccatalyst && cp -R Finanzuebersicht/bin/Debug/net10.0-maccatalyst/maccatalyst-x64/Finanzübersicht.app /Applications/ && open /Applications/Finanzübersicht.app
+dotnet build Finanzuebersicht/Finanzuebersicht.csproj -f net10.0-maccatalyst -c Debug \
+  && cp -R Finanzuebersicht/bin/Debug/net10.0-maccatalyst/maccatalyst-arm64/Finanzübersicht.app /Applications/ \
+  && open /Applications/Finanzübersicht.app
 ```
 
 ## Architecture
 
-**MVVM** using `CommunityToolkit.Mvvm` source generators:
+Layered clean architecture with MVVM (`CommunityToolkit.Mvvm` source generators):
 
-- `Finanzuebersicht.Core/` – Shared .NET 10 class library (models, services, interfaces)
-- `Finanzuebersicht/` – .NET MAUI app (ViewModels, Views, Converters, platform code)
-- `Finanzuebersicht.Tests/` – xUnit test project (references Core only)
+| Project | Role |
+|---------|------|
+| `Finanzuebersicht.Core` | Models, repository interfaces, domain services (forecast, categorization, migrations) |
+| `Finanzuebersicht.Application` | Use cases (orchestration, no UI/IO) |
+| `Finanzuebersicht.Infrastructure` | JSON stores, `LocalDataService`, backup, settings, import parsers |
+| `Finanzuebersicht.Presentation` | ViewModels, navigation abstractions (`Routes`, `INavigationService`) |
+| `Finanzuebersicht` | MAUI app: Views (XAML), Converters, Charts, `MauiProgram`, platform code |
+| `Finanzuebersicht.Tests` | xUnit + NSubstitute; references Core, Application, Infrastructure, Presentation |
 
-Navigation: Shell with 5 tabs (Dashboard, Transaktionen, Daueraufträge, Kategorien, Einstellungen) + 3 detail pages via Shell routing.
+**Data flow:** View → ViewModel → Use Case → Repository (`I*Repository`) → JSON Store
+
+**Legacy:** `IDataService` / `DataServiceFacade` still registered for compatibility — **new code uses repository interfaces and use cases**.
+
+**DI entry points:**
+- `MauiProgram.cs` — app services, pages
+- `AddInfrastructureServices()` — stores + repositories
+- `AddApplicationUseCases()` — all use cases
+- `AddPresentationViewModels()` — ViewModels (`Finanzuebersicht.Presentation`)
+
+## Navigation
+
+**5 tabs** (`AppShell.xaml`):
+
+| Tab | Page | Purpose |
+|-----|------|---------|
+| Dashboard | `DashboardPage` | Month/year overview, budgets, due recurring, account filter, cashflow link |
+| Transaktionen | `TransactionsPage` | Transaction list, search, templates, account filter |
+| Daueraufträge | `RecurringTransactionsPage` | Recurring transactions |
+| Verwaltung | `CategoriesPage` | Toggle: **Kategorien** / **Konten** (accounts with balance) |
+| Sparziele | `SparZielePage` | Savings goals |
+
+**Toolbar:** Einstellungen → `SettingsPage`
+
+**Shell routes** (`Routes.cs`): TransactionDetail, TransferDetail, RecurringTransactionDetail, RecurringInstanceShift, CategoryDetail, AccountDetail, Settings, BackupList, ImportPreview, Cashflow
+
+## Feature Domains (quick reference)
+
+### Accounts & balances
+- `GetAccountBalancesUseCase` — Saldo = Σ transactions per account (transfers affect both sides)
+- Account list with balance: **Verwaltung → Konten** (`CategoriesViewModel`, `AccountListItem`)
+- Dashboard shows single-account balance when filter is set (not total overview yet)
+- **Planned:** Opening balance (#212), dashboard overview (#213), manual reconciliation (#214)
+
+### Dashboard
+- `LoadDashboardMonthUseCase`, `LoadDashboardYearUseCase`, `LoadForecastUseCase`
+- Due recurring widget with book/skip/shift actions
+
+### Cashflow
+- `LoadCashflowOutlookUseCase` — 30-day outlook per account (`CashflowPage`, linked from Dashboard)
+- Forward-looking cashflow, **not** account balance
+
+### Import
+- CSV import (DKB parser), import preview, auto-categorization (`KeywordCategorizationStrategy`, `HistoricalCategorizationStrategy`)
+- No Open Banking / bank API integration
+
+### Other
+- Sparziele with transaction linking and completion forecast
+- Backup/restore (ZIP/JSON), configurable data path
+- CloudKit code exists but disabled (requires paid Apple Developer account)
 
 ## Data Persistence
 
-- All CRUD goes through `IDataService` → `LocalDataService` (Singleton, JSON files)
-- Storage path configurable via `SettingsService` ("DataPath" key), default: `LocalApplicationData/Finanzuebersicht`
-- CloudKit code exists (`CloudKitDataService`) but is disabled (requires paid Apple Developer account)
-- Recurring transaction auto-generation runs on `App.OnStart()` and `Window.Resumed`
+- JSON files per entity in configurable data directory (`SettingsService` key `DataPath`)
+- Default macOS path: `~/Library/Application Support/Finanzuebersicht` (`AppPaths`)
+- Stores: `CategoryStore`, `AccountStore`, `TransactionStore`, `RecurringStore`, `BudgetStore`, `SparZielStore`, `TransactionTemplateStore`
+- `LocalDataService` coordinates stores and implements all `I*Repository` interfaces
+- Schema migrations via `IDataMigrator` (V1→V2, V2→V3)
+- Recurring auto-generation on `App.OnStart()` and `Window.Resumed`
 
 ## Key Conventions
 
-- `CommunityToolkit.Mvvm` source generators everywhere — no manual `INotifyPropertyChanged`
-- All services and ViewModels registered in `MauiProgram.cs` via DI (`AddSingleton` / `AddTransient`)
-- Pages receive their ViewModel via constructor injection
-- `OnAppearing()` triggers data loading via command execution
+- `CommunityToolkit.Mvvm` source generators — no manual `INotifyPropertyChanged`
+- ViewModels live in `Finanzuebersicht.Presentation/ViewModels/` (namespace `Finanzuebersicht.ViewModels`)
+- Register new ViewModels in `PresentationServiceCollectionExtensions.cs`
+- Pages in `Finanzuebersicht/Views/`, registered in `MauiProgram.cs`
+- Pages receive ViewModels via constructor injection; `OnAppearing()` triggers `Load*Command`
+- Navigation from ViewModels via `INavigationService` + `Routes` constants (no direct View type references)
 - Monetary values: `decimal` in C#, formatted with `CultureInfo.CurrentCulture`
 - Use `Border` with `StrokeShape="RoundRectangle"` instead of deprecated `Frame`
-- Colors defined in `Resources/Styles/Colors.xaml` (Apple System Colors palette)
-- Light/Dark mode via `AppThemeBinding` — avoid hardcoded color values in XAML
-- Multi-language support (German and English); additional languages possible but not maintained
+- Colors in `Resources/Styles/Colors.xaml` — use `AppThemeBinding`, no hardcoded colors in XAML
+- Localization: add keys to `AppResources.resx` + `AppResources.de.resx` + `ResourceKeys.cs`
 
 ## Versioning
 
-Automatic **SemVer** via **Nerdbank.GitVersioning** (`version.json` in repo root):
+Automatic **SemVer** via **Nerdbank.GitVersioning** (`version.json`):
 
-- Version = `<major>.<minor>.<git-height>` (e.g., `0.1.5` = 5 commits since 0.1.0)
-- MAUI `ApplicationDisplayVersion` and `ApplicationVersion` are set automatically at build time
-- **Bump version:** edit `version.json` or run `nbgv set-version <new-version>`
-- **Current version:** run `nbgv get-version`
-- `publicReleaseRefSpec`: `main` and `release/v*` branches produce stable versions
-- Cloud build numbers enabled for CI pipelines
+- Version = `<major>.<minor>.<git-height>` (e.g. `1.11.5`)
+- Bump: edit `version.json` or `nbgv set-version <version>`
+- Current: `nbgv get-version`
+- Stable releases: `main` and `release/v*` branches
 
 ## Git Branching Strategy
 
-**`main` is protected** — no direct commits to `main`. It is always release-ready.
-
-All feature development targets `develop`. When a milestone is complete, `develop` is merged into `main` via PR, then tagged to trigger a release.
+**`main` is protected** — release-ready only. All development targets `develop`.
 
 ```
-main              ← stable, release-ready (merge from develop when milestone complete)
-develop           ← integration branch for ongoing work
-├── feature/*     ← new features (e.g., feature/cloud-sync)
-├── fix/*         ← bug fixes (e.g., fix/dark-mode-contrast)
-├── chore/*       ← tooling, deps, config (e.g., chore/update-packages)
-└── release/v*    ← release preparation (e.g., release/v1.0)
+main              ← stable (merge from develop when milestone complete)
+develop           ← integration branch
+├── feature/*     ← new features
+├── fix/*         ← bug fixes
+├── chore/*       ← tooling, deps, config
+└── release/v*    ← release preparation
 ```
 
 **Workflow:**
-1. Create branch from `develop`: `git checkout develop && git checkout -b feature/<name>`
-2. Make changes, commit following conventions below
-3. Push branch and create Pull Request targeting `develop`
-4. When milestone is complete: PR `develop` → `main`, then tag to release
+1. Branch from `develop`: `git checkout develop && git checkout -b feature/<name>`
+2. Push and open PR targeting `develop`
+3. Milestone complete: PR `develop` → `main`, then tag
 
-**Branch naming:** `<type>/<short-description>` in kebab-case (English)
+Branch naming: `<type>/<short-description>` in kebab-case (English)
 
 ## Project Structure
 
 ```
-Finanzuebersicht.slnx              ← Solution file
-version.json                       ← Nerdbank.GitVersioning config
-Directory.Build.props              ← Shared MSBuild properties (nbgv package)
+Finanzuebersicht.slnx
+version.json
+Directory.Build.props              ← TreatWarningsAsErrors, Nerdbank.GitVersioning
 
-Finanzuebersicht.Core/             ← Shared library (net10.0)
-├── Models/                        ← Transaction, Category, RecurringTransaction, etc.
-└── Services/                      ← IDataService, LocalDataService, SettingsService, InitializationService
+Finanzuebersicht.Core/             ← net10.0
+├── Models/                        ← Transaction, Category, Account, SparZiel, …
+├── Services/                      ← I*Repository, IClock, ForecastService, ImportService, …
+└── Constants/
 
-Finanzuebersicht/                  ← MAUI app (net10.0-ios, net10.0-maccatalyst)
+Finanzuebersicht.Application/      ← net10.0
+└── UseCases/                      ← Dashboard, Accounts, Transactions, Recurring, SparZiele, …
+
+Finanzuebersicht.Infrastructure/     ← net10.0
+├── Services/                      ← *Store, LocalDataService, BackupService, SettingsService
+└── DependencyInjection/
+
+Finanzuebersicht.Presentation/       ← net10.0
+├── ViewModels/
+├── Navigation/                    ← Routes.cs
+└── Services/                      ← IDialogService, INavigationService, …
+
+Finanzuebersicht/                    ← net10.0-ios, net10.0-maccatalyst
 ├── MauiProgram.cs
-├── App.xaml / App.xaml.cs
-├── AppShell.xaml / AppShell.xaml.cs
-├── ViewModels/                    ← DashboardVM, TransactionsVM, SettingsVM, etc.
+├── AppShell.xaml
 ├── Views/                         ← XAML pages
-├── Converters/                    ← Value converters for UI
-├── Handlers/                      ← Custom Shell renderer (FastShellRenderer)
-├── Resources/Styles/              ← Colors.xaml, Styles.xaml
-└── Platforms/                     ← iOS, MacCatalyst
+├── Converters/
+├── Charts/
+├── Resources/Strings/             ← AppResources.resx, AppResources.de.resx
+└── Platforms/
 
-Finanzuebersicht.Tests/            ← xUnit tests (net10.0, references Core only)
-└── Services/                      ← LocalDataService, InitializationService tests
+Finanzuebersicht.Tests/              ← net10.0
+├── Application/UseCases/
+├── ViewModels/
+├── Infrastructure/
+└── Services/
 ```
 
 ## Git Commit Conventions
@@ -153,36 +234,18 @@ Finanzuebersicht.Tests/            ← xUnit tests (net10.0, references Core onl
 | 🚀 | `deploy` | Deployment-related changes |
 | 🏗️ | `arch` | Architecture changes (project structure) |
 
-**Scopes:** `core`, `ui`, `viewmodel`, `service`, `model`, `converter`, `test`, `config`, `shell`, `settings`
+**Scopes:** `core`, `ui`, `viewmodel`, `service`, `model`, `converter`, `test`, `config`, `shell`, `settings`, `accounts`, `dashboard`
 
 **Rules:**
-- Subject line: imperative mood, max 72 chars, no period at end
-- Body: wrap at 80 chars, explain *what* and *why* (not *how*)
-- Always list affected files/components in the body
-- Breaking changes: add `BREAKING CHANGE:` in footer
-- Always include `Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>` trailer
+- Subject: imperative mood, max 72 chars, no period
+- Body: explain *what* and *why*; list affected files/components
+- Breaking changes: `BREAKING CHANGE:` in footer
+- Include `Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>` when pair-programming with Copilot
 
-**Examples:**
+## Open Issues (accounts — do not re-analyse from scratch)
 
-```
-✨ feat(service): add configurable data path for LocalDataService
-
-- LocalDataService now accepts SettingsService to read custom data path
-- Users can choose iCloud Drive folder for automatic backup
-- Falls back to LocalApplicationData when no custom path is set
-
-Affected: LocalDataService.cs, SettingsService.cs, MauiProgram.cs
-
-Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>
-```
-
-```
-🐛 fix(converter): handle null values in BetragDisplayConverter
-
-- Return "0,00 €" instead of throwing NullReferenceException
-- Added null check for decimal input parameter
-
-Affected: BetragDisplayConverter.cs
-
-Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>
-```
+| Issue | Topic |
+|-------|-------|
+| [#212](https://github.com/tom4711/finanzuebersicht/issues/212) | Opening balance per account |
+| [#213](https://github.com/tom4711/finanzuebersicht/issues/213) | Dashboard account overview with total balance |
+| [#214](https://github.com/tom4711/finanzuebersicht/issues/214) | Manual balance reconciliation (no bank API) |

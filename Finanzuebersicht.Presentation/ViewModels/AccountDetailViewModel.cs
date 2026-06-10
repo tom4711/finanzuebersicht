@@ -1,3 +1,4 @@
+using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Finanzuebersicht.Application.UseCases.Accounts;
@@ -12,11 +13,13 @@ public partial class AccountDetailViewModel(
     SaveAccountDetailUseCase saveAccountDetailUseCase,
     INavigationService navigationService,
     ILocalizationService localizationService,
+    IDialogService dialogService,
     ILogger<AccountDetailViewModel>? logger = null) : ObservableObject, IApplyQueryAttributes
 {
     private readonly SaveAccountDetailUseCase _saveAccountDetailUseCase = saveAccountDetailUseCase;
     private readonly INavigationService _navigationService = navigationService;
     private readonly ILocalizationService _loc = localizationService;
+    private readonly IDialogService _dialogService = dialogService;
     private readonly ILogger<AccountDetailViewModel>? _logger = logger;
     private Account? _existingAccount;
 
@@ -31,6 +34,18 @@ public partial class AccountDetailViewModel(
 
     [ObservableProperty]
     private AccountTypeOption? selectedTypeOption;
+
+    [ObservableProperty]
+    private string openingBalanceText = string.Empty;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasOpeningBalanceDate))]
+    private bool useOpeningBalanceDate;
+
+    [ObservableProperty]
+    private DateTime openingBalanceDate = DateTime.Today;
+
+    public bool HasOpeningBalanceDate => UseOpeningBalanceDate;
 
     public string PageTitle => _existingAccount == null
         ? _loc.GetString(ResourceKeys.Title_KontoHinzufuegen)
@@ -67,6 +82,9 @@ public partial class AccountDetailViewModel(
                 Name = value.Name;
                 Type = value.Type;
                 IsArchived = value.IsArchived;
+                OpeningBalanceText = value.OpeningBalance.ToString("F2", CultureInfo.CurrentCulture);
+                UseOpeningBalanceDate = value.OpeningBalanceDate.HasValue;
+                OpeningBalanceDate = value.OpeningBalanceDate ?? DateTime.Today;
                 SelectedTypeOption = VerfuegbareTypen.FirstOrDefault(t => t.Value == value.Type);
                 OnPropertyChanged(nameof(PageTitle));
                 OnPropertyChanged(nameof(IsSystemAccount));
@@ -88,9 +106,46 @@ public partial class AccountDetailViewModel(
     {
         if (string.IsNullOrWhiteSpace(Name)) return;
 
-        Type = SelectedTypeOption?.Value ?? Type;
-        await _saveAccountDetailUseCase.ExecuteAsync(_existingAccount, Name, Type, IsArchived);
-        await _navigationService.GoBackAsync();
+        if (!TryParseOpeningBalance(out var openingBalance))
+        {
+            await _dialogService.ShowAlertAsync(
+                _loc.GetString(ResourceKeys.Err_Titel),
+                _loc.GetString(ResourceKeys.Err_UngueltigerBetrag),
+                _loc.GetString(ResourceKeys.Btn_OK));
+            return;
+        }
+
+        try
+        {
+            Type = SelectedTypeOption?.Value ?? Type;
+            var openingBalanceDate = UseOpeningBalanceDate ? OpeningBalanceDate : (DateTime?)null;
+            await _saveAccountDetailUseCase.ExecuteAsync(
+                _existingAccount, Name, Type, IsArchived, openingBalance, openingBalanceDate);
+            await _navigationService.GoBackAsync();
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "AccountDetailViewModel: Save failed");
+            await _dialogService.ShowAlertAsync(
+                _loc.GetString(ResourceKeys.Err_Titel),
+                _loc.GetString(ResourceKeys.Err_SpeichernFehlgeschlagen, ex.Message),
+                _loc.GetString(ResourceKeys.Btn_OK));
+        }
+    }
+
+    private bool TryParseOpeningBalance(out decimal openingBalance)
+    {
+        if (string.IsNullOrWhiteSpace(OpeningBalanceText))
+        {
+            openingBalance = 0m;
+            return true;
+        }
+
+        return decimal.TryParse(
+            OpeningBalanceText,
+            NumberStyles.Number,
+            CultureInfo.CurrentCulture,
+            out openingBalance);
     }
 }
 

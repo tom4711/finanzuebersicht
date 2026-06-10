@@ -129,6 +129,10 @@
                                                   FontSize="11"
                                                   TextColor="Gray" />
                                        </HorizontalStackLayout>
+                                       <Label Text="{Binding BalanceBreakdownText}"
+                                              IsVisible="{Binding ShowBalanceBreakdown}"
+                                              FontSize="12"
+                                              TextColor="Gray" />
                                     </VerticalStackLayout>
 
                                     <VerticalStackLayout Grid.Column="2" Spacing="4" VerticalOptions="Center">

@@ -1,0 +1,26 @@
+---
+description: Finanzübersicht Domänenindex — verweist auf copilot-instructions.md
+alwaysApply: true
+---
+
+# Finanzübersicht — Cursor Domänenindex
+
+**Vollständige Referenz:** `.github/copilot-instructions.md` (zuerst lesen bei Architektur-, Build- oder Feature-Fragen).
+
+## Schnellreferenz
+
+- **Stack:** .NET 10 MAUI, Clean Architecture + MVVM, JSON-Persistenz, DE/EN
+- **Tabs:** Dashboard · Transaktionen · Daueraufträge · Verwaltung (Kategorien/Konten) · Sparziele · Einstellungen (Toolbar)
+- **Neuer Code:** ViewModel → Use Case → `I*Repository` (nicht `IDataService`)
+- **ViewModels:** `Finanzuebersicht.Presentation/ViewModels/` — in `PresentationServiceCollectionExtensions` registrieren
+- **Build macOS:** `dotnet build Finanzuebersicht/Finanzuebersicht.csproj -f net10.0-maccatalyst` → `maccatalyst-arm64/Finanzübersicht.app`
+
+## Konten & Salden (Issues #212–#214)
+
+- `GetAccountBalancesUseCase`: Saldo = Σ Buchungen (Transfers korrekt)
+- Liste mit Saldo: Verwaltung → Konten
+- Anfangssaldo, Dashboard-Übersicht, manueller Abgleich → siehe Issues, nicht neu erfinden
+
+## Nicht wiederholen
+
+Vor Konten-/Saldo-Feature-Vorschlägen: `copilot-instructions.md` + Issues #212–#214 prüfen.
