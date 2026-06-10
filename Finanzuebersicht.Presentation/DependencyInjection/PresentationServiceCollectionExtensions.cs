@@ -38,6 +38,7 @@ public static class PresentationServiceCollectionExtensions
         services.AddTransient<SparZieleViewModel>();
         services.AddTransient<BackupListViewModel>();
         services.AddTransient<ImportPreviewViewModel>();
+        services.AddTransient<CashflowViewModel>();
 
         return services;
     }
