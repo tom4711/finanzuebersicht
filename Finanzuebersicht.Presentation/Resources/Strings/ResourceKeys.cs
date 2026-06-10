@@ -245,6 +245,10 @@ public static class ResourceKeys
     public const string Lbl_AnfangssaldoStichtag = nameof(Lbl_AnfangssaldoStichtag);
     public const string Hint_Anfangssaldo = nameof(Hint_Anfangssaldo);
     public const string Fmt_KontoSaldoAufschluesselung = nameof(Fmt_KontoSaldoAufschluesselung);
+    public const string Lbl_KontenUebersicht = nameof(Lbl_KontenUebersicht);
+    public const string Lbl_Gesamtsaldo = nameof(Lbl_Gesamtsaldo);
+    public const string Lbl_GesamtsaldoAktiv = nameof(Lbl_GesamtsaldoAktiv);
+    public const string A11y_KontoUebersichtTippen = nameof(A11y_KontoUebersichtTippen);
     public const string Lbl_Archiviert = nameof(Lbl_Archiviert);
     public const string Lbl_VonKonto = nameof(Lbl_VonKonto);
     public const string Lbl_NachKonto = nameof(Lbl_NachKonto);

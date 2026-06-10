@@ -136,6 +136,15 @@ public partial class DashboardViewModel : MonthNavigationViewModel
     public bool HasSelectedAccountSaldo => !string.IsNullOrWhiteSpace(SelectedAccountId);
 
     [ObservableProperty]
+    private decimal gesamtSaldo;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasKontenUebersicht))]
+    private ObservableCollection<AccountOverviewItem> kontenUebersicht = [];
+
+    public bool HasKontenUebersicht => KontenUebersicht.Count > 0;
+
+    [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsYearView))]
     [NotifyPropertyChangedFor(nameof(ShowMonthView))]
     [NotifyPropertyChangedFor(nameof(ShowYearView))]
@@ -235,6 +244,7 @@ public partial class DashboardViewModel : MonthNavigationViewModel
         {
             await EnsureMinJahrLoadedAsync();
             await EnsureAccountFilterLoadedAsync();
+            await UpdateKontenUebersichtAsync();
             await UpdateSelectedAccountSaldoAsync();
             if (IsMonthView)
             {
@@ -287,6 +297,33 @@ public partial class DashboardViewModel : MonthNavigationViewModel
 
         var balances = await _getAccountBalancesUseCase.ExecuteAsync();
         SelectedAccountSaldo = balances.FirstOrDefault(b => b.AccountId == SelectedAccountId)?.Saldo ?? 0;
+    }
+
+    private async Task UpdateKontenUebersichtAsync()
+    {
+        var balances = await _getAccountBalancesUseCase.ExecuteAsync();
+        var active = balances.Where(b => !b.IsArchived).ToList();
+        GesamtSaldo = active.Sum(b => b.Saldo);
+
+        var maxAbs = active.Count > 0 ? active.Max(b => Math.Abs(b.Saldo)) : 0m;
+        KontenUebersicht = new ObservableCollection<AccountOverviewItem>(
+            active
+                .OrderByDescending(b => Math.Abs(b.Saldo))
+                .Select(b => new AccountOverviewItem
+                {
+                    AccountId = b.AccountId,
+                    Name = b.AccountName,
+                    Saldo = b.Saldo,
+                    AnteilProzent = maxAbs > 0 ? Math.Abs(b.Saldo) / maxAbs * 100 : 0
+                }));
+    }
+
+    [RelayCommand]
+    private Task SelectKontoFromOverview(AccountOverviewItem item)
+    {
+        SelectedKontoFilterItem = AvailableKonten.FirstOrDefault(k => k.Id == item.AccountId)
+            ?? AvailableKonten.FirstOrDefault();
+        return Task.CompletedTask;
     }
 
     private async Task EnsureAccountFilterLoadedAsync()

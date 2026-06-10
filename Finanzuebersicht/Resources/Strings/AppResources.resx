@@ -40,6 +40,10 @@
   <data name="Lbl_AnfangssaldoStichtag" xml:space="preserve"><value>As-of date (optional)</value></data>
   <data name="Hint_Anfangssaldo" xml:space="preserve"><value>Balance before your recorded transactions. Changes affect the account balance.</value></data>
   <data name="Fmt_KontoSaldoAufschluesselung" xml:space="preserve"><value>Opening balance {0} · Transactions {1}</value></data>
+  <data name="Lbl_KontenUebersicht" xml:space="preserve"><value>Account overview</value></data>
+  <data name="Lbl_Gesamtsaldo" xml:space="preserve"><value>Total balance</value></data>
+  <data name="Lbl_GesamtsaldoAktiv" xml:space="preserve"><value>Total balance (active accounts)</value></data>
+  <data name="A11y_KontoUebersichtTippen" xml:space="preserve"><value>Tap to filter by this account</value></data>
   <data name="Lbl_Archiviert" xml:space="preserve"><value>Archived</value></data>
   <data name="Lbl_VonKonto" xml:space="preserve"><value>From account</value></data>
   <data name="Lbl_NachKonto" xml:space="preserve"><value>To account</value></data>

@@ -10,6 +10,41 @@ namespace Finanzuebersicht.Tests.ViewModels;
 public class CategoriesViewModelTests
 {
     [Fact]
+    public async Task LoadKategorien_SetsGesamtSaldoAktivWithoutArchivedAccounts()
+    {
+        var categoryRepository = Substitute.For<ICategoryRepository>();
+        categoryRepository.GetCategoriesAsync().Returns(Task.FromResult(new List<Category>()));
+
+        var accountRepository = Substitute.For<IAccountRepository>();
+        accountRepository.GetAccountsAsync().Returns(Task.FromResult(new List<Account>
+        {
+            new() { Id = "acc-1", Name = "Giro" },
+            new() { Id = "acc-2", Name = "Alt", IsArchived = true }
+        }));
+
+        var transactionRepository = Substitute.For<ITransactionRepository>();
+        transactionRepository.GetTransactionsAsync(Arg.Any<DateTime>(), Arg.Any<DateTime>())
+            .Returns(Task.FromResult(new List<Transaction>
+            {
+                new() { Typ = TransactionType.Einnahme, Betrag = 800m, AccountId = "acc-1" },
+                new() { Typ = TransactionType.Einnahme, Betrag = 400m, AccountId = "acc-2" }
+            }));
+
+        var sut = CreateSut(
+            categoryRepository,
+            transactionRepository,
+            Substitute.For<IRecurringTransactionRepository>(),
+            accountRepository,
+            Substitute.For<ITransactionTemplateRepository>(),
+            out _);
+
+        await sut.LoadKategorienCommand.ExecuteAsync(null);
+
+        Assert.Equal(800m, sut.GesamtSaldoAktiv);
+        Assert.True(sut.ShowGesamtSaldoHeader);
+    }
+
+    [Fact]
     public async Task LoadKategorien_PopulatesKategorien()
     {
         var categoryRepository = Substitute.For<ICategoryRepository>();
