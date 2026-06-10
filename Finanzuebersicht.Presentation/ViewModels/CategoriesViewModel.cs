@@ -40,7 +40,14 @@ public partial class CategoriesViewModel(
     private ObservableCollection<Category> kategorien = [];
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ShowGesamtSaldoHeader))]
     private ObservableCollection<AccountListItem> konten = [];
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ShowGesamtSaldoHeader))]
+    private decimal gesamtSaldoAktiv;
+
+    public bool ShowGesamtSaldoHeader => Konten.Any(k => !k.IsArchived);
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsKategorienVisible))]
@@ -89,6 +96,7 @@ public partial class CategoriesViewModel(
                                 : null
                         };
                     }));
+            GesamtSaldoAktiv = balances.Where(b => !b.IsArchived).Sum(b => b.Saldo);
         }
         catch (Exception ex)
         {

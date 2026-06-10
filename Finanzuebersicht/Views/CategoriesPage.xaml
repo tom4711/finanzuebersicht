@@ -86,6 +86,24 @@
                              IsVisible="{Binding IsKontenVisible}">
                     <CollectionView ItemsSource="{Binding Konten}"
                                     SelectionMode="None">
+                        <CollectionView.Header>
+                            <Border Padding="16,12"
+                                    StrokeThickness="0"
+                                    BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray900}}"
+                                    IsVisible="{Binding ShowGesamtSaldoHeader}">
+                                <Grid ColumnDefinitions="*, Auto">
+                                    <Label Text="{loc:Translate Lbl_GesamtsaldoAktiv}"
+                                           FontSize="14"
+                                           FontAttributes="Bold"
+                                           VerticalTextAlignment="Center" />
+                                    <Label Grid.Column="1"
+                                           Text="{Binding GesamtSaldoAktiv, Converter={StaticResource Currency}}"
+                                           FontSize="16"
+                                           FontAttributes="Bold"
+                                           TextColor="{Binding GesamtSaldoAktiv, Converter={StaticResource BilanzColor}}" />
+                                </Grid>
+                            </Border>
+                        </CollectionView.Header>
                         <CollectionView.EmptyView>
                             <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Padding="20">
                                <Label Text="{loc:Translate Empty_KeineKonten}" FontSize="16"

@@ -40,6 +40,10 @@
   <data name="Lbl_AnfangssaldoStichtag" xml:space="preserve"><value>Stichtag (optional)</value></data>
   <data name="Hint_Anfangssaldo" xml:space="preserve"><value>Stand vor deinen erfassten Buchungen. Änderungen wirken sich auf den Kontosaldo aus.</value></data>
   <data name="Fmt_KontoSaldoAufschluesselung" xml:space="preserve"><value>Anfangssaldo {0} · Buchungen {1}</value></data>
+  <data name="Lbl_KontenUebersicht" xml:space="preserve"><value>Kontenübersicht</value></data>
+  <data name="Lbl_Gesamtsaldo" xml:space="preserve"><value>Gesamtsaldo</value></data>
+  <data name="Lbl_GesamtsaldoAktiv" xml:space="preserve"><value>Gesamtsaldo (aktive Konten)</value></data>
+  <data name="A11y_KontoUebersichtTippen" xml:space="preserve"><value>Tippen, um dieses Konto zu filtern</value></data>
   <data name="Lbl_Archiviert" xml:space="preserve"><value>Archiviert</value></data>
   <data name="Lbl_VonKonto" xml:space="preserve"><value>Von Konto</value></data>
   <data name="Lbl_NachKonto" xml:space="preserve"><value>Nach Konto</value></data>

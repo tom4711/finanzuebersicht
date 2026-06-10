@@ -15,11 +15,11 @@ alwaysApply: true
 - **ViewModels:** `Finanzuebersicht.Presentation/ViewModels/` — in `PresentationServiceCollectionExtensions` registrieren
 - **Build macOS:** `dotnet build Finanzuebersicht/Finanzuebersicht.csproj -f net10.0-maccatalyst` → `maccatalyst-arm64/Finanzübersicht.app`
 
-## Konten & Salden (Issues #212–#214)
+## Konten & Salden
 
-- `GetAccountBalancesUseCase`: Saldo = Σ Buchungen (Transfers korrekt)
-- Liste mit Saldo: Verwaltung → Konten
-- Anfangssaldo, Dashboard-Übersicht, manueller Abgleich → siehe Issues, nicht neu erfinden
+- `GetAccountBalancesUseCase`: Saldo = Anfangssaldo + Σ Buchungen (Transfers korrekt)
+- Liste mit Saldo: Verwaltung → Konten; Dashboard: Kontenübersicht-Karte + Gesamtsaldo
+- Manueller Abgleich (ohne Bank-API) → Issue #214 (offen)
 
 ## Nicht wiederholen
 

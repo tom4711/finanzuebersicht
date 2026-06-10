@@ -26,20 +26,90 @@ public class DashboardViewModelTests
         Assert.False(viewModel.HasMonthData);
     }
 
-    private static DashboardViewModel CreateSut()
+    [Fact]
+    public async Task LoadDashboard_PopulatesKontenUebersichtForActiveAccounts()
     {
-        var categoryRepository = Substitute.For<ICategoryRepository>();
-        var transactionRepository = Substitute.For<ITransactionRepository>();
-        var recurringTransactionRepository = Substitute.For<IRecurringTransactionRepository>();
-        var budgetRepository = Substitute.For<IBudgetRepository>();
-        var reportingService = Substitute.For<IReportingService>();
         var accountRepository = Substitute.For<IAccountRepository>();
-        accountRepository.GetAccountsAsync().Returns(Task.FromResult(new List<Account>()));
+        accountRepository.GetAccountsAsync().Returns(Task.FromResult(new List<Account>
+        {
+            new() { Id = "acc-1", Name = "Giro" },
+            new() { Id = "acc-2", Name = "Sparkonto", IsArchived = true }
+        }));
+
+        var transactionRepository = Substitute.For<ITransactionRepository>();
+        transactionRepository.GetTransactionsAsync(Arg.Any<DateTime>(), Arg.Any<DateTime>())
+            .Returns(Task.FromResult(new List<Transaction>
+            {
+                new() { Typ = TransactionType.Einnahme, Betrag = 1000m, AccountId = "acc-1", KategorieId = "cat-1" },
+                new() { Typ = TransactionType.Einnahme, Betrag = 500m, AccountId = "acc-2", KategorieId = "cat-1" }
+            }));
+
+        var viewModel = CreateSut(accountRepository, transactionRepository);
+
+        await viewModel.LoadDashboardCommand.ExecuteAsync(null);
+
+        Assert.True(viewModel.HasKontenUebersicht);
+        Assert.Equal(1000m, viewModel.GesamtSaldo);
+        Assert.Single(viewModel.KontenUebersicht);
+        Assert.Equal("acc-1", viewModel.KontenUebersicht[0].AccountId);
+    }
+
+    [Fact]
+    public async Task SelectKontoFromOverview_SetsAccountFilter()
+    {
+        var accountRepository = Substitute.For<IAccountRepository>();
+        accountRepository.GetAccountsAsync().Returns(Task.FromResult(new List<Account>
+        {
+            new() { Id = "acc-1", Name = "Giro" },
+            new() { Id = "acc-2", Name = "Tagesgeld", OpeningBalance = 2500m }
+        }));
+
+        var transactionRepository = Substitute.For<ITransactionRepository>();
         transactionRepository.GetTransactionsAsync(Arg.Any<DateTime>(), Arg.Any<DateTime>())
             .Returns(Task.FromResult(new List<Transaction>()));
+
+        var viewModel = CreateSut(accountRepository, transactionRepository);
+        await viewModel.LoadDashboardCommand.ExecuteAsync(null);
+
+        var item = viewModel.KontenUebersicht.First(i => i.AccountId == "acc-2");
+        await viewModel.SelectKontoFromOverviewCommand.ExecuteAsync(item);
+
+        Assert.Equal("acc-2", viewModel.SelectedAccountId);
+        Assert.Equal(2500m, viewModel.SelectedAccountSaldo);
+    }
+
+    private static DashboardViewModel CreateSut()
+    {
+        var accountRepository = Substitute.For<IAccountRepository>();
+        accountRepository.GetAccountsAsync().Returns(Task.FromResult(new List<Account>()));
+        var transactionRepository = Substitute.For<ITransactionRepository>();
+        transactionRepository.GetTransactionsAsync(Arg.Any<DateTime>(), Arg.Any<DateTime>())
+            .Returns(Task.FromResult(new List<Transaction>()));
+        return CreateSut(accountRepository, transactionRepository);
+    }
+
+    private static DashboardViewModel CreateSut(
+        IAccountRepository accountRepository,
+        ITransactionRepository transactionRepository)
+    {
+        var categoryRepository = Substitute.For<ICategoryRepository>();
+        categoryRepository.GetCategoriesAsync().Returns(Task.FromResult(new List<Category>
+        {
+            new() { Id = "cat-1", Name = "Sonstiges", Color = "#999999", Icon = "📁" }
+        }));
+
+        var recurringTransactionRepository = Substitute.For<IRecurringTransactionRepository>();
+        recurringTransactionRepository.GetRecurringTransactionsAsync()
+            .Returns(Task.FromResult(new List<RecurringTransaction>()));
+
+        var budgetRepository = Substitute.For<IBudgetRepository>();
+        budgetRepository.GetBudgetsAsync().Returns(Task.FromResult(new List<CategoryBudget>()));
+
         var localizationService = Substitute.For<ILocalizationService>();
         var navigationService = Substitute.For<INavigationService>();
         var forecastService = Substitute.For<IForecastService>();
+        forecastService.GetMovingAverageAsync(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<string?>())
+            .Returns(Task.FromResult(new ForecastResult()));
         var clock = new FixedClock(new DateTime(2026, 3, 15));
 
         return new DashboardViewModel(
