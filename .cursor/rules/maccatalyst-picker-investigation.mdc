@@ -39,19 +39,24 @@ open /Applications/Finanzübersicht.app
 sw_vers   # Version notieren
 ```
 
-| Test | Seite | Ergebnis 26 stable | Ergebnis 27 Beta |
-|------|-------|-------------------|------------------|
-| Intervall-Picker + Touchpad-Scroll | Dauerauftrag bearbeiten | | hängt |
-| Kategorie-Picker | Transaktion bearbeiten | | |
-| DatePicker | Dauerauftrag Startdatum | | |
+| Test | Seite | Ergebnis 26 stable (iMac) | Ergebnis 27 Beta (MacBook) |
+|------|-------|---------------------------|----------------------------|
+| Intervall-Picker + Scroll | Dauerauftrag bearbeiten | ✅ ok (Scrollrad + Magic Mouse Touch) | ❌ hängt (Touchpad) |
+| Kategorie-Picker + Scroll | Transaktion bearbeiten | ✅ ok (Scrollrad + Magic Mouse Touch) | ❌ hängt (Touchpad) |
+| DatePicker + Scroll | Dauerauftrag Startdatum | ✅ ok (Scrollrad + Magic Mouse Touch) | ❌ hängt (Touchpad) |
 
-**Interpretation:** Nur Beta kaputt → OS-Regression abwarten; beide kaputt → MAUI-Fix (SR6) oder **Mac-only Ersatz-UI** (Popup/Menü statt nativem Picker).
+**Testumgebung 26 stable:** macOS 26.6 (25G5028f), x86_64 iMac, Branch `fix/recurring-interval-picker`, MAUI 10.0.70.  
+**Input 26 stable:** Maus mit Scrollrad und Apple Magic Mouse (Touch-Scroll) — beides ohne Freeze.  
+**Input 27 Beta:** MacBook-Touchpad-Scroll im Picker-Dialog — Freeze bleibt.
 
-## Nächste Schritte (nach Vergleich)
+**Interpretation:** Nur Beta + Touchpad kaputt, 26 stable mit Maus ok → **OS-/Input-Regression auf macOS 27 Beta** (kein App-Umbau nötig). Known issue dokumentieren; MAUI SR6 (#33146) im Auge behalten.
 
-- **Beide OS:** MAUI auf SR6 prüfen; ggf. Mac-only `MenuFlyout`/Popup-Liste
-- **Nur Beta:** Known issue dokumentieren; kein großer App-Umbau nötig
-- **Nur Beta kaputt, 26 ok:** Issue an Apple/MAUI mit `sw_vers` + MAUI-Version
+## Nächste Schritte (Stand 2026-06-13)
+
+- **Known issue** in Docs/README oder Issue festhalten (macOS 27 Beta + Touchpad)
+- **Kein großer App-Umbau** solange 26 stable funktioniert
+- Optional: auf MacBook mit **externer Maus** verifizieren (ob nur Touchpad betroffen)
+- MAUI **SR6** prüfen, wenn verfügbar; ggf. erneut auf 27 Beta testen
 
 ## Build-Hinweis
 
