@@ -17,7 +17,7 @@ public class SelectionPopup : Popup<object>
         BackgroundColor = Colors.Transparent;
         Padding = 0;
         Margin = new Thickness(20);
-        CanBeDismissedByTappingOutsideOfPopup = false;
+        CanBeDismissedByTappingOutsideOfPopup = true;
         Content = CreateContent(items, selectedItem, displayMemberPath);
     }
 

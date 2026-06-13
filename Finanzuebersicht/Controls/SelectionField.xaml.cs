@@ -100,7 +100,7 @@ public partial class SelectionField : ContentView
 
     private async void OnTapped(object? sender, TappedEventArgs e)
     {
-        if (ItemsSource is null)
+        if (!IsEnabled || ItemsSource is null)
             return;
 
         var popup = new SelectionPopup(ItemsSource, SelectedItem, DisplayMemberPath);
