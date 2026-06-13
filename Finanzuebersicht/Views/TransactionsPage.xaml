@@ -6,6 +6,7 @@
              xmlns:models="clr-namespace:Finanzuebersicht.Models"
              xmlns:conv="clr-namespace:Finanzuebersicht.Converters"
              xmlns:loc="clr-namespace:Finanzuebersicht.Extensions"
+             xmlns:controls="clr-namespace:Finanzuebersicht.Controls"
              x:Class="Finanzuebersicht.Views.TransactionsPage"
              x:DataType="vm:TransactionsViewModel"
              Title="Transaktionen">
@@ -128,32 +129,33 @@
                 <Grid ColumnDefinitions="80, *" ColumnSpacing="8">
                     <Label Grid.Column="0" Text="{loc:Translate Lbl_AlleKategorien}"
                            FontSize="13" TextColor="Gray" VerticalTextAlignment="Center" />
-                    <Picker Grid.Column="1"
-                            ItemsSource="{Binding AvailableKategorien}"
-                            ItemDisplayBinding="{Binding DisplayName}"
-                            SelectedItem="{Binding SelectedKategorieFilterItem}"
-                            FontSize="14" />
+                    <controls:SelectionField Grid.Column="1"
+                                             ItemsSource="{Binding AvailableKategorien}"
+                                             SelectedItem="{Binding SelectedKategorieFilterItem, Mode=TwoWay}"
+                                             DisplayMemberPath="DisplayName"
+                                             Placeholder="{loc:Translate Lbl_AlleKategorien}" />
                 </Grid>
 
                 <!-- Konto-Filter -->
                 <Grid ColumnDefinitions="80, *" ColumnSpacing="8">
                     <Label Grid.Column="0" Text="{loc:Translate Lbl_Konto}"
                            FontSize="13" TextColor="Gray" VerticalTextAlignment="Center" />
-                    <Picker Grid.Column="1"
-                            ItemsSource="{Binding AvailableKonten}"
-                            ItemDisplayBinding="{Binding DisplayName}"
-                            SelectedItem="{Binding SelectedKontoFilterItem}"
-                            FontSize="14" />
+                    <controls:SelectionField Grid.Column="1"
+                                             ItemsSource="{Binding AvailableKonten}"
+                                             SelectedItem="{Binding SelectedKontoFilterItem, Mode=TwoWay}"
+                                             DisplayMemberPath="DisplayName"
+                                             Placeholder="{loc:Translate Lbl_AlleKonten}" />
                 </Grid>
 
                 <!-- Typ-Filter -->
                 <Grid ColumnDefinitions="80, *" ColumnSpacing="8">
                     <Label Grid.Column="0" Text="{loc:Translate Lbl_AlleTypen}"
                            FontSize="13" TextColor="Gray" VerticalTextAlignment="Center" />
-                    <Picker Grid.Column="1"
-                            ItemsSource="{Binding TypFilterItems}"
-                            SelectedIndex="{Binding SelectedTypIndex}"
-                            FontSize="14" />
+                    <controls:SelectionField Grid.Column="1"
+                                             ItemsSource="{Binding TypFilterItems}"
+                                             SelectedItem="{Binding SelectedTypFilterItem, Mode=TwoWay}"
+                                             DisplayMemberPath=""
+                                             Placeholder="{loc:Translate Lbl_AlleTypen}" />
                 </Grid>
 
                 <!-- Datum-Filter aktivieren -->

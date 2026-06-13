@@ -6,6 +6,7 @@
              xmlns:recurring="clr-namespace:Finanzuebersicht.Application.UseCases.RecurringTransactions;assembly=Finanzuebersicht.Application"
              xmlns:conv="clr-namespace:Finanzuebersicht.Converters"
              xmlns:loc="clr-namespace:Finanzuebersicht.Extensions"
+             xmlns:controls="clr-namespace:Finanzuebersicht.Controls"
              x:Class="Finanzuebersicht.Views.DashboardPage"
              x:DataType="vm:DashboardViewModel"
              Title="Dashboard">
@@ -142,10 +143,11 @@
                            FontSize="13"
                            TextColor="Gray"
                            VerticalTextAlignment="Center" />
-                    <Picker Grid.Column="1"
-                            ItemsSource="{Binding AvailableKonten}"
-                            ItemDisplayBinding="{Binding DisplayName}"
-                            SelectedItem="{Binding SelectedKontoFilterItem}" />
+                    <controls:SelectionField Grid.Column="1"
+                                             ItemsSource="{Binding AvailableKonten}"
+                                             SelectedItem="{Binding SelectedKontoFilterItem, Mode=TwoWay}"
+                                             DisplayMemberPath="DisplayName"
+                                             Placeholder="{loc:Translate Lbl_AlleKonten}" />
                 </Grid>
 
                 <Grid ColumnDefinitions="70,*" ColumnSpacing="8"

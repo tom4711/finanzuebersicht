@@ -37,6 +37,29 @@ public partial class CategoryDetailViewModel(
     [ObservableProperty]
     private TransactionType typ = TransactionType.Ausgabe;
 
+    [ObservableProperty]
+    private TransactionTypeOption? selectedTypeOption;
+
+    private List<TransactionTypeOption>? _verfuegbareTypen;
+
+    public IReadOnlyList<TransactionTypeOption> VerfuegbareTypen =>
+        _verfuegbareTypen ??=
+        [
+            new(TransactionType.Einnahme, _loc.GetString(ResourceKeys.Lbl_Einnahme)),
+            new(TransactionType.Ausgabe, _loc.GetString(ResourceKeys.Lbl_Ausgabe))
+        ];
+
+    partial void OnTypChanged(TransactionType value)
+    {
+        SelectedTypeOption = VerfuegbareTypen.FirstOrDefault(option => option.Value == value);
+    }
+
+    partial void OnSelectedTypeOptionChanged(TransactionTypeOption? value)
+    {
+        if (value != null && Typ != value.Value)
+            Typ = value.Value;
+    }
+
     // String-backed property for culture-safe decimal input
     [ObservableProperty]
     private string monthlyBudgetText = string.Empty;
@@ -70,6 +93,7 @@ public partial class CategoryDetailViewModel(
                 Icon = value.Icon;
                 Color = value.Color;
                 Typ = value.Typ;
+                SelectedTypeOption = VerfuegbareTypen.FirstOrDefault(option => option.Value == Typ);
                 _ = LoadBudgetAsync(value.Id);
             }
         }
@@ -112,3 +136,5 @@ public partial class CategoryDetailViewModel(
         await _navigationService.GoBackAsync();
     }
 }
+
+public sealed record TransactionTypeOption(TransactionType Value, string DisplayName);

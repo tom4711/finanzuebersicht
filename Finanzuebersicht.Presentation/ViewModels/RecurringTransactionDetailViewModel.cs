@@ -76,6 +76,9 @@ public partial class RecurringTransactionDetailViewModel(
     [ObservableProperty]
     private RecurrenceInterval interval = RecurrenceInterval.Monthly;
 
+    [ObservableProperty]
+    private RecurrenceIntervalOption? selectedIntervalOption;
+
     // string-backed entries to avoid binding conversion errors; numeric backing kept for logic
     [ObservableProperty]
     private string intervalFactorText = "1";
@@ -92,8 +95,21 @@ public partial class RecurringTransactionDetailViewModel(
     [ObservableProperty]
     private ObservableCollection<RecurringException> exceptions = [];
 
-    // Prefer binding the Picker directly to enum values to avoid string localization issues
-    public List<RecurrenceInterval> IntervalValues { get; } = Enum.GetValues<RecurrenceInterval>().Cast<RecurrenceInterval>().ToList();
+    private List<RecurrenceIntervalOption>? _verfuegbareIntervalle;
+
+    public IReadOnlyList<RecurrenceIntervalOption> VerfuegbareIntervalle =>
+        _verfuegbareIntervalle ??= BuildIntervalOptions();
+
+    partial void OnIntervalChanged(RecurrenceInterval value)
+    {
+        SelectedIntervalOption = VerfuegbareIntervalle.FirstOrDefault(option => option.Value == value);
+    }
+
+    partial void OnSelectedIntervalOptionChanged(RecurrenceIntervalOption? value)
+    {
+        if (value != null && Interval != value.Value)
+            Interval = value.Value;
+    }
 
     public RecurringTransaction? RecurringTransaction
     {
@@ -142,6 +158,7 @@ public partial class RecurringTransactionDetailViewModel(
         Accounts = new ObservableCollection<Account>(data.Accounts);
         SelectedKategorie = data.SelectedKategorie;
         SelectedAccount = data.SelectedAccount;
+        SelectedIntervalOption ??= VerfuegbareIntervalle.FirstOrDefault(option => option.Value == Interval);
     }
 
     [RelayCommand]
@@ -319,4 +336,15 @@ public partial class RecurringTransactionDetailViewModel(
             _logger?.LogWarning(ex, "Fehler beim Laden des Kontos");
         }
     }
+
+    private List<RecurrenceIntervalOption> BuildIntervalOptions() =>
+    [
+        new(RecurrenceInterval.Daily, _loc.GetString(ResourceKeys.RecurrenceInterval_Daily)),
+        new(RecurrenceInterval.Weekly, _loc.GetString(ResourceKeys.RecurrenceInterval_Weekly)),
+        new(RecurrenceInterval.Monthly, _loc.GetString(ResourceKeys.RecurrenceInterval_Monthly)),
+        new(RecurrenceInterval.Quarterly, _loc.GetString(ResourceKeys.RecurrenceInterval_Quarterly)),
+        new(RecurrenceInterval.Yearly, _loc.GetString(ResourceKeys.RecurrenceInterval_Yearly))
+    ];
 }
+
+public sealed record RecurrenceIntervalOption(RecurrenceInterval Value, string DisplayName);

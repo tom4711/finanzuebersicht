@@ -9,6 +9,11 @@ using Finanzuebersicht.Views;
 
 using Microsoft.Extensions.Logging;
 
+#if MACCATALYST || IOS
+using Microsoft.Maui.Controls.PlatformConfiguration;
+using Microsoft.Maui.Controls.PlatformConfiguration.iOSSpecific;
+#endif
+
 namespace Finanzuebersicht;
 
 public static class MauiProgram
@@ -30,6 +35,24 @@ public static class MauiProgram
 		builder.ConfigureMauiHandlers(handlers =>
 		{
 			handlers.AddHandler<Shell, Finanzuebersicht.Handlers.FastShellRenderer>();
+
+			// Mac Catalyst uses the iOS picker: scrolling fires SelectedItem/Date immediately and
+			// can freeze the UI when pickers live inside a ScrollView. Only commit on Done.
+			Microsoft.Maui.Handlers.PickerHandler.Mapper.AppendToMapping("WhenFinishedSelection", (handler, view) =>
+			{
+				if (view is Microsoft.Maui.Controls.Picker picker)
+					picker.On<iOS>().SetUpdateMode(UpdateMode.WhenFinished);
+			});
+			Microsoft.Maui.Handlers.DatePickerHandler.Mapper.AppendToMapping("WhenFinishedSelection", (handler, view) =>
+			{
+				if (view is Microsoft.Maui.Controls.DatePicker datePicker)
+					datePicker.On<iOS>().SetUpdateMode(UpdateMode.WhenFinished);
+			});
+			Microsoft.Maui.Handlers.TimePickerHandler.Mapper.AppendToMapping("WhenFinishedSelection", (handler, view) =>
+			{
+				if (view is Microsoft.Maui.Controls.TimePicker timePicker)
+					timePicker.On<iOS>().SetUpdateMode(UpdateMode.WhenFinished);
+			});
 		});
 #endif
 

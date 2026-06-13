@@ -5,6 +5,7 @@
               xmlns:vm="clr-namespace:Finanzuebersicht.ViewModels"
               xmlns:loc="clr-namespace:Finanzuebersicht.Extensions"
               xmlns:conv="clr-namespace:Finanzuebersicht.Converters"
+              xmlns:controls="clr-namespace:Finanzuebersicht.Controls"
               x:Class="Finanzuebersicht.Views.ImportPreviewPage"
               x:DataType="vm:ImportPreviewViewModel"
               Title="{loc:Translate Ttl_ImportVorschau}">
@@ -24,9 +25,10 @@
                 <Label Text="{Binding SummaryText}"
                        FontSize="13"
                        TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}" />
-                <Picker ItemsSource="{Binding FilterOptions}"
-                        SelectedItem="{Binding SelectedFilter}"
-                        ItemDisplayBinding="{Binding DisplayName}" />
+                <controls:SelectionField ItemsSource="{Binding FilterOptions}"
+                                         SelectedItem="{Binding SelectedFilter, Mode=TwoWay}"
+                                         DisplayMemberPath="DisplayName"
+                                         Placeholder="{loc:Translate Lbl_ImportFilterAlle}" />
             </VerticalStackLayout>
         </Border>
 
@@ -90,12 +92,12 @@
                                        FontSize="12"
                                        VerticalTextAlignment="Center"
                                        TextColor="{AppThemeBinding Light={StaticResource TextTertiary}, Dark={StaticResource Gray600}}" />
-                                <Picker Grid.Column="1"
-                                        ItemsSource="{Binding CategoryOptions}"
-                                        ItemDisplayBinding="{Binding DisplayName}"
-                                        SelectedItem="{Binding SelectedCategoryOption}"
-                                        IsEnabled="{Binding CanEditCategory}"
-                                        FontSize="13" />
+                                <controls:SelectionField Grid.Column="1"
+                                                         ItemsSource="{Binding CategoryOptions}"
+                                                         SelectedItem="{Binding SelectedCategoryOption, Mode=TwoWay}"
+                                                         DisplayMemberPath="DisplayName"
+                                                         IsEnabled="{Binding CanEditCategory}"
+                                                         Placeholder="{loc:Translate Hint_KategorieWaehlen}" />
                             </Grid>
                         </VerticalStackLayout>
                     </Border>
