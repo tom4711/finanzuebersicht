@@ -127,10 +127,10 @@ public partial class DashboardViewModel : MonthNavigationViewModel
     private KategorieFilterItem? selectedKontoFilterItem;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasSelectedAccountSaldo))]
     private string? selectedAccountId;
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(HasSelectedAccountSaldo))]
     private decimal selectedAccountSaldo;
 
     public bool HasSelectedAccountSaldo => !string.IsNullOrWhiteSpace(SelectedAccountId);
@@ -193,6 +193,7 @@ public partial class DashboardViewModel : MonthNavigationViewModel
 
     partial void OnSelectedAccountIdChanged(string? value)
     {
+        _ = UpdateSelectedAccountSaldoAsync();
         _ = LoadDashboard();
     }
 

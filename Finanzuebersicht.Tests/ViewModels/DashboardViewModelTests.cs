@@ -78,6 +78,36 @@ public class DashboardViewModelTests
         Assert.Equal(2500m, viewModel.SelectedAccountSaldo);
     }
 
+    [Fact]
+    public async Task SelectedKontoFilterItem_NotifiesHasSelectedAccountSaldo()
+    {
+        var accountRepository = Substitute.For<IAccountRepository>();
+        accountRepository.GetAccountsAsync().Returns(Task.FromResult(new List<Account>
+        {
+            new() { Id = "acc-1", Name = "Giro", OpeningBalance = 100m }
+        }));
+
+        var transactionRepository = Substitute.For<ITransactionRepository>();
+        transactionRepository.GetTransactionsAsync(Arg.Any<DateTime>(), Arg.Any<DateTime>())
+            .Returns(Task.FromResult(new List<Transaction>()));
+
+        var viewModel = CreateSut(accountRepository, transactionRepository);
+        await viewModel.LoadDashboardCommand.ExecuteAsync(null);
+
+        var notified = false;
+        viewModel.PropertyChanged += (_, e) =>
+        {
+            if (e.PropertyName == nameof(DashboardViewModel.HasSelectedAccountSaldo))
+                notified = true;
+        };
+
+        viewModel.SelectedKontoFilterItem = viewModel.AvailableKonten.First(k => k.Id == "acc-1");
+        await Task.Delay(50);
+
+        Assert.True(viewModel.HasSelectedAccountSaldo);
+        Assert.True(notified);
+    }
+
     private static DashboardViewModel CreateSut()
     {
         var accountRepository = Substitute.For<IAccountRepository>();
