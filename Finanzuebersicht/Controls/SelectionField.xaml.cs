@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Linq;
 using CommunityToolkit.Maui.Extensions;
 using Finanzuebersicht.Converters;
 using Finanzuebersicht.Selection;
@@ -100,7 +101,7 @@ public partial class SelectionField : ContentView
 
     private async void OnTapped(object? sender, TappedEventArgs e)
     {
-        if (!IsEnabled || ItemsSource is null)
+        if (!IsEnabled || ItemsSource is null || !ItemsSource.Cast<object>().Any())
             return;
 
         var popup = new SelectionPopup(ItemsSource, SelectedItem, DisplayMemberPath);
