@@ -5,10 +5,15 @@
              xmlns:vm="clr-namespace:Finanzuebersicht.ViewModels"
              xmlns:models="clr-namespace:Finanzuebersicht.Models"
              xmlns:loc="clr-namespace:Finanzuebersicht.Extensions"
+             xmlns:conv="clr-namespace:Finanzuebersicht.Converters"
              xmlns:controls="clr-namespace:Finanzuebersicht.Controls"
              x:Class="Finanzuebersicht.Views.TransactionDetailPage"
              x:DataType="vm:TransactionDetailViewModel"
              Title="{loc:Translate Title_Transaktion}">
+
+    <views:BaseContentPage.Resources>
+        <conv:TypButtonColorConverter x:Key="TypButtonColor" />
+    </views:BaseContentPage.Resources>
 
     <ScrollView Padding="16">
         <VerticalStackLayout Spacing="20">
@@ -99,9 +104,4 @@
 
         </VerticalStackLayout>
     </ScrollView>
-
-    <views:BaseContentPage.Resources>
-        <local:TypButtonColorConverter x:Key="TypButtonColor"
-                                       xmlns:local="clr-namespace:Finanzuebersicht.Converters" />
-    </views:BaseContentPage.Resources>
 </views:BaseContentPage>
