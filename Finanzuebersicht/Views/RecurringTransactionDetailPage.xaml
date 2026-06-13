@@ -5,6 +5,7 @@
              xmlns:vm="clr-namespace:Finanzuebersicht.ViewModels"
              xmlns:models="clr-namespace:Finanzuebersicht.Models"
              xmlns:conv="clr-namespace:Finanzuebersicht.Converters"
+             xmlns:controls="clr-namespace:Finanzuebersicht.Controls"
              xmlns:loc="clr-namespace:Finanzuebersicht.Extensions"
              x:Class="Finanzuebersicht.Views.RecurringTransactionDetailPage"
              x:DataType="vm:RecurringTransactionDetailViewModel"
@@ -12,11 +13,11 @@
 
     <views:BaseContentPage.Resources>
         <conv:TypButtonColorConverter x:Key="TypButtonColor" />
-        <conv:EnumToLocalizedStringConverter x:Key="EnumToLocalizedStringConverter" />
     </views:BaseContentPage.Resources>
 
-    <ScrollView Padding="16">
-        <VerticalStackLayout Spacing="20">
+    <Grid RowDefinitions="*, Auto">
+        <ScrollView Grid.Row="0" Padding="16">
+            <VerticalStackLayout Spacing="20" Padding="0,0,0,24">
 
             <!-- Typ-Auswahl -->
             <Grid ColumnDefinitions="*, *" ColumnSpacing="8">
@@ -49,20 +50,18 @@
             <!-- Kategorie -->
             <VerticalStackLayout Spacing="4">
                 <Label Text="{loc:Translate Lbl_Kategorie}" FontSize="13" TextColor="Gray" />
-                <Picker ItemsSource="{Binding Kategorien}"
-                        SelectedItem="{Binding SelectedKategorie}"
-                        ItemDisplayBinding="{Binding Name}"
-                        Title="{loc:Translate Hint_KategorieWaehlen}"
-                        FontSize="16" />
+                <controls:SelectionField ItemsSource="{Binding Kategorien}"
+                                         SelectedItem="{Binding SelectedKategorie, Mode=TwoWay}"
+                                         DisplayMemberPath="Name"
+                                         Placeholder="{loc:Translate Hint_KategorieWaehlen}" />
             </VerticalStackLayout>
 
             <VerticalStackLayout Spacing="4">
                 <Label Text="{loc:Translate Lbl_Konto}" FontSize="13" TextColor="Gray" />
-                <Picker ItemsSource="{Binding Accounts}"
-                        SelectedItem="{Binding SelectedAccount}"
-                        ItemDisplayBinding="{Binding Name}"
-                        Title="{loc:Translate Hint_KontoWaehlen}"
-                        FontSize="16" />
+                <controls:SelectionField ItemsSource="{Binding Accounts}"
+                                         SelectedItem="{Binding SelectedAccount, Mode=TwoWay}"
+                                         DisplayMemberPath="Name"
+                                         Placeholder="{loc:Translate Hint_KontoWaehlen}" />
             </VerticalStackLayout>
 
             <!-- Startdatum -->
@@ -93,11 +92,11 @@
             <!-- Intervall (Täglich/Wöchentlich/Monatlich/Quartal/Jährlich) -->
             <VerticalStackLayout Spacing="4">
                 <Label Text="{loc:Translate Lbl_Intervall}" FontSize="13" TextColor="Gray" />
-                <Picker ItemsSource="{Binding IntervalValues}" SelectedItem="{Binding Interval, Mode=TwoWay}" FontSize="16" Margin="0,0,0,8">
-                    <Picker.ItemDisplayBinding>
-                        <Binding Path="." Converter="{StaticResource EnumToLocalizedStringConverter}" />
-                    </Picker.ItemDisplayBinding>
-                </Picker>
+                <controls:SelectionField ItemsSource="{Binding VerfuegbareIntervalle}"
+                                         SelectedItem="{Binding SelectedIntervalOption, Mode=TwoWay}"
+                                         DisplayMemberPath="DisplayName"
+                                         Placeholder="{loc:Translate Hint_IntervallWaehlen}"
+                                         Margin="0,0,0,8" />
             </VerticalStackLayout>
 
             <!-- Interval-Factor -->
@@ -140,6 +139,14 @@
                     <Button Text="{loc:Translate Btn_ShiftInstance}" Command="{Binding GoToShiftCommand}" BackgroundColor="{StaticResource Einnahme}" TextColor="White" />
                 </HorizontalStackLayout>
 
-        </VerticalStackLayout>
-    </ScrollView>
+            </VerticalStackLayout>
+        </ScrollView>
+        <Label Grid.Row="1"
+               Text="▼"
+               FontSize="10"
+               HorizontalTextAlignment="Center"
+               Padding="0,2,0,6"
+               InputTransparent="True"
+               TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray600}}" />
+    </Grid>
 </views:BaseContentPage>

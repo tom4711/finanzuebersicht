@@ -8,8 +8,9 @@
              Title="Einstellungen"
              BackgroundColor="{AppThemeBinding Light={StaticResource PageBackground}, Dark={StaticResource PageBackgroundDark}}">
 
-    <ScrollView Padding="16">
-        <VerticalStackLayout Spacing="24">
+    <Grid RowDefinitions="*, Auto">
+        <ScrollView Grid.Row="0" Padding="16">
+            <VerticalStackLayout Spacing="24" Padding="0,0,0,24">
 
             <!-- Darstellung -->
             <Border StrokeShape="RoundRectangle 12"
@@ -224,6 +225,14 @@
                 </VerticalStackLayout>
             </Border>
 
-        </VerticalStackLayout>
-    </ScrollView>
+            </VerticalStackLayout>
+        </ScrollView>
+        <Label Grid.Row="1"
+               Text="▼"
+               FontSize="10"
+               HorizontalTextAlignment="Center"
+               Padding="0,2,0,6"
+               InputTransparent="True"
+               TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray600}}" />
+    </Grid>
 </ContentPage>

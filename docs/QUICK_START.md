@@ -100,7 +100,7 @@ dotnet test Finanzuebersicht.Tests
 
 ## Versioning
 
-Automatic SemVer via **Nerdbank.GitVersioning** (`version.json`, base `1.11`):
+Automatic SemVer via **Nerdbank.GitVersioning** (`version.json`, base `1.13`):
 
 ```bash
 nbgv get-version

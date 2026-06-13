@@ -5,6 +5,7 @@
              xmlns:vm="clr-namespace:Finanzuebersicht.ViewModels"
              xmlns:models="clr-namespace:Finanzuebersicht.Models"
              xmlns:loc="clr-namespace:Finanzuebersicht.Extensions"
+             xmlns:controls="clr-namespace:Finanzuebersicht.Controls"
              x:Class="Finanzuebersicht.Views.TransferDetailPage"
              x:DataType="vm:TransferDetailViewModel"
              Title="{loc:Translate Title_Umbuchung}">
@@ -13,18 +14,18 @@
         <VerticalStackLayout Spacing="20">
             <VerticalStackLayout Spacing="4">
                 <Label Text="{loc:Translate Lbl_VonKonto}" FontSize="13" TextColor="Gray" />
-                <Picker ItemsSource="{Binding Accounts}"
-                        SelectedItem="{Binding SourceAccount}"
-                        ItemDisplayBinding="{Binding Name}"
-                        FontSize="16" />
+                <controls:SelectionField ItemsSource="{Binding Accounts}"
+                                         SelectedItem="{Binding SourceAccount, Mode=TwoWay}"
+                                         DisplayMemberPath="Name"
+                                         Placeholder="{loc:Translate Hint_KontoWaehlen}" />
             </VerticalStackLayout>
 
             <VerticalStackLayout Spacing="4">
                 <Label Text="{loc:Translate Lbl_NachKonto}" FontSize="13" TextColor="Gray" />
-                <Picker ItemsSource="{Binding Accounts}"
-                        SelectedItem="{Binding TargetAccount}"
-                        ItemDisplayBinding="{Binding Name}"
-                        FontSize="16" />
+                <controls:SelectionField ItemsSource="{Binding Accounts}"
+                                         SelectedItem="{Binding TargetAccount, Mode=TwoWay}"
+                                         DisplayMemberPath="Name"
+                                         Placeholder="{loc:Translate Hint_KontoWaehlen}" />
             </VerticalStackLayout>
 
             <VerticalStackLayout Spacing="4">

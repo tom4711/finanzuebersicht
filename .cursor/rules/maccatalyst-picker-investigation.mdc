@@ -1,0 +1,40 @@
+---
+description: Mac Catalyst Picker/DatePicker freeze — SelectionField-Workaround (merged)
+alwaysApply: false
+---
+
+# Mac Catalyst Picker — Workaround (umgesetzt)
+
+**Status:** `SelectionField` + `SelectionPopup` auf `develop`/`main` (PR #218–#221). Native `Picker` in Formularen ersetzt.
+
+## Symptom (macOS 27 Beta)
+
+Auf Mac Catalyst hängen **native `Picker`** in `ScrollView`-Formularen beim Scrollen im Auswahl-Dialog (Touchpad und externes Mausrad). Auf **macOS 26.6 stable** ok.
+
+`DatePicker` bleibt nativ — auf getesteten Systemen ohne Freeze.
+
+## Lösung (aktuell)
+
+- **`SelectionField`** (`Finanzuebersicht/Controls/`) — tappbares Feld mit aktuellem Wert
+- **`SelectionPopup`** (`Finanzuebersicht/Views/Popups/`) — scrollbare Button-Liste, Outside-Tap schließt
+- **`SelectionDisplayHelper`** / **`SelectionRowViewFactory`** — gemeinsame Anzeige-Logik
+- Scroll-Hinweis (▼) auf langen Formularen: `SettingsPage`, `RecurringTransactionDetailPage`
+
+Betroffene Seiten u. a.: Transaktion, Dauerauftrag, Konto, Kategorie, Umbuchung, Import-Vorschau, Dashboard-/Cashflow-Filter.
+
+## Ursache & Rollback
+
+Kombination **MAUI Mac Catalyst** ([#10208](https://github.com/dotnet/maui/issues/10208), [#33229](https://github.com/dotnet/maui/issues/33229)) + **macOS 27 Beta**. Fix [dotnet/maui#33146](https://github.com/dotnet/maui/pull/33146) in **.NET 10 SR6** — Projekt nutzt **MAUI 10.0.70**.
+
+**Rollback:** Wenn MAUI/macOS-Bug gefixt ist, native `Picker` wieder einsetzen und `SelectionField` entfernen.
+
+## Vergleichstest (Referenz)
+
+| Test | macOS 26.6 stable | macOS 27 Beta |
+|------|-------------------|---------------|
+| Picker + Scroll | ✅ ok | ❌ hängt |
+| DatePicker + Scroll | ✅ ok | ⚠️ ggf. betroffen; auf MacBook getestet ok |
+
+## Build-Hinweis
+
+`ValidateXcodeVersion=false` wegen Xcode 26.3. Tests: `dotnet test Finanzuebersicht.Tests/Finanzuebersicht.Tests.csproj -c Release`

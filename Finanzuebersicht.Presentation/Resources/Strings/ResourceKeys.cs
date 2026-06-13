@@ -256,10 +256,18 @@ public static class ResourceKeys
     public const string Btn_Archivieren = nameof(Btn_Archivieren);
     public const string Btn_Aktivieren = nameof(Btn_Aktivieren);
     public const string Hint_Systemkonto = nameof(Hint_Systemkonto);
+
+    // Recurrence intervals
+    public const string RecurrenceInterval_Daily = nameof(RecurrenceInterval_Daily);
+    public const string RecurrenceInterval_Weekly = nameof(RecurrenceInterval_Weekly);
+    public const string RecurrenceInterval_Monthly = nameof(RecurrenceInterval_Monthly);
+    public const string RecurrenceInterval_Quarterly = nameof(RecurrenceInterval_Quarterly);
+    public const string RecurrenceInterval_Yearly = nameof(RecurrenceInterval_Yearly);
     public const string Lbl_AlleTypen = nameof(Lbl_AlleTypen);
     public const string Lbl_VonDatum = nameof(Lbl_VonDatum);
     public const string Lbl_BisDatum = nameof(Lbl_BisDatum);
     public const string Hint_SucheTransaktionen = nameof(Hint_SucheTransaktionen);
+    public const string Hint_IntervallWaehlen = nameof(Hint_IntervallWaehlen);
     public const string A11y_FilterUmschalten = nameof(A11y_FilterUmschalten);
     public const string Lbl_DauerauftraegeFaellig = nameof(Lbl_DauerauftraegeFaellig);
     public const string Lbl_DauerauftraegeFaellig_Singular = nameof(Lbl_DauerauftraegeFaellig_Singular);

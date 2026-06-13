@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:Finanzuebersicht.ViewModels"
              xmlns:loc="clr-namespace:Finanzuebersicht.Extensions"
+             xmlns:controls="clr-namespace:Finanzuebersicht.Controls"
              x:Class="Finanzuebersicht.Views.CategoryDetailPage"
              x:DataType="vm:CategoryDetailViewModel"
              Title="{Binding PageTitle}">
@@ -66,12 +67,9 @@
             <!-- Typ -->
             <VerticalStackLayout Spacing="4">
                 <Label Text="{loc:Translate Lbl_Typ}" FontSize="13" TextColor="Gray" />
-                <Picker SelectedIndex="{Binding Typ}">
-                    <Picker.Items>
-                        <x:String>Einnahme</x:String>
-                        <x:String>Ausgabe</x:String>
-                    </Picker.Items>
-                </Picker>
+                <controls:SelectionField ItemsSource="{Binding VerfuegbareTypen}"
+                                         SelectedItem="{Binding SelectedTypeOption, Mode=TwoWay}"
+                                         DisplayMemberPath="DisplayName" />
             </VerticalStackLayout>
 
             <!-- Monatliches Budget -->

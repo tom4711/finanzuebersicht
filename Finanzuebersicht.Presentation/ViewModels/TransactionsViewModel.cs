@@ -184,6 +184,10 @@ public partial class TransactionsViewModel(
 
     // Typ-Filter als Index (0=Alle, 1=Einnahmen, 2=Ausgaben) für Picker
     private int _selectedTypIndex;
+
+    [ObservableProperty]
+    private string? selectedTypFilterItem;
+
     public int SelectedTypIndex
     {
         get => _selectedTypIndex;
@@ -197,8 +201,22 @@ public partial class TransactionsViewModel(
                     2 => TransactionTypeFilter.Ausgabe,
                     _ => TransactionTypeFilter.Alle
                 };
+
+                var items = TypFilterItems;
+                if (value >= 0 && value < items.Length)
+                    SelectedTypFilterItem = items[value];
             }
         }
+    }
+
+    partial void OnSelectedTypFilterItemChanged(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return;
+
+        var idx = Array.IndexOf(TypFilterItems, value);
+        if (idx >= 0 && idx != _selectedTypIndex)
+            SelectedTypIndex = idx;
     }
 
     partial void OnSelectedKategorieFilterItemChanged(KategorieFilterItem? value)
@@ -336,6 +354,7 @@ public partial class TransactionsViewModel(
             items.Add(new KategorieFilterItem(k.Id, $"{k.Icon} {k.Name}"));
         AvailableKategorien = items;
         SelectedKategorieFilterItem = items[0];
+        SelectedTypFilterItem ??= TypFilterItems[SelectedTypIndex];
     }
 
     private async Task LoadKontenAsync()
