@@ -41,22 +41,24 @@ sw_vers   # Version notieren
 
 | Test | Seite | Ergebnis 26 stable (iMac) | Ergebnis 27 Beta (MacBook) |
 |------|-------|---------------------------|----------------------------|
-| Intervall-Picker + Scroll | Dauerauftrag bearbeiten | ✅ ok (Scrollrad + Magic Mouse Touch) | ❌ hängt (Touchpad) |
-| Kategorie-Picker + Scroll | Transaktion bearbeiten | ✅ ok (Scrollrad + Magic Mouse Touch) | ❌ hängt (Touchpad) |
-| DatePicker + Scroll | Dauerauftrag Startdatum | ✅ ok (Scrollrad + Magic Mouse Touch) | ❌ hängt (Touchpad) |
+| Intervall-Picker + Scroll | Dauerauftrag bearbeiten | ✅ ok (Scrollrad + Magic Mouse Touch) | ❌ hängt |
+| Kategorie-Picker + Scroll | Transaktion bearbeiten | ✅ ok (Scrollrad + Magic Mouse Touch) | ❌ hängt |
+| DatePicker + Scroll | Dauerauftrag Startdatum | ✅ ok (Scrollrad + Magic Mouse Touch) | ❌ hängt |
 
 **Testumgebung 26 stable:** macOS 26.6 (25G5028f), x86_64 iMac, Branch `fix/recurring-interval-picker`, MAUI 10.0.70.  
-**Input 26 stable:** Maus mit Scrollrad und Apple Magic Mouse (Touch-Scroll) — beides ohne Freeze.  
-**Input 27 Beta:** MacBook-Touchpad-Scroll im Picker-Dialog — Freeze bleibt.
+**Input 26 stable:** Maus mit Scrollrad und Apple Magic Mouse (Touch-Scroll) — beides ohne Freeze.
 
-**Interpretation:** Nur Beta + Touchpad kaputt, 26 stable mit Maus ok → **OS-/Input-Regression auf macOS 27 Beta** (kein App-Umbau nötig). Known issue dokumentieren; MAUI SR6 (#33146) im Auge behalten.
+**Testumgebung 27 Beta:** MacBook, dieselbe externe Maus wie am iMac (zuvor dort ok).  
+**Input 27 Beta:** Touchpad-Scroll **und** Mausrad der externen Maus im Picker-Dialog — **beides hängt**.
+
+**Interpretation:** 26 stable ok, 27 Beta mit **allen Scroll-Eingaben** kaputt (nicht nur Touchpad) → **Regression macOS 27 Beta + MAUI Mac Catalyst Picker** (kein App-Logikfehler). Known issue dokumentieren; MAUI SR6 (#33146) im Auge behalten.
 
 ## Nächste Schritte (Stand 2026-06-13)
 
-- **Known issue** in Docs/README oder Issue festhalten (macOS 27 Beta + Touchpad)
+- **Known issue** festhalten (macOS 27 Beta: Picker-Scroll per Touchpad **und** Mausrad)
 - **Kein großer App-Umbau** solange 26 stable funktioniert
-- Optional: auf MacBook mit **externer Maus** verifizieren (ob nur Touchpad betroffen)
 - MAUI **SR6** prüfen, wenn verfügbar; ggf. erneut auf 27 Beta testen
+- Auf 27 Beta: Picker per **Klick** auf Einträge nutzen (Scroll vermeiden) bis OS/MAUI-Fix
 
 ## Build-Hinweis
 
