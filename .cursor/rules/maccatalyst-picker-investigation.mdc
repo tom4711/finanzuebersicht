@@ -1,0 +1,58 @@
+---
+description: Mac Catalyst Picker/DatePicker freeze beim Touchpad-Scroll — Branch fix/recurring-interval-picker, Vergleichstest macOS 26 vs 27 Beta
+alwaysApply: false
+---
+
+# Mac Catalyst Picker — laufende Untersuchung
+
+**Branch:** `fix/recurring-interval-picker` (von `main`)
+
+## Symptom
+
+Auf Mac Catalyst hängen **alle** `Picker`/`DatePicker` in `ScrollView`-Formularen, sobald man im offenen Auswahl-Dialog mit dem **Touchpad scrollt**. Mausklicks funktionieren; „Done“ oft noch klickbar bis zum Freeze.
+
+Betroffene Seiten u. a.: `RecurringTransactionDetailPage`, `TransactionDetailPage`, `AccountDetailPage`, `TransferDetailPage`.
+
+## Bereits versucht (Branch-Stand)
+
+1. **Intervall:** `RecurrenceIntervalOption` + normaler Picker (wie `AccountTypeOption`) statt Enum+Converter
+2. **Buttons statt Picker** — verworfen (schlechte UX, Auswahl nicht sichtbar)
+3. **`SuppressParentScrollWhileFocusedBehavior`** — kein Effekt, wieder entfernt
+4. **`UpdateMode=WhenFinished`** app-weit:
+   - `Styles.xaml` für Picker/DatePicker/TimePicker
+   - `MauiProgram.cs` Handler-Mapper (iOS/Mac Catalyst)
+
+**Ergebnis auf macOS 27 Beta (darwin 27):** Problem bleibt.
+
+## Wahrscheinliche Ursache
+
+Kombination aus **MAUI Mac Catalyst** (Issues [#10208](https://github.com/dotnet/maui/issues/10208), [#33229](https://github.com/dotnet/maui/issues/33229)) und **macOS 26+**. Fix [dotnet/maui#33146](https://github.com/dotnet/maui/pull/33146) erst in **.NET 10 SR6** — Projekt nutzt **MAUI 10.0.70**.
+
+## Vergleichstest (iMac macOS 26 stable vs. Mac macOS 27 Beta)
+
+```bash
+git fetch && git checkout fix/recurring-interval-picker
+dotnet build Finanzuebersicht/Finanzuebersicht.csproj -f net10.0-maccatalyst -c Debug
+# arm64 oder x64 je nach iMac
+cp -R Finanzuebersicht/bin/Debug/net10.0-maccatalyst/maccatalyst-arm64/Finanzübersicht.app /Applications/
+open /Applications/Finanzübersicht.app
+sw_vers   # Version notieren
+```
+
+| Test | Seite | Ergebnis 26 stable | Ergebnis 27 Beta |
+|------|-------|-------------------|------------------|
+| Intervall-Picker + Touchpad-Scroll | Dauerauftrag bearbeiten | | hängt |
+| Kategorie-Picker | Transaktion bearbeiten | | |
+| DatePicker | Dauerauftrag Startdatum | | |
+
+**Interpretation:** Nur Beta kaputt → OS-Regression abwarten; beide kaputt → MAUI-Fix (SR6) oder **Mac-only Ersatz-UI** (Popup/Menü statt nativem Picker).
+
+## Nächste Schritte (nach Vergleich)
+
+- **Beide OS:** MAUI auf SR6 prüfen; ggf. Mac-only `MenuFlyout`/Popup-Liste
+- **Nur Beta:** Known issue dokumentieren; kein großer App-Umbau nötig
+- **Nur Beta kaputt, 26 ok:** Issue an Apple/MAUI mit `sw_vers` + MAUI-Version
+
+## Build-Hinweis
+
+`ValidateXcodeVersion=false` wegen Xcode 26.3. Tests: `dotnet test Finanzuebersicht.Tests/Finanzuebersicht.Tests.csproj -c Release`

@@ -328,6 +328,11 @@ Please restart the app.</value></data>
   <data name="A11y_HintBetrag" xml:space="preserve"><value>Enter amount, e.g. 12.50</value></data>
   <data name="A11y_HintTitel" xml:space="preserve"><value>Short description of the transaction</value></data>
   <data name="A11y_HintBudget" xml:space="preserve"><value>Leave empty for no budget limit</value></data>
+  <data name="RecurrenceInterval_Daily" xml:space="preserve"><value>Daily</value></data>
+  <data name="RecurrenceInterval_Weekly" xml:space="preserve"><value>Weekly</value></data>
+  <data name="RecurrenceInterval_Monthly" xml:space="preserve"><value>Monthly</value></data>
+  <data name="RecurrenceInterval_Quarterly" xml:space="preserve"><value>Quarterly</value></data>
+  <data name="RecurrenceInterval_Yearly" xml:space="preserve"><value>Yearly</value></data>
   <data name="AccountType_Girokonto" xml:space="preserve"><value>Checking account</value></data>
   <data name="AccountType_Tagesgeld" xml:space="preserve"><value>Savings account</value></data>
   <data name="AccountType_Kreditkarte" xml:space="preserve"><value>Credit card</value></data>
