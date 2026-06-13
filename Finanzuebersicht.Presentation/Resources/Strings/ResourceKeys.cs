@@ -267,6 +267,8 @@ public static class ResourceKeys
     public const string Lbl_VonDatum = nameof(Lbl_VonDatum);
     public const string Lbl_BisDatum = nameof(Lbl_BisDatum);
     public const string Hint_SucheTransaktionen = nameof(Hint_SucheTransaktionen);
+    public const string Hint_SucheAuswahl = nameof(Hint_SucheAuswahl);
+    public const string Hint_IntervallWaehlen = nameof(Hint_IntervallWaehlen);
     public const string A11y_FilterUmschalten = nameof(A11y_FilterUmschalten);
     public const string Lbl_DauerauftraegeFaellig = nameof(Lbl_DauerauftraegeFaellig);
     public const string Lbl_DauerauftraegeFaellig_Singular = nameof(Lbl_DauerauftraegeFaellig_Singular);

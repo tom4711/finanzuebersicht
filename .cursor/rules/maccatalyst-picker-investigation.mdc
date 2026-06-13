@@ -55,10 +55,11 @@ sw_vers   # Version notieren
 
 ## Nächste Schritte (Stand 2026-06-13)
 
-- **Known issue** festhalten (macOS 27 Beta: Picker-Scroll per Touchpad **und** Mausrad)
-- **Kein großer App-Umbau** solange 26 stable funktioniert
-- MAUI **SR6** prüfen, wenn verfügbar; ggf. erneut auf 27 Beta testen
-- Auf 27 Beta: Picker per **Klick** auf Einträge nutzen (Scroll vermeiden) bis OS/MAUI-Fix
+- **SelectionField** implementiert: Popup-Liste als Ersatz für native `Picker` in Formularen (zurück zu `Picker` wenn MAUI/macOS-Bug gefixt)
+- Erprobt auf `RecurringTransactionDetailPage` (Intervall/Kategorie/Konto)
+- Rollout auf weitere Formularseiten nach erfolgreichem Test
+- **Known issue** native Picker auf macOS 27 Beta weiter dokumentiert
+- MAUI **SR6** prüfen, wenn verfügbar
 
 ## Build-Hinweis
 
