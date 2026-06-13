@@ -15,8 +15,9 @@
         <conv:TypButtonColorConverter x:Key="TypButtonColor" />
     </views:BaseContentPage.Resources>
 
-    <ScrollView Padding="16">
-        <VerticalStackLayout Spacing="20">
+    <Grid RowDefinitions="*, Auto">
+        <ScrollView Grid.Row="0" Padding="16">
+            <VerticalStackLayout Spacing="20" Padding="0,0,0,24">
 
             <!-- Typ-Auswahl -->
             <Grid ColumnDefinitions="*, *" ColumnSpacing="8">
@@ -138,6 +139,14 @@
                     <Button Text="{loc:Translate Btn_ShiftInstance}" Command="{Binding GoToShiftCommand}" BackgroundColor="{StaticResource Einnahme}" TextColor="White" />
                 </HorizontalStackLayout>
 
-        </VerticalStackLayout>
-    </ScrollView>
+            </VerticalStackLayout>
+        </ScrollView>
+        <Label Grid.Row="1"
+               Text="▼"
+               FontSize="10"
+               HorizontalTextAlignment="Center"
+               Padding="0,2,0,6"
+               InputTransparent="True"
+               TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray600}}" />
+    </Grid>
 </views:BaseContentPage>
