@@ -1,5 +1,23 @@
 # Änderungsverlauf
 
+## [1.14] - 2026-06-18
+
+### Hinzugefügt
+
+- Onboarding-Wizard (5 Schritte) beim ersten Start, erneut aufrufbar über Einstellungen
+- Einheitliches `EmptyStateView` auf Listen-Seiten
+- Snackbar-Feedback beim Speichern; Transaktion löschen mit Rückgängig
+- Manueller Saldo-Abgleich (Ist-Saldo passt Anfangssaldo an) in Konto bearbeiten (#214)
+
+### Geändert
+
+- MAUI 10.0.71 und Microsoft.Extensions.* 10.0.9
+
+### Behoben
+
+- Onboarding: Einstellungen-Schritt schließt Wizard nicht mehr vorzeitig; eigener Abschluss-Schritt mit „Zum Dashboard“
+- Onboarding: UI-Polish (Button-Breite, Skip als Sekundär-Button, einheitliche Aktions-Buttons)
+
 ## [1.13] - 2026-06-13
 
 ### Hinzugefügt

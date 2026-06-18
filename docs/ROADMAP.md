@@ -2,7 +2,9 @@
 
 Übersicht über geplante Releases und Features. Die Roadmap wird fortlaufend aktualisiert.
 
-> **Hinweis:** Die Milestone-Bezeichnungen (v1.1, v1.2, v2.0) sind thematische GitHub-Planungslabels, keine sequenziellen Release-Versionen. Tatsächliche Releases (v1.0, v1.6, v1.6.1 …) werden durch Git-Commit-Höhe via Nerdbank.GitVersioning bestimmt.
+> **Hinweis:** Die Milestone-Bezeichnungen (v1.14, v1.2, v2.0) sind thematische GitHub-Planungslabels, keine sequenziellen Release-Versionen. Tatsächliche Releases (v1.0, v1.6, v1.12 …) werden durch Git-Commit-Höhe via Nerdbank.GitVersioning bestimmt.
+
+**Aktueller Stand:** Release **v1.14** (Latest). Nächste geplante UX-Releases: **v1.15–v1.17** (vor v2.0).
 
 ---
 
@@ -14,7 +16,6 @@
 - Backup / Restore mit Schema-Migrations-Framework
 - Accessibility (VoiceOver / Tastaturnavigation)
 - CI/CD: Build-Artifacts für macOS & Windows
-- Vollständige Fehlerbehandlung in allen ViewModels
 
 ---
 
@@ -24,83 +25,133 @@ Fokus: Layering bereinigen, Persistenz robuster machen und DI modularisieren.
 
 | Issue | Thema | Status |
 |-------|-------|--------|
-| [#152](https://github.com/tom4711/finanzuebersicht/issues/152) | JSON-Persistenz: Korruption nicht stillschweigend als leere Daten behandeln | ✅ Closed |
-| [#153](https://github.com/tom4711/finanzuebersicht/issues/153) | Restore-Prozess transaktional absichern | ✅ Closed |
-| [#154](https://github.com/tom4711/finanzuebersicht/issues/154) | Refactor Core: I/O-, Logging- und Persistenz-Services aus Core auslagern | ✅ Closed |
-| [#155](https://github.com/tom4711/finanzuebersicht/issues/155) | CSV-Import: Teilimporte und globale Side-Effects vermeiden | ✅ Closed |
-| [#159](https://github.com/tom4711/finanzuebersicht/issues/159) | Recurring-Berechnung zentralisieren und CancellationToken unterstützen | ✅ Closed |
-| [#160](https://github.com/tom4711/finanzuebersicht/issues/160) | DataServiceFacade in fachlich getrennte Interfaces aufteilen | ✅ Closed |
-| [#161](https://github.com/tom4711/finanzuebersicht/issues/161) | DI-Registrierung in modulare Extensions aufteilen | ✅ Closed |
-| [#162](https://github.com/tom4711/finanzuebersicht/issues/162) | Namespaces nach Layern trennen und vereinheitlichen | ✅ Closed |
-| [#163](https://github.com/tom4711/finanzuebersicht/issues/163) | SettingsService: I/O abstrahieren und async/testbar machen | ✅ Closed |
-| [#168](https://github.com/tom4711/finanzuebersicht/issues/168) | UseCases um CancellationToken und klare Application-Verantwortung erweitern | ✅ Closed |
-
-Alle 10 Issues des Milestones sind geschlossen.
+| [#152](https://github.com/tom4711/finanzuebersicht/issues/152)–[#168](https://github.com/tom4711/finanzuebersicht/issues/168) | Persistenz, Restore, Layering, DI, UseCases | ✅ Closed |
 
 ---
 
-## ✅ v1.11 — Konten & Salden *(abgeschlossen)*
+## ✅ v1.9 — UX-Schnellgewinne *(abgeschlossen)*
 
-Fokus: Mehrkonten-Verwaltung, Saldo-Berechnung und Dashboard-Übersicht.
+- Import-Vorschau mit Dubletten-Erkennung ([#192](https://github.com/tom4711/finanzuebersicht/issues/192))
+- Transaktionsvorlagen / Schnellbuchungen ([#191](https://github.com/tom4711/finanzuebersicht/issues/191))
+- Budget-Hinweise mit Tagesbudget ([#193](https://github.com/tom4711/finanzuebersicht/issues/193))
+
+---
+
+## ✅ v1.10 — Multi-Account-Grundlage *(abgeschlossen)*
+
+- Kontenmodell, Verwaltung, Filter, Umbuchungen ([#49](https://github.com/tom4711/finanzuebersicht/issues/49))
+
+---
+
+## ✅ v1.11 — Planung & Sparziele *(abgeschlossen)*
+
+| Issue | Thema |
+|-------|-------|
+| [#194](https://github.com/tom4711/finanzuebersicht/issues/194) | Daueraufträge vom Dashboard buchen / überspringen / verschieben |
+| [#195](https://github.com/tom4711/finanzuebersicht/issues/195) | Sparziele mit Transaktionen verknüpfen |
+| [#196](https://github.com/tom4711/finanzuebersicht/issues/196) | Cashflow-Kalender (30 Tage) |
+| [#206](https://github.com/tom4711/finanzuebersicht/issues/206)–[#208](https://github.com/tom4711/finanzuebersicht/issues/208) | Kontosaldo, Konto-Filter Prognose/Budget |
+
+---
+
+## ✅ v1.12 — Konten & Salden *(abgeschlossen)*
+
+| Issue | Thema |
+|-------|-------|
+| [#212](https://github.com/tom4711/finanzuebersicht/issues/212) | Anfangssaldo pro Konto |
+| [#213](https://github.com/tom4711/finanzuebersicht/issues/213) | Dashboard-Kontenübersicht mit Gesamtsaldo |
+
+Weitere Umsetzungen: Umbuchungen, Transaktions-Suche/Filter/Swipe, Cashflow-Navigation, Docs & Screenshots.
+
+---
+
+## ✅ v1.13 — Mac Catalyst Picker *(abgeschlossen)*
+
+Kleines Update: Mitigation für Mac-Catalyst-Picker-Freeze (`UpdateMode=WhenFinished`, `RecurrenceIntervalOption`, Handoff-Dokumentation). Branch: `fix/recurring-interval-picker`.
+
+---
+
+## ✅ v1.14 — Erste Schritte & Vertrauen *(abgeschlossen)* · [Milestone](https://github.com/tom4711/finanzuebersicht/milestone/18)
+
+Fokus: Onboarding, einheitliche Empty States, Aktion-Feedback, Saldo-Vertrauen.
 
 | Issue | Thema | Status |
 |-------|-------|--------|
-| [#212](https://github.com/tom4711/finanzuebersicht/issues/212) | Anfangssaldo pro Konto (ohne Fake-Transaktionen) | ✅ Closed |
-| [#213](https://github.com/tom4711/finanzuebersicht/issues/213) | Dashboard-Kontenübersicht mit Gesamtsaldo | ✅ Closed |
-
-**Weitere Umsetzungen in diesem Release-Zyklus:**
-- 30-Tage-Cashflow-Vorschau (`CashflowPage`, `LoadCashflowOutlookUseCase`)
-- Umbuchungen zwischen Konten (`TransferDetailPage`)
-- Transaktionen: Suche, Filter, Swipe-Aktionen (Löschen/Duplizieren)
-
-**Offener Follow-up:** [#214](https://github.com/tom4711/finanzuebersicht/issues/214) — manueller Saldo-Abgleich (ohne Bank-API)
+| [#227](https://github.com/tom4711/finanzuebersicht/issues/227) | Onboarding für neue Nutzer | ✅ Closed |
+| [#228](https://github.com/tom4711/finanzuebersicht/issues/228) | Leere Zustände vereinheitlichen | ✅ Closed |
+| [#229](https://github.com/tom4711/finanzuebersicht/issues/229) | Feedback nach Speichern/Löschen (optional Rückgängig) | ✅ Closed |
+| [#214](https://github.com/tom4711/finanzuebersicht/issues/214) | Manueller Saldo-Abgleich (Ist vs. berechnet) | ✅ Closed |
 
 ---
 
-## 🔧 v1.1 — Qualität & Performance *(geplant)* · [Milestone](https://github.com/tom4711/finanzuebersicht/milestone/5)
+## 🎯 v1.15 — Sparziele & Planung *(geplant)* · [Milestone](https://github.com/tom4711/finanzuebersicht/milestone/19)
 
-Fokus: Code-Qualität, technische Schulden abbauen, Performance verbessern.
-
-| Issue | Thema | Aufwand |
-|-------|-------|---------|
-| [#101](https://github.com/tom4711/finanzuebersicht/issues/101) | Store-Basisklasse (`JsonStore<T>`) – DRY für alle 5 Stores | M |
-| [#102](https://github.com/tom4711/finanzuebersicht/issues/102) | `YearOverviewViewModel`: `List<>` → `ObservableCollection` | S |
-| [#103](https://github.com/tom4711/finanzuebersicht/issues/103) | Namespace-Bereinigung (ASCII-Konvention) | M |
-| [#100](https://github.com/tom4711/finanzuebersicht/issues/100) | Bulk-Replace API für Restore (O(n²) → O(n) I/O) | M |
+| Issue | Thema | Priorität |
+|-------|-------|-----------|
+| [#230](https://github.com/tom4711/finanzuebersicht/issues/230) | Sparziele bearbeiten, sicher löschen, Beitrag buchen | A |
+| [#231](https://github.com/tom4711/finanzuebersicht/issues/231) | Cashflow besser auffindbar | B |
+| [#232](https://github.com/tom4711/finanzuebersicht/issues/232) | Fällige Daueraufträge — kompaktere Dashboard-Aktionen | B |
+| [#233](https://github.com/tom4711/finanzuebersicht/issues/233) | Dashboard Informationshierarchie entschlacken | C |
 
 ---
 
-## 📊 v1.2 — Export & Auswertungen *(geplant)* · [Milestone](https://github.com/tom4711/finanzuebersicht/milestone/6)
+## 🎯 v1.16 — UI-Konsistenz & Lokalisierung *(geplant)* · [Milestone](https://github.com/tom4711/finanzuebersicht/milestone/20)
 
-Fokus: Erweiterte Exportmöglichkeiten für Steuern und Analysen.
+| Issue | Thema | Priorität |
+|-------|-------|-----------|
+| [#234](https://github.com/tom4711/finanzuebersicht/issues/234) | Seitentitel und Enum-Labels lokalisieren | B |
+| [#236](https://github.com/tom4711/finanzuebersicht/issues/236) | Verwaltung Kategorien/Konten — Segment klarer | B |
+| [#238](https://github.com/tom4711/finanzuebersicht/issues/238) | Filter und Umbuchung mit Text statt Emoji | B |
+| [#240](https://github.com/tom4711/finanzuebersicht/issues/240) | Einheitliches Icon-Set statt Emoji | C |
+
+---
+
+## 🎯 v1.17 — Barrierefreiheit & Mac-Formulare *(geplant)* · [Milestone](https://github.com/tom4711/finanzuebersicht/milestone/21)
+
+| Issue | Thema | Priorität |
+|-------|-------|-----------|
+| [#235](https://github.com/tom4711/finanzuebersicht/issues/235) | Charts mit Text-Zusammenfassung (Screenreader) | B |
+| [#237](https://github.com/tom4711/finanzuebersicht/issues/237) | Listenzeilen für VoiceOver beschriften | B |
+| [#239](https://github.com/tom4711/finanzuebersicht/issues/239) | Mac Catalyst: SelectionField in Scroll-Formularen | B |
+
+---
+
+## 💡 v1.18 — Ideen & Langfrist *(Backlog, vor v2)* · [Milestone](https://github.com/tom4711/finanzuebersicht/milestone/22)
+
+Größere Features — Priorisierung nach Abschluss von v1.14–v1.17.
 
 | Issue | Thema | Aufwand |
 |-------|-------|---------|
+| [#241](https://github.com/tom4711/finanzuebersicht/issues/241) | Kategorien-Hierarchie (Ober-/Unterkategorien) | L |
+| [#242](https://github.com/tom4711/finanzuebersicht/issues/242) | Home-Screen-Widget (iOS / macOS) | L |
+| [#244](https://github.com/tom4711/finanzuebersicht/issues/244) | Daueraufträge mit variablem Betrag | M |
+| [#243](https://github.com/tom4711/finanzuebersicht/issues/243) | CloudKit-Sync zwischen Geräten | XL |
+| [#245](https://github.com/tom4711/finanzuebersicht/issues/245) | Open Banking / automatischer Bank-Import | XL |
+
+---
+
+## 🔧 v1.1 — Qualität & Performance *(Backlog)* · [Milestone](https://github.com/tom4711/finanzuebersicht/milestone/5)
+
+Technische Schulden — parallel zu UX-Releases möglich.
+
+| Issue | Thema | Aufwand |
+|-------|-------|---------|
+| [#101](https://github.com/tom4711/finanzuebersicht/issues/101) | Store-Basisklasse (`JsonStore<T>`) | M |
+| [#102](https://github.com/tom4711/finanzuebersicht/issues/102) | `YearOverviewViewModel`: ObservableCollection | S |
+| [#103](https://github.com/tom4711/finanzuebersicht/issues/103) | Namespace-Bereinigung | M |
+| [#100](https://github.com/tom4711/finanzuebersicht/issues/100) | Bulk-Replace API für Restore | M |
+
+---
+
+## 🔐 v2.0 — Sicherheit & erweiterte Finanzen *(geplant)* · [Milestone](https://github.com/tom4711/finanzuebersicht/milestone/17)
+
+Größere Architekturänderungen — nach v1.14–v1.18.
+
+| Issue | Thema | Aufwand |
+|-------|-------|---------|
+| [#53](https://github.com/tom4711/finanzuebersicht/issues/53) | Optionale lokale Verschlüsselung (passwortbasiert) | L |
+| [#197](https://github.com/tom4711/finanzuebersicht/issues/197) | Mehrwährung mit historischen Wechselkursen | XL |
 | [#64](https://github.com/tom4711/finanzuebersicht/issues/64) | CSV/PDF-Export für Steuerzwecke | M |
-
----
-
-## 🔐 v2.0 — Sicherheit & Multi-Account *(geplant)* · [Milestone](https://github.com/tom4711/finanzuebersicht/milestone/7)
-
-Fokus: Größere Architekturänderungen – eigener Release-Zyklus.
-
-| Issue | Thema | Aufwand |
-|-------|-------|---------|
-| [#53](https://github.com/tom4711/finanzuebersicht/issues/53) | Optionale lokale Verschlüsselung (PBKDF2/Argon2) | L |
-| [#49](https://github.com/tom4711/finanzuebersicht/issues/49) | Multi-Account & Währungsunterstützung | XL |
-
----
-
-## 💡 Ideen / Nicht eingeplant
-
-Features, die diskutiert wurden aber noch keinen Milestone haben:
-
-- [#214](https://github.com/tom4711/finanzuebersicht/issues/214) Manueller Saldo-Abgleich (Ist-Saldo vs. berechneter Saldo)
-- CloudKit-Sync (erfordert Apple Developer Membership)
-- Widget für iOS/macOS
-- Wiederkehrende Transaktionen mit variablem Betrag
-- Kategorien-Hierarchie (Ober-/Unterkategorien)
-- Open Banking / automatischer Bank-Import (aktuell nur CSV)
 
 ---
 

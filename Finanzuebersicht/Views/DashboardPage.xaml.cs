@@ -1,4 +1,6 @@
 using Finanzuebersicht.Charts;
+using Finanzuebersicht.Navigation;
+using Finanzuebersicht.Presentation.Services;
 using Finanzuebersicht.ViewModels;
 using System.ComponentModel;
 
@@ -7,21 +9,28 @@ namespace Finanzuebersicht.Views;
 public partial class DashboardPage : ContentPage
 {
     private readonly DashboardViewModel _vm;
+    private readonly IOnboardingCoordinator _onboardingCoordinator;
+    private readonly INavigationService _navigationService;
     private readonly DonutChartDrawable _monthDonut = new();
     private readonly BarChartDrawable _yearBar = new();
     private readonly DonutChartDrawable _yearDonut = new();
+    private bool _onboardingChecked;
 
-    public DashboardPage(DashboardViewModel viewModel)
+    public DashboardPage(
+        DashboardViewModel viewModel,
+        IOnboardingCoordinator onboardingCoordinator,
+        INavigationService navigationService)
     {
         InitializeComponent();
         BindingContext = viewModel;
         _vm = viewModel;
+        _onboardingCoordinator = onboardingCoordinator;
+        _navigationService = navigationService;
 
         MonthDonutChart.Drawable = _monthDonut;
         YearBarChart.Drawable = _yearBar;
         YearDonutChart.Drawable = _yearDonut;
 
-        // Initialize drawables with current VM data so charts render immediately
         _monthDonut.Items = _vm.KategorieAusgaben;
         _yearBar.Months = _vm.JahrMonate;
         _yearBar.CurrentMonth = _vm.IsYearView ? 0 : _vm.AktuellerMonat.Month;
@@ -33,15 +42,19 @@ public partial class DashboardPage : ContentPage
         _vm.PropertyChanged += OnViewModelPropertyChanged;
     }
 
-    protected override void OnAppearing()
+    protected override async void OnAppearing()
     {
         base.OnAppearing();
         if (BindingContext is DashboardViewModel vm)
-        {
             vm.LoadDashboardCommand.Execute(null);
+
+        if (!_onboardingChecked)
+        {
+            _onboardingChecked = true;
+            if (await _onboardingCoordinator.ShouldShowOnboardingAsync())
+                await _navigationService.GoToAsync(Routes.Onboarding);
         }
 
-        // Ensure charts are invalidated after loading so drawables render current data
         MainThread.BeginInvokeOnMainThread(() =>
         {
             MonthDonutChart.Invalidate();
@@ -49,7 +62,6 @@ public partial class DashboardPage : ContentPage
             YearBarChart.Invalidate();
         });
 
-        // subscribe to app-wide data change notifications
         App.DataChanged += OnAppDataChanged;
     }
 

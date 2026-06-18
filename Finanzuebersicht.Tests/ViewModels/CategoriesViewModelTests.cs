@@ -3,6 +3,7 @@ using Finanzuebersicht.Application.UseCases.Categories;
 using Finanzuebersicht.Application.UseCases.Accounts;
 using Finanzuebersicht.Models;
 using Finanzuebersicht.Navigation;
+using Finanzuebersicht.Presentation.Services;
 using Finanzuebersicht.ViewModels;
 
 namespace Finanzuebersicht.Tests.ViewModels;
@@ -210,7 +211,9 @@ public class CategoriesViewModelTests
             new DeleteAccountUseCase(accountRepository, transactionRepository, templateRepository),
             localizationService,
             navigationService,
-            dialogService);
+            dialogService,
+            Substitute.For<IFeedbackService>(),
+            Substitute.For<IAppEvents>());
     }
 
     private static CategoriesViewModel CreateSut(

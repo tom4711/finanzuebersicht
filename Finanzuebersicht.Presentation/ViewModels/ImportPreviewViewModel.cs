@@ -18,6 +18,7 @@ public partial class ImportPreviewViewModel(
     IDialogService dialogService,
     ILocalizationService localizationService,
     IAppEvents appEvents,
+    IFeedbackService feedbackService,
     ILogger<ImportPreviewViewModel>? logger = null) : ObservableObject, IAutoLoadViewModel
 {
     private readonly ImportService _importService = importService;
@@ -27,6 +28,7 @@ public partial class ImportPreviewViewModel(
     private readonly IDialogService _dialogService = dialogService;
     private readonly ILocalizationService _loc = localizationService;
     private readonly IAppEvents _appEvents = appEvents;
+    private readonly IFeedbackService _feedbackService = feedbackService;
     private readonly ILogger<ImportPreviewViewModel>? _logger = logger;
 
     private ImportPreviewResult? _activeSession;
@@ -142,12 +144,8 @@ public partial class ImportPreviewViewModel(
             if (result.SaveErrors.Count > 0)
                 summaryLines.Add(string.Format(_loc.GetString(ResourceKeys.Msg_ImportFehlerCount), result.SaveErrors.Count));
 
-            await _dialogService.ShowAlertAsync(
-                _loc.GetString(ResourceKeys.Msg_ImportAbgeschlossen_Title),
-                string.Join("\n", summaryLines),
-                _loc.GetString(ResourceKeys.Btn_OK));
-
-            try { _appEvents.NotifyDataChanged(); } catch { }
+            _appEvents.NotifyDataChanged();
+            await _feedbackService.ShowSnackbarAsync(string.Join(" · ", summaryLines));
 
             _importSessionStore.Clear();
             _loadedPreview = false;

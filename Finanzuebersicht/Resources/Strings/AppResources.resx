@@ -340,4 +340,42 @@ Please restart the app.</value></data>
   <data name="AccountType_Bargeld" xml:space="preserve"><value>Cash</value></data>
   <data name="AccountType_Depot" xml:space="preserve"><value>Securities account</value></data>
   <data name="AccountType_Sonstiges" xml:space="preserve"><value>Other</value></data>
+  <data name="Btn_Weiter" xml:space="preserve"><value>Continue</value></data>
+  <data name="Btn_Fertig" xml:space="preserve"><value>Done</value></data>
+  <data name="Btn_Ueberspringen" xml:space="preserve"><value>Skip</value></data>
+  <data name="Btn_Zurueck" xml:space="preserve"><value>Back</value></data>
+  <data name="Btn_Abgleichen" xml:space="preserve"><value>Reconcile</value></data>
+  <data name="Btn_ErsteTransaktion" xml:space="preserve"><value>Add first transaction</value></data>
+  <data name="Btn_ErsterDauerauftrag" xml:space="preserve"><value>Add recurring transaction</value></data>
+  <data name="Empty_HintTransaktionen" xml:space="preserve"><value>Record income and expenses to see your dashboard.</value></data>
+  <data name="Empty_HintDauerauftraege" xml:space="preserve"><value>Set up rent, subscriptions and other recurring items.</value></data>
+  <data name="Empty_HintSparZiele" xml:space="preserve"><value>Define a savings goal and track your progress.</value></data>
+  <data name="Empty_HintCashflow" xml:space="preserve"><value>Projections appear once you have transactions or recurring items.</value></data>
+  <data name="Empty_HintKategorien" xml:space="preserve"><value>Organize your income and expenses with custom categories.</value></data>
+  <data name="Empty_HintBackups" xml:space="preserve"><value>Create a backup in Settings to see it listed here.</value></data>
+  <data name="Lbl_Hilfe" xml:space="preserve"><value>Help</value></data>
+  <data name="Hint_EinrichtungWiederholen" xml:space="preserve"><value>Review the welcome tour and first steps at any time.</value></data>
+  <data name="Btn_EinrichtungWiederholen" xml:space="preserve"><value>Repeat setup tour</value></data>
+  <data name="Msg_Gespeichert" xml:space="preserve"><value>Saved</value></data>
+  <data name="Msg_Geloescht" xml:space="preserve"><value>Deleted</value></data>
+  <data name="Btn_Rueckgaengig" xml:space="preserve"><value>Undo</value></data>
+  <data name="Lbl_BerechneterSaldo" xml:space="preserve"><value>Calculated balance</value></data>
+  <data name="Lbl_IstSaldo" xml:space="preserve"><value>Actual balance (bank)</value></data>
+  <data name="Hint_SaldoAbgleich" xml:space="preserve"><value>Enter the balance from your bank statement. The opening balance will be adjusted automatically.</value></data>
+  <data name="Msg_SaldoAbgeglichen" xml:space="preserve"><value>Balance reconciled</value></data>
+  <data name="Onboarding_PageTitle" xml:space="preserve"><value>Welcome</value></data>
+  <data name="Onboarding_TitleWelcome" xml:space="preserve"><value>Welcome to Finanzübersicht</value></data>
+  <data name="Onboarding_TitleAccount" xml:space="preserve"><value>Set your opening balance</value></data>
+  <data name="Onboarding_TitleFirstTransaction" xml:space="preserve"><value>Record your first transaction</value></data>
+  <data name="Onboarding_TitleBackup" xml:space="preserve"><value>Protect your data</value></data>
+  <data name="Onboarding_DescWelcome" xml:space="preserve"><value>Track accounts, budgets and savings — all stored locally on your device.</value></data>
+  <data name="Onboarding_DescAccount" xml:space="preserve"><value>Optionally set an opening balance so your account balance matches your bank.</value></data>
+  <data name="Onboarding_DescFirstTransaction" xml:space="preserve"><value>Add an income or expense to populate your dashboard.</value></data>
+  <data name="Onboarding_DescBackup" xml:space="preserve"><value>Configure backup location and create regular backups in Settings.</value></data>
+  <data name="Onboarding_TitleDone" xml:space="preserve"><value>You're all set!</value></data>
+  <data name="Onboarding_DescDone" xml:space="preserve"><value>You can repeat this setup anytime in Settings. Enjoy using Finanzübersicht!</value></data>
+  <data name="Onboarding_Btn_Anfangssaldo" xml:space="preserve"><value>Edit account balance</value></data>
+  <data name="Onboarding_Btn_ErsteTransaktion" xml:space="preserve"><value>Add transaction</value></data>
+  <data name="Onboarding_Btn_Einstellungen" xml:space="preserve"><value>Open settings</value></data>
+  <data name="Onboarding_Btn_ZumDashboard" xml:space="preserve"><value>Go to dashboard</value></data>
 </root>

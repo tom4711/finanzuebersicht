@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.Input;
 using Finanzuebersicht.Application.UseCases.Accounts;
 using Finanzuebersicht.Models;
 using Finanzuebersicht.Navigation;
+using Finanzuebersicht.Presentation.Services;
 using Finanzuebersicht.Resources.Strings;
 using Microsoft.Extensions.Logging;
 
@@ -11,15 +12,23 @@ namespace Finanzuebersicht.ViewModels;
 
 public partial class AccountDetailViewModel(
     SaveAccountDetailUseCase saveAccountDetailUseCase,
+    GetAccountBalancesUseCase getAccountBalancesUseCase,
+    ReconcileAccountBalanceUseCase reconcileAccountBalanceUseCase,
     INavigationService navigationService,
     ILocalizationService localizationService,
     IDialogService dialogService,
+    IFeedbackService feedbackService,
+    IAppEvents appEvents,
     ILogger<AccountDetailViewModel>? logger = null) : ObservableObject, IApplyQueryAttributes
 {
     private readonly SaveAccountDetailUseCase _saveAccountDetailUseCase = saveAccountDetailUseCase;
+    private readonly GetAccountBalancesUseCase _getAccountBalancesUseCase = getAccountBalancesUseCase;
+    private readonly ReconcileAccountBalanceUseCase _reconcileAccountBalanceUseCase = reconcileAccountBalanceUseCase;
     private readonly INavigationService _navigationService = navigationService;
     private readonly ILocalizationService _loc = localizationService;
     private readonly IDialogService _dialogService = dialogService;
+    private readonly IFeedbackService _feedbackService = feedbackService;
+    private readonly IAppEvents _appEvents = appEvents;
     private readonly ILogger<AccountDetailViewModel>? _logger = logger;
     private Account? _existingAccount;
 
@@ -45,7 +54,14 @@ public partial class AccountDetailViewModel(
     [ObservableProperty]
     private DateTime openingBalanceDate = DateTime.Today;
 
+    [ObservableProperty]
+    private string calculatedBalanceText = string.Empty;
+
+    [ObservableProperty]
+    private string actualBalanceText = string.Empty;
+
     public bool HasOpeningBalanceDate => UseOpeningBalanceDate;
+    public bool CanReconcile => _existingAccount != null;
 
     public string PageTitle => _existingAccount == null
         ? _loc.GetString(ResourceKeys.Title_KontoHinzufuegen)
@@ -76,22 +92,23 @@ public partial class AccountDetailViewModel(
     {
         set
         {
-            if (value != null)
-            {
-                _existingAccount = value;
-                Name = value.Name;
-                Type = value.Type;
-                IsArchived = value.IsArchived;
-                OpeningBalanceText = value.OpeningBalance.ToString("F2", CultureInfo.CurrentCulture);
-                UseOpeningBalanceDate = value.OpeningBalanceDate.HasValue;
-                OpeningBalanceDate = value.OpeningBalanceDate ?? DateTime.Today;
-                SelectedTypeOption = VerfuegbareTypen.FirstOrDefault(t => t.Value == value.Type);
-                OnPropertyChanged(nameof(PageTitle));
-                OnPropertyChanged(nameof(IsSystemAccount));
-                OnPropertyChanged(nameof(CanArchive));
-                OnPropertyChanged(nameof(SystemAccountHint));
-                OnPropertyChanged(nameof(ArchiveStatusText));
-            }
+            if (value == null) return;
+
+            _existingAccount = value;
+            Name = value.Name;
+            Type = value.Type;
+            IsArchived = value.IsArchived;
+            OpeningBalanceText = value.OpeningBalance.ToString("F2", CultureInfo.CurrentCulture);
+            UseOpeningBalanceDate = value.OpeningBalanceDate.HasValue;
+            OpeningBalanceDate = value.OpeningBalanceDate ?? DateTime.Today;
+            SelectedTypeOption = VerfuegbareTypen.FirstOrDefault(t => t.Value == value.Type);
+            OnPropertyChanged(nameof(PageTitle));
+            OnPropertyChanged(nameof(IsSystemAccount));
+            OnPropertyChanged(nameof(CanArchive));
+            OnPropertyChanged(nameof(SystemAccountHint));
+            OnPropertyChanged(nameof(ArchiveStatusText));
+            OnPropertyChanged(nameof(CanReconcile));
+            _ = LoadCalculatedBalanceAsync();
         }
     }
 
@@ -121,6 +138,8 @@ public partial class AccountDetailViewModel(
             var openingBalanceDate = UseOpeningBalanceDate ? OpeningBalanceDate : (DateTime?)null;
             await _saveAccountDetailUseCase.ExecuteAsync(
                 _existingAccount, Name, Type, IsArchived, openingBalance, openingBalanceDate);
+            _appEvents.NotifyDataChanged();
+            await _feedbackService.ShowSnackbarAsync(_loc.GetString(ResourceKeys.Msg_Gespeichert));
             await _navigationService.GoBackAsync();
         }
         catch (Exception ex)
@@ -131,6 +150,52 @@ public partial class AccountDetailViewModel(
                 _loc.GetString(ResourceKeys.Err_SpeichernFehlgeschlagen, ex.Message),
                 _loc.GetString(ResourceKeys.Btn_OK));
         }
+    }
+
+    [RelayCommand]
+    private async Task Reconcile()
+    {
+        if (_existingAccount == null) return;
+
+        if (!decimal.TryParse(ActualBalanceText, NumberStyles.Number, CultureInfo.CurrentCulture, out var actualBalance))
+        {
+            await _dialogService.ShowAlertAsync(
+                _loc.GetString(ResourceKeys.Err_Titel),
+                _loc.GetString(ResourceKeys.Err_UngueltigerBetrag),
+                _loc.GetString(ResourceKeys.Btn_OK));
+            return;
+        }
+
+        try
+        {
+            var result = await _reconcileAccountBalanceUseCase.ExecuteAsync(_existingAccount.Id, actualBalance);
+            OpeningBalanceText = result.NewOpeningBalance.ToString("F2", CultureInfo.CurrentCulture);
+            _existingAccount.OpeningBalance = result.NewOpeningBalance;
+            await LoadCalculatedBalanceAsync();
+            _appEvents.NotifyDataChanged();
+            await _feedbackService.ShowSnackbarAsync(_loc.GetString(ResourceKeys.Msg_SaldoAbgeglichen));
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "AccountDetailViewModel: Reconcile failed");
+            await _dialogService.ShowAlertAsync(
+                _loc.GetString(ResourceKeys.Err_Titel),
+                _loc.GetString(ResourceKeys.Err_SpeichernFehlgeschlagen, ex.Message),
+                _loc.GetString(ResourceKeys.Btn_OK));
+        }
+    }
+
+    private async Task LoadCalculatedBalanceAsync()
+    {
+        if (_existingAccount == null)
+        {
+            CalculatedBalanceText = string.Empty;
+            return;
+        }
+
+        var summaries = await _getAccountBalancesUseCase.ExecuteAsync();
+        var summary = summaries.FirstOrDefault(s => s.AccountId == _existingAccount.Id);
+        CalculatedBalanceText = summary?.Saldo.ToString("C", CultureInfo.CurrentCulture) ?? string.Empty;
     }
 
     private bool TryParseOpeningBalance(out decimal openingBalance)
