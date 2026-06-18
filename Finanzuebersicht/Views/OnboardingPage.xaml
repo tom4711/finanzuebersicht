@@ -56,8 +56,8 @@
             <VerticalStackLayout Spacing="12" IsVisible="{Binding ShowBackupActions}">
                 <Button Text="{loc:Translate Onboarding_Btn_Einstellungen}"
                         Command="{Binding OpenSettingsCommand}"
-                        BackgroundColor="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}"
-                        TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"
+                        BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                        TextColor="White"
                         CornerRadius="12"
                         HeightRequest="48" />
             </VerticalStackLayout>
