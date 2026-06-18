@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Finanzuebersicht.ViewModels"
+             xmlns:conv="clr-namespace:Finanzuebersicht.Converters"
+             xmlns:loc="clr-namespace:Finanzuebersicht.Extensions"
+             x:Class="Finanzuebersicht.Views.OnboardingPage"
+             x:DataType="vm:OnboardingViewModel"
+             Title="{loc:Translate Onboarding_PageTitle}"
+             Shell.NavBarIsVisible="False">
+
+    <ContentPage.Resources>
+        <conv:InvertBoolConverter x:Key="InvertBool" />
+    </ContentPage.Resources>
+
+    <ScrollView Padding="24">
+        <VerticalStackLayout Spacing="24" VerticalOptions="Center">
+
+            <Label Text="{Binding StepTitle}"
+                   FontSize="28"
+                   FontAttributes="Bold"
+                   HorizontalTextAlignment="Center" />
+
+            <Label Text="{Binding StepDescription}"
+                   FontSize="16"
+                   TextColor="Gray"
+                   HorizontalTextAlignment="Center"
+                   LineBreakMode="WordWrap" />
+
+            <Label Text="{Binding StepIndicator}"
+                   FontSize="13"
+                   TextColor="Gray"
+                   HorizontalTextAlignment="Center" />
+
+            <VerticalStackLayout Spacing="12" IsVisible="{Binding ShowAccountActions}">
+                <Button Text="{loc:Translate Onboarding_Btn_Anfangssaldo}"
+                        Command="{Binding OpenDefaultAccountCommand}"
+                        BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                        TextColor="White"
+                        CornerRadius="12"
+                        HeightRequest="48" />
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Spacing="12" IsVisible="{Binding ShowTransactionActions}">
+                <Button Text="{loc:Translate Onboarding_Btn_ErsteTransaktion}"
+                        Command="{Binding OpenNewTransactionCommand}"
+                        BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                        TextColor="White"
+                        CornerRadius="12"
+                        HeightRequest="48" />
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Spacing="12" IsVisible="{Binding ShowBackupActions}">
+                <Button Text="{loc:Translate Onboarding_Btn_Einstellungen}"
+                        Command="{Binding OpenSettingsCommand}"
+                        BackgroundColor="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}"
+                        TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"
+                        CornerRadius="12"
+                        HeightRequest="48" />
+            </VerticalStackLayout>
+
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="12" Margin="0,16,0,0">
+                <Button Grid.Column="0"
+                        Text="{loc:Translate Btn_Ueberspringen}"
+                        Command="{Binding SkipCommand}"
+                        BackgroundColor="Transparent"
+                        TextColor="Gray" />
+                <Button Grid.Column="1"
+                        Text="{Binding PrimaryButtonText}"
+                        Command="{Binding NextCommand}"
+                        BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                        TextColor="White"
+                        CornerRadius="12"
+                        HeightRequest="48" />
+            </Grid>
+
+            <Button Text="{loc:Translate Btn_Zurueck}"
+                    Command="{Binding BackCommand}"
+                    IsVisible="{Binding IsFirstStep, Converter={StaticResource InvertBool}}"
+                    BackgroundColor="Transparent"
+                    TextColor="Gray" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

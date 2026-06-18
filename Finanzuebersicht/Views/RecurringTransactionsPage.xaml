@@ -6,6 +6,7 @@
              xmlns:models="clr-namespace:Finanzuebersicht.Models"
              xmlns:conv="clr-namespace:Finanzuebersicht.Converters"
              xmlns:loc="clr-namespace:Finanzuebersicht.Extensions"
+             xmlns:controls="clr-namespace:Finanzuebersicht.Controls"
              x:Class="Finanzuebersicht.Views.RecurringTransactionsPage"
              x:DataType="vm:RecurringTransactionsViewModel"
              Title="Daueraufträge">
@@ -24,10 +25,11 @@
                         SelectionMode="None">
 
             <CollectionView.EmptyView>
-                <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Padding="20">
-                    <Label Text="{loc:Translate Empty_KeineDauerauftraege}"
-                           FontSize="16" HorizontalTextAlignment="Center" TextColor="Gray" />
-                </VerticalStackLayout>
+                <controls:EmptyStateView IconText="🔄"
+                                         Message="{loc:Translate Empty_KeineDauerauftraege}"
+                                         Hint="{loc:Translate Empty_HintDauerauftraege}"
+                                         ActionText="{loc:Translate Btn_ErsterDauerauftrag}"
+                                         ActionCommand="{Binding GoToDetailCommand}" />
             </CollectionView.EmptyView>
 
             <CollectionView.ItemTemplate>

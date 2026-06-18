@@ -36,5 +36,10 @@ namespace Finanzuebersicht.Core.Services
         /// Maximale Anzahl aufzubewahrende Backups (Standard: 10).
         /// </summary>
         public const string MaxBackupsToKeep = "MaxBackupsToKeep";
+
+        /// <summary>
+        /// Whether the first-run onboarding wizard was completed (true/false).
+        /// </summary>
+        public const string OnboardingCompleted = "OnboardingCompleted";
     }
 }

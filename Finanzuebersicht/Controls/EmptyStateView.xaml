@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Finanzuebersicht.Controls.EmptyStateView"
+             x:Name="Root">
+
+    <VerticalStackLayout Spacing="12"
+                         HorizontalOptions="Center"
+                         Margin="0,40,0,0"
+                         Padding="16,0">
+        <Label Text="{Binding Source={x:Reference Root}, Path=IconText}"
+               FontSize="48"
+               HorizontalTextAlignment="Center"
+               IsVisible="{Binding Source={x:Reference Root}, Path=HasIcon}"
+               AutomationProperties.IsInAccessibleTree="False" />
+        <Label Text="{Binding Source={x:Reference Root}, Path=Message}"
+               FontSize="17"
+               TextColor="Gray"
+               HorizontalTextAlignment="Center" />
+        <Label Text="{Binding Source={x:Reference Root}, Path=Hint}"
+               FontSize="14"
+               TextColor="Gray"
+               HorizontalTextAlignment="Center"
+               IsVisible="{Binding Source={x:Reference Root}, Path=HasHint}" />
+        <Button Text="{Binding Source={x:Reference Root}, Path=ActionText}"
+                Command="{Binding Source={x:Reference Root}, Path=ActionCommand}"
+                HorizontalOptions="Center"
+                BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                TextColor="White"
+                CornerRadius="10"
+                Padding="20,10"
+                IsVisible="{Binding Source={x:Reference Root}, Path=HasAction}" />
+    </VerticalStackLayout>
+</ContentView>

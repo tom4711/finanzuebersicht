@@ -18,6 +18,8 @@ public partial class TransactionDetailViewModel(
     ILocalizationService localizationService,
     INavigationService navigationService,
     IDialogService dialogService,
+    IFeedbackService feedbackService,
+    IAppEvents appEvents,
     ILogger<TransactionDetailViewModel>? logger = null,
     Finanzuebersicht.Core.Services.IClock? clock = null,
     SaveTransactionTemplateUseCase? saveTransactionTemplateUseCase = null) : ObservableObject, IAutoLoadViewModel, IApplyQueryAttributes
@@ -33,6 +35,8 @@ public partial class TransactionDetailViewModel(
     private readonly ILocalizationService _loc = localizationService;
     private readonly INavigationService _navigationService = navigationService;
     private readonly IDialogService _dialogService = dialogService;
+    private readonly IFeedbackService _feedbackService = feedbackService;
+    private readonly IAppEvents _appEvents = appEvents;
     private readonly ILogger<TransactionDetailViewModel>? _logger = logger;
     private readonly Finanzuebersicht.Core.Services.IClock _clock = clock ?? Finanzuebersicht.Core.Services.SystemClock.Instance;
     private readonly SaveTransactionTemplateUseCase? _saveTransactionTemplateUseCase = saveTransactionTemplateUseCase;
@@ -174,7 +178,9 @@ public partial class TransactionDetailViewModel(
                 Typ,
                 Verwendungszweck,
                 SelectedSparZiel?.Id);
+            _appEvents.NotifyDataChanged();
             await _navigationService.GoBackAsync();
+            await _feedbackService.ShowSnackbarAsync(_loc.GetString(ResourceKeys.Msg_Gespeichert));
         }
         catch (Exception ex)
         {

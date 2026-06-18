@@ -83,6 +83,8 @@ public static class MauiProgram
 		builder.Services.AddSingleton<ILocalizationService, LocalizationService>();
 		builder.Services.AddSingleton<INavigationService, ShellNavigationService>();
 		builder.Services.AddSingleton<IDialogService, ShellDialogService>();
+		builder.Services.AddSingleton<IFeedbackService, MauiFeedbackService>();
+		builder.Services.AddSingleton<IOnboardingCoordinator, OnboardingCoordinator>();
 		builder.Services.AddSingleton<IMainThreadDispatcher, MauiMainThreadDispatcher>();
 		builder.Services.AddSingleton<Finanzuebersicht.Presentation.Services.IFilePicker, MauiFilePicker>();
 		builder.Services.AddSingleton<IAppEvents, MauiAppEvents>();
@@ -109,6 +111,7 @@ public static class MauiProgram
 		builder.Services.AddTransient<BackupListPage>();
 		builder.Services.AddTransient<ImportPreviewPage>();
 		builder.Services.AddTransient<CashflowPage>();
+		builder.Services.AddTransient<OnboardingPage>();
 
 #if DEBUG
 		builder.Logging.AddDebug();

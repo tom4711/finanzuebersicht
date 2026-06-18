@@ -75,6 +75,13 @@ public static class ResourceKeys
     public const string Btn_Duplizieren = nameof(Btn_Duplizieren);
     public const string Btn_Verwenden = nameof(Btn_Verwenden);
     public const string Btn_AlsVorlageSpeichern = nameof(Btn_AlsVorlageSpeichern);
+    public const string Btn_Weiter = nameof(Btn_Weiter);
+    public const string Btn_Fertig = nameof(Btn_Fertig);
+    public const string Btn_Ueberspringen = nameof(Btn_Ueberspringen);
+    public const string Btn_Zurueck = nameof(Btn_Zurueck);
+    public const string Btn_Abgleichen = nameof(Btn_Abgleichen);
+    public const string Btn_ErsteTransaktion = nameof(Btn_ErsteTransaktion);
+    public const string Btn_ErsterDauerauftrag = nameof(Btn_ErsterDauerauftrag);
 
     // Hints / Placeholders
     public const string Hint_Kategoriename = nameof(Hint_Kategoriename);
@@ -313,9 +320,34 @@ public static class ResourceKeys
     public const string Btn_BackupWiederherstellen = nameof(Btn_BackupWiederherstellen);
     public const string Empty_KeineBackupsVorhanden = nameof(Empty_KeineBackupsVorhanden);
     public const string Empty_ImportVorschauLeer = nameof(Empty_ImportVorschauLeer);
+    public const string Empty_HintTransaktionen = nameof(Empty_HintTransaktionen);
+    public const string Empty_HintDauerauftraege = nameof(Empty_HintDauerauftraege);
+    public const string Empty_HintSparZiele = nameof(Empty_HintSparZiele);
+    public const string Empty_HintCashflow = nameof(Empty_HintCashflow);
     public const string Ttl_ImportVorschau = nameof(Ttl_ImportVorschau);
     public const string Msg_BackupRestoreConfirmTitle = nameof(Msg_BackupRestoreConfirmTitle);
     public const string Msg_BackupRestoreConfirmBody = nameof(Msg_BackupRestoreConfirmBody);
+
+    // v1.14 — Feedback, Onboarding, Saldo-Abgleich
+    public const string Msg_Gespeichert = nameof(Msg_Gespeichert);
+    public const string Msg_Geloescht = nameof(Msg_Geloescht);
+    public const string Btn_Rueckgaengig = nameof(Btn_Rueckgaengig);
+    public const string Lbl_BerechneterSaldo = nameof(Lbl_BerechneterSaldo);
+    public const string Lbl_IstSaldo = nameof(Lbl_IstSaldo);
+    public const string Hint_SaldoAbgleich = nameof(Hint_SaldoAbgleich);
+    public const string Msg_SaldoAbgeglichen = nameof(Msg_SaldoAbgeglichen);
+    public const string Onboarding_PageTitle = nameof(Onboarding_PageTitle);
+    public const string Onboarding_TitleWelcome = nameof(Onboarding_TitleWelcome);
+    public const string Onboarding_TitleAccount = nameof(Onboarding_TitleAccount);
+    public const string Onboarding_TitleFirstTransaction = nameof(Onboarding_TitleFirstTransaction);
+    public const string Onboarding_TitleBackup = nameof(Onboarding_TitleBackup);
+    public const string Onboarding_DescWelcome = nameof(Onboarding_DescWelcome);
+    public const string Onboarding_DescAccount = nameof(Onboarding_DescAccount);
+    public const string Onboarding_DescFirstTransaction = nameof(Onboarding_DescFirstTransaction);
+    public const string Onboarding_DescBackup = nameof(Onboarding_DescBackup);
+    public const string Onboarding_Btn_Anfangssaldo = nameof(Onboarding_Btn_Anfangssaldo);
+    public const string Onboarding_Btn_ErsteTransaktion = nameof(Onboarding_Btn_ErsteTransaktion);
+    public const string Onboarding_Btn_Einstellungen = nameof(Onboarding_Btn_Einstellungen);
 
     // Accessibility
     public const string A11y_VorherigerMonat = nameof(A11y_VorherigerMonat);

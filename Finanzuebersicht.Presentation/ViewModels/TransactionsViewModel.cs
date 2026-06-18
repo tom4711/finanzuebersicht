@@ -13,11 +13,13 @@ namespace Finanzuebersicht.ViewModels;
 
 public partial class TransactionsViewModel(
     DeleteTransactionUseCase deleteTransactionUseCase,
+    RestoreTransactionUseCase restoreTransactionUseCase,
     LoadTransactionsMonthUseCase loadTransactionsMonthUseCase,
     SearchTransactionsUseCase searchTransactionsUseCase,
     INavigationService navigationService,
     ImportService importService,
     IDialogService dialogService,
+    IFeedbackService feedbackService,
     ILocalizationService localizationService,
     ICategoryRepository categoryRepository,
     IAccountRepository accountRepository,
@@ -31,6 +33,7 @@ public partial class TransactionsViewModel(
     UseTransactionTemplateUseCase? useTransactionTemplateUseCase = null) : MonthNavigationViewModel, IAutoLoadViewModel
 {
     private readonly DeleteTransactionUseCase _deleteTransactionUseCase = deleteTransactionUseCase;
+    private readonly RestoreTransactionUseCase _restoreTransactionUseCase = restoreTransactionUseCase;
     private readonly LoadTransactionsMonthUseCase _loadTransactionsMonthUseCase = loadTransactionsMonthUseCase;
 
     public System.Windows.Input.ICommand AutoLoadCommand => LoadTransaktionenCommand;
@@ -38,6 +41,7 @@ public partial class TransactionsViewModel(
     private readonly INavigationService _navigationService = navigationService;
     private readonly ImportService _importService = importService;
     private readonly IDialogService _dialogService = dialogService;
+    private readonly IFeedbackService _feedbackService = feedbackService;
     private readonly ILocalizationService _loc = localizationService;
     private readonly ICategoryRepository _categoryRepository = categoryRepository;
     private readonly IAccountRepository _accountRepository = accountRepository;
@@ -433,9 +437,12 @@ public partial class TransactionsViewModel(
             {
                 await _deleteTransactionUseCase.ExecuteTransferGroupAsync(transaktion.TransferGroupId);
                 await LoadTransaktionen();
+                _appEvents.NotifyDataChanged();
+                await _feedbackService.ShowSnackbarAsync(_loc.GetString(ResourceKeys.Msg_Geloescht));
                 return;
             }
 
+            var snapshot = CloneTransaction(transaktion);
             await _deleteTransactionUseCase.ExecuteAsync(transaktion.Id);
             var gruppe = TransaktionsGruppen.FirstOrDefault(g => g.Contains(transaktion));
             if (gruppe == null) return;
@@ -443,6 +450,17 @@ public partial class TransactionsViewModel(
             gruppe.Remove(transaktion);
             if (gruppe.Count == 0)
                 TransaktionsGruppen.Remove(gruppe);
+
+            _appEvents.NotifyDataChanged();
+            await _feedbackService.ShowSnackbarAsync(
+                _loc.GetString(ResourceKeys.Msg_Geloescht),
+                _loc.GetString(ResourceKeys.Btn_Rueckgaengig),
+                async () =>
+                {
+                    await _restoreTransactionUseCase.ExecuteAsync(snapshot);
+                    await LoadTransaktionen();
+                    _appEvents.NotifyDataChanged();
+                });
         }
         catch (Exception ex)
         {
@@ -609,4 +627,20 @@ public partial class TransactionsViewModel(
             await _dialogService.ShowAlertAsync(errTitle, msg, okError);
         }
     }
+
+    private static Transaction CloneTransaction(Transaction source) => new()
+    {
+        Id = source.Id,
+        Betrag = source.Betrag,
+        Titel = source.Titel,
+        Datum = source.Datum,
+        KategorieId = source.KategorieId,
+        Typ = source.Typ,
+        DauerauftragId = source.DauerauftragId,
+        AccountId = source.AccountId,
+        IsTransfer = source.IsTransfer,
+        TransferGroupId = source.TransferGroupId,
+        Verwendungszweck = source.Verwendungszweck,
+        SparZielId = source.SparZielId
+    };
 }
