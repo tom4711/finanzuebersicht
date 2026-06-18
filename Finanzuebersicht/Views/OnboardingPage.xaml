@@ -14,7 +14,10 @@
     </ContentPage.Resources>
 
     <ScrollView Padding="24">
-        <VerticalStackLayout Spacing="24" VerticalOptions="Center">
+        <VerticalStackLayout Spacing="24"
+                             VerticalOptions="Center"
+                             MaximumWidthRequest="400"
+                             HorizontalOptions="Center">
 
             <Label Text="{Binding StepTitle}"
                    FontSize="28"
