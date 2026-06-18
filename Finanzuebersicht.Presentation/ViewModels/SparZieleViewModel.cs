@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Finanzuebersicht.Application.UseCases.SparZiele;
 using Finanzuebersicht.Models;
+using Finanzuebersicht.Presentation.Services;
 using Finanzuebersicht.Resources.Strings;
 using Microsoft.Extensions.Logging;
 
@@ -15,6 +16,8 @@ public partial class SparZieleViewModel : ObservableObject, IAutoLoadViewModel
     private readonly DeleteSparZielUseCase _deleteUseCase;
     private readonly IDialogService _dialogService;
     private readonly ILocalizationService _loc;
+    private readonly IFeedbackService _feedbackService;
+    private readonly IAppEvents _appEvents;
     private readonly ILogger<SparZieleViewModel>? _logger;
 
     public System.Windows.Input.ICommand AutoLoadCommand => LoadSparZieleCommand;
@@ -55,6 +58,8 @@ public partial class SparZieleViewModel : ObservableObject, IAutoLoadViewModel
         DeleteSparZielUseCase deleteUseCase,
         IDialogService dialogService,
         ILocalizationService localizationService,
+        IFeedbackService feedbackService,
+        IAppEvents appEvents,
         ILogger<SparZieleViewModel>? logger = null)
     {
         _loadUseCase = loadUseCase;
@@ -62,6 +67,8 @@ public partial class SparZieleViewModel : ObservableObject, IAutoLoadViewModel
         _deleteUseCase = deleteUseCase;
         _dialogService = dialogService;
         _loc = localizationService;
+        _feedbackService = feedbackService;
+        _appEvents = appEvents;
         _logger = logger;
     }
 
@@ -134,6 +141,8 @@ public partial class SparZieleViewModel : ObservableObject, IAutoLoadViewModel
             };
 
             await _saveUseCase.ExecuteAsync(ziel);
+            _appEvents.NotifyDataChanged();
+            await _feedbackService.ShowSnackbarAsync(_loc.GetString(ResourceKeys.Msg_Gespeichert));
         }
         catch (Exception ex)
         {
@@ -156,6 +165,8 @@ public partial class SparZieleViewModel : ObservableObject, IAutoLoadViewModel
         {
             await _saveUseCase.ExecuteAsync(ziel);
             await LoadSparZieleCommand.ExecuteAsync(null);
+            _appEvents.NotifyDataChanged();
+            await _feedbackService.ShowSnackbarAsync(_loc.GetString(ResourceKeys.Msg_Gespeichert));
         }
         catch (Exception ex)
         {
@@ -181,6 +192,8 @@ public partial class SparZieleViewModel : ObservableObject, IAutoLoadViewModel
         {
             await _deleteUseCase.ExecuteAsync(id);
             await LoadSparZieleCommand.ExecuteAsync(null);
+            _appEvents.NotifyDataChanged();
+            await _feedbackService.ShowSnackbarAsync(_loc.GetString(ResourceKeys.Msg_Geloescht));
         }
         catch (Exception ex)
         {

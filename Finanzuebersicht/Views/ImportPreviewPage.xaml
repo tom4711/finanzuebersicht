@@ -32,12 +32,10 @@
             </VerticalStackLayout>
         </Border>
 
-        <Label Grid.Row="1"
-               Text="{loc:Translate Empty_ImportVorschauLeer}"
-               IsVisible="{Binding HasRows, Converter={StaticResource InvertBool}}"
-               HorizontalTextAlignment="Center"
-               TextColor="{AppThemeBinding Light={StaticResource TextTertiary}, Dark={StaticResource Gray600}}"
-               Margin="0,24,0,0" />
+        <controls:EmptyStateView Grid.Row="1"
+                                 IconText="📄"
+                                 Message="{loc:Translate Empty_ImportVorschauLeer}"
+                                 IsVisible="{Binding HasRows, Converter={StaticResource InvertBool}}" />
 
         <CollectionView Grid.Row="2"
                         IsVisible="{Binding HasRows}"

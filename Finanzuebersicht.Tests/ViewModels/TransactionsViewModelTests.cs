@@ -317,14 +317,21 @@ public class TransactionsViewModelTests
 
         deleteTransactionRepository ??= Substitute.For<ITransactionRepository>();
         deleteTransactionRepository.DeleteTransactionAsync(Arg.Any<string>()).Returns(Task.CompletedTask);
+        deleteTransactionRepository.SaveTransactionAsync(Arg.Any<Transaction>()).Returns(Task.CompletedTask);
+
+        var feedbackService = Substitute.For<IFeedbackService>();
+        feedbackService.ShowSnackbarAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<Func<Task>>())
+            .Returns(Task.CompletedTask);
 
         return new TransactionsViewModel(
             new DeleteTransactionUseCase(deleteTransactionRepository),
+            new RestoreTransactionUseCase(deleteTransactionRepository),
             new LoadTransactionsMonthUseCase(loadTransactionRepository, loadCategoryRepository, loadAccountRepository),
             new SearchTransactionsUseCase(searchTransactionRepository, searchCategoryRepository, searchAccountRepository),
             navigationService,
             importService,
             dialogService,
+            feedbackService,
             localizationService,
             loadCategoryRepository,
             loadAccountRepository,

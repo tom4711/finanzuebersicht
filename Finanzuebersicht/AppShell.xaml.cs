@@ -19,6 +19,7 @@ public partial class AppShell : Shell
 		Routing.RegisterRoute(Routes.BackupList, typeof(BackupListPage));
 		Routing.RegisterRoute(Routes.ImportPreview, typeof(ImportPreviewPage));
 		Routing.RegisterRoute(Routes.Cashflow, typeof(CashflowPage));
+		Routing.RegisterRoute(Routes.Onboarding, typeof(OnboardingPage));
 	}
 
 	private async void OnSettingsClicked(object? sender, EventArgs e)

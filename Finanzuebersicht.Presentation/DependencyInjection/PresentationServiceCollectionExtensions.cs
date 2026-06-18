@@ -34,11 +34,18 @@ public static class PresentationServiceCollectionExtensions
         services.AddTransient<BackupViewModel>();
         services.AddTransient<AboutViewModel>(sp =>
             new AboutViewModel(appAssembly, sp.GetService<Microsoft.Extensions.Logging.ILogger<AboutViewModel>>()));
-        services.AddTransient<SettingsViewModel>();
+        services.AddTransient<SettingsViewModel>(sp =>
+            new SettingsViewModel(
+                sp.GetRequiredService<AppearanceViewModel>(),
+                sp.GetRequiredService<StorageViewModel>(),
+                sp.GetRequiredService<BackupViewModel>(),
+                sp.GetRequiredService<AboutViewModel>(),
+                sp.GetRequiredService<INavigationService>()));
         services.AddTransient<SparZieleViewModel>();
         services.AddTransient<BackupListViewModel>();
         services.AddTransient<ImportPreviewViewModel>();
         services.AddTransient<CashflowViewModel>();
+        services.AddTransient<OnboardingViewModel>();
 
         return services;
     }

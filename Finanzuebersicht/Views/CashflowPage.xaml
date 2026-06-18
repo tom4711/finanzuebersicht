@@ -41,9 +41,10 @@
                     </VerticalStackLayout>
                 </Grid>
 
-                <Label Text="{loc:Translate Empty_KeinCashflow}"
-                       IsVisible="{Binding HasDays, Converter={StaticResource InvertBool}}"
-                       FontSize="15" TextColor="Gray" HorizontalTextAlignment="Center" Margin="0,40,0,0" />
+                <controls:EmptyStateView IconText="📅"
+                                         Message="{loc:Translate Empty_KeinCashflow}"
+                                         Hint="{loc:Translate Empty_HintCashflow}"
+                                         IsVisible="{Binding HasDays, Converter={StaticResource InvertBool}}" />
 
                 <VerticalStackLayout Spacing="12" BindableLayout.ItemsSource="{Binding Days}">
                     <BindableLayout.ItemTemplate>

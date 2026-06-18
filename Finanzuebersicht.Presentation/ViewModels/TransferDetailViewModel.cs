@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.Input;
 using Finanzuebersicht.Application.UseCases.Transactions;
 using Finanzuebersicht.Models;
 using Finanzuebersicht.Navigation;
+using Finanzuebersicht.Presentation.Services;
 using Finanzuebersicht.Resources.Strings;
 using Microsoft.Extensions.Logging;
 
@@ -15,6 +16,8 @@ public partial class TransferDetailViewModel(
     INavigationService navigationService,
     IDialogService dialogService,
     ILocalizationService localizationService,
+    IFeedbackService feedbackService,
+    IAppEvents appEvents,
     ILogger<TransferDetailViewModel>? logger = null,
     Finanzuebersicht.Core.Services.IClock? clock = null) : ObservableObject, IAutoLoadViewModel
 {
@@ -23,6 +26,8 @@ public partial class TransferDetailViewModel(
     private readonly INavigationService _navigationService = navigationService;
     private readonly IDialogService _dialogService = dialogService;
     private readonly ILocalizationService _loc = localizationService;
+    private readonly IFeedbackService _feedbackService = feedbackService;
+    private readonly IAppEvents _appEvents = appEvents;
     private readonly ILogger<TransferDetailViewModel>? _logger = logger;
     private readonly Finanzuebersicht.Core.Services.IClock _clock = clock ?? Finanzuebersicht.Core.Services.SystemClock.Instance;
 
@@ -100,7 +105,9 @@ public partial class TransferDetailViewModel(
                 title,
                 Note);
 
+            _appEvents.NotifyDataChanged();
             await _navigationService.GoBackAsync();
+            await _feedbackService.ShowSnackbarAsync(_loc.GetString(ResourceKeys.Msg_Gespeichert));
         }
         catch (Exception ex)
         {

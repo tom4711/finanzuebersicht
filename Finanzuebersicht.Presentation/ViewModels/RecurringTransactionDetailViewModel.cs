@@ -7,6 +7,7 @@ using CommunityToolkit.Mvvm.Input;
 using Finanzuebersicht.Application.UseCases.RecurringTransactions;
 using Finanzuebersicht.Models;
 using Finanzuebersicht.Navigation;
+using Finanzuebersicht.Presentation.Services;
 using Finanzuebersicht.Resources.Strings;
 
 namespace Finanzuebersicht.ViewModels;
@@ -20,6 +21,8 @@ public partial class RecurringTransactionDetailViewModel(
     INavigationService navigationService,
     IDialogService dialogService,
     ILocalizationService localizationService,
+    IFeedbackService feedbackService,
+    IAppEvents appEvents,
     ILogger<RecurringTransactionDetailViewModel>? logger = null,
     Finanzuebersicht.Core.Services.IClock? clock = null) : ObservableObject, IAutoLoadViewModel, IApplyQueryAttributes
 {
@@ -32,6 +35,8 @@ public partial class RecurringTransactionDetailViewModel(
     private readonly INavigationService _navigationService = navigationService;
     private readonly IDialogService _dialogService = dialogService;
     private readonly ILocalizationService _loc = localizationService;
+    private readonly IFeedbackService _feedbackService = feedbackService;
+    private readonly IAppEvents _appEvents = appEvents;
     private readonly ILogger<RecurringTransactionDetailViewModel>? _logger = logger;
     private readonly Finanzuebersicht.Core.Services.IClock _clock = clock ?? Finanzuebersicht.Core.Services.SystemClock.Instance;
 
@@ -225,7 +230,9 @@ public partial class RecurringTransactionDetailViewModel(
             IntervalFactor,
             ReminderDaysBefore,
             Exceptions.ToList());
+        _appEvents.NotifyDataChanged();
         await _navigationService.GoBackAsync();
+        await _feedbackService.ShowSnackbarAsync(_loc.GetString(ResourceKeys.Msg_Gespeichert));
     }
 
     [RelayCommand]

@@ -170,6 +170,28 @@
                 </VerticalStackLayout>
             </Border>
 
+            <!-- Hilfe / Einrichtung -->
+            <Border StrokeShape="RoundRectangle 12"
+                    Stroke="{AppThemeBinding Light={StaticResource Separator}, Dark={StaticResource SeparatorDark}}"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource CardBackground}, Dark={StaticResource CardBackgroundDark}}"
+                    Padding="16">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="{loc:Translate Lbl_Hilfe}"
+                           FontSize="18"
+                           FontAttributes="Bold"
+                           TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
+                    <Label Text="{loc:Translate Hint_EinrichtungWiederholen}"
+                           FontSize="14"
+                           TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}" />
+                    <Button Text="{loc:Translate Btn_EinrichtungWiederholen}"
+                            Command="{Binding ShowOnboardingAgainCommand}"
+                            FontSize="14"
+                            Padding="12,8"
+                            BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                            TextColor="White" />
+                </VerticalStackLayout>
+            </Border>
+
             <!-- Über -->
             <Border StrokeShape="RoundRectangle 12"
                     Stroke="{AppThemeBinding Light={StaticResource Separator}, Dark={StaticResource SeparatorDark}}"

@@ -340,4 +340,42 @@ Bitte starte die App neu.</value></data>
   <data name="AccountType_Bargeld" xml:space="preserve"><value>Bargeld</value></data>
   <data name="AccountType_Depot" xml:space="preserve"><value>Wertpapierdepot</value></data>
   <data name="AccountType_Sonstiges" xml:space="preserve"><value>Sonstiges</value></data>
+  <data name="Btn_Weiter" xml:space="preserve"><value>Weiter</value></data>
+  <data name="Btn_Fertig" xml:space="preserve"><value>Fertig</value></data>
+  <data name="Btn_Ueberspringen" xml:space="preserve"><value>Überspringen</value></data>
+  <data name="Btn_Zurueck" xml:space="preserve"><value>Zurück</value></data>
+  <data name="Btn_Abgleichen" xml:space="preserve"><value>Abgleichen</value></data>
+  <data name="Btn_ErsteTransaktion" xml:space="preserve"><value>Erste Transaktion</value></data>
+  <data name="Btn_ErsterDauerauftrag" xml:space="preserve"><value>Ersten Dauerauftrag anlegen</value></data>
+  <data name="Empty_HintTransaktionen" xml:space="preserve"><value>Erfasse Einnahmen und Ausgaben, um dein Dashboard zu füllen.</value></data>
+  <data name="Empty_HintDauerauftraege" xml:space="preserve"><value>Lege Miete, Abos und andere wiederkehrende Buchungen an.</value></data>
+  <data name="Empty_HintSparZiele" xml:space="preserve"><value>Definiere ein Sparziel und verfolge deinen Fortschritt.</value></data>
+  <data name="Empty_HintCashflow" xml:space="preserve"><value>Prognosen erscheinen, sobald Transaktionen oder Daueraufträge vorhanden sind.</value></data>
+  <data name="Empty_HintKategorien" xml:space="preserve"><value>Ordne Einnahmen und Ausgaben mit eigenen Kategorien.</value></data>
+  <data name="Empty_HintBackups" xml:space="preserve"><value>Erstelle ein Backup in den Einstellungen, um es hier zu sehen.</value></data>
+  <data name="Lbl_Hilfe" xml:space="preserve"><value>Hilfe</value></data>
+  <data name="Hint_EinrichtungWiederholen" xml:space="preserve"><value>Willkommenstour und erste Schritte jederzeit erneut ansehen.</value></data>
+  <data name="Btn_EinrichtungWiederholen" xml:space="preserve"><value>Einrichtung wiederholen</value></data>
+  <data name="Msg_Gespeichert" xml:space="preserve"><value>Gespeichert</value></data>
+  <data name="Msg_Geloescht" xml:space="preserve"><value>Gelöscht</value></data>
+  <data name="Btn_Rueckgaengig" xml:space="preserve"><value>Rückgängig</value></data>
+  <data name="Lbl_BerechneterSaldo" xml:space="preserve"><value>Berechneter Saldo</value></data>
+  <data name="Lbl_IstSaldo" xml:space="preserve"><value>Ist-Saldo (Bank)</value></data>
+  <data name="Hint_SaldoAbgleich" xml:space="preserve"><value>Trage den Saldo laut Kontoauszug ein. Der Anfangssaldo wird automatisch angepasst.</value></data>
+  <data name="Msg_SaldoAbgeglichen" xml:space="preserve"><value>Saldo abgeglichen</value></data>
+  <data name="Onboarding_PageTitle" xml:space="preserve"><value>Willkommen</value></data>
+  <data name="Onboarding_TitleWelcome" xml:space="preserve"><value>Willkommen bei Finanzübersicht</value></data>
+  <data name="Onboarding_TitleAccount" xml:space="preserve"><value>Anfangssaldo festlegen</value></data>
+  <data name="Onboarding_TitleFirstTransaction" xml:space="preserve"><value>Erste Transaktion erfassen</value></data>
+  <data name="Onboarding_TitleBackup" xml:space="preserve"><value>Daten schützen</value></data>
+  <data name="Onboarding_DescWelcome" xml:space="preserve"><value>Verwalte Konten, Budgets und Sparziele — alles lokal auf deinem Gerät.</value></data>
+  <data name="Onboarding_DescAccount" xml:space="preserve"><value>Lege optional einen Anfangssaldo fest, damit der Kontostand zur Bank passt.</value></data>
+  <data name="Onboarding_DescFirstTransaction" xml:space="preserve"><value>Füge eine Einnahme oder Ausgabe hinzu, um dein Dashboard zu füllen.</value></data>
+  <data name="Onboarding_DescBackup" xml:space="preserve"><value>Richte den Speicherort ein und erstelle regelmäßige Backups in den Einstellungen.</value></data>
+  <data name="Onboarding_TitleDone" xml:space="preserve"><value>Alles bereit!</value></data>
+  <data name="Onboarding_DescDone" xml:space="preserve"><value>Du kannst die Einrichtung jederzeit unter Einstellungen wiederholen. Viel Erfolg mit Finanzübersicht!</value></data>
+  <data name="Onboarding_Btn_Anfangssaldo" xml:space="preserve"><value>Konto bearbeiten</value></data>
+  <data name="Onboarding_Btn_ErsteTransaktion" xml:space="preserve"><value>Transaktion hinzufügen</value></data>
+  <data name="Onboarding_Btn_Einstellungen" xml:space="preserve"><value>Einstellungen öffnen</value></data>
+  <data name="Onboarding_Btn_ZumDashboard" xml:space="preserve"><value>Zum Dashboard</value></data>
 </root>

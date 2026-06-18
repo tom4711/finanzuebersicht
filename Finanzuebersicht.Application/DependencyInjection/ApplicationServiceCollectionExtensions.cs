@@ -21,6 +21,7 @@ public static class ApplicationServiceCollectionExtensions
         services.AddTransient<ToggleAccountArchiveUseCase>();
         services.AddTransient<DeleteAccountUseCase>();
         services.AddTransient<GetAccountBalancesUseCase>();
+        services.AddTransient<ReconcileAccountBalanceUseCase>();
 
         services.AddTransient<LoadDashboardMonthUseCase>();
         services.AddTransient<LoadDashboardYearUseCase>();
@@ -40,6 +41,8 @@ public static class ApplicationServiceCollectionExtensions
 
         services.AddTransient<LoadTransactionDetailDataUseCase>();
         services.AddTransient<DeleteTransactionUseCase>();
+        services.AddTransient<RestoreTransactionUseCase>();
+        services.AddTransient<HasAnyTransactionsUseCase>();
         services.AddTransient<LoadTransactionsMonthUseCase>();
         services.AddTransient<LoadTransactionTemplatesUseCase>();
         services.AddTransient<SearchTransactionsUseCase>();
