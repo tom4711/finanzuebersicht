@@ -351,6 +351,11 @@ Bitte starte die App neu.</value></data>
   <data name="Empty_HintDauerauftraege" xml:space="preserve"><value>Lege Miete, Abos und andere wiederkehrende Buchungen an.</value></data>
   <data name="Empty_HintSparZiele" xml:space="preserve"><value>Definiere ein Sparziel und verfolge deinen Fortschritt.</value></data>
   <data name="Empty_HintCashflow" xml:space="preserve"><value>Prognosen erscheinen, sobald Transaktionen oder Daueraufträge vorhanden sind.</value></data>
+  <data name="Empty_HintKategorien" xml:space="preserve"><value>Ordne Einnahmen und Ausgaben mit eigenen Kategorien.</value></data>
+  <data name="Empty_HintBackups" xml:space="preserve"><value>Erstelle ein Backup in den Einstellungen, um es hier zu sehen.</value></data>
+  <data name="Lbl_Hilfe" xml:space="preserve"><value>Hilfe</value></data>
+  <data name="Hint_EinrichtungWiederholen" xml:space="preserve"><value>Willkommenstour und erste Schritte jederzeit erneut ansehen.</value></data>
+  <data name="Btn_EinrichtungWiederholen" xml:space="preserve"><value>Einrichtung wiederholen</value></data>
   <data name="Msg_Gespeichert" xml:space="preserve"><value>Gespeichert</value></data>
   <data name="Msg_Geloescht" xml:space="preserve"><value>Gelöscht</value></data>
   <data name="Btn_Rueckgaengig" xml:space="preserve"><value>Rückgängig</value></data>

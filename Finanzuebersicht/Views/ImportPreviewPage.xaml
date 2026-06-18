@@ -6,6 +6,7 @@
               xmlns:loc="clr-namespace:Finanzuebersicht.Extensions"
               xmlns:conv="clr-namespace:Finanzuebersicht.Converters"
               xmlns:controls="clr-namespace:Finanzuebersicht.Controls"
+              xmlns:controls="clr-namespace:Finanzuebersicht.Controls"
               x:Class="Finanzuebersicht.Views.ImportPreviewPage"
               x:DataType="vm:ImportPreviewViewModel"
               Title="{loc:Translate Ttl_ImportVorschau}">
@@ -32,12 +33,10 @@
             </VerticalStackLayout>
         </Border>
 
-        <Label Grid.Row="1"
-               Text="{loc:Translate Empty_ImportVorschauLeer}"
-               IsVisible="{Binding HasRows, Converter={StaticResource InvertBool}}"
-               HorizontalTextAlignment="Center"
-               TextColor="{AppThemeBinding Light={StaticResource TextTertiary}, Dark={StaticResource Gray600}}"
-               Margin="0,24,0,0" />
+        <controls:EmptyStateView Grid.Row="1"
+                                 IconText="📄"
+                                 Message="{loc:Translate Empty_ImportVorschauLeer}"
+                                 IsVisible="{Binding HasRows, Converter={StaticResource InvertBool}}" />
 
         <CollectionView Grid.Row="2"
                         IsVisible="{Binding HasRows}"

@@ -6,6 +6,7 @@ using Finanzuebersicht.Application.UseCases.Accounts;
 using Finanzuebersicht.Application.UseCases.Categories;
 using Finanzuebersicht.Models;
 using Finanzuebersicht.Navigation;
+using Finanzuebersicht.Presentation.Services;
 using Finanzuebersicht.Resources.Strings;
 using Microsoft.Extensions.Logging;
 
@@ -21,6 +22,8 @@ public partial class CategoriesViewModel(
     ILocalizationService localizationService,
     INavigationService navigationService,
     IDialogService dialogService,
+    IFeedbackService feedbackService,
+    IAppEvents appEvents,
     ILogger<CategoriesViewModel>? logger = null) : ObservableObject, IAutoLoadViewModel
 {
     private readonly DeleteCategoryUseCase _deleteCategoryUseCase = deleteCategoryUseCase;
@@ -32,6 +35,8 @@ public partial class CategoriesViewModel(
     private readonly ILocalizationService _loc = localizationService;
     private readonly INavigationService _navigationService = navigationService;
     private readonly IDialogService _dialogService = dialogService;
+    private readonly IFeedbackService _feedbackService = feedbackService;
+    private readonly IAppEvents _appEvents = appEvents;
     private readonly ILogger<CategoriesViewModel>? _logger = logger;
 
     public System.Windows.Input.ICommand AutoLoadCommand => LoadKategorienCommand;
@@ -125,6 +130,8 @@ public partial class CategoriesViewModel(
         {
             await _deleteCategoryUseCase.ExecuteAsync(kategorie.Id);
             Kategorien.Remove(kategorie);
+            _appEvents.NotifyDataChanged();
+            await _feedbackService.ShowSnackbarAsync(_loc.GetString(ResourceKeys.Msg_Geloescht));
         }
         catch (Exception ex)
         {
@@ -151,6 +158,8 @@ public partial class CategoriesViewModel(
         {
             await _deleteAccountUseCase.ExecuteAsync(konto.Account.Id);
             Konten.Remove(konto);
+            _appEvents.NotifyDataChanged();
+            await _feedbackService.ShowSnackbarAsync(_loc.GetString(ResourceKeys.Msg_Geloescht));
         }
         catch (Exception ex)
         {

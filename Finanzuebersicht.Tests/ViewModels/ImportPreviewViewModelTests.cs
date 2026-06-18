@@ -62,6 +62,7 @@ public class ImportPreviewViewModelTests
             dialog,
             localization,
             Substitute.For<IAppEvents>(),
+            Substitute.For<IFeedbackService>(),
             Substitute.For<ILogger<ImportPreviewViewModel>>());
 
         await vm.LoadPreviewCommand.ExecuteAsync(null);
@@ -105,6 +106,7 @@ public class ImportPreviewViewModelTests
             Substitute.For<IDialogService>(),
             localization,
             Substitute.For<IAppEvents>(),
+            Substitute.For<IFeedbackService>(),
             Substitute.For<ILogger<ImportPreviewViewModel>>());
 
         vm.HandlePageDisappearing();

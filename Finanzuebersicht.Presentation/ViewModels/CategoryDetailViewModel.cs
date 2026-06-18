@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using Finanzuebersicht.Application.UseCases.Categories;
 using Finanzuebersicht.Models;
 using Finanzuebersicht.Navigation;
+using Finanzuebersicht.Presentation.Services;
 using Finanzuebersicht.Resources.Strings;
 using Microsoft.Extensions.Logging;
 using System.Globalization;
@@ -13,6 +14,8 @@ public partial class CategoryDetailViewModel(
     SaveCategoryDetailUseCase saveCategoryDetailUseCase,
     INavigationService navigationService,
     ILocalizationService localizationService,
+    IFeedbackService feedbackService,
+    IAppEvents appEvents,
     SaveCategoryBudgetUseCase? saveCategoryBudgetUseCase = null,
     IBudgetRepository? budgetRepository = null,
     ILogger<CategoryDetailViewModel>? logger = null) : ObservableObject, IApplyQueryAttributes
@@ -20,6 +23,8 @@ public partial class CategoryDetailViewModel(
     private readonly SaveCategoryDetailUseCase _saveCategoryDetailUseCase = saveCategoryDetailUseCase;
     private readonly INavigationService _navigationService = navigationService;
     private readonly ILocalizationService _loc = localizationService;
+    private readonly IFeedbackService _feedbackService = feedbackService;
+    private readonly IAppEvents _appEvents = appEvents;
     private readonly SaveCategoryBudgetUseCase? _saveCategoryBudgetUseCase = saveCategoryBudgetUseCase;
     private readonly IBudgetRepository? _budgetRepository = budgetRepository;
     private readonly ILogger<CategoryDetailViewModel>? _logger = logger;
@@ -133,7 +138,9 @@ public partial class CategoryDetailViewModel(
             decimal.TryParse(MonthlyBudgetText, NumberStyles.Any, CultureInfo.CurrentCulture, out var budget);
             await _saveCategoryBudgetUseCase.ExecuteAsync(savedCategory.Id, budget);
         }
+        _appEvents.NotifyDataChanged();
         await _navigationService.GoBackAsync();
+        await _feedbackService.ShowSnackbarAsync(_loc.GetString(ResourceKeys.Msg_Gespeichert));
     }
 }
 

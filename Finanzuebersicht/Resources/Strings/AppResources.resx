@@ -351,6 +351,11 @@ Please restart the app.</value></data>
   <data name="Empty_HintDauerauftraege" xml:space="preserve"><value>Set up rent, subscriptions and other recurring items.</value></data>
   <data name="Empty_HintSparZiele" xml:space="preserve"><value>Define a savings goal and track your progress.</value></data>
   <data name="Empty_HintCashflow" xml:space="preserve"><value>Projections appear once you have transactions or recurring items.</value></data>
+  <data name="Empty_HintKategorien" xml:space="preserve"><value>Organize your income and expenses with custom categories.</value></data>
+  <data name="Empty_HintBackups" xml:space="preserve"><value>Create a backup in Settings to see it listed here.</value></data>
+  <data name="Lbl_Hilfe" xml:space="preserve"><value>Help</value></data>
+  <data name="Hint_EinrichtungWiederholen" xml:space="preserve"><value>Review the welcome tour and first steps at any time.</value></data>
+  <data name="Btn_EinrichtungWiederholen" xml:space="preserve"><value>Repeat setup tour</value></data>
   <data name="Msg_Gespeichert" xml:space="preserve"><value>Saved</value></data>
   <data name="Msg_Geloescht" xml:space="preserve"><value>Deleted</value></data>
   <data name="Btn_Rueckgaengig" xml:space="preserve"><value>Undo</value></data>

@@ -324,6 +324,11 @@ public static class ResourceKeys
     public const string Empty_HintDauerauftraege = nameof(Empty_HintDauerauftraege);
     public const string Empty_HintSparZiele = nameof(Empty_HintSparZiele);
     public const string Empty_HintCashflow = nameof(Empty_HintCashflow);
+    public const string Empty_HintKategorien = nameof(Empty_HintKategorien);
+    public const string Empty_HintBackups = nameof(Empty_HintBackups);
+    public const string Lbl_Hilfe = nameof(Lbl_Hilfe);
+    public const string Hint_EinrichtungWiederholen = nameof(Hint_EinrichtungWiederholen);
+    public const string Btn_EinrichtungWiederholen = nameof(Btn_EinrichtungWiederholen);
     public const string Ttl_ImportVorschau = nameof(Ttl_ImportVorschau);
     public const string Msg_BackupRestoreConfirmTitle = nameof(Msg_BackupRestoreConfirmTitle);
     public const string Msg_BackupRestoreConfirmBody = nameof(Msg_BackupRestoreConfirmBody);

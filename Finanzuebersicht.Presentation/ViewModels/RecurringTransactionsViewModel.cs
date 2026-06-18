@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.Input;
 using Finanzuebersicht.Application.UseCases.RecurringTransactions;
 using Finanzuebersicht.Models;
 using Finanzuebersicht.Navigation;
+using Finanzuebersicht.Presentation.Services;
 using Finanzuebersicht.Resources.Strings;
 using Microsoft.Extensions.Logging;
 
@@ -16,6 +17,8 @@ public partial class RecurringTransactionsViewModel(
     ILocalizationService localizationService,
     INavigationService navigationService,
     IDialogService dialogService,
+    IFeedbackService feedbackService,
+    IAppEvents appEvents,
     ILogger<RecurringTransactionsViewModel>? logger = null) : ObservableObject, IAutoLoadViewModel
 {
     private readonly DeleteRecurringTransactionUseCase _deleteRecurringTransactionUseCase = deleteRecurringTransactionUseCase;
@@ -24,6 +27,8 @@ public partial class RecurringTransactionsViewModel(
     private readonly ILocalizationService _loc = localizationService;
     private readonly INavigationService _navigationService = navigationService;
     private readonly IDialogService _dialogService = dialogService;
+    private readonly IFeedbackService _feedbackService = feedbackService;
+    private readonly IAppEvents _appEvents = appEvents;
     private readonly ILogger<RecurringTransactionsViewModel>? _logger = logger;
 
     public System.Windows.Input.ICommand AutoLoadCommand => LoadDauerauftraegeCommand;
@@ -80,6 +85,8 @@ public partial class RecurringTransactionsViewModel(
         {
             await _deleteRecurringTransactionUseCase.ExecuteAsync(dauerauftrag.Id);
             Dauerauftraege.Remove(dauerauftrag);
+            _appEvents.NotifyDataChanged();
+            await _feedbackService.ShowSnackbarAsync(_loc.GetString(ResourceKeys.Msg_Geloescht));
         }
         catch (Exception ex)
         {

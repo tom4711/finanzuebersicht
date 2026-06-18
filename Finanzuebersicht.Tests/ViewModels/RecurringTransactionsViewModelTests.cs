@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using Finanzuebersicht.Application.UseCases.RecurringTransactions;
 using Finanzuebersicht.Models;
+using Finanzuebersicht.Presentation.Services;
 using Finanzuebersicht.ViewModels;
 
 namespace Finanzuebersicht.Tests.ViewModels;
@@ -104,6 +105,8 @@ public class RecurringTransactionsViewModelTests
             new ToggleRecurringTransactionActiveUseCase(recurringTransactionRepository),
             localizationService,
             navigationService,
-            dialogService);
+            dialogService,
+            Substitute.For<IFeedbackService>(),
+            Substitute.For<IAppEvents>());
     }
 }
