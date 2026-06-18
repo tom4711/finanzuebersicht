@@ -170,8 +170,6 @@
                 </VerticalStackLayout>
             </Border>
 
-            </Border>
-
             <!-- Hilfe / Einrichtung -->
             <Border StrokeShape="RoundRectangle 12"
                     Stroke="{AppThemeBinding Light={StaticResource Separator}, Dark={StaticResource SeparatorDark}}"
