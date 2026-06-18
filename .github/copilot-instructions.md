@@ -10,7 +10,7 @@ Personal finance app built with **.NET 10** and **.NET MAUI**, targeting **macOS
 Data is persisted locally as JSON. Architecture: **Clean Architecture + MVVM**.
 Languages: **German and English** (`AppResources.resx` / `AppResources.de.resx`).
 
-Current version baseline: `version.json` → `1.13` (patch = git height via Nerdbank.GitVersioning).
+Current version baseline: `version.json` → `1.14` (patch = git height via Nerdbank.GitVersioning).
 
 ## Build & Run
 
@@ -146,7 +146,7 @@ Native `Picker` controls freeze on **macOS 27 Beta** when scrolling inside picke
 
 Automatic **SemVer** via **Nerdbank.GitVersioning** (`version.json`):
 
-- Version = `<major>.<minor>.<git-height>` (e.g. `1.13.5`)
+- Version = `<major>.<minor>.<git-height>` (e.g. `1.14.5`)
 - Bump: edit `version.json` or `nbgv set-version <version>`
 - Current: `nbgv get-version`
 - Stable releases: `main` and `release/v*` branches

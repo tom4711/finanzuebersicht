@@ -4,7 +4,7 @@
 
 > **Hinweis:** Die Milestone-Bezeichnungen (v1.14, v1.2, v2.0) sind thematische GitHub-Planungslabels, keine sequenziellen Release-Versionen. Tatsächliche Releases (v1.0, v1.6, v1.12 …) werden durch Git-Commit-Höhe via Nerdbank.GitVersioning bestimmt.
 
-**Aktueller Stand:** Release **v1.13** (Latest). Nächste geplante UX-Releases: **v1.14–v1.17** (vor v2.0).
+**Aktueller Stand:** Release **v1.14** (Latest). Nächste geplante UX-Releases: **v1.15–v1.17** (vor v2.0).
 
 ---
 
@@ -71,16 +71,16 @@ Kleines Update: Mitigation für Mac-Catalyst-Picker-Freeze (`UpdateMode=WhenFini
 
 ---
 
-## 🎯 v1.14 — Erste Schritte & Vertrauen *(geplant)* · [Milestone](https://github.com/tom4711/finanzuebersicht/milestone/18)
+## ✅ v1.14 — Erste Schritte & Vertrauen *(abgeschlossen)* · [Milestone](https://github.com/tom4711/finanzuebersicht/milestone/18)
 
 Fokus: Onboarding, einheitliche Empty States, Aktion-Feedback, Saldo-Vertrauen.
 
-| Issue | Thema | Priorität |
-|-------|-------|-----------|
-| [#227](https://github.com/tom4711/finanzuebersicht/issues/227) | Onboarding für neue Nutzer | A |
-| [#228](https://github.com/tom4711/finanzuebersicht/issues/228) | Leere Zustände vereinheitlichen | A |
-| [#229](https://github.com/tom4711/finanzuebersicht/issues/229) | Feedback nach Speichern/Löschen (optional Rückgängig) | A |
-| [#214](https://github.com/tom4711/finanzuebersicht/issues/214) | Manueller Saldo-Abgleich (Ist vs. berechnet) | A |
+| Issue | Thema | Status |
+|-------|-------|--------|
+| [#227](https://github.com/tom4711/finanzuebersicht/issues/227) | Onboarding für neue Nutzer | ✅ Closed |
+| [#228](https://github.com/tom4711/finanzuebersicht/issues/228) | Leere Zustände vereinheitlichen | ✅ Closed |
+| [#229](https://github.com/tom4711/finanzuebersicht/issues/229) | Feedback nach Speichern/Löschen (optional Rückgängig) | ✅ Closed |
+| [#214](https://github.com/tom4711/finanzuebersicht/issues/214) | Manueller Saldo-Abgleich (Ist vs. berechnet) | ✅ Closed |
 
 ---
 
