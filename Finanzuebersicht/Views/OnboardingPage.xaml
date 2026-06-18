@@ -66,8 +66,10 @@
                 <Button Grid.Column="0"
                         Text="{loc:Translate Btn_Ueberspringen}"
                         Command="{Binding SkipCommand}"
-                        BackgroundColor="Transparent"
-                        TextColor="Gray" />
+                        BackgroundColor="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}"
+                        TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
+                        CornerRadius="12"
+                        HeightRequest="48" />
                 <Button Grid.Column="1"
                         Text="{Binding PrimaryButtonText}"
                         Command="{Binding NextCommand}"
