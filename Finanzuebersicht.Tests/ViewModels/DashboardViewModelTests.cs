@@ -95,14 +95,19 @@ public class DashboardViewModelTests
         await viewModel.LoadDashboardCommand.ExecuteAsync(null);
 
         var notified = false;
+        var notifiedTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
         viewModel.PropertyChanged += (_, e) =>
         {
             if (e.PropertyName == nameof(DashboardViewModel.HasSelectedAccountSaldo))
+            {
                 notified = true;
+                notifiedTcs.TrySetResult(true);
+            }
         };
 
         viewModel.SelectedKontoFilterItem = viewModel.AvailableKonten.First(k => k.Id == "acc-1");
-        await Task.Delay(50);
+        var completed = await Task.WhenAny(notifiedTcs.Task, Task.Delay(1000));
+        Assert.Same(notifiedTcs.Task, completed);
 
         Assert.True(viewModel.HasSelectedAccountSaldo);
         Assert.True(notified);
