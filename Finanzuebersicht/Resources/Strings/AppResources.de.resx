@@ -372,7 +372,10 @@ Bitte starte die App neu.</value></data>
   <data name="Onboarding_DescAccount" xml:space="preserve"><value>Lege optional einen Anfangssaldo fest, damit der Kontostand zur Bank passt.</value></data>
   <data name="Onboarding_DescFirstTransaction" xml:space="preserve"><value>Füge eine Einnahme oder Ausgabe hinzu, um dein Dashboard zu füllen.</value></data>
   <data name="Onboarding_DescBackup" xml:space="preserve"><value>Richte den Speicherort ein und erstelle regelmäßige Backups in den Einstellungen.</value></data>
+  <data name="Onboarding_TitleDone" xml:space="preserve"><value>Alles bereit!</value></data>
+  <data name="Onboarding_DescDone" xml:space="preserve"><value>Du kannst die Einrichtung jederzeit unter Einstellungen wiederholen. Viel Erfolg mit Finanzübersicht!</value></data>
   <data name="Onboarding_Btn_Anfangssaldo" xml:space="preserve"><value>Konto bearbeiten</value></data>
   <data name="Onboarding_Btn_ErsteTransaktion" xml:space="preserve"><value>Transaktion hinzufügen</value></data>
   <data name="Onboarding_Btn_Einstellungen" xml:space="preserve"><value>Einstellungen öffnen</value></data>
+  <data name="Onboarding_Btn_ZumDashboard" xml:space="preserve"><value>Zum Dashboard</value></data>
 </root>

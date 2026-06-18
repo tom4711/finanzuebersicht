@@ -346,13 +346,16 @@ public static class ResourceKeys
     public const string Onboarding_TitleAccount = nameof(Onboarding_TitleAccount);
     public const string Onboarding_TitleFirstTransaction = nameof(Onboarding_TitleFirstTransaction);
     public const string Onboarding_TitleBackup = nameof(Onboarding_TitleBackup);
+    public const string Onboarding_TitleDone = nameof(Onboarding_TitleDone);
     public const string Onboarding_DescWelcome = nameof(Onboarding_DescWelcome);
     public const string Onboarding_DescAccount = nameof(Onboarding_DescAccount);
     public const string Onboarding_DescFirstTransaction = nameof(Onboarding_DescFirstTransaction);
     public const string Onboarding_DescBackup = nameof(Onboarding_DescBackup);
+    public const string Onboarding_DescDone = nameof(Onboarding_DescDone);
     public const string Onboarding_Btn_Anfangssaldo = nameof(Onboarding_Btn_Anfangssaldo);
     public const string Onboarding_Btn_ErsteTransaktion = nameof(Onboarding_Btn_ErsteTransaktion);
     public const string Onboarding_Btn_Einstellungen = nameof(Onboarding_Btn_Einstellungen);
+    public const string Onboarding_Btn_ZumDashboard = nameof(Onboarding_Btn_ZumDashboard);
 
     // Accessibility
     public const string A11y_VorherigerMonat = nameof(A11y_VorherigerMonat);

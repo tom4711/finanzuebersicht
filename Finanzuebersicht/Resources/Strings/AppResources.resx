@@ -372,7 +372,10 @@ Please restart the app.</value></data>
   <data name="Onboarding_DescAccount" xml:space="preserve"><value>Optionally set an opening balance so your account balance matches your bank.</value></data>
   <data name="Onboarding_DescFirstTransaction" xml:space="preserve"><value>Add an income or expense to populate your dashboard.</value></data>
   <data name="Onboarding_DescBackup" xml:space="preserve"><value>Configure backup location and create regular backups in Settings.</value></data>
+  <data name="Onboarding_TitleDone" xml:space="preserve"><value>You're all set!</value></data>
+  <data name="Onboarding_DescDone" xml:space="preserve"><value>You can repeat this setup anytime in Settings. Enjoy using Finanzübersicht!</value></data>
   <data name="Onboarding_Btn_Anfangssaldo" xml:space="preserve"><value>Edit account balance</value></data>
   <data name="Onboarding_Btn_ErsteTransaktion" xml:space="preserve"><value>Add transaction</value></data>
   <data name="Onboarding_Btn_Einstellungen" xml:space="preserve"><value>Open settings</value></data>
+  <data name="Onboarding_Btn_ZumDashboard" xml:space="preserve"><value>Go to dashboard</value></data>
 </root>

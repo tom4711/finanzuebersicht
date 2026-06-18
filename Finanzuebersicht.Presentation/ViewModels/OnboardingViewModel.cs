@@ -22,7 +22,7 @@ public partial class OnboardingViewModel(
     [ObservableProperty]
     private int currentStep;
 
-    public int TotalSteps => 4;
+    public int TotalSteps => 5;
 
     public string StepIndicator => $"{CurrentStep + 1} / {TotalSteps}";
 
@@ -35,7 +35,8 @@ public partial class OnboardingViewModel(
         0 => _loc.GetString(ResourceKeys.Onboarding_TitleWelcome),
         1 => _loc.GetString(ResourceKeys.Onboarding_TitleAccount),
         2 => _loc.GetString(ResourceKeys.Onboarding_TitleFirstTransaction),
-        _ => _loc.GetString(ResourceKeys.Onboarding_TitleBackup)
+        3 => _loc.GetString(ResourceKeys.Onboarding_TitleBackup),
+        _ => _loc.GetString(ResourceKeys.Onboarding_TitleDone)
     };
 
     public string StepDescription => CurrentStep switch
@@ -43,14 +44,15 @@ public partial class OnboardingViewModel(
         0 => _loc.GetString(ResourceKeys.Onboarding_DescWelcome),
         1 => _loc.GetString(ResourceKeys.Onboarding_DescAccount),
         2 => _loc.GetString(ResourceKeys.Onboarding_DescFirstTransaction),
-        _ => _loc.GetString(ResourceKeys.Onboarding_DescBackup)
+        3 => _loc.GetString(ResourceKeys.Onboarding_DescBackup),
+        _ => _loc.GetString(ResourceKeys.Onboarding_DescDone)
     };
 
     public bool IsLastStep => CurrentStep >= TotalSteps - 1;
     public bool IsFirstStep => CurrentStep == 0;
 
     public string PrimaryButtonText => IsLastStep
-        ? _loc.GetString(ResourceKeys.Btn_Fertig)
+        ? _loc.GetString(ResourceKeys.Onboarding_Btn_ZumDashboard)
         : _loc.GetString(ResourceKeys.Btn_Weiter);
 
     partial void OnCurrentStepChanged(int value)
@@ -112,11 +114,8 @@ public partial class OnboardingViewModel(
     }
 
     [RelayCommand]
-    private async Task OpenSettings()
-    {
-        CompleteNavigationPending();
-        await _navigationService.GoToAsync(Routes.Settings);
-    }
+    private Task OpenSettings()
+        => _navigationService.GoToAsync(Routes.Settings);
 
     private void CompleteNavigationPending()
     {
