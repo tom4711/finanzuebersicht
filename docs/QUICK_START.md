@@ -15,25 +15,25 @@ dotnet workload install maui
 
 ### Mac Catalyst
 
-`dotnet run` fails due to macOS sandboxing — copy the `.app` to `/Applications`:
+`dotnet run` fails due to macOS sandboxing — Debug builds install to `~/Applications`:
 
 ```bash
 dotnet build Finanzuebersicht/Finanzuebersicht.csproj -f net10.0-maccatalyst
+open ~/Applications/Finanzübersicht.app
+```
 
-# Apple Silicon (arm64)
-cp -R Finanzuebersicht/bin/Debug/net10.0-maccatalyst/maccatalyst-arm64/Finanzübersicht.app /Applications/
-open /Applications/Finanzübersicht.app
+Manual copy (Apple Silicon `arm64`, Intel `x64`):
 
-# Intel (x64)
-cp -R Finanzuebersicht/bin/Debug/net10.0-maccatalyst/maccatalyst-x64/Finanzübersicht.app /Applications/
+```bash
+cp -R Finanzuebersicht/bin/Debug/net10.0-maccatalyst/maccatalyst-arm64/Finanzübersicht.app ~/Applications/
+open ~/Applications/Finanzübersicht.app
 ```
 
 One-liner (arm64):
 
 ```bash
 dotnet build Finanzuebersicht/Finanzuebersicht.csproj -f net10.0-maccatalyst \
-  && cp -R Finanzuebersicht/bin/Debug/net10.0-maccatalyst/maccatalyst-arm64/Finanzübersicht.app /Applications/ \
-  && open /Applications/Finanzübersicht.app
+  && open ~/Applications/Finanzübersicht.app
 ```
 
 > Build the MAUI project only, not the whole solution with `-f net10.0-maccatalyst`.

@@ -12,7 +12,7 @@ public class AppearanceViewModelTests
         var themeService = Substitute.For<IThemeService>();
         var localizationService = CreateLocalizationService();
 
-        var sut = new AppearanceViewModel(settingsScope.Settings, themeService, localizationService);
+        var sut = new AppearanceViewModel(settingsScope.Settings, themeService, localizationService, CreateDisplayCurrencyService());
 
         Assert.Equal(2, sut.SelectedThemeIndex);
     }
@@ -24,7 +24,7 @@ public class AppearanceViewModelTests
         var themeService = Substitute.For<IThemeService>();
         var localizationService = CreateLocalizationService("en");
 
-        var sut = new AppearanceViewModel(settingsScope.Settings, themeService, localizationService);
+        var sut = new AppearanceViewModel(settingsScope.Settings, themeService, localizationService, CreateDisplayCurrencyService());
 
         Assert.Equal(2, sut.SelectedLanguageIndex);
     }
@@ -35,7 +35,7 @@ public class AppearanceViewModelTests
         using var settingsScope = new SettingsScope(nameof(AppearanceViewModelTests));
         var themeService = Substitute.For<IThemeService>();
         var localizationService = CreateLocalizationService();
-        var sut = new AppearanceViewModel(settingsScope.Settings, themeService, localizationService);
+        var sut = new AppearanceViewModel(settingsScope.Settings, themeService, localizationService, CreateDisplayCurrencyService());
 
         sut.SetThemeCommand.Execute("1");
 
@@ -50,7 +50,7 @@ public class AppearanceViewModelTests
         using var settingsScope = new SettingsScope(nameof(AppearanceViewModelTests));
         var themeService = Substitute.For<IThemeService>();
         var localizationService = CreateLocalizationService();
-        var sut = new AppearanceViewModel(settingsScope.Settings, themeService, localizationService);
+        var sut = new AppearanceViewModel(settingsScope.Settings, themeService, localizationService, CreateDisplayCurrencyService());
 
         sut.SelectedThemeIndex = 2;
 
@@ -64,12 +64,34 @@ public class AppearanceViewModelTests
         using var settingsScope = new SettingsScope(nameof(AppearanceViewModelTests));
         var themeService = Substitute.For<IThemeService>();
         var localizationService = CreateLocalizationService();
-        var sut = new AppearanceViewModel(settingsScope.Settings, themeService, localizationService);
+        var sut = new AppearanceViewModel(settingsScope.Settings, themeService, localizationService, CreateDisplayCurrencyService());
 
         sut.SetLanguageCommand.Execute("2");
 
         Assert.Equal(2, sut.SelectedLanguageIndex);
         localizationService.Received(1).SetLanguage("en");
+    }
+
+    [Fact]
+    public void SetCurrency_UpdatesIndex()
+    {
+        using var settingsScope = new SettingsScope(nameof(AppearanceViewModelTests));
+        var themeService = Substitute.For<IThemeService>();
+        var localizationService = CreateLocalizationService();
+        var displayCurrency = CreateDisplayCurrencyService();
+        var sut = new AppearanceViewModel(settingsScope.Settings, themeService, localizationService, displayCurrency);
+
+        sut.SetCurrencyCommand.Execute("2");
+
+        Assert.Equal(2, sut.SelectedCurrencyIndex);
+        displayCurrency.Received(1).SelectedIndex = 2;
+    }
+
+    private static IDisplayCurrencyService CreateDisplayCurrencyService(int selectedIndex = 0)
+    {
+        var displayCurrency = Substitute.For<IDisplayCurrencyService>();
+        displayCurrency.SelectedIndex.Returns(selectedIndex);
+        return displayCurrency;
     }
 
     private static ILocalizationService CreateLocalizationService(string currentLanguageCode = "")

@@ -8,25 +8,32 @@
                          HorizontalOptions="Center"
                          Margin="0,40,0,0"
                          Padding="16,0">
+        <Image Source="{Binding Source={x:Reference Root}, Path=IconImage}"
+               HeightRequest="48"
+               WidthRequest="48"
+               Aspect="AspectFit"
+               HorizontalOptions="Center"
+               IsVisible="{Binding Source={x:Reference Root}, Path=HasIconImage}"
+               SemanticProperties.Description="{Binding Source={x:Reference Root}, Path=IconAccessibilityDescription}" />
         <Label Text="{Binding Source={x:Reference Root}, Path=IconText}"
                FontSize="48"
                HorizontalTextAlignment="Center"
-               IsVisible="{Binding Source={x:Reference Root}, Path=HasIcon}"
+               IsVisible="{Binding Source={x:Reference Root}, Path=ShowIconText}"
                AutomationProperties.IsInAccessibleTree="False" />
         <Label Text="{Binding Source={x:Reference Root}, Path=Message}"
                FontSize="17"
-               TextColor="Gray"
+               TextColor="{AppThemeBinding Light={StaticResource TextTertiary}, Dark={StaticResource Gray600}}"
                HorizontalTextAlignment="Center" />
         <Label Text="{Binding Source={x:Reference Root}, Path=Hint}"
                FontSize="14"
-               TextColor="Gray"
+               TextColor="{AppThemeBinding Light={StaticResource TextTertiary}, Dark={StaticResource Gray600}}"
                HorizontalTextAlignment="Center"
                IsVisible="{Binding Source={x:Reference Root}, Path=HasHint}" />
         <Button Text="{Binding Source={x:Reference Root}, Path=ActionText}"
                 Command="{Binding Source={x:Reference Root}, Path=ActionCommand}"
                 HorizontalOptions="Center"
                 BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
-                TextColor="White"
+                TextColor="{StaticResource White}"
                 CornerRadius="10"
                 Padding="20,10"
                 IsVisible="{Binding Source={x:Reference Root}, Path=HasAction}" />

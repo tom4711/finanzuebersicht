@@ -13,7 +13,7 @@ alwaysApply: true
 - **Tabs:** Dashboard · Transaktionen · Daueraufträge · Verwaltung (Kategorien/Konten) · Sparziele · Einstellungen (Toolbar)
 - **Neuer Code:** ViewModel → Use Case → `I*Repository` (nicht `IDataService`)
 - **ViewModels:** `Finanzuebersicht.Presentation/ViewModels/` — in `PresentationServiceCollectionExtensions` registrieren
-- **Build macOS:** `dotnet build Finanzuebersicht/Finanzuebersicht.csproj -f net10.0-maccatalyst` → `maccatalyst-arm64/Finanzübersicht.app`
+- **Build macOS:** `dotnet build Finanzuebersicht/Finanzuebersicht.csproj -f net10.0-maccatalyst` → kopiert nach `~/Applications/Finanzübersicht.app`
 
 ## Mac Catalyst UI
 

@@ -9,6 +9,7 @@ public static class InfrastructureServiceCollectionExtensions
     {
         // Settings (file-based JSON persistence)
         services.AddSingleton<ISettingsService, SettingsService>();
+        services.AddSingleton<IDisplayCurrencyService, DisplayCurrencyService>();
 
         // Backup
         services.AddSingleton<IDataMigrator, Finanzuebersicht.Core.Services.Migrations.V1ToV2Migrator>();

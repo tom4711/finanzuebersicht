@@ -8,6 +8,7 @@ public partial class AppearanceViewModel : ObservableObject
     private readonly ISettingsService _settings;
     private readonly IThemeService _themeService;
     private readonly ILocalizationService _loc;
+    private readonly IDisplayCurrencyService _displayCurrency;
 
     [ObservableProperty]
     private int selectedThemeIndex;
@@ -15,14 +16,19 @@ public partial class AppearanceViewModel : ObservableObject
     [ObservableProperty]
     private int selectedLanguageIndex;
 
+    [ObservableProperty]
+    private int selectedCurrencyIndex;
+
     public AppearanceViewModel(
         ISettingsService settings,
         IThemeService themeService,
-        ILocalizationService localizationService)
+        ILocalizationService localizationService,
+        IDisplayCurrencyService displayCurrency)
     {
         _settings = settings;
         _themeService = themeService;
         _loc = localizationService;
+        _displayCurrency = displayCurrency;
 
         var theme = _settings.Get("Theme", "System");
         selectedThemeIndex = theme switch
@@ -39,6 +45,8 @@ public partial class AppearanceViewModel : ObservableObject
             "en" => 2,
             _ => 0
         };
+
+        selectedCurrencyIndex = _displayCurrency.SelectedIndex;
     }
 
     partial void OnSelectedThemeIndexChanged(int value)
@@ -66,6 +74,11 @@ public partial class AppearanceViewModel : ObservableObject
         _loc.SetLanguage(string.IsNullOrEmpty(code) ? null : code);
     }
 
+    partial void OnSelectedCurrencyIndexChanged(int value)
+    {
+        _displayCurrency.SelectedIndex = value;
+    }
+
     [RelayCommand]
     private void SetTheme(string indexStr)
     {
@@ -81,6 +94,15 @@ public partial class AppearanceViewModel : ObservableObject
         if (int.TryParse(indexStr, out var idx))
         {
             SelectedLanguageIndex = idx;
+        }
+    }
+
+    [RelayCommand]
+    private void SetCurrency(string indexStr)
+    {
+        if (int.TryParse(indexStr, out var idx))
+        {
+            SelectedCurrencyIndex = idx;
         }
     }
 }

@@ -21,7 +21,8 @@
             <VerticalStackLayout Spacing="12" Padding="16">
 
                 <!-- Leerer Zustand -->
-                <controls:EmptyStateView IconText="💾"
+                <controls:EmptyStateView IconImage="settings.png"
+                                         IconAccessibilityDescription="{loc:Translate Nav_Einstellungen}"
                                          Message="{loc:Translate Empty_KeineBackupsVorhanden}"
                                          Hint="{loc:Translate Empty_HintBackups}"
                                          IsVisible="{Binding IsEmpty}" />

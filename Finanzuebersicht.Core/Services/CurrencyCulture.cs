@@ -3,9 +3,14 @@ using System.Globalization;
 namespace Finanzuebersicht.Core.Services;
 
 /// <summary>
-/// Fixed EUR formatting for monetary amounts regardless of UI language.
+/// Monetary formatting culture derived from the configured display currency.
 /// </summary>
 public static class CurrencyCulture
 {
-    public static CultureInfo Instance { get; } = CultureInfo.GetCultureInfo("de-DE");
+    private static IDisplayCurrencyService? _service;
+
+    public static CultureInfo Instance =>
+        _service?.FormatCulture ?? CultureInfo.GetCultureInfo("de-DE");
+
+    public static void Initialize(IDisplayCurrencyService service) => _service = service;
 }

@@ -51,5 +51,30 @@ namespace Finanzuebersicht.Core.Services
         /// Whether the dashboard year details section is expanded (true/false).
         /// </summary>
         public const string DashboardYearDetailsExpanded = "DashboardYearDetailsExpanded";
+
+        /// <summary>
+        /// Whether due recurring action cards are expanded on the dashboard (true/false).
+        /// </summary>
+        public const string DashboardDueDetailsExpanded = "DashboardDueDetailsExpanded";
+
+        /// <summary>
+        /// Whether the accounts overview section is expanded on the dashboard (true/false).
+        /// </summary>
+        public const string DashboardAccountsExpanded = "DashboardAccountsExpanded";
+
+        /// <summary>
+        /// Whether the cashflow preview section is expanded on the dashboard (true/false).
+        /// </summary>
+        public const string DashboardCashflowExpanded = "DashboardCashflowExpanded";
+
+        /// <summary>
+        /// Whether the account filter section is expanded on the dashboard (true/false).
+        /// </summary>
+        public const string DashboardFilterExpanded = "DashboardFilterExpanded";
+
+        /// <summary>
+        /// ISO currency code for amount display formatting (EUR, CHF, USD, GBP).
+        /// </summary>
+        public const string DisplayCurrency = "DisplayCurrency";
     }
 }

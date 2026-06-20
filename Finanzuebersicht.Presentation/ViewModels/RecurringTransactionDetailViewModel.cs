@@ -24,7 +24,7 @@ public partial class RecurringTransactionDetailViewModel(
     IFeedbackService feedbackService,
     IAppEvents appEvents,
     ILogger<RecurringTransactionDetailViewModel>? logger = null,
-    Finanzuebersicht.Core.Services.IClock? clock = null) : ObservableObject, IAutoLoadViewModel, IApplyQueryAttributes
+    Finanzuebersicht.Core.Services.IClock? clock = null) : ObservableObject, IAutoLoadViewModel, IApplyQueryAttributes, ILocalizableViewModel
 {
     private readonly SaveRecurringTransactionDetailUseCase _saveRecurringTransactionDetailUseCase = saveRecurringTransactionDetailUseCase;
     private readonly LoadRecurringTransactionDetailDataUseCase _loadRecurringTransactionDetailDataUseCase = loadRecurringTransactionDetailDataUseCase;
@@ -346,12 +346,19 @@ public partial class RecurringTransactionDetailViewModel(
 
     private List<RecurrenceIntervalOption> BuildIntervalOptions() =>
     [
-        new(RecurrenceInterval.Daily, _loc.GetString(ResourceKeys.RecurrenceInterval_Daily)),
-        new(RecurrenceInterval.Weekly, _loc.GetString(ResourceKeys.RecurrenceInterval_Weekly)),
-        new(RecurrenceInterval.Monthly, _loc.GetString(ResourceKeys.RecurrenceInterval_Monthly)),
-        new(RecurrenceInterval.Quarterly, _loc.GetString(ResourceKeys.RecurrenceInterval_Quarterly)),
-        new(RecurrenceInterval.Yearly, _loc.GetString(ResourceKeys.RecurrenceInterval_Yearly))
+        new(RecurrenceInterval.Daily, _loc.GetString(EnumResourceKeys.GetRecurrenceInterval(RecurrenceInterval.Daily))),
+        new(RecurrenceInterval.Weekly, _loc.GetString(EnumResourceKeys.GetRecurrenceInterval(RecurrenceInterval.Weekly))),
+        new(RecurrenceInterval.Monthly, _loc.GetString(EnumResourceKeys.GetRecurrenceInterval(RecurrenceInterval.Monthly))),
+        new(RecurrenceInterval.Quarterly, _loc.GetString(EnumResourceKeys.GetRecurrenceInterval(RecurrenceInterval.Quarterly))),
+        new(RecurrenceInterval.Yearly, _loc.GetString(EnumResourceKeys.GetRecurrenceInterval(RecurrenceInterval.Yearly)))
     ];
+
+    public void RefreshLocalizedStrings()
+    {
+        _verfuegbareIntervalle = null;
+        OnPropertyChanged(nameof(VerfuegbareIntervalle));
+        SelectedIntervalOption = VerfuegbareIntervalle.FirstOrDefault(option => option.Value == Interval);
+    }
 }
 
 public sealed record RecurrenceIntervalOption(RecurrenceInterval Value, string DisplayName);

@@ -13,20 +13,51 @@
 
     <views:BaseContentPage.Resources>
         <conv:AccountTypeToLocalizedStringConverter x:Key="AccountTypeToLocalizedStringConverter" />
+        <conv:TransactionTypeToLocalizedStringConverter x:Key="TransactionTypeToLocalizedStringConverter" />
         <conv:AccountArchiveActionConverter x:Key="AccountArchiveActionConverter" />
         <conv:DecimalCurrencyConverter x:Key="Currency" />
         <conv:BilanzColorConverter x:Key="BilanzColor" />
+        <conv:ToggleActiveColorConverter x:Key="ToggleActiveColor" />
+        <conv:ToggleActiveTextColorConverter x:Key="ToggleActiveText" />
     </views:BaseContentPage.Resources>
 
     <Grid>
         <Grid RowDefinitions="Auto, *">
-            <Grid Grid.Row="0" ColumnDefinitions="*,*" Padding="16,12" ColumnSpacing="8">
-                <Button Text="{loc:Translate Nav_Kategorien}"
-                        Command="{Binding ShowKategorienCommand}" />
-                <Button Grid.Column="1"
-                        Text="{loc:Translate Lbl_Konto}"
-                        Command="{Binding ShowKontenCommand}" />
-            </Grid>
+            <Border Grid.Row="0"
+                    Margin="16,12"
+                    StrokeShape="RoundRectangle 10"
+                    Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray900}}"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray950}}"
+                    Padding="2">
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="2">
+                    <Border Grid.Column="0"
+                            StrokeShape="RoundRectangle 8"
+                            Stroke="Transparent"
+                            BackgroundColor="{Binding IsKategorienVisible, Converter={StaticResource ToggleActiveColor}}"
+                            Padding="8,6">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding ShowKategorienCommand}" />
+                        </Border.GestureRecognizers>
+                        <Label Text="{loc:Translate Nav_Kategorien}"
+                               HorizontalTextAlignment="Center"
+                               FontAttributes="Bold"
+                               TextColor="{Binding IsKategorienVisible, Converter={StaticResource ToggleActiveText}}" />
+                    </Border>
+                    <Border Grid.Column="1"
+                            StrokeShape="RoundRectangle 8"
+                            Stroke="Transparent"
+                            BackgroundColor="{Binding IsKontenVisible, Converter={StaticResource ToggleActiveColor}}"
+                            Padding="8,6">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding ShowKontenCommand}" />
+                        </Border.GestureRecognizers>
+                        <Label Text="{loc:Translate Lbl_Konten}"
+                               HorizontalTextAlignment="Center"
+                               FontAttributes="Bold"
+                               TextColor="{Binding IsKontenVisible, Converter={StaticResource ToggleActiveText}}" />
+                    </Border>
+                </Grid>
+            </Border>
 
             <Grid Grid.Row="1">
                 <RefreshView Command="{Binding LoadKategorienCommand}"
@@ -35,7 +66,8 @@
                     <CollectionView ItemsSource="{Binding Kategorien}"
                                     SelectionMode="None">
                         <CollectionView.EmptyView>
-                            <controls:EmptyStateView IconText="🏷️"
+                            <controls:EmptyStateView IconImage="categories.png"
+                                                     IconAccessibilityDescription="{loc:Translate Nav_Kategorien}"
                                                      Message="{loc:Translate Empty_KeineKategorien}"
                                                      Hint="{loc:Translate Empty_HintKategorien}"
                                                      ActionText="{loc:Translate Btn_Hinzufuegen}"
@@ -71,7 +103,7 @@
 
                                         <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
                                             <Label Text="{Binding Name}" FontSize="16" FontAttributes="Bold" />
-                                            <Label Text="{Binding Typ}" FontSize="13" TextColor="Gray" />
+                                            <Label Text="{Binding Typ, Converter={StaticResource TransactionTypeToLocalizedStringConverter}}" FontSize="13" TextColor="{AppThemeBinding Light={StaticResource TextTertiary}, Dark={StaticResource Gray600}}" />
                                         </VerticalStackLayout>
 
                                         <Label Grid.Column="2" Text="{loc:Translate Btn_Next}" FontSize="24" TextColor="Gray"
@@ -107,7 +139,8 @@
                             </Border>
                         </CollectionView.Header>
                         <CollectionView.EmptyView>
-                            <controls:EmptyStateView IconText="🏦"
+                            <controls:EmptyStateView IconImage="categories.png"
+                                                     IconAccessibilityDescription="{loc:Translate Lbl_Konten}"
                                                      Message="{loc:Translate Empty_KeineKonten}"
                                                      Hint="{loc:Translate Empty_KontenHinweis}"
                                                      ActionText="{loc:Translate Btn_Hinzufuegen}"
@@ -128,8 +161,13 @@
                                             Stroke="Transparent"
                                             WidthRequest="44" HeightRequest="44"
                                             Padding="0" HorizontalOptions="Center" VerticalOptions="Center">
-                                        <Label Text="🏦" FontSize="20"
-                                               HorizontalOptions="Center" VerticalOptions="Center" />
+                                        <Image Source="categories.png"
+                                               HeightRequest="24"
+                                               WidthRequest="24"
+                                               Aspect="AspectFit"
+                                               HorizontalOptions="Center"
+                                               VerticalOptions="Center"
+                                               SemanticProperties.Description="{loc:Translate Lbl_Konto}" />
                                     </Border>
 
                                     <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
@@ -188,7 +226,7 @@
                 WidthRequest="56" HeightRequest="56"
                 HorizontalOptions="End" VerticalOptions="End"
                 Margin="0,0,20,20"
-                SemanticProperties.Description="{loc:Translate A11y_KategorieHinzufuegen}"
+                SemanticProperties.Description="{Binding FabAccessibilityDescription}"
                 Shadow="{Shadow Brush='#40000000', Offset='0,4', Radius=8}"
                 Command="{Binding GoToDetailCommand}" />
     </Grid>

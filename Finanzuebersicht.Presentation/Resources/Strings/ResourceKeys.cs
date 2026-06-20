@@ -57,6 +57,7 @@ public static class ResourceKeys
     public const string Lbl_Verwendungszweck = nameof(Lbl_Verwendungszweck);
     public const string Lbl_DatenWerdenGespeichert = nameof(Lbl_DatenWerdenGespeichert);
     public const string Lbl_Sprache = nameof(Lbl_Sprache);
+    public const string Lbl_Anzeigewaehrung = nameof(Lbl_Anzeigewaehrung);
     public const string Lbl_KategorienColon = nameof(Lbl_KategorienColon);
 
     // Buttons
@@ -120,6 +121,12 @@ public static class ResourceKeys
     // Confirmation Dialogs
     public const string Dlg_KategorieLoeschen = nameof(Dlg_KategorieLoeschen);
     public const string Dlg_KategorieLoeschenFrage = nameof(Dlg_KategorieLoeschenFrage);
+    public const string Dlg_KontoLoeschen = nameof(Dlg_KontoLoeschen);
+    public const string Dlg_KontoLoeschenFrage = nameof(Dlg_KontoLoeschenFrage);
+    public const string Dlg_KontoArchivieren = nameof(Dlg_KontoArchivieren);
+    public const string Dlg_KontoArchivierenFrage = nameof(Dlg_KontoArchivierenFrage);
+    public const string Dlg_KontoReaktivieren = nameof(Dlg_KontoReaktivieren);
+    public const string Dlg_KontoReaktivierenFrage = nameof(Dlg_KontoReaktivierenFrage);
     public const string Dlg_DauerauftragLoeschen = nameof(Dlg_DauerauftragLoeschen);
     public const string Dlg_DauerauftragLoeschenFrage = nameof(Dlg_DauerauftragLoeschenFrage);
     public const string Dlg_DauerauftragBuchen = nameof(Dlg_DauerauftragBuchen);
@@ -148,6 +155,10 @@ public static class ResourceKeys
     public const string Stn_SpracheDeutsch = nameof(Stn_SpracheDeutsch);
     public const string Stn_SpracheEnglisch = nameof(Stn_SpracheEnglisch);
     public const string Stn_SpracheSystem = nameof(Stn_SpracheSystem);
+    public const string Stn_CurrencyEur = nameof(Stn_CurrencyEur);
+    public const string Stn_CurrencyChf = nameof(Stn_CurrencyChf);
+    public const string Stn_CurrencyUsd = nameof(Stn_CurrencyUsd);
+    public const string Stn_CurrencyGbp = nameof(Stn_CurrencyGbp);
 
     // Status
     public const string Status_Aktiv = nameof(Status_Aktiv);
@@ -219,6 +230,8 @@ public static class ResourceKeys
     public const string Msg_BackupRestoreTitle = nameof(Msg_BackupRestoreTitle);
     public const string Msg_BackupRestoreDesc = nameof(Msg_BackupRestoreDesc);
     public const string Btn_Import = nameof(Btn_Import);
+    public const string Btn_Filter = nameof(Btn_Filter);
+    public const string Btn_Umbuchen = nameof(Btn_Umbuchen);
     public const string Btn_FilterZuruecksetzen = nameof(Btn_FilterZuruecksetzen);
     public const string Title_ShiftInstance = nameof(Title_ShiftInstance);
 
@@ -261,6 +274,7 @@ public static class ResourceKeys
     public const string Lbl_AnfangssaldoStichtag = nameof(Lbl_AnfangssaldoStichtag);
     public const string Hint_Anfangssaldo = nameof(Hint_Anfangssaldo);
     public const string Fmt_KontoSaldoAufschluesselung = nameof(Fmt_KontoSaldoAufschluesselung);
+    public const string Lbl_Konten = nameof(Lbl_Konten);
     public const string Lbl_KontenUebersicht = nameof(Lbl_KontenUebersicht);
     public const string Lbl_Gesamtsaldo = nameof(Lbl_Gesamtsaldo);
     public const string Lbl_GesamtsaldoAktiv = nameof(Lbl_GesamtsaldoAktiv);
@@ -278,6 +292,13 @@ public static class ResourceKeys
     public const string RecurrenceInterval_Monthly = nameof(RecurrenceInterval_Monthly);
     public const string RecurrenceInterval_Quarterly = nameof(RecurrenceInterval_Quarterly);
     public const string RecurrenceInterval_Yearly = nameof(RecurrenceInterval_Yearly);
+
+    public const string AccountType_Girokonto = nameof(AccountType_Girokonto);
+    public const string AccountType_Tagesgeld = nameof(AccountType_Tagesgeld);
+    public const string AccountType_Kreditkarte = nameof(AccountType_Kreditkarte);
+    public const string AccountType_Bargeld = nameof(AccountType_Bargeld);
+    public const string AccountType_Depot = nameof(AccountType_Depot);
+    public const string AccountType_Sonstiges = nameof(AccountType_Sonstiges);
     public const string Lbl_AlleTypen = nameof(Lbl_AlleTypen);
     public const string Lbl_VonDatum = nameof(Lbl_VonDatum);
     public const string Lbl_BisDatum = nameof(Lbl_BisDatum);
@@ -309,6 +330,7 @@ public static class ResourceKeys
     public const string Lbl_ImportStatusUngueltig = nameof(Lbl_ImportStatusUngueltig);
     public const string Lbl_ImportStatusUnkategorisiert = nameof(Lbl_ImportStatusUnkategorisiert);
     public const string Lbl_ImportStatusSpeicherfehler = nameof(Lbl_ImportStatusSpeicherfehler);
+    public const string Lbl_ImportStatusUnbekannt = nameof(Lbl_ImportStatusUnbekannt);
     public const string Lbl_ImportBereitCount = nameof(Lbl_ImportBereitCount);
     public const string Lbl_ImportDuplikateCount = nameof(Lbl_ImportDuplikateCount);
     public const string Lbl_ImportProblemeCount = nameof(Lbl_ImportProblemeCount);
@@ -376,6 +398,7 @@ public static class ResourceKeys
     public const string A11y_TransaktionHinzufuegen = nameof(A11y_TransaktionHinzufuegen);
     public const string A11y_UmbuchungHinzufuegen = nameof(A11y_UmbuchungHinzufuegen);
     public const string A11y_KategorieHinzufuegen = nameof(A11y_KategorieHinzufuegen);
+    public const string A11y_KontoHinzufuegen = nameof(A11y_KontoHinzufuegen);
     public const string A11y_SparZielHinzufuegen = nameof(A11y_SparZielHinzufuegen);
     public const string A11y_DauerauftragHinzufuegen = nameof(A11y_DauerauftragHinzufuegen);
     public const string A11y_BudgetBalken = nameof(A11y_BudgetBalken);
