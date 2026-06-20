@@ -1,5 +1,27 @@
 # Änderungsverlauf
 
+## [1.16] - 2026-06-20
+
+### Hinzugefügt
+
+- Anzeige-Währung (EUR/USD/GBP/CHF) in Einstellungen und Onboarding, getrennt von UI-Sprache (#253)
+- `IDisplayCurrencyService` und `App.CurrencyChanged` für sofortige Betrags-Aktualisierung
+- Lokalisierung von Seitentiteln und Enum-Labels (Kontotyp, Transaktionstyp) (#234)
+- Verwaltung: Dashboard-Segment Kategorien/Konten mit klarerem Tab-Titel (#236)
+- Dashboard Runde 2: Summary oben, einklappbare Sekundärbereiche (#252)
+- Einheitliche Tab-Icons in Empty States statt Emoji (#240)
+
+### Geändert
+
+- Hardcoded XAML-Farben durch zentrale `Colors.xaml`-Tokens ersetzt (#254)
+- Transaktionen: beschriftete Buttons „Filter“ / „Umbuchen“ statt Emoji (#238)
+- Debug-Build installiert nach `~/Applications` (macOS 26+ Dev-Signatur)
+
+### Behoben
+
+- Fällige Daueraufträge im Dashboard standardmäßig aufgeklappt
+- Währungswechsel aktualisiert Salden (Konto-Detail) und Import-Beträge ohne Seitenwechsel
+
 ## [1.15] - 2026-06-20
 
 ### Hinzugefügt
