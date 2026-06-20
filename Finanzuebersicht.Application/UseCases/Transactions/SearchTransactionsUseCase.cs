@@ -17,6 +17,7 @@ public class SearchTransactionsResult
 {
     public List<TransactionGroup> Gruppen { get; set; } = [];
     public Dictionary<string, string> IconMap { get; set; } = [];
+    public Dictionary<string, string> CategoryNameMap { get; set; } = [];
     public Dictionary<string, string> AccountMap { get; set; } = [];
     public int TotalCount { get; set; }
 }
@@ -71,6 +72,7 @@ public class SearchTransactionsUseCase(
 
         var categories = await _categoryRepository.GetCategoriesAsync();
         var iconMap = categories.ToDictionary(c => c.Id, c => c.Icon ?? "📁");
+        var categoryNameMap = categories.ToDictionary(c => c.Id, c => c.Name);
         var accounts = await _accountRepository.GetAccountsAsync();
         var accountMap = accounts.ToDictionary(a => a.Id, a => a.Name);
 
@@ -78,6 +80,7 @@ public class SearchTransactionsUseCase(
         {
             Gruppen = gruppen,
             IconMap = iconMap,
+            CategoryNameMap = categoryNameMap,
             AccountMap = accountMap,
             TotalCount = liste.Count
         };

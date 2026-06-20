@@ -572,6 +572,7 @@
                 <GraphicsView x:Name="MonthDonutChart"
                               HeightRequest="200"
                               IsVisible="{Binding KategorieAusgaben, Converter={StaticResource CountToBool}}"
+                              SemanticProperties.Description="{Binding MonthDonutAccessibilitySummary}"
                               Margin="0,4,0,0" />
 
                 <VerticalStackLayout BindableLayout.ItemsSource="{Binding KategorieAusgaben}"
@@ -744,6 +745,7 @@
 
                 <GraphicsView x:Name="YearBarChart"
                               HeightRequest="150"
+                              SemanticProperties.Description="{Binding YearBarAccessibilitySummary}"
                               Margin="0,4,0,8" />
 
                 <!-- Kategorien im Jahr -->
@@ -756,6 +758,7 @@
                 <GraphicsView x:Name="YearDonutChart"
                               HeightRequest="200"
                               IsVisible="{Binding JahrKategorien, Converter={StaticResource CountToBool}}"
+                              SemanticProperties.Description="{Binding YearDonutAccessibilitySummary}"
                               Margin="0,4,0,0" />
 
                 <VerticalStackLayout BindableLayout.ItemsSource="{Binding JahrKategorien}"

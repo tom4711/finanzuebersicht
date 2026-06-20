@@ -2,9 +2,11 @@ using System.ComponentModel;
 using System.Collections;
 using System.Linq;
 using CommunityToolkit.Maui.Extensions;
+using Finanzuebersicht.Resources.Strings;
 using Finanzuebersicht.Selection;
 using Finanzuebersicht.Services;
 using Finanzuebersicht.Views.Popups;
+using Microsoft.Maui.Controls;
 
 namespace Finanzuebersicht.Controls;
 
@@ -21,6 +23,9 @@ public partial class SelectionField : ContentView
 
     public static readonly BindableProperty PlaceholderProperty =
         BindableProperty.Create(nameof(Placeholder), typeof(string), typeof(SelectionField), string.Empty);
+
+    public static readonly BindableProperty FieldLabelProperty =
+        BindableProperty.Create(nameof(FieldLabel), typeof(string), typeof(SelectionField), string.Empty, propertyChanged: OnAccessibilityContextChanged);
 
     public static readonly BindableProperty ResolvedDisplayTextProperty =
         BindableProperty.Create(nameof(ResolvedDisplayText), typeof(string), typeof(SelectionField), string.Empty);
@@ -49,6 +54,12 @@ public partial class SelectionField : ContentView
         set => SetValue(PlaceholderProperty, value);
     }
 
+    public string FieldLabel
+    {
+        get => (string)GetValue(FieldLabelProperty);
+        set => SetValue(FieldLabelProperty, value);
+    }
+
     public string ResolvedDisplayText
     {
         get => (string)GetValue(ResolvedDisplayTextProperty);
@@ -73,12 +84,24 @@ public partial class SelectionField : ContentView
     }
 
     private void OnLocalizationChanged(object? sender, PropertyChangedEventArgs e)
-        => UpdateResolvedDisplay();
+    {
+        UpdateResolvedDisplay();
+        UpdateAccessibilityDescription();
+    }
 
     private static void OnSelectionChanged(BindableObject bindable, object oldValue, object newValue)
     {
         if (bindable is SelectionField field)
+        {
             field.UpdateResolvedDisplay();
+            field.UpdateAccessibilityDescription();
+        }
+    }
+
+    private static void OnAccessibilityContextChanged(BindableObject bindable, object oldValue, object newValue)
+    {
+        if (bindable is SelectionField field)
+            field.UpdateAccessibilityDescription();
     }
 
     protected override void OnBindingContextChanged()
@@ -99,10 +122,30 @@ public partial class SelectionField : ContentView
         if (SelectedItem is not null)
         {
             ResolvedDisplayText = LocalizedSelectionDisplay.GetDisplayText(SelectedItem, DisplayMemberPath);
+            UpdateAccessibilityDescription();
             return;
         }
 
         ResolvedDisplayText = string.IsNullOrWhiteSpace(Placeholder) ? "—" : Placeholder;
+        UpdateAccessibilityDescription();
+    }
+
+    private void UpdateAccessibilityDescription()
+    {
+        if (string.IsNullOrWhiteSpace(FieldLabel))
+        {
+            SemanticProperties.SetDescription(SelectionBorder, ResolvedDisplayText);
+            return;
+        }
+
+        var hasSelection = SelectedItem is not null;
+        var template = LocalizationResourceManager.Current[
+            hasSelection ? ResourceKeys.A11y_SelectionField : ResourceKeys.A11y_SelectionFieldLeer];
+        SemanticProperties.SetDescription(
+            SelectionBorder,
+            hasSelection
+                ? string.Format(template, FieldLabel, ResolvedDisplayText)
+                : string.Format(template, FieldLabel));
     }
 
     private async void OnTapped(object? sender, TappedEventArgs e)

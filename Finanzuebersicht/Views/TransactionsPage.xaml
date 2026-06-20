@@ -17,12 +17,18 @@
         <conv:KategorieIdToIconConverter x:Key="KategorieIdToIcon" />
         <conv:AccountIdToNameConverter x:Key="AccountIdToName" />
         <conv:InvertBoolConverter x:Key="InvertBool" />
+        <conv:TransactionRowAccessibilityConverter x:Key="TransactionAccessibility" />
+        <conv:CategoryRowAccessibilityConverter x:Key="CategoryAccessibility" />
+        <conv:AccountRowAccessibilityConverter x:Key="AccountAccessibility" />
+        <conv:RecurringRowAccessibilityConverter x:Key="RecurringAccessibility" />
+        <conv:SparZielRowAccessibilityConverter x:Key="SparZielAccessibility" />
 
         <!-- Shared transaction row layout (tap-only, no swipe).
              Reused in search results. Month view uses same structure
              wrapped in SwipeView (see CollectionView below). -->
         <DataTemplate x:Key="TransactionRowTemplate" x:DataType="models:Transaction">
-            <Grid ColumnDefinitions="44, *, Auto" Padding="16,10" ColumnSpacing="12">
+            <Grid ColumnDefinitions="44, *, Auto" Padding="16,10" ColumnSpacing="12"
+                  SemanticProperties.Description="{Binding ., Converter={StaticResource TransactionAccessibility}, ConverterParameter={Binding Source={RelativeSource AncestorType={x:Type views:BaseContentPage}}, Path=BindingContext}}">
                 <Grid.GestureRecognizers>
                     <TapGestureRecognizer
                         Command="{Binding Source={RelativeSource AncestorType={x:Type vm:TransactionsViewModel}}, Path=GoToDetailCommand}"
@@ -291,7 +297,8 @@
                                                    CommandParameter="{Binding .}" />
                                     </SwipeItems>
                                 </SwipeView.RightItems>
-                                <Grid ColumnDefinitions="44, *, Auto" Padding="16,10" ColumnSpacing="12">
+                                <Grid ColumnDefinitions="44, *, Auto" Padding="16,10" ColumnSpacing="12"
+                                      SemanticProperties.Description="{Binding ., Converter={StaticResource TransactionAccessibility}, ConverterParameter={Binding Source={RelativeSource AncestorType={x:Type views:BaseContentPage}}, Path=BindingContext}}">
                                     <Grid.GestureRecognizers>
                                         <TapGestureRecognizer
                                             Command="{Binding Source={RelativeSource AncestorType={x:Type vm:TransactionsViewModel}}, Path=GoToDetailCommand}"

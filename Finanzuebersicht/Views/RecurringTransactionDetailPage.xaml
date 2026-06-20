@@ -53,6 +53,7 @@
                 <controls:SelectionField ItemsSource="{Binding Kategorien}"
                                          SelectedItem="{Binding SelectedKategorie, Mode=TwoWay}"
                                          DisplayMemberPath="Name"
+                                         FieldLabel="{loc:Translate Lbl_Kategorie}"
                                          Placeholder="{loc:Translate Hint_KategorieWaehlen}" />
             </VerticalStackLayout>
 
@@ -61,6 +62,7 @@
                 <controls:SelectionField ItemsSource="{Binding Accounts}"
                                          SelectedItem="{Binding SelectedAccount, Mode=TwoWay}"
                                          DisplayMemberPath="Name"
+                                         FieldLabel="{loc:Translate Lbl_Konto}"
                                          Placeholder="{loc:Translate Hint_KontoWaehlen}" />
             </VerticalStackLayout>
 
@@ -97,6 +99,7 @@
                 <controls:SelectionField ItemsSource="{Binding VerfuegbareIntervalle}"
                                          SelectedItem="{Binding SelectedIntervalOption, Mode=TwoWay}"
                                          DisplayMemberPath="DisplayName"
+                                         FieldLabel="{loc:Translate Lbl_Intervall}"
                                          Placeholder="{loc:Translate Hint_IntervallWaehlen}"
                                          Margin="0,0,0,8" />
             </VerticalStackLayout>

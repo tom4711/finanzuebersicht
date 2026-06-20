@@ -77,6 +77,9 @@ public partial class TransactionsViewModel(
     private Dictionary<string, string> accountMap = [];
 
     [ObservableProperty]
+    private Dictionary<string, string> categoryNameMap = [];
+
+    [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasTransactionTemplates))]
     [NotifyPropertyChangedFor(nameof(ShowTransactionTemplates))]
     private ObservableCollection<TransactionTemplate> transactionTemplates = [];
@@ -302,6 +305,7 @@ public partial class TransactionsViewModel(
             SearchErgebnisGruppen = new ObservableCollection<TransactionGroup>(result.Gruppen);
             TotalSearchCount = result.TotalCount;
             IconMap = result.IconMap;
+            CategoryNameMap = result.CategoryNameMap;
             AccountMap = result.AccountMap;
         }
         catch (Exception ex)
@@ -385,6 +389,7 @@ public partial class TransactionsViewModel(
             var data = await _loadTransactionsMonthUseCase.ExecuteAsync(AktuellerMonat, SelectedAccountId);
             TransaktionsGruppen = new ObservableCollection<TransactionGroup>(data.Gruppen);
             IconMap = data.IconMap;
+            CategoryNameMap = data.CategoryNameMap;
             AccountMap = data.AccountMap;
 
             if (AvailableKategorien.Count == 0)

@@ -8,7 +8,8 @@
              x:DataType="vm:CategoryDetailViewModel"
              Title="{Binding PageTitle}">
 
-    <ScrollView Padding="16">
+    <Grid RowDefinitions="*, Auto">
+    <ScrollView Grid.Row="0" Padding="16">
         <VerticalStackLayout Spacing="20">
 
             <!-- Name -->
@@ -69,7 +70,8 @@
                 <Label Text="{loc:Translate Lbl_Typ}" FontSize="13" TextColor="Gray" />
                 <controls:SelectionField ItemsSource="{Binding VerfuegbareTypen}"
                                          SelectedItem="{Binding SelectedTypeOption, Mode=TwoWay}"
-                                         DisplayMemberPath="DisplayName" />
+                                         DisplayMemberPath="DisplayName"
+                                         FieldLabel="{loc:Translate Lbl_Typ}" />
             </VerticalStackLayout>
 
             <!-- Monatliches Budget -->
@@ -90,4 +92,12 @@
 
         </VerticalStackLayout>
     </ScrollView>
+        <Label Grid.Row="1"
+               Text="▼"
+               FontSize="10"
+               HorizontalTextAlignment="Center"
+               Padding="0,2,0,6"
+               InputTransparent="True"
+               TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray600}}" />
+    </Grid>
 </ContentPage>
