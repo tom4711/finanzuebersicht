@@ -1,8 +1,9 @@
+using System.ComponentModel;
 using System.Windows.Input;
 
 namespace Finanzuebersicht.Controls;
 
-public partial class EmptyStateView : ContentView
+public partial class EmptyStateView : ContentView, INotifyPropertyChanged
 {
     public static readonly BindableProperty MessageProperty =
         BindableProperty.Create(nameof(Message), typeof(string), typeof(EmptyStateView), string.Empty);
@@ -11,7 +12,15 @@ public partial class EmptyStateView : ContentView
         BindableProperty.Create(nameof(Hint), typeof(string), typeof(EmptyStateView), string.Empty);
 
     public static readonly BindableProperty IconTextProperty =
-        BindableProperty.Create(nameof(IconText), typeof(string), typeof(EmptyStateView), string.Empty);
+        BindableProperty.Create(nameof(IconText), typeof(string), typeof(EmptyStateView), string.Empty,
+            propertyChanged: OnIconPropertyChanged);
+
+    public static readonly BindableProperty IconImageProperty =
+        BindableProperty.Create(nameof(IconImage), typeof(string), typeof(EmptyStateView), string.Empty,
+            propertyChanged: OnIconPropertyChanged);
+
+    public static readonly BindableProperty IconAccessibilityDescriptionProperty =
+        BindableProperty.Create(nameof(IconAccessibilityDescription), typeof(string), typeof(EmptyStateView), string.Empty);
 
     public static readonly BindableProperty ActionTextProperty =
         BindableProperty.Create(nameof(ActionText), typeof(string), typeof(EmptyStateView), string.Empty);
@@ -39,6 +48,18 @@ public partial class EmptyStateView : ContentView
         set => SetValue(IconTextProperty, value);
     }
 
+    public string IconImage
+    {
+        get => (string)GetValue(IconImageProperty);
+        set => SetValue(IconImageProperty, value);
+    }
+
+    public string IconAccessibilityDescription
+    {
+        get => (string)GetValue(IconAccessibilityDescriptionProperty);
+        set => SetValue(IconAccessibilityDescriptionProperty, value);
+    }
+
     public string ActionText
     {
         get => (string)GetValue(ActionTextProperty);
@@ -52,6 +73,16 @@ public partial class EmptyStateView : ContentView
     }
 
     public bool HasHint => !string.IsNullOrWhiteSpace(Hint);
-    public bool HasIcon => !string.IsNullOrWhiteSpace(IconText);
+    public bool HasIconImage => !string.IsNullOrWhiteSpace(IconImage);
+    public bool ShowIconText => !HasIconImage && !string.IsNullOrWhiteSpace(IconText);
     public bool HasAction => !string.IsNullOrWhiteSpace(ActionText) && ActionCommand != null;
+
+    private static void OnIconPropertyChanged(BindableObject bindable, object oldValue, object newValue)
+    {
+        if (bindable is EmptyStateView view)
+        {
+            view.OnPropertyChanged(nameof(HasIconImage));
+            view.OnPropertyChanged(nameof(ShowIconText));
+        }
+    }
 }

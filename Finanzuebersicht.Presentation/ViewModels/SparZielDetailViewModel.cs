@@ -20,7 +20,7 @@ public partial class SparZielDetailViewModel(
     IDialogService dialogService,
     IFeedbackService feedbackService,
     IAppEvents appEvents,
-    ILogger<SparZielDetailViewModel>? logger = null) : ObservableObject, IApplyQueryAttributes, IAutoLoadViewModel
+    ILogger<SparZielDetailViewModel>? logger = null) : ObservableObject, IApplyQueryAttributes, IAutoLoadViewModel, ILocalizableViewModel
 {
     private readonly SaveSparZielUseCase _saveSparZielUseCase = saveSparZielUseCase;
     private readonly DeleteSparZielUseCase _deleteSparZielUseCase = deleteSparZielUseCase;
@@ -67,6 +67,12 @@ public partial class SparZielDetailViewModel(
     public System.Windows.Input.ICommand AutoLoadCommand => LoadProgressCommand;
 
     public string PageTitle => _loc.GetString(ResourceKeys.Title_SparZielBearbeiten);
+
+    public void RefreshLocalizedStrings()
+    {
+        OnPropertyChanged(nameof(PageTitle));
+        _ = LoadProgressAsync();
+    }
 
     public SparZiel? SparZiel
     {

@@ -18,7 +18,7 @@ public partial class CategoryDetailViewModel(
     IAppEvents appEvents,
     SaveCategoryBudgetUseCase? saveCategoryBudgetUseCase = null,
     IBudgetRepository? budgetRepository = null,
-    ILogger<CategoryDetailViewModel>? logger = null) : ObservableObject, IApplyQueryAttributes
+    ILogger<CategoryDetailViewModel>? logger = null) : ObservableObject, IApplyQueryAttributes, ILocalizableViewModel
 {
     private readonly SaveCategoryDetailUseCase _saveCategoryDetailUseCase = saveCategoryDetailUseCase;
     private readonly INavigationService _navigationService = navigationService;
@@ -48,11 +48,21 @@ public partial class CategoryDetailViewModel(
     private List<TransactionTypeOption>? _verfuegbareTypen;
 
     public IReadOnlyList<TransactionTypeOption> VerfuegbareTypen =>
-        _verfuegbareTypen ??=
-        [
-            new(TransactionType.Einnahme, _loc.GetString(ResourceKeys.Lbl_Einnahme)),
-            new(TransactionType.Ausgabe, _loc.GetString(ResourceKeys.Lbl_Ausgabe))
-        ];
+        _verfuegbareTypen ??= BuildTypeOptions();
+
+    private List<TransactionTypeOption> BuildTypeOptions() =>
+    [
+        new(TransactionType.Einnahme, _loc.GetString(EnumResourceKeys.GetTransactionType(TransactionType.Einnahme))),
+        new(TransactionType.Ausgabe, _loc.GetString(EnumResourceKeys.GetTransactionType(TransactionType.Ausgabe)))
+    ];
+
+    public void RefreshLocalizedStrings()
+    {
+        _verfuegbareTypen = null;
+        OnPropertyChanged(nameof(VerfuegbareTypen));
+        OnPropertyChanged(nameof(PageTitle));
+        SelectedTypeOption = VerfuegbareTypen.FirstOrDefault(option => option.Value == Typ);
+    }
 
     partial void OnTypChanged(TransactionType value)
     {

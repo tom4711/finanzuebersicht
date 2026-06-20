@@ -20,7 +20,7 @@ public partial class ImportPreviewViewModel(
     ILocalizationService localizationService,
     IAppEvents appEvents,
     IFeedbackService feedbackService,
-    ILogger<ImportPreviewViewModel>? logger = null) : ObservableObject, IAutoLoadViewModel
+    ILogger<ImportPreviewViewModel>? logger = null) : ObservableObject, IAutoLoadViewModel, ILocalizableViewModel
 {
     private readonly ImportService _importService = importService;
     private readonly IImportSessionStore _importSessionStore = importSessionStore;
@@ -230,6 +230,14 @@ public partial class ImportPreviewViewModel(
 
         FilteredRows = new ObservableCollection<ImportPreviewRowItemViewModel>(filtered);
     }
+
+    public void RefreshLocalizedStrings()
+    {
+        RefreshFilterOptions();
+        RefreshState();
+        foreach (var row in Rows)
+            row.RefreshLocalizedStrings();
+    }
 }
 
 public partial class ImportPreviewRowItemViewModel : ObservableObject
@@ -293,8 +301,10 @@ public partial class ImportPreviewRowItemViewModel : ObservableObject
         ImportPreviewRowStatus.Invalid => _loc.GetString(ResourceKeys.Lbl_ImportStatusUngueltig),
         ImportPreviewRowStatus.Uncategorized => _loc.GetString(ResourceKeys.Lbl_ImportStatusUnkategorisiert),
         ImportPreviewRowStatus.SaveError => _loc.GetString(ResourceKeys.Lbl_ImportStatusSpeicherfehler),
-        _ => Status.ToString()
+        _ => _loc.GetString(ResourceKeys.Lbl_ImportStatusUnbekannt)
     };
+
+    public void RefreshLocalizedStrings() => OnPropertyChanged(nameof(StatusText));
 
     partial void OnIsIncludedChanged(bool value)
     {

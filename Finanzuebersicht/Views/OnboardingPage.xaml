@@ -35,6 +35,38 @@
                    TextColor="Gray"
                    HorizontalTextAlignment="Center" />
 
+            <VerticalStackLayout Spacing="12" IsVisible="{Binding ShowWelcomeSetup}">
+                <Label Text="{loc:Translate Lbl_Anzeigewaehrung}"
+                       FontSize="15"
+                       FontAttributes="Bold"
+                       HorizontalTextAlignment="Center" />
+                <Grid ColumnDefinitions="*,*,*,*" ColumnSpacing="8">
+                    <Button Text="{loc:Translate Stn_CurrencyEur}"
+                            Command="{Binding SetCurrencyCommand}"
+                            CommandParameter="0"
+                            BackgroundColor="{Binding SelectedCurrencyIndex, Converter={StaticResource ThemeButtonConverter}, ConverterParameter=0}"
+                            TextColor="{Binding SelectedCurrencyIndex, Converter={StaticResource ThemeButtonTextConverter}, ConverterParameter=0}" />
+                    <Button Text="{loc:Translate Stn_CurrencyChf}"
+                            Grid.Column="1"
+                            Command="{Binding SetCurrencyCommand}"
+                            CommandParameter="1"
+                            BackgroundColor="{Binding SelectedCurrencyIndex, Converter={StaticResource ThemeButtonConverter}, ConverterParameter=1}"
+                            TextColor="{Binding SelectedCurrencyIndex, Converter={StaticResource ThemeButtonTextConverter}, ConverterParameter=1}" />
+                    <Button Text="{loc:Translate Stn_CurrencyUsd}"
+                            Grid.Column="2"
+                            Command="{Binding SetCurrencyCommand}"
+                            CommandParameter="2"
+                            BackgroundColor="{Binding SelectedCurrencyIndex, Converter={StaticResource ThemeButtonConverter}, ConverterParameter=2}"
+                            TextColor="{Binding SelectedCurrencyIndex, Converter={StaticResource ThemeButtonTextConverter}, ConverterParameter=2}" />
+                    <Button Text="{loc:Translate Stn_CurrencyGbp}"
+                            Grid.Column="3"
+                            Command="{Binding SetCurrencyCommand}"
+                            CommandParameter="3"
+                            BackgroundColor="{Binding SelectedCurrencyIndex, Converter={StaticResource ThemeButtonConverter}, ConverterParameter=3}"
+                            TextColor="{Binding SelectedCurrencyIndex, Converter={StaticResource ThemeButtonTextConverter}, ConverterParameter=3}" />
+                </Grid>
+            </VerticalStackLayout>
+
             <VerticalStackLayout Spacing="12" IsVisible="{Binding ShowAccountActions}">
                 <Button Text="{loc:Translate Onboarding_Btn_Anfangssaldo}"
                         Command="{Binding OpenDefaultAccountCommand}"

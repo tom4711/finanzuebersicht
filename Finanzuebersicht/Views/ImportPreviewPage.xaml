@@ -33,7 +33,8 @@
         </Border>
 
         <controls:EmptyStateView Grid.Row="1"
-                                 IconText="📄"
+                                 IconImage="transactions.png"
+                                 IconAccessibilityDescription="{loc:Translate Ttl_ImportVorschau}"
                                  Message="{loc:Translate Empty_ImportVorschauLeer}"
                                  IsVisible="{Binding HasRows, Converter={StaticResource InvertBool}}" />
 

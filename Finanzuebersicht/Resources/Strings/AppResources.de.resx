@@ -34,6 +34,7 @@
   <data name="Lbl_Titel" xml:space="preserve"><value>Titel</value></data>
   <data name="Lbl_Kategorie" xml:space="preserve"><value>Kategorie</value></data>
   <data name="Lbl_Konto" xml:space="preserve"><value>Konto</value></data>
+  <data name="Lbl_Konten" xml:space="preserve"><value>Konten</value></data>
   <data name="Lbl_AlleKonten" xml:space="preserve"><value>Alle Konten</value></data>
   <data name="Lbl_Kontosaldo" xml:space="preserve"><value>Kontosaldo</value></data>
   <data name="Lbl_Anfangssaldo" xml:space="preserve"><value>Anfangssaldo</value></data>
@@ -74,6 +75,7 @@
   <data name="Lbl_Verwendungszweck" xml:space="preserve"><value>Verwendungszweck</value></data>
   <data name="Lbl_DatenWerdenGespeichert" xml:space="preserve"><value>Daten werden hier gespeichert:</value></data>
   <data name="Lbl_Sprache" xml:space="preserve"><value>Sprache</value></data>
+  <data name="Lbl_Anzeigewaehrung" xml:space="preserve"><value>Anzeige-Währung</value></data>
   <data name="Lbl_KategorienColon" xml:space="preserve"><value>Kategorien:</value></data>
 
   <!-- Buttons -->
@@ -81,11 +83,11 @@
   <data name="Btn_Loeschen" xml:space="preserve"><value>Löschen</value></data>
   <data name="Btn_Abbrechen" xml:space="preserve"><value>Abbrechen</value></data>
   <data name="Btn_OK" xml:space="preserve"><value>OK</value></data>
-  <data name="Btn_OrdnerWaehlen" xml:space="preserve"><value>📁 Ordner wählen</value></data>
+  <data name="Btn_OrdnerWaehlen" xml:space="preserve"><value>Ordner wählen</value></data>
   <data name="Btn_Zuruecksetzen" xml:space="preserve"><value>Zurücksetzen</value></data>
   <data name="Btn_System" xml:space="preserve"><value>System</value></data>
-  <data name="Btn_Hell" xml:space="preserve"><value>☀️ Hell</value></data>
-  <data name="Btn_Dunkel" xml:space="preserve"><value>🌙 Dunkel</value></data>
+  <data name="Btn_Hell" xml:space="preserve"><value>Hell</value></data>
+  <data name="Btn_Dunkel" xml:space="preserve"><value>Dunkel</value></data>
   <data name="Btn_Ja" xml:space="preserve"><value>Ja</value></data>
   <data name="Btn_Nein" xml:space="preserve"><value>Nein</value></data>
   <data name="Btn_AktivInaktiv" xml:space="preserve"><value>Aktiv/Inaktiv</value></data>
@@ -129,6 +131,12 @@
   <!-- Confirmation Dialogs -->
   <data name="Dlg_KategorieLoeschen" xml:space="preserve"><value>Kategorie löschen</value></data>
   <data name="Dlg_KategorieLoeschenFrage" xml:space="preserve"><value>"{0}" wirklich löschen?</value></data>
+  <data name="Dlg_KontoLoeschen" xml:space="preserve"><value>Konto löschen</value></data>
+  <data name="Dlg_KontoLoeschenFrage" xml:space="preserve"><value>"{0}" wirklich löschen?</value></data>
+  <data name="Dlg_KontoArchivieren" xml:space="preserve"><value>Konto archivieren</value></data>
+  <data name="Dlg_KontoArchivierenFrage" xml:space="preserve"><value>"{0}" archivieren? Das Konto steht dann nicht mehr für neue Buchungen zur Auswahl.</value></data>
+  <data name="Dlg_KontoReaktivieren" xml:space="preserve"><value>Konto reaktivieren</value></data>
+  <data name="Dlg_KontoReaktivierenFrage" xml:space="preserve"><value>"{0}" wieder aktivieren?</value></data>
   <data name="Dlg_DauerauftragLoeschen" xml:space="preserve"><value>Dauerauftrag löschen</value></data>
   <data name="Dlg_DauerauftragLoeschenFrage" xml:space="preserve"><value>"{0}" wirklich löschen?</value></data>
   <data name="Dlg_DauerauftragBuchen" xml:space="preserve"><value>Dauerauftrag buchen</value></data>
@@ -161,6 +169,10 @@ Bitte starte die App neu.</value></data>
   <data name="Stn_SpracheDeutsch" xml:space="preserve"><value>Deutsch</value></data>
   <data name="Stn_SpracheEnglisch" xml:space="preserve"><value>Englisch</value></data>
   <data name="Stn_SpracheSystem" xml:space="preserve"><value>Systemsprache</value></data>
+  <data name="Stn_CurrencyEur" xml:space="preserve"><value>EUR</value></data>
+  <data name="Stn_CurrencyChf" xml:space="preserve"><value>CHF</value></data>
+  <data name="Stn_CurrencyUsd" xml:space="preserve"><value>USD</value></data>
+  <data name="Stn_CurrencyGbp" xml:space="preserve"><value>GBP</value></data>
 
   <!-- Status -->
   <data name="Status_Aktiv" xml:space="preserve"><value>Aktiv</value></data>
@@ -238,6 +250,8 @@ Bitte starte die App neu.</value></data>
   <data name="Msg_BackupRestoreConfirmBody" xml:space="preserve"><value>Backup vom {0} wiederherstellen? Alle aktuellen Daten werden überschrieben.</value></data>
   <data name="Msg_BackupRestoreDesc" xml:space="preserve"><value>Erstelle Sicherungen deiner Daten und stelle sie bei Bedarf wieder her.</value></data>
   <data name="Btn_Import" xml:space="preserve"><value>Import</value></data>
+  <data name="Btn_Filter" xml:space="preserve"><value>Filter</value></data>
+  <data name="Btn_Umbuchen" xml:space="preserve"><value>Umbuchen</value></data>
   <data name="Btn_FilterZuruecksetzen" xml:space="preserve"><value>Filter zurücksetzen</value></data>
   <data name="Title_ShiftInstance" xml:space="preserve"><value>Instanz verschieben</value></data>
   <data name="Btn_Hinzufuegen" xml:space="preserve"><value>+</value></data>
@@ -303,6 +317,7 @@ Bitte starte die App neu.</value></data>
   <data name="Lbl_ImportStatusUngueltig" xml:space="preserve"><value>Ungültig</value></data>
   <data name="Lbl_ImportStatusUnkategorisiert" xml:space="preserve"><value>Ohne Kategorie</value></data>
   <data name="Lbl_ImportStatusSpeicherfehler" xml:space="preserve"><value>Speicherfehler</value></data>
+  <data name="Lbl_ImportStatusUnbekannt" xml:space="preserve"><value>Unbekannt</value></data>
   <data name="Lbl_ImportBereitCount" xml:space="preserve"><value>Bereit: {0}</value></data>
   <data name="Lbl_ImportDuplikateCount" xml:space="preserve"><value>Duplikate: {0}</value></data>
   <data name="Lbl_ImportProblemeCount" xml:space="preserve"><value>Probleme: {0}</value></data>
@@ -332,6 +347,7 @@ Bitte starte die App neu.</value></data>
   <data name="A11y_TransaktionHinzufuegen" xml:space="preserve"><value>Neue Transaktion hinzufügen</value></data>
   <data name="A11y_UmbuchungHinzufuegen" xml:space="preserve"><value>Neue Umbuchung hinzufügen</value></data>
   <data name="A11y_KategorieHinzufuegen" xml:space="preserve"><value>Neue Kategorie hinzufügen</value></data>
+  <data name="A11y_KontoHinzufuegen" xml:space="preserve"><value>Neues Konto hinzufügen</value></data>
   <data name="A11y_SparZielHinzufuegen" xml:space="preserve"><value>Neues Sparziel hinzufügen</value></data>
   <data name="A11y_DauerauftragHinzufuegen" xml:space="preserve"><value>Neuen Dauerauftrag hinzufügen</value></data>
   <data name="A11y_BudgetBalken" xml:space="preserve"><value>Budget-Fortschrittsbalken für Kategorie</value></data>

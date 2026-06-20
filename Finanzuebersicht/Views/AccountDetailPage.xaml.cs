@@ -11,9 +11,27 @@ public partial class AccountDetailPage : ContentPage, IQueryAttributable
         BindingContext = viewModel;
     }
 
+    protected override void OnAppearing()
+    {
+        base.OnAppearing();
+        App.LanguageChanged += OnLanguageChanged;
+    }
+
+    protected override void OnDisappearing()
+    {
+        App.LanguageChanged -= OnLanguageChanged;
+        base.OnDisappearing();
+    }
+
     public void ApplyQueryAttributes(IDictionary<string, object> query)
     {
         if (BindingContext is IApplyQueryAttributes vm)
             vm.ApplyQueryAttributes(query);
+    }
+
+    private void OnLanguageChanged()
+    {
+        if (BindingContext is ILocalizableViewModel vm)
+            vm.RefreshLocalizedStrings();
     }
 }
