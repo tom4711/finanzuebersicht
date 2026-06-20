@@ -95,11 +95,11 @@
 		<ProjectReference Include="..\Finanzuebersicht.Presentation\Finanzuebersicht.Presentation.csproj" />
 	</ItemGroup>
 
-	<!-- Debug/maccatalyst: App nach dem Build nach /Applications kopieren und starten -->
+	<!-- Debug/maccatalyst: nach ~/Applications kopieren (Dev-Signatur startet unter macOS 26+ nicht aus /Applications) -->
 	<Target Name="InstallToApplications"
 			AfterTargets="_CodesignAppBundle"
 			Condition="'$(Configuration)' == 'Debug' AND $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">
-		<Exec Command="rsync -a --delete '$(AppBundleDir)/' '/Applications/$(ApplicationTitle).app/'" />
+		<Exec Command="mkdir -p &quot;$HOME/Applications&quot; &amp;&amp; rm -rf &quot;$HOME/Applications/$(ApplicationTitle).app&quot; &amp;&amp; ditto &quot;$(AppBundleDir)&quot; &quot;$HOME/Applications/$(ApplicationTitle).app&quot;" />
 	</Target>
 
 	<!-- Set MAUI version properties from Nerdbank.GitVersioning at build time -->

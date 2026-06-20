@@ -202,11 +202,33 @@ public partial class DashboardViewModel : MonthNavigationViewModel
 
     public bool HasCashflowPreview => CashflowProjectedIncome > 0 || CashflowProjectedExpenses > 0 || CashflowNotableDays > 0;
 
-    [ObservableProperty]
-    private bool isBudgetSectionExpanded = true;
+    public bool ShowCashflowCompact => HasCashflowPreview && !IsCashflowSectionExpanded;
+
+    public bool ShowCashflowExpanded => IsCashflowSectionExpanded && HasCashflowPreview;
+
+    public bool ShowCashflowEmptyLink => IsCashflowSectionExpanded && !HasCashflowPreview;
+
+    public bool ShowSecondarySections => HasAnyDataLoaded || HasKontenUebersicht;
+
+    public bool ShowDueDetailsList => HasDueItems && IsDueDetailsExpanded;
 
     [ObservableProperty]
-    private bool isYearDetailsExpanded = true;
+    private bool isBudgetSectionExpanded;
+
+    [ObservableProperty]
+    private bool isYearDetailsExpanded;
+
+    [ObservableProperty]
+    private bool isDueDetailsExpanded;
+
+    [ObservableProperty]
+    private bool isAccountsSectionExpanded;
+
+    [ObservableProperty]
+    private bool isCashflowSectionExpanded;
+
+    [ObservableProperty]
+    private bool isFilterSectionExpanded;
 
     public bool ShowDashboardSummary => HasKontenUebersicht || HasSelectedAccountSaldo || (IsMonthView && HasMonthData);
 
@@ -219,8 +241,11 @@ public partial class DashboardViewModel : MonthNavigationViewModel
     public bool ShowSummaryBilanz => IsMonthView && HasMonthData;
 
     public string BudgetSectionChevron => IsBudgetSectionExpanded ? "▼" : "▶";
-
     public string YearDetailsChevron => IsYearDetailsExpanded ? "▼" : "▶";
+    public string DueDetailsChevron => IsDueDetailsExpanded ? "▼" : "▶";
+    public string AccountsSectionChevron => IsAccountsSectionExpanded ? "▼" : "▶";
+    public string CashflowSectionChevron => IsCashflowSectionExpanded ? "▼" : "▶";
+    public string FilterSectionChevron => IsFilterSectionExpanded ? "▼" : "▶";
 
     public string DueRecurringText => DueRecurringCount == 1
         ? _loc.GetString(ResourceKeys.Lbl_DauerauftraegeFaellig_Singular, DueRecurringCount)
@@ -246,6 +271,24 @@ public partial class DashboardViewModel : MonthNavigationViewModel
     partial void OnIsBudgetSectionExpandedChanged(bool value) => OnPropertyChanged(nameof(BudgetSectionChevron));
 
     partial void OnIsYearDetailsExpandedChanged(bool value) => OnPropertyChanged(nameof(YearDetailsChevron));
+
+    partial void OnIsDueDetailsExpandedChanged(bool value)
+    {
+        OnPropertyChanged(nameof(DueDetailsChevron));
+        OnPropertyChanged(nameof(ShowDueDetailsList));
+    }
+
+    partial void OnIsAccountsSectionExpandedChanged(bool value) => OnPropertyChanged(nameof(AccountsSectionChevron));
+
+    partial void OnIsCashflowSectionExpandedChanged(bool value)
+    {
+        OnPropertyChanged(nameof(CashflowSectionChevron));
+        OnPropertyChanged(nameof(ShowCashflowCompact));
+        OnPropertyChanged(nameof(ShowCashflowExpanded));
+        OnPropertyChanged(nameof(ShowCashflowEmptyLink));
+    }
+
+    partial void OnIsFilterSectionExpandedChanged(bool value) => OnPropertyChanged(nameof(FilterSectionChevron));
 
     partial void OnGesamtSaldoChanged(decimal value)
     {
@@ -299,15 +342,21 @@ public partial class DashboardViewModel : MonthNavigationViewModel
         _getAccountBalancesUseCase = getAccountBalancesUseCase;
         _settingsService = settingsService;
         _logger = logger;
-        IsBudgetSectionExpanded =
-            bool.TryParse(settingsService.Get(SettingsKeys.DashboardBudgetExpanded, "true"), out var budgetExpanded)
-                ? budgetExpanded
-                : true;
-        IsYearDetailsExpanded =
-            bool.TryParse(settingsService.Get(SettingsKeys.DashboardYearDetailsExpanded, "true"), out var yearExpanded)
-                ? yearExpanded
-                : true;
+        IsBudgetSectionExpanded = ReadExpandedSetting(settingsService, SettingsKeys.DashboardBudgetExpanded);
+        IsYearDetailsExpanded = ReadExpandedSetting(settingsService, SettingsKeys.DashboardYearDetailsExpanded);
+        IsDueDetailsExpanded = ReadExpandedSetting(settingsService, SettingsKeys.DashboardDueDetailsExpanded, defaultExpanded: true);
+        IsAccountsSectionExpanded = ReadExpandedSetting(settingsService, SettingsKeys.DashboardAccountsExpanded);
+        IsCashflowSectionExpanded = ReadExpandedSetting(settingsService, SettingsKeys.DashboardCashflowExpanded);
+        IsFilterSectionExpanded = ReadExpandedSetting(settingsService, SettingsKeys.DashboardFilterExpanded);
         UpdateJahrAnzeige();
+    }
+
+    private static bool ReadExpandedSetting(ISettingsService settingsService, string key, bool defaultExpanded = false)
+    {
+        var defaultValue = defaultExpanded.ToString().ToLowerInvariant();
+        return bool.TryParse(settingsService.Get(key, defaultValue), out var expanded)
+            ? expanded
+            : defaultExpanded;
     }
 
     protected override async Task OnMonthChangedAsync() => await LoadDashboard();
@@ -334,6 +383,7 @@ public partial class DashboardViewModel : MonthNavigationViewModel
             await LadeFaelligeDauerauftraegeAsync();
             await LoadCashflowPreviewAsync();
             HasAnyDataLoaded = HasMonthData || HasYearData;
+            OnPropertyChanged(nameof(ShowSecondarySections));
         }
         finally
         {
@@ -585,6 +635,10 @@ public partial class DashboardViewModel : MonthNavigationViewModel
             CashflowNotableDays = 0;
             CashflowSummaryText = string.Empty;
         }
+
+        OnPropertyChanged(nameof(ShowCashflowCompact));
+        OnPropertyChanged(nameof(ShowCashflowExpanded));
+        OnPropertyChanged(nameof(ShowCashflowEmptyLink));
     }
 
     [RelayCommand]
@@ -599,6 +653,34 @@ public partial class DashboardViewModel : MonthNavigationViewModel
     {
         IsYearDetailsExpanded = !IsYearDetailsExpanded;
         _settingsService.Set(SettingsKeys.DashboardYearDetailsExpanded, IsYearDetailsExpanded.ToString().ToLowerInvariant());
+    }
+
+    [RelayCommand]
+    private void ToggleDueDetails()
+    {
+        IsDueDetailsExpanded = !IsDueDetailsExpanded;
+        _settingsService.Set(SettingsKeys.DashboardDueDetailsExpanded, IsDueDetailsExpanded.ToString().ToLowerInvariant());
+    }
+
+    [RelayCommand]
+    private void ToggleAccountsSection()
+    {
+        IsAccountsSectionExpanded = !IsAccountsSectionExpanded;
+        _settingsService.Set(SettingsKeys.DashboardAccountsExpanded, IsAccountsSectionExpanded.ToString().ToLowerInvariant());
+    }
+
+    [RelayCommand]
+    private void ToggleCashflowSection()
+    {
+        IsCashflowSectionExpanded = !IsCashflowSectionExpanded;
+        _settingsService.Set(SettingsKeys.DashboardCashflowExpanded, IsCashflowSectionExpanded.ToString().ToLowerInvariant());
+    }
+
+    [RelayCommand]
+    private void ToggleFilterSection()
+    {
+        IsFilterSectionExpanded = !IsFilterSectionExpanded;
+        _settingsService.Set(SettingsKeys.DashboardFilterExpanded, IsFilterSectionExpanded.ToString().ToLowerInvariant());
     }
 
     private async Task LadeFaelligeDauerauftraegeAsync()
@@ -622,6 +704,7 @@ public partial class DashboardViewModel : MonthNavigationViewModel
         DueRecurringCount = actionable.Count;
         DueRecurringItems = new ObservableCollection<DueRecurringItem>(actionable);
         OnPropertyChanged(nameof(DueRecurringText));
+        OnPropertyChanged(nameof(ShowDueDetailsList));
     }
 
     private string? BuildDueRecurringHint(DueRecurringItem item, int dashboardPreviewDays)

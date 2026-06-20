@@ -20,7 +20,7 @@ public partial class AccountDetailViewModel(
     IDialogService dialogService,
     IFeedbackService feedbackService,
     IAppEvents appEvents,
-    ILogger<AccountDetailViewModel>? logger = null) : ObservableObject, IApplyQueryAttributes
+    ILogger<AccountDetailViewModel>? logger = null) : ObservableObject, IApplyQueryAttributes, ILocalizableViewModel
 {
     private readonly SaveAccountDetailUseCase _saveAccountDetailUseCase = saveAccountDetailUseCase;
     private readonly GetAccountBalancesUseCase _getAccountBalancesUseCase = getAccountBalancesUseCase;
@@ -81,13 +81,24 @@ public partial class AccountDetailViewModel(
 
     public List<AccountTypeOption> VerfuegbareTypen =>
     [
-        new(AccountType.Girokonto, _loc.GetString("AccountType_Girokonto")),
-        new(AccountType.Tagesgeld, _loc.GetString("AccountType_Tagesgeld")),
-        new(AccountType.Kreditkarte, _loc.GetString("AccountType_Kreditkarte")),
-        new(AccountType.Bargeld, _loc.GetString("AccountType_Bargeld")),
-        new(AccountType.Depot, _loc.GetString("AccountType_Depot")),
-        new(AccountType.Sonstiges, _loc.GetString("AccountType_Sonstiges"))
+        new(AccountType.Girokonto, _loc.GetString(EnumResourceKeys.GetAccountType(AccountType.Girokonto))),
+        new(AccountType.Tagesgeld, _loc.GetString(EnumResourceKeys.GetAccountType(AccountType.Tagesgeld))),
+        new(AccountType.Kreditkarte, _loc.GetString(EnumResourceKeys.GetAccountType(AccountType.Kreditkarte))),
+        new(AccountType.Bargeld, _loc.GetString(EnumResourceKeys.GetAccountType(AccountType.Bargeld))),
+        new(AccountType.Depot, _loc.GetString(EnumResourceKeys.GetAccountType(AccountType.Depot))),
+        new(AccountType.Sonstiges, _loc.GetString(EnumResourceKeys.GetAccountType(AccountType.Sonstiges)))
     ];
+
+    public void RefreshLocalizedStrings()
+    {
+        OnPropertyChanged(nameof(VerfuegbareTypen));
+        OnPropertyChanged(nameof(PageTitle));
+        OnPropertyChanged(nameof(ArchiveStatusText));
+        OnPropertyChanged(nameof(SystemAccountHint));
+        SelectedTypeOption = VerfuegbareTypen.FirstOrDefault(t => t.Value == Type);
+        if (_existingAccount != null)
+            _ = LoadCalculatedBalanceAsync();
+    }
 
     public Account? Account
     {

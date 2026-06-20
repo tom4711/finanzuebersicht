@@ -6,14 +6,14 @@ using Microsoft.Maui.Controls;
 
 namespace Finanzuebersicht.Converters;
 
-public class AccountTypeToLocalizedStringConverter : IValueConverter
+public class TransactionTypeToLocalizedStringConverter : IValueConverter
 {
     public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        if (value is not AccountType accountType)
+        if (value is not TransactionType transactionType)
             return string.Empty;
 
-        return LocalizationResourceManager.Current[EnumResourceKeys.GetAccountType(accountType)];
+        return LocalizationResourceManager.Current[EnumResourceKeys.GetTransactionType(transactionType)];
     }
 
     public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)

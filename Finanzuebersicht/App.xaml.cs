@@ -1,4 +1,5 @@
-﻿using Finanzuebersicht.Services;
+﻿using Finanzuebersicht.Core.Services;
+using Finanzuebersicht.Services;
 
 namespace Finanzuebersicht;
 
@@ -8,6 +9,8 @@ public partial class App : global::Microsoft.Maui.Controls.Application
 	public static event Action? DataChanged;
 
 	public static event Action? LanguageChanged;
+
+	public static event Action? CurrencyChanged;
 
 		public static void NotifyDataChanged()
 		{
@@ -20,11 +23,12 @@ public partial class App : global::Microsoft.Maui.Controls.Application
 	private readonly string _savedTheme;
 
 	public App(InitializationService initService, IRecurringGenerationService recurringGenerationService, ISettingsService settings,
-		ThemeService themeService, ILocalizationService localizationService)
+		ThemeService themeService, ILocalizationService localizationService, IDisplayCurrencyService displayCurrency)
 	{
 		// Sprache vor InitializeComponent setzen, damit XAML-Bindings korrekt aufgelöst werden
 		localizationService.Initialize();
 		localizationService.LanguageChanged += () => LanguageChanged?.Invoke();
+		displayCurrency.Changed += () => CurrencyChanged?.Invoke();
 
 		InitializeComponent();
 		_recurringGenerationService = recurringGenerationService;

@@ -132,9 +132,8 @@ Build & Start (Mac Catalyst):
 
 ```bash
 dotnet build Finanzuebersicht/Finanzuebersicht.csproj -f net10.0-maccatalyst
-# Apple Silicon: maccatalyst-arm64 · Intel: maccatalyst-x64
-cp -R "Finanzuebersicht/bin/Debug/net10.0-maccatalyst/maccatalyst-arm64/Finanzübersicht.app" "/Applications/Finanzübersicht.app"
-open "/Applications/Finanzübersicht.app"
+# Debug-Build kopiert automatisch nach ~/Applications (nicht /Applications — macOS 26+ Dev-Signatur)
+open ~/Applications/Finanzübersicht.app
 
 # Tests
 dotnet test Finanzuebersicht.Tests
@@ -205,7 +204,7 @@ Finanzuebersicht.Tests/            ← xUnit Tests (net10.0)
 
 ## Versionierung & CI
 
-- Nerdbank.GitVersioning (`version.json`) steuert Versionsnummern (aktuell Basis `1.15`)
+- Nerdbank.GitVersioning (`version.json`) steuert Versionsnummern (aktuell Basis `1.16`)
 - CI / Pre-Release / Release Workflows in `.github/workflows/`
 
 ### Full MAUI build (macCatalyst)

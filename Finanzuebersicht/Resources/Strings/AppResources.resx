@@ -10,7 +10,7 @@
   <data name="Nav_Transaktionen" xml:space="preserve"><value>Transactions</value></data>
   <data name="Nav_Dauerauftraege" xml:space="preserve"><value>Recurring</value></data>
   <data name="Nav_Kategorien" xml:space="preserve"><value>Categories</value></data>
-  <data name="Nav_Verwaltung" xml:space="preserve"><value>Management</value></data>
+  <data name="Nav_Verwaltung" xml:space="preserve"><value>Categories &amp; Accounts</value></data>
   <data name="Nav_Einstellungen" xml:space="preserve"><value>Settings</value></data>
   <data name="Nav_Cashflow" xml:space="preserve"><value>Cashflow (30 days)</value></data>
   <data name="Title_Cashflow" xml:space="preserve"><value>Cashflow Outlook</value></data>
@@ -34,6 +34,7 @@
   <data name="Lbl_Titel" xml:space="preserve"><value>Title</value></data>
   <data name="Lbl_Kategorie" xml:space="preserve"><value>Category</value></data>
   <data name="Lbl_Konto" xml:space="preserve"><value>Account</value></data>
+  <data name="Lbl_Konten" xml:space="preserve"><value>Accounts</value></data>
   <data name="Lbl_AlleKonten" xml:space="preserve"><value>All Accounts</value></data>
   <data name="Lbl_Kontosaldo" xml:space="preserve"><value>Account Balance</value></data>
   <data name="Lbl_Anfangssaldo" xml:space="preserve"><value>Opening balance</value></data>
@@ -74,6 +75,7 @@
   <data name="Lbl_Verwendungszweck" xml:space="preserve"><value>Purpose</value></data>
   <data name="Lbl_DatenWerdenGespeichert" xml:space="preserve"><value>Data is stored here:</value></data>
   <data name="Lbl_Sprache" xml:space="preserve"><value>Language</value></data>
+  <data name="Lbl_Anzeigewaehrung" xml:space="preserve"><value>Display Currency</value></data>
   <data name="Lbl_KategorienColon" xml:space="preserve"><value>Categories:</value></data>
 
   <!-- Buttons -->
@@ -81,11 +83,11 @@
   <data name="Btn_Loeschen" xml:space="preserve"><value>Delete</value></data>
   <data name="Btn_Abbrechen" xml:space="preserve"><value>Cancel</value></data>
   <data name="Btn_OK" xml:space="preserve"><value>OK</value></data>
-  <data name="Btn_OrdnerWaehlen" xml:space="preserve"><value>📁 Choose Folder</value></data>
+  <data name="Btn_OrdnerWaehlen" xml:space="preserve"><value>Choose Folder</value></data>
   <data name="Btn_Zuruecksetzen" xml:space="preserve"><value>Reset</value></data>
   <data name="Btn_System" xml:space="preserve"><value>System</value></data>
-  <data name="Btn_Hell" xml:space="preserve"><value>☀️ Light</value></data>
-  <data name="Btn_Dunkel" xml:space="preserve"><value>🌙 Dark</value></data>
+  <data name="Btn_Hell" xml:space="preserve"><value>Light</value></data>
+  <data name="Btn_Dunkel" xml:space="preserve"><value>Dark</value></data>
   <data name="Btn_Ja" xml:space="preserve"><value>Yes</value></data>
   <data name="Btn_Nein" xml:space="preserve"><value>No</value></data>
   <data name="Btn_AktivInaktiv" xml:space="preserve"><value>Toggle Active</value></data>
@@ -129,6 +131,12 @@
   <!-- Confirmation Dialogs -->
   <data name="Dlg_KategorieLoeschen" xml:space="preserve"><value>Delete Category</value></data>
   <data name="Dlg_KategorieLoeschenFrage" xml:space="preserve"><value>Really delete "{0}"?</value></data>
+  <data name="Dlg_KontoLoeschen" xml:space="preserve"><value>Delete account</value></data>
+  <data name="Dlg_KontoLoeschenFrage" xml:space="preserve"><value>Really delete "{0}"?</value></data>
+  <data name="Dlg_KontoArchivieren" xml:space="preserve"><value>Archive account</value></data>
+  <data name="Dlg_KontoArchivierenFrage" xml:space="preserve"><value>Archive "{0}"? It will no longer be available for new transactions.</value></data>
+  <data name="Dlg_KontoReaktivieren" xml:space="preserve"><value>Reactivate account</value></data>
+  <data name="Dlg_KontoReaktivierenFrage" xml:space="preserve"><value>Reactivate "{0}"?</value></data>
   <data name="Dlg_DauerauftragLoeschen" xml:space="preserve"><value>Delete Recurring Transaction</value></data>
   <data name="Dlg_DauerauftragLoeschenFrage" xml:space="preserve"><value>Really delete "{0}"?</value></data>
   <data name="Dlg_DauerauftragBuchen" xml:space="preserve"><value>Book Recurring Transaction</value></data>
@@ -161,6 +169,10 @@ Please restart the app.</value></data>
   <data name="Stn_SpracheDeutsch" xml:space="preserve"><value>German</value></data>
   <data name="Stn_SpracheEnglisch" xml:space="preserve"><value>English</value></data>
   <data name="Stn_SpracheSystem" xml:space="preserve"><value>System Language</value></data>
+  <data name="Stn_CurrencyEur" xml:space="preserve"><value>EUR</value></data>
+  <data name="Stn_CurrencyChf" xml:space="preserve"><value>CHF</value></data>
+  <data name="Stn_CurrencyUsd" xml:space="preserve"><value>USD</value></data>
+  <data name="Stn_CurrencyGbp" xml:space="preserve"><value>GBP</value></data>
 
   <!-- Status -->
   <data name="Status_Aktiv" xml:space="preserve"><value>Active</value></data>
@@ -238,6 +250,8 @@ Please restart the app.</value></data>
   <data name="Msg_BackupRestoreConfirmBody" xml:space="preserve"><value>Restore backup from {0}? All current data will be overwritten.</value></data>
   <data name="Msg_BackupRestoreDesc" xml:space="preserve"><value>Create backups of your data and restore when needed.</value></data>
   <data name="Btn_Import" xml:space="preserve"><value>Import</value></data>
+  <data name="Btn_Filter" xml:space="preserve"><value>Filter</value></data>
+  <data name="Btn_Umbuchen" xml:space="preserve"><value>Transfer</value></data>
   <data name="Btn_FilterZuruecksetzen" xml:space="preserve"><value>Clear filter</value></data>
   <data name="Title_ShiftInstance" xml:space="preserve"><value>Shift instance</value></data>
   <data name="Btn_Hinzufuegen" xml:space="preserve"><value>+</value></data>
@@ -303,6 +317,7 @@ Please restart the app.</value></data>
   <data name="Lbl_ImportStatusUngueltig" xml:space="preserve"><value>Invalid</value></data>
   <data name="Lbl_ImportStatusUnkategorisiert" xml:space="preserve"><value>No category</value></data>
   <data name="Lbl_ImportStatusSpeicherfehler" xml:space="preserve"><value>Save error</value></data>
+  <data name="Lbl_ImportStatusUnbekannt" xml:space="preserve"><value>Unknown</value></data>
   <data name="Lbl_ImportBereitCount" xml:space="preserve"><value>Ready: {0}</value></data>
   <data name="Lbl_ImportDuplikateCount" xml:space="preserve"><value>Duplicates: {0}</value></data>
   <data name="Lbl_ImportProblemeCount" xml:space="preserve"><value>Problems: {0}</value></data>
@@ -332,6 +347,7 @@ Please restart the app.</value></data>
   <data name="A11y_TransaktionHinzufuegen" xml:space="preserve"><value>Add new transaction</value></data>
   <data name="A11y_UmbuchungHinzufuegen" xml:space="preserve"><value>Add new transfer</value></data>
   <data name="A11y_KategorieHinzufuegen" xml:space="preserve"><value>Add new category</value></data>
+  <data name="A11y_KontoHinzufuegen" xml:space="preserve"><value>Add new account</value></data>
   <data name="A11y_SparZielHinzufuegen" xml:space="preserve"><value>Add new savings goal</value></data>
   <data name="A11y_DauerauftragHinzufuegen" xml:space="preserve"><value>Add new recurring transaction</value></data>
   <data name="A11y_BudgetBalken" xml:space="preserve"><value>Category budget progress</value></data>

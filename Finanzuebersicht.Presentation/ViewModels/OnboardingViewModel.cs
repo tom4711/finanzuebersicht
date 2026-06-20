@@ -12,20 +12,26 @@ public partial class OnboardingViewModel(
     IOnboardingCoordinator onboardingCoordinator,
     INavigationService navigationService,
     ILocalizationService localizationService,
+    IDisplayCurrencyService displayCurrency,
     LoadAccountsUseCase loadAccountsUseCase) : ObservableObject
 {
     private readonly IOnboardingCoordinator _onboardingCoordinator = onboardingCoordinator;
     private readonly INavigationService _navigationService = navigationService;
     private readonly ILocalizationService _loc = localizationService;
+    private readonly IDisplayCurrencyService _displayCurrency = displayCurrency;
     private readonly LoadAccountsUseCase _loadAccountsUseCase = loadAccountsUseCase;
 
     [ObservableProperty]
     private int currentStep;
 
+    [ObservableProperty]
+    private int selectedCurrencyIndex = displayCurrency.SelectedIndex;
+
     public int TotalSteps => 5;
 
     public string StepIndicator => $"{CurrentStep + 1} / {TotalSteps}";
 
+    public bool ShowWelcomeSetup => CurrentStep == 0;
     public bool ShowAccountActions => CurrentStep == 1;
     public bool ShowTransactionActions => CurrentStep == 2;
     public bool ShowBackupActions => CurrentStep == 3;
@@ -63,9 +69,20 @@ public partial class OnboardingViewModel(
         OnPropertyChanged(nameof(IsFirstStep));
         OnPropertyChanged(nameof(PrimaryButtonText));
         OnPropertyChanged(nameof(StepIndicator));
+        OnPropertyChanged(nameof(ShowWelcomeSetup));
         OnPropertyChanged(nameof(ShowAccountActions));
         OnPropertyChanged(nameof(ShowTransactionActions));
         OnPropertyChanged(nameof(ShowBackupActions));
+    }
+
+    partial void OnSelectedCurrencyIndexChanged(int value)
+        => _displayCurrency.SelectedIndex = value;
+
+    [RelayCommand]
+    private void SetCurrency(string indexStr)
+    {
+        if (int.TryParse(indexStr, out var idx))
+            SelectedCurrencyIndex = idx;
     }
 
     [RelayCommand]

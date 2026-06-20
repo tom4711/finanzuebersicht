@@ -145,7 +145,7 @@ public class DashboardViewModelTests
     public void ToggleBudgetSection_PersistsExpandedState()
     {
         var settings = Substitute.For<ISettingsService>();
-        settings.Get(SettingsKeys.DashboardBudgetExpanded, "true").Returns("true");
+        settings.Get(SettingsKeys.DashboardBudgetExpanded, "false").Returns("true");
 
         var viewModel = CreateSut(settings);
         Assert.True(viewModel.IsBudgetSectionExpanded);

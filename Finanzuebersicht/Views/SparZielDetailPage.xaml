@@ -19,35 +19,35 @@
         <VerticalStackLayout Spacing="20">
 
             <VerticalStackLayout Spacing="8">
-                <Label Text="{Binding FortschrittText}" FontSize="14" TextColor="Gray" />
+                <Label Text="{Binding FortschrittText}" FontSize="14" TextColor="{AppThemeBinding Light={StaticResource TextTertiary}, Dark={StaticResource Gray600}}" />
                 <ProgressBar Progress="{Binding FortschrittProzent, Converter={StaticResource ProzentToWidth}}"
                              ProgressColor="{AppThemeBinding Light={StaticResource Einnahme}, Dark={StaticResource EinnahmeDark}}"
-                             BackgroundColor="{AppThemeBinding Light=#E5E5EA, Dark=#3A3A3C}"
+                             BackgroundColor="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray900}}"
                              SemanticProperties.Description="{loc:Translate A11y_SparZielBalken}" />
             </VerticalStackLayout>
 
             <VerticalStackLayout Spacing="4">
-                <Label Text="{loc:Translate Lbl_Titel}" FontSize="13" TextColor="Gray" />
+                <Label Text="{loc:Translate Lbl_Titel}" FontSize="13" TextColor="{AppThemeBinding Light={StaticResource TextTertiary}, Dark={StaticResource Gray600}}" />
                 <Entry Text="{Binding Titel}" Placeholder="{loc:Translate Hint_ZielTitel}" FontSize="16" />
             </VerticalStackLayout>
 
             <VerticalStackLayout Spacing="4">
-                <Label Text="{loc:Translate Lbl_Icon}" FontSize="13" TextColor="Gray" />
+                <Label Text="{loc:Translate Lbl_Icon}" FontSize="13" TextColor="{AppThemeBinding Light={StaticResource TextTertiary}, Dark={StaticResource Gray600}}" />
                 <Entry Text="{Binding Icon}" FontSize="24" MaxLength="2" />
             </VerticalStackLayout>
 
             <VerticalStackLayout Spacing="4">
-                <Label Text="{loc:Translate Lbl_ZielBetrag}" FontSize="13" TextColor="Gray" />
+                <Label Text="{loc:Translate Lbl_ZielBetrag}" FontSize="13" TextColor="{AppThemeBinding Light={StaticResource TextTertiary}, Dark={StaticResource Gray600}}" />
                 <Entry Text="{Binding ZielBetragText}" Keyboard="Numeric" FontSize="16" />
             </VerticalStackLayout>
 
             <VerticalStackLayout Spacing="4">
-                <Label Text="{loc:Translate Lbl_AktuellerBetrag}" FontSize="13" TextColor="Gray" />
+                <Label Text="{loc:Translate Lbl_AktuellerBetrag}" FontSize="13" TextColor="{AppThemeBinding Light={StaticResource TextTertiary}, Dark={StaticResource Gray600}}" />
                 <Entry Text="{Binding AktuellerBetragText}" Keyboard="Numeric" FontSize="16" />
             </VerticalStackLayout>
 
             <VerticalStackLayout Spacing="4">
-                <Label Text="{loc:Translate Lbl_MonatlicheSparrate}" FontSize="13" TextColor="Gray" />
+                <Label Text="{loc:Translate Lbl_MonatlicheSparrate}" FontSize="13" TextColor="{AppThemeBinding Light={StaticResource TextTertiary}, Dark={StaticResource Gray600}}" />
                 <Entry Text="{Binding MonatlicheSparrateText}" Keyboard="Numeric" FontSize="16" />
             </VerticalStackLayout>
 
@@ -55,7 +55,7 @@
                 <Grid ColumnDefinitions="*, Auto" ColumnSpacing="8">
                     <Label Text="{loc:Translate Lbl_Faelligkeit}"
                            FontSize="13"
-                           TextColor="Gray"
+                           TextColor="{AppThemeBinding Light={StaticResource TextTertiary}, Dark={StaticResource Gray600}}"
                            VerticalTextAlignment="Center" />
                     <Switch Grid.Column="1" IsToggled="{Binding UseFaelligkeit}" />
                 </Grid>
@@ -68,14 +68,14 @@
             <Button Text="{loc:Translate Btn_BeitragBuchen}"
                     Command="{Binding BookContributionCommand}"
                     BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
-                    TextColor="White"
+                    TextColor="{StaticResource White}"
                     CornerRadius="12"
                     HeightRequest="44" />
 
             <Button Text="{loc:Translate Btn_Speichern}"
                     Command="{Binding SaveCommand}"
                     BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
-                    TextColor="White"
+                    TextColor="{StaticResource White}"
                     CornerRadius="12"
                     HeightRequest="50"
                     FontSize="16"
@@ -84,7 +84,7 @@
 
             <Button Text="{loc:Translate Btn_Loeschen}"
                     Command="{Binding DeleteCommand}"
-                    BackgroundColor="{AppThemeBinding Light=#E5E5EA, Dark=#3A3A3C}"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray900}}"
                     TextColor="{AppThemeBinding Light={StaticResource Ausgabe}, Dark={StaticResource AusgabeDark}}"
                     CornerRadius="12"
                     HeightRequest="44" />

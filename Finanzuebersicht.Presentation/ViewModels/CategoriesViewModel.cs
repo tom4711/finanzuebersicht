@@ -25,7 +25,7 @@ public partial class CategoriesViewModel(
     IDialogService dialogService,
     IFeedbackService feedbackService,
     IAppEvents appEvents,
-    ILogger<CategoriesViewModel>? logger = null) : ObservableObject, IAutoLoadViewModel
+    ILogger<CategoriesViewModel>? logger = null) : ObservableObject, IAutoLoadViewModel, ILocalizableViewModel
 {
     private readonly DeleteCategoryUseCase _deleteCategoryUseCase = deleteCategoryUseCase;
     private readonly LoadCategoriesUseCase _loadCategoriesUseCase = loadCategoriesUseCase;
@@ -62,6 +62,21 @@ public partial class CategoriesViewModel(
 
     public bool IsKategorienVisible => SelectedSectionIndex == 0;
     public bool IsKontenVisible => SelectedSectionIndex == 1;
+
+    public string FabAccessibilityDescription => IsKontenVisible
+        ? _loc.GetString(ResourceKeys.A11y_KontoHinzufuegen)
+        : _loc.GetString(ResourceKeys.A11y_KategorieHinzufuegen);
+
+    partial void OnSelectedSectionIndexChanged(int value)
+    {
+        OnPropertyChanged(nameof(FabAccessibilityDescription));
+    }
+
+    public void RefreshLocalizedStrings()
+    {
+        OnPropertyChanged(nameof(FabAccessibilityDescription));
+        _ = LoadKategorien();
+    }
 
     [ObservableProperty]
     private bool isLoading;
@@ -150,8 +165,8 @@ public partial class CategoriesViewModel(
         if (!konto.CanDelete) return;
 
         var confirm = await _dialogService.ShowConfirmationAsync(
-            "Konto löschen",
-            $"\"{konto.Name}\" wirklich löschen?",
+            _loc.GetString(ResourceKeys.Dlg_KontoLoeschen),
+            _loc.GetString(ResourceKeys.Dlg_KontoLoeschenFrage, konto.Name),
             _loc.GetString(ResourceKeys.Btn_Ja), _loc.GetString(ResourceKeys.Btn_Nein));
         if (!confirm) return;
 
@@ -178,10 +193,12 @@ public partial class CategoriesViewModel(
         if (!konto.CanArchive) return;
 
         var setArchived = !konto.IsArchived;
-        var confirmTitle = setArchived ? "Konto archivieren" : "Konto reaktivieren";
+        var confirmTitle = setArchived
+            ? _loc.GetString(ResourceKeys.Dlg_KontoArchivieren)
+            : _loc.GetString(ResourceKeys.Dlg_KontoReaktivieren);
         var confirmBody = setArchived
-            ? $"\"{konto.Name}\" archivieren? Konto steht dann nicht mehr für neue Buchungen zur Auswahl."
-            : $"\"{konto.Name}\" wieder aktivieren?";
+            ? _loc.GetString(ResourceKeys.Dlg_KontoArchivierenFrage, konto.Name)
+            : _loc.GetString(ResourceKeys.Dlg_KontoReaktivierenFrage, konto.Name);
         var confirm = await _dialogService.ShowConfirmationAsync(
             confirmTitle,
             confirmBody,
