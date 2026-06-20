@@ -35,7 +35,7 @@ public abstract class BaseContentPage : ContentPage
 
     private void OnLanguageChanged()
     {
-        if (BindingContext is IAutoLoadViewModel vm)
+        if (BindingContext is IAutoLoadViewModel vm && vm.ShouldAutoLoad)
             vm.AutoLoadCommand.Execute(null);
     }
 }

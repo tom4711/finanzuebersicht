@@ -299,8 +299,14 @@ public partial class DashboardViewModel : MonthNavigationViewModel
         _getAccountBalancesUseCase = getAccountBalancesUseCase;
         _settingsService = settingsService;
         _logger = logger;
-        IsBudgetSectionExpanded = settingsService.Get(SettingsKeys.DashboardBudgetExpanded, "true") == "true";
-        IsYearDetailsExpanded = settingsService.Get(SettingsKeys.DashboardYearDetailsExpanded, "true") == "true";
+        IsBudgetSectionExpanded =
+            bool.TryParse(settingsService.Get(SettingsKeys.DashboardBudgetExpanded, "true"), out var budgetExpanded)
+                ? budgetExpanded
+                : true;
+        IsYearDetailsExpanded =
+            bool.TryParse(settingsService.Get(SettingsKeys.DashboardYearDetailsExpanded, "true"), out var yearExpanded)
+                ? yearExpanded
+                : true;
         UpdateJahrAnzeige();
     }
 

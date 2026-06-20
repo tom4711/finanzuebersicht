@@ -64,11 +64,21 @@ internal static class SelectionRowViewFactory
         Grid.SetRowSpan(separator, 1);
         Grid.SetColumnSpan(separator, 2);
 
-        var tap = new TapGestureRecognizer();
-        tap.Tapped += async (_, _) => await onSelectedAsync(row);
-        rowGrid.GestureRecognizers.Add(tap);
+        var button = new Button
+        {
+            BackgroundColor = Colors.Transparent,
+            BorderWidth = 0,
+            Padding = 0,
+            HorizontalOptions = LayoutOptions.Fill,
+            VerticalOptions = LayoutOptions.Fill
+        };
+        button.Clicked += async (_, _) => await onSelectedAsync(row);
 
-        return rowGrid;
+        return new Grid
+        {
+            HeightRequest = RowHeight,
+            Children = { rowGrid, button }
+        };
     }
 
     public static double RowHeightRequest => RowHeight;
