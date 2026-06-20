@@ -20,7 +20,7 @@ public partial class SparZielDetailViewModel(
     IDialogService dialogService,
     IFeedbackService feedbackService,
     IAppEvents appEvents,
-    ILogger<SparZielDetailViewModel>? logger = null) : ObservableObject, IApplyQueryAttributes
+    ILogger<SparZielDetailViewModel>? logger = null) : ObservableObject, IApplyQueryAttributes, IAutoLoadViewModel
 {
     private readonly SaveSparZielUseCase _saveSparZielUseCase = saveSparZielUseCase;
     private readonly DeleteSparZielUseCase _deleteSparZielUseCase = deleteSparZielUseCase;
@@ -63,6 +63,8 @@ public partial class SparZielDetailViewModel(
     private string fortschrittText = string.Empty;
 
     public bool HasFaelligkeit => UseFaelligkeit;
+
+    public System.Windows.Input.ICommand AutoLoadCommand => LoadProgressCommand;
 
     public string PageTitle => _loc.GetString(ResourceKeys.Title_SparZielBearbeiten);
 

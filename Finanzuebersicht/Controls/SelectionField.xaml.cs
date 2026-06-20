@@ -57,8 +57,18 @@ public partial class SelectionField : ContentView
     public SelectionField()
     {
         InitializeComponent();
-        LocalizationResourceManager.Current.PropertyChanged += OnLocalizationChanged;
         UpdateResolvedDisplay();
+    }
+
+    protected override void OnParentSet()
+    {
+        base.OnParentSet();
+        LocalizationResourceManager.Current.PropertyChanged -= OnLocalizationChanged;
+        if (Parent is not null)
+        {
+            LocalizationResourceManager.Current.PropertyChanged += OnLocalizationChanged;
+            UpdateResolvedDisplay();
+        }
     }
 
     private void OnLocalizationChanged(object? sender, PropertyChangedEventArgs e)

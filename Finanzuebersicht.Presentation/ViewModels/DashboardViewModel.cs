@@ -151,6 +151,8 @@ public partial class DashboardViewModel : MonthNavigationViewModel
     [NotifyPropertyChangedFor(nameof(IsYearView))]
     [NotifyPropertyChangedFor(nameof(ShowMonthView))]
     [NotifyPropertyChangedFor(nameof(ShowYearView))]
+    [NotifyPropertyChangedFor(nameof(ShowDashboardSummary))]
+    [NotifyPropertyChangedFor(nameof(ShowSummaryBilanz))]
     private bool isMonthView = true;
 
     public bool IsYearView => !IsMonthView;
@@ -300,20 +302,6 @@ public partial class DashboardViewModel : MonthNavigationViewModel
         IsBudgetSectionExpanded = settingsService.Get(SettingsKeys.DashboardBudgetExpanded, "true") == "true";
         IsYearDetailsExpanded = settingsService.Get(SettingsKeys.DashboardYearDetailsExpanded, "true") == "true";
         UpdateJahrAnzeige();
-        _loc.LanguageChanged += OnLanguageChanged;
-    }
-
-    private async void OnLanguageChanged()
-    {
-        try
-        {
-            await LadeFaelligeDauerauftraegeAsync();
-            await LoadCashflowPreviewAsync();
-        }
-        catch (Exception ex)
-        {
-            _logger?.LogWarning(ex, "Dashboard refresh after language change failed");
-        }
     }
 
     protected override async Task OnMonthChangedAsync() => await LoadDashboard();

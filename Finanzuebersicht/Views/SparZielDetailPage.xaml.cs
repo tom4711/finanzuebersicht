@@ -3,7 +3,7 @@ using Finanzuebersicht.ViewModels;
 
 namespace Finanzuebersicht.Views;
 
-public partial class SparZielDetailPage : ContentPage, IQueryAttributable
+public partial class SparZielDetailPage : BaseContentPage, IQueryAttributable
 {
     public SparZielDetailPage(SparZielDetailViewModel viewModel)
     {
