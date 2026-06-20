@@ -14,12 +14,14 @@ public partial class AccountDetailPage : ContentPage, IQueryAttributable
     protected override void OnAppearing()
     {
         base.OnAppearing();
-        App.LanguageChanged += OnLanguageChanged;
+        App.LanguageChanged += OnLocalizationChanged;
+        App.CurrencyChanged += OnLocalizationChanged;
     }
 
     protected override void OnDisappearing()
     {
-        App.LanguageChanged -= OnLanguageChanged;
+        App.LanguageChanged -= OnLocalizationChanged;
+        App.CurrencyChanged -= OnLocalizationChanged;
         base.OnDisappearing();
     }
 
@@ -29,7 +31,7 @@ public partial class AccountDetailPage : ContentPage, IQueryAttributable
             vm.ApplyQueryAttributes(query);
     }
 
-    private void OnLanguageChanged()
+    private void OnLocalizationChanged()
     {
         if (BindingContext is ILocalizableViewModel vm)
             vm.RefreshLocalizedStrings();

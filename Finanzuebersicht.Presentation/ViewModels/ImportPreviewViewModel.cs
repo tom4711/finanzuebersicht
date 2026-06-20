@@ -304,7 +304,12 @@ public partial class ImportPreviewRowItemViewModel : ObservableObject
         _ => _loc.GetString(ResourceKeys.Lbl_ImportStatusUnbekannt)
     };
 
-    public void RefreshLocalizedStrings() => OnPropertyChanged(nameof(StatusText));
+    public void RefreshLocalizedStrings()
+    {
+        OnPropertyChanged(nameof(StatusText));
+        OnPropertyChanged(nameof(AmountText));
+        OnPropertyChanged(nameof(DateText));
+    }
 
     partial void OnIsIncludedChanged(bool value)
     {

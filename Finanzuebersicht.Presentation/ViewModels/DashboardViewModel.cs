@@ -344,15 +344,18 @@ public partial class DashboardViewModel : MonthNavigationViewModel
         _logger = logger;
         IsBudgetSectionExpanded = ReadExpandedSetting(settingsService, SettingsKeys.DashboardBudgetExpanded);
         IsYearDetailsExpanded = ReadExpandedSetting(settingsService, SettingsKeys.DashboardYearDetailsExpanded);
-        IsDueDetailsExpanded = ReadExpandedSetting(settingsService, SettingsKeys.DashboardDueDetailsExpanded);
+        IsDueDetailsExpanded = ReadExpandedSetting(settingsService, SettingsKeys.DashboardDueDetailsExpanded, defaultExpanded: true);
         IsAccountsSectionExpanded = ReadExpandedSetting(settingsService, SettingsKeys.DashboardAccountsExpanded);
         IsCashflowSectionExpanded = ReadExpandedSetting(settingsService, SettingsKeys.DashboardCashflowExpanded);
         IsFilterSectionExpanded = ReadExpandedSetting(settingsService, SettingsKeys.DashboardFilterExpanded);
         UpdateJahrAnzeige();
     }
 
-    private static bool ReadExpandedSetting(ISettingsService settingsService, string key) =>
-        bool.TryParse(settingsService.Get(key, "false"), out var expanded) && expanded;
+    private static bool ReadExpandedSetting(ISettingsService settingsService, string key, bool defaultExpanded = false)
+    {
+        var defaultValue = defaultExpanded.ToString().ToLowerInvariant();
+        return bool.TryParse(settingsService.Get(key, defaultValue), out var expanded) && expanded;
+    }
 
     protected override async Task OnMonthChangedAsync() => await LoadDashboard();
 

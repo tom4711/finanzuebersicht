@@ -96,6 +96,8 @@ public partial class AccountDetailViewModel(
         OnPropertyChanged(nameof(ArchiveStatusText));
         OnPropertyChanged(nameof(SystemAccountHint));
         SelectedTypeOption = VerfuegbareTypen.FirstOrDefault(t => t.Value == Type);
+        if (_existingAccount != null)
+            _ = LoadCalculatedBalanceAsync();
     }
 
     public Account? Account
