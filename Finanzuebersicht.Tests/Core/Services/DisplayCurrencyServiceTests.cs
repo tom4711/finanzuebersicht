@@ -52,6 +52,21 @@ public class DisplayCurrencyServiceTests
     }
 
     [Theory]
+    [InlineData("usd", "USD", "en-US")]
+    [InlineData(" usd ", "USD", "en-US")]
+    [InlineData("chf", "CHF", "de-CH")]
+    public void LoadCurrencyCode_NormalizesStoredValue(string stored, string expectedCode, string expectedCulture)
+    {
+        var settings = Substitute.For<ISettingsService>();
+        settings.Get(SettingsKeys.DisplayCurrency, "").Returns(stored);
+
+        var service = new DisplayCurrencyService(settings);
+
+        Assert.Equal(expectedCode, service.CurrencyCode);
+        Assert.Equal(expectedCulture, service.FormatCulture.Name);
+    }
+
+    [Theory]
     [InlineData(0, "EUR", "de-DE")]
     [InlineData(1, "CHF", "de-CH")]
     [InlineData(2, "USD", "en-US")]

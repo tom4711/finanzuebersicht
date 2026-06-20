@@ -354,7 +354,9 @@ public partial class DashboardViewModel : MonthNavigationViewModel
     private static bool ReadExpandedSetting(ISettingsService settingsService, string key, bool defaultExpanded = false)
     {
         var defaultValue = defaultExpanded.ToString().ToLowerInvariant();
-        return bool.TryParse(settingsService.Get(key, defaultValue), out var expanded) && expanded;
+        return bool.TryParse(settingsService.Get(key, defaultValue), out var expanded)
+            ? expanded
+            : defaultExpanded;
     }
 
     protected override async Task OnMonthChangedAsync() => await LoadDashboard();
