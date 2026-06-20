@@ -101,6 +101,7 @@ Fokus: Onboarding, einheitliche Empty States, Aktion-Feedback, Saldo-Vertrauen.
 |-------|-------|-----------|
 | [#252](https://github.com/tom4711/finanzuebersicht/issues/252) | Dashboard Runde 2 — weniger Karten, klarer erster Blick | B |
 | [#253](https://github.com/tom4711/finanzuebersicht/issues/253) | Anzeige-Währung beim Erststart (getrennt von Sprache) | B |
+| [#254](https://github.com/tom4711/finanzuebersicht/issues/254) | Hardcoded XAML-Farben → zentrale Theme-Ressourcen | B |
 | [#234](https://github.com/tom4711/finanzuebersicht/issues/234) | Seitentitel und Enum-Labels lokalisieren | B |
 | [#236](https://github.com/tom4711/finanzuebersicht/issues/236) | Verwaltung Kategorien/Konten — Segment klarer | B |
 | [#238](https://github.com/tom4711/finanzuebersicht/issues/238) | Filter und Umbuchung mit Text statt Emoji | B |
