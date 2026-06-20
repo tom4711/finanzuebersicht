@@ -42,6 +42,7 @@ public static class PresentationServiceCollectionExtensions
                 sp.GetRequiredService<AboutViewModel>(),
                 sp.GetRequiredService<INavigationService>()));
         services.AddTransient<SparZieleViewModel>();
+        services.AddTransient<SparZielDetailViewModel>();
         services.AddTransient<BackupListViewModel>();
         services.AddTransient<ImportPreviewViewModel>();
         services.AddTransient<CashflowViewModel>();

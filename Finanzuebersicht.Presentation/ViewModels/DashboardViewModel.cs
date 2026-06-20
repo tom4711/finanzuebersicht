@@ -5,6 +5,7 @@ using CommunityToolkit.Mvvm.Input;
 using Finanzuebersicht.Application.UseCases.Accounts;
 using Finanzuebersicht.Application.UseCases.Dashboard;
 using Finanzuebersicht.Application.UseCases.RecurringTransactions;
+using Finanzuebersicht.Core.Services;
 using Finanzuebersicht.Models;
 using Finanzuebersicht.Navigation;
 using Finanzuebersicht.Resources.Strings;
@@ -19,6 +20,8 @@ public partial class DashboardViewModel : MonthNavigationViewModel
     private readonly GetDueRecurringWithHintsUseCase _getDueRecurringUseCase;
     private readonly BookDueRecurringInstanceUseCase _bookDueRecurringUseCase;
     private readonly SkipDueRecurringInstanceUseCase _skipDueRecurringUseCase;
+    private readonly LoadCashflowOutlookUseCase _loadCashflowOutlookUseCase;
+    private readonly ISettingsService _settingsService;
     private readonly IDialogService _dialogService;
     private readonly IBudgetRepository _budgetRepository;
     private readonly IAccountRepository _accountRepository;
@@ -176,6 +179,47 @@ public partial class DashboardViewModel : MonthNavigationViewModel
 
     public bool HasDueItems => DueRecurringCount > 0;
 
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasCashflowPreview))]
+    private decimal cashflowNetAmount;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasCashflowPreview))]
+    private decimal cashflowProjectedIncome;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasCashflowPreview))]
+    private decimal cashflowProjectedExpenses;
+
+    [ObservableProperty]
+    private string cashflowSummaryText = string.Empty;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasCashflowPreview))]
+    private int cashflowNotableDays;
+
+    public bool HasCashflowPreview => CashflowProjectedIncome > 0 || CashflowProjectedExpenses > 0 || CashflowNotableDays > 0;
+
+    [ObservableProperty]
+    private bool isBudgetSectionExpanded = true;
+
+    [ObservableProperty]
+    private bool isYearDetailsExpanded = true;
+
+    public bool ShowDashboardSummary => HasKontenUebersicht || HasSelectedAccountSaldo || (IsMonthView && HasMonthData);
+
+    public decimal SummarySaldo => HasSelectedAccountSaldo ? SelectedAccountSaldo : GesamtSaldo;
+
+    public string SummarySaldoLabel => HasSelectedAccountSaldo
+        ? _loc.GetString(ResourceKeys.Lbl_Kontosaldo)
+        : _loc.GetString(ResourceKeys.Lbl_Gesamtsaldo);
+
+    public bool ShowSummaryBilanz => IsMonthView && HasMonthData;
+
+    public string BudgetSectionChevron => IsBudgetSectionExpanded ? "▼" : "▶";
+
+    public string YearDetailsChevron => IsYearDetailsExpanded ? "▼" : "▶";
+
     public string DueRecurringText => DueRecurringCount == 1
         ? _loc.GetString(ResourceKeys.Lbl_DauerauftraegeFaellig_Singular, DueRecurringCount)
         : _loc.GetString(ResourceKeys.Lbl_DauerauftraegeFaellig, DueRecurringCount);
@@ -197,10 +241,29 @@ public partial class DashboardViewModel : MonthNavigationViewModel
         _ = LoadDashboard();
     }
 
+    partial void OnIsBudgetSectionExpandedChanged(bool value) => OnPropertyChanged(nameof(BudgetSectionChevron));
+
+    partial void OnIsYearDetailsExpandedChanged(bool value) => OnPropertyChanged(nameof(YearDetailsChevron));
+
+    partial void OnGesamtSaldoChanged(decimal value)
+    {
+        OnPropertyChanged(nameof(SummarySaldo));
+        OnPropertyChanged(nameof(ShowDashboardSummary));
+    }
+
+    partial void OnSelectedAccountSaldoChanged(decimal value)
+    {
+        OnPropertyChanged(nameof(SummarySaldo));
+        OnPropertyChanged(nameof(ShowDashboardSummary));
+    }
+
+    partial void OnBilanzChanged(decimal value) => OnPropertyChanged(nameof(ShowSummaryBilanz));
+
     public DashboardViewModel(
         LoadDashboardMonthUseCase loadDashboardMonthUseCase,
         LoadDashboardYearUseCase loadDashboardYearUseCase,
         LoadForecastUseCase loadForecastUseCase,
+        LoadCashflowOutlookUseCase loadCashflowOutlookUseCase,
         GetDueRecurringWithHintsUseCase getDueRecurringUseCase,
         BookDueRecurringInstanceUseCase bookDueRecurringUseCase,
         SkipDueRecurringInstanceUseCase skipDueRecurringUseCase,
@@ -211,6 +274,7 @@ public partial class DashboardViewModel : MonthNavigationViewModel
         ITransactionRepository transactionRepository,
         IAccountRepository accountRepository,
         GetAccountBalancesUseCase getAccountBalancesUseCase,
+        ISettingsService settingsService,
         IClock? clock = null,
         ILogger<DashboardViewModel>? logger = null) : base(clock)
     {
@@ -220,6 +284,7 @@ public partial class DashboardViewModel : MonthNavigationViewModel
         _loadDashboardMonthUseCase = loadDashboardMonthUseCase;
         _loadDashboardYearUseCase = loadDashboardYearUseCase;
         _loadForecastUseCase = loadForecastUseCase;
+        _loadCashflowOutlookUseCase = loadCashflowOutlookUseCase;
         _getDueRecurringUseCase = getDueRecurringUseCase;
         _bookDueRecurringUseCase = bookDueRecurringUseCase;
         _skipDueRecurringUseCase = skipDueRecurringUseCase;
@@ -230,8 +295,25 @@ public partial class DashboardViewModel : MonthNavigationViewModel
         _transactionRepository = transactionRepository;
         _accountRepository = accountRepository;
         _getAccountBalancesUseCase = getAccountBalancesUseCase;
+        _settingsService = settingsService;
         _logger = logger;
+        IsBudgetSectionExpanded = settingsService.Get(SettingsKeys.DashboardBudgetExpanded, "true") == "true";
+        IsYearDetailsExpanded = settingsService.Get(SettingsKeys.DashboardYearDetailsExpanded, "true") == "true";
         UpdateJahrAnzeige();
+        _loc.LanguageChanged += OnLanguageChanged;
+    }
+
+    private async void OnLanguageChanged()
+    {
+        try
+        {
+            await LadeFaelligeDauerauftraegeAsync();
+            await LoadCashflowPreviewAsync();
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogWarning(ex, "Dashboard refresh after language change failed");
+        }
     }
 
     protected override async Task OnMonthChangedAsync() => await LoadDashboard();
@@ -256,11 +338,15 @@ public partial class DashboardViewModel : MonthNavigationViewModel
                 await LadeJahrAsync();
             }
             await LadeFaelligeDauerauftraegeAsync();
+            await LoadCashflowPreviewAsync();
             HasAnyDataLoaded = HasMonthData || HasYearData;
         }
         finally
         {
             IsLoading = false;
+            OnPropertyChanged(nameof(ShowDashboardSummary));
+            OnPropertyChanged(nameof(ShowSummaryBilanz));
+            OnPropertyChanged(nameof(SummarySaldoLabel));
         }
     }
 
@@ -334,7 +420,7 @@ public partial class DashboardViewModel : MonthNavigationViewModel
         var accounts = await _accountRepository.GetAccountsAsync();
         var items = new ObservableCollection<KategorieFilterItem>
         {
-            new(null, _loc.GetString(ResourceKeys.Lbl_AlleKonten))
+            new(null, _loc.GetString(ResourceKeys.Lbl_AlleKonten), ResourceKeys.Lbl_AlleKonten)
         };
 
         foreach (var account in accounts.Where(a => !a.IsArchived).OrderBy(a => a.Name))
@@ -481,12 +567,81 @@ public partial class DashboardViewModel : MonthNavigationViewModel
         PreviousYearCommand.NotifyCanExecuteChanged();
     }
 
+    private async Task LoadCashflowPreviewAsync()
+    {
+        try
+        {
+            var data = await _loadCashflowOutlookUseCase.ExecuteAsync(accountId: SelectedAccountId);
+            CashflowNetAmount = data.ProjectedIncome - data.ProjectedExpenses;
+            CashflowProjectedIncome = data.ProjectedIncome;
+            CashflowProjectedExpenses = data.ProjectedExpenses;
+            CashflowNotableDays = data.Days.Count(d => d.IsNotable);
+            CashflowSummaryText = string.Format(
+                System.Globalization.CultureInfo.CurrentCulture,
+                _loc.GetString(ResourceKeys.Fmt_CashflowSummary),
+                data.ProjectedIncome.ToString("C", CurrencyCulture.Instance),
+                data.ProjectedExpenses.ToString("C", CurrencyCulture.Instance));
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "DashboardViewModel: LoadCashflowPreviewAsync failed");
+            CashflowNetAmount = 0;
+            CashflowProjectedIncome = 0;
+            CashflowProjectedExpenses = 0;
+            CashflowNotableDays = 0;
+            CashflowSummaryText = string.Empty;
+        }
+    }
+
+    [RelayCommand]
+    private void ToggleBudgetSection()
+    {
+        IsBudgetSectionExpanded = !IsBudgetSectionExpanded;
+        _settingsService.Set(SettingsKeys.DashboardBudgetExpanded, IsBudgetSectionExpanded.ToString().ToLowerInvariant());
+    }
+
+    [RelayCommand]
+    private void ToggleYearDetails()
+    {
+        IsYearDetailsExpanded = !IsYearDetailsExpanded;
+        _settingsService.Set(SettingsKeys.DashboardYearDetailsExpanded, IsYearDetailsExpanded.ToString().ToLowerInvariant());
+    }
+
     private async Task LadeFaelligeDauerauftraegeAsync()
     {
+        const int dashboardPreviewDays = 7;
         var items = await _getDueRecurringUseCase.ExecuteAsync(_clock.Today);
-        var actionable = items.Where(i => i.Hint != null).ToList();
+        var actionable = items
+            .Select(item =>
+            {
+                var hint = BuildDueRecurringHint(item, dashboardPreviewDays);
+                if (hint is null)
+                    return null;
+
+                item.Hint = hint;
+                return item;
+            })
+            .Where(item => item is not null)
+            .Cast<DueRecurringItem>()
+            .ToList();
+
         DueRecurringCount = actionable.Count;
         DueRecurringItems = new ObservableCollection<DueRecurringItem>(actionable);
+        OnPropertyChanged(nameof(DueRecurringText));
+    }
+
+    private string? BuildDueRecurringHint(DueRecurringItem item, int dashboardPreviewDays)
+    {
+        var daysUntil = (item.DueDate.Date - _clock.Today.Date).Days;
+        return daysUntil switch
+        {
+            0 => _loc.GetString(ResourceKeys.Hint_HeuteFaellig),
+            < 0 => _loc.GetString(ResourceKeys.Hint_UeberfaelligSeitTagen, -daysUntil),
+            > 0 when daysUntil <= dashboardPreviewDays => _loc.GetString(ResourceKeys.Hint_FaelligInTagen, daysUntil),
+            > 0 when item.Recurring.ReminderDaysBefore > 0 && daysUntil <= item.Recurring.ReminderDaysBefore
+                => _loc.GetString(ResourceKeys.Hint_FaelligInTagen, daysUntil),
+            _ => null
+        };
     }
 
     [RelayCommand]

@@ -233,6 +233,14 @@ public static class ResourceKeys
     // Budgeting & Forecasting
     public const string Nav_SparZiele = nameof(Nav_SparZiele);
     public const string Title_SparZiele = nameof(Title_SparZiele);
+    public const string Title_SparZielBearbeiten = nameof(Title_SparZielBearbeiten);
+    public const string Btn_BeitragBuchen = nameof(Btn_BeitragBuchen);
+    public const string Btn_Buchen = nameof(Btn_Buchen);
+    public const string Lbl_Cashflow30Tage = nameof(Lbl_Cashflow30Tage);
+    public const string Lbl_CashflowNetto = nameof(Lbl_CashflowNetto);
+    public const string Fmt_CashflowSummary = nameof(Fmt_CashflowSummary);
+    public const string Fmt_SparZielFortschritt = nameof(Fmt_SparZielFortschritt);
+    public const string Lbl_Jahresdetails = nameof(Lbl_Jahresdetails);
     public const string Lbl_MonatlichesBudget = nameof(Lbl_MonatlichesBudget);
     public const string Lbl_ZielBetrag = nameof(Lbl_ZielBetrag);
     public const string Lbl_AktuellerBetrag = nameof(Lbl_AktuellerBetrag);
@@ -278,6 +286,9 @@ public static class ResourceKeys
     public const string A11y_FilterUmschalten = nameof(A11y_FilterUmschalten);
     public const string Lbl_DauerauftraegeFaellig = nameof(Lbl_DauerauftraegeFaellig);
     public const string Lbl_DauerauftraegeFaellig_Singular = nameof(Lbl_DauerauftraegeFaellig_Singular);
+    public const string Hint_HeuteFaellig = nameof(Hint_HeuteFaellig);
+    public const string Hint_UeberfaelligSeitTagen = nameof(Hint_UeberfaelligSeitTagen);
+    public const string Hint_FaelligInTagen = nameof(Hint_FaelligInTagen);
     public const string Lbl_OhneKategorie = nameof(Lbl_OhneKategorie);
     public const string Lbl_BudgetVon = nameof(Lbl_BudgetVon);
     public const string Lbl_Von = nameof(Lbl_Von);

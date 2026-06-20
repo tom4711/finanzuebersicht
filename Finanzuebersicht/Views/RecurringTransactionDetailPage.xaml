@@ -67,8 +67,9 @@
             <!-- Startdatum -->
             <VerticalStackLayout Spacing="4">
                 <Label Text="{loc:Translate Lbl_Startdatum}" FontSize="13" TextColor="Gray" />
-                <DatePicker Date="{Binding Startdatum}" FontSize="16"
-                            Format="dd. MMMM yyyy" />
+                <DatePicker Date="{Binding Startdatum, Mode=TwoWay}" FontSize="16"
+                            Format="dd. MMMM yyyy"
+                            controls:DatePickerProperties.ImmediateUpdate="True" />
             </VerticalStackLayout>
 
             <!-- Enddatum (optional) -->
@@ -78,9 +79,10 @@
                 <Switch Grid.Column="1" IsToggled="{Binding HatEnddatum}" />
             </Grid>
 
-            <DatePicker Date="{Binding EnddatumWert}" FontSize="16"
+            <DatePicker Date="{Binding EnddatumWert, Mode=TwoWay}" FontSize="16"
                         Format="dd. MMMM yyyy"
-                        IsVisible="{Binding HatEnddatum}" />
+                        IsVisible="{Binding HatEnddatum}"
+                        controls:DatePickerProperties.ImmediateUpdate="True" />
 
             <!-- Aktiv -->
             <Grid ColumnDefinitions="*, Auto" Padding="0">

@@ -16,5 +16,6 @@ public static class Routes
     public static readonly string BackupList = "BackupListPage";
     public static readonly string ImportPreview = "ImportPreviewPage";
     public static readonly string Cashflow = "CashflowPage";
+    public static readonly string SparZielDetail = "SparZielDetailPage";
     public static readonly string Onboarding = "OnboardingPage";
 }

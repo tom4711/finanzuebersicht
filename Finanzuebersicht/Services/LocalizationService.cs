@@ -15,6 +15,8 @@ public class LocalizationService(ISettingsService settings) : ILocalizationServi
     private readonly ISettingsService _settings = settings;
     private string _currentLanguageCode = string.Empty;
 
+    public event Action? LanguageChanged;
+
     public string CurrentLanguageCode => _currentLanguageCode;
 
     public void Initialize()
@@ -52,5 +54,6 @@ public class LocalizationService(ISettingsService settings) : ILocalizationServi
         CultureInfo.CurrentCulture = culture;
         CultureInfo.CurrentUICulture = culture;
         LocalizationResourceManager.Current.CurrentCulture = culture;
+        LanguageChanged?.Invoke();
     }
 }

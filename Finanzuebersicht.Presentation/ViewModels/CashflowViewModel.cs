@@ -91,7 +91,7 @@ public partial class CashflowViewModel(
         var accounts = await _accountRepository.GetAccountsAsync();
         var items = new ObservableCollection<KategorieFilterItem>
         {
-            new(null, _loc.GetString(ResourceKeys.Lbl_AlleKonten))
+            new(null, _loc.GetString(ResourceKeys.Lbl_AlleKonten), ResourceKeys.Lbl_AlleKonten)
         };
 
         foreach (var account in accounts.Where(a => !a.IsArchived).OrderBy(a => a.Name))

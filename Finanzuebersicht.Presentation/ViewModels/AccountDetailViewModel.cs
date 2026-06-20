@@ -2,6 +2,7 @@ using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Finanzuebersicht.Application.UseCases.Accounts;
+using Finanzuebersicht.Core.Services;
 using Finanzuebersicht.Models;
 using Finanzuebersicht.Navigation;
 using Finanzuebersicht.Presentation.Services;
@@ -195,7 +196,7 @@ public partial class AccountDetailViewModel(
 
         var summaries = await _getAccountBalancesUseCase.ExecuteAsync();
         var summary = summaries.FirstOrDefault(s => s.AccountId == _existingAccount.Id);
-        CalculatedBalanceText = summary?.Saldo.ToString("C", CultureInfo.CurrentCulture) ?? string.Empty;
+        CalculatedBalanceText = summary?.Saldo.ToString("C", CurrencyCulture.Instance) ?? string.Empty;
     }
 
     private bool TryParseOpeningBalance(out decimal openingBalance)

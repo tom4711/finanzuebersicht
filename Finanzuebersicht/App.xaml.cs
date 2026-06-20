@@ -7,6 +7,8 @@ public partial class App : global::Microsoft.Maui.Controls.Application
 	// App-wide event to notify UI of data changes (e.g., after import)
 	public static event Action? DataChanged;
 
+	public static event Action? LanguageChanged;
+
 		public static void NotifyDataChanged()
 		{
 			DataChanged?.Invoke();
@@ -22,6 +24,7 @@ public partial class App : global::Microsoft.Maui.Controls.Application
 	{
 		// Sprache vor InitializeComponent setzen, damit XAML-Bindings korrekt aufgelöst werden
 		localizationService.Initialize();
+		localizationService.LanguageChanged += () => LanguageChanged?.Invoke();
 
 		InitializeComponent();
 		_recurringGenerationService = recurringGenerationService;

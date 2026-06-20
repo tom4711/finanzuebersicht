@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Finanzuebersicht.Application.UseCases.Accounts;
 using Finanzuebersicht.Application.UseCases.Categories;
+using Finanzuebersicht.Core.Services;
 using Finanzuebersicht.Models;
 using Finanzuebersicht.Navigation;
 using Finanzuebersicht.Presentation.Services;
@@ -96,8 +97,8 @@ public partial class CategoriesViewModel(
                             BalanceBreakdownText = summary is { OpeningBalance: not 0 }
                                 ? _loc.GetString(
                                     ResourceKeys.Fmt_KontoSaldoAufschluesselung,
-                                    summary.OpeningBalance.ToString("C", CultureInfo.CurrentCulture),
-                                    summary.TransactionBalance.ToString("C", CultureInfo.CurrentCulture))
+                                    summary.OpeningBalance.ToString("C", CurrencyCulture.Instance),
+                                    summary.TransactionBalance.ToString("C", CurrencyCulture.Instance))
                                 : null
                         };
                     }));

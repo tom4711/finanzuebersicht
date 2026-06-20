@@ -63,12 +63,19 @@ public partial class DashboardPage : ContentPage
         });
 
         App.DataChanged += OnAppDataChanged;
+        App.LanguageChanged += OnLanguageChanged;
     }
 
     protected override void OnDisappearing()
     {
         base.OnDisappearing();
         App.DataChanged -= OnAppDataChanged;
+        App.LanguageChanged -= OnLanguageChanged;
+    }
+
+    private void OnLanguageChanged()
+    {
+        _vm.LoadDashboardCommand.Execute(null);
     }
 
     private void OnAppDataChanged()

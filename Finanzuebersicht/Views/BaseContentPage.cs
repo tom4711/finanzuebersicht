@@ -22,7 +22,20 @@ public abstract class BaseContentPage : ContentPage
     protected override void OnAppearing()
     {
         base.OnAppearing();
+        App.LanguageChanged += OnLanguageChanged;
         if (BindingContext is IAutoLoadViewModel vm && vm.ShouldAutoLoad)
+            vm.AutoLoadCommand.Execute(null);
+    }
+
+    protected override void OnDisappearing()
+    {
+        App.LanguageChanged -= OnLanguageChanged;
+        base.OnDisappearing();
+    }
+
+    private void OnLanguageChanged()
+    {
+        if (BindingContext is IAutoLoadViewModel vm)
             vm.AutoLoadCommand.Execute(null);
     }
 }

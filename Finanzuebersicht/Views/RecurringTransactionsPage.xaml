@@ -14,7 +14,7 @@
     <views:BaseContentPage.Resources>
         <conv:TransactionTypToColorConverter x:Key="TypToColor" />
         <conv:BoolToOpacityConverter x:Key="BoolToOpacity" />
-        <conv:VorzeichenConverter x:Key="VorzeichenConv" />
+        <conv:BetragDisplayConverter x:Key="BetragDisplay" />
         <conv:AktivTextConverter x:Key="AktivText" />
     </views:BaseContentPage.Resources>
 
@@ -84,16 +84,10 @@
                             </VerticalStackLayout>
 
                             <Label Grid.Column="2"
+                                   Text="{Binding ., Converter={StaticResource BetragDisplay}}"
                                    TextColor="{Binding Typ, Converter={StaticResource TypToColor}}"
                                    FontSize="16" FontAttributes="Bold"
-                                   VerticalTextAlignment="Center">
-                                <Label.Text>
-                                    <MultiBinding StringFormat="{}{0}{1:C}">
-                                        <Binding Path="Typ" Converter="{StaticResource VorzeichenConv}" />
-                                        <Binding Path="Betrag" />
-                                    </MultiBinding>
-                                </Label.Text>
-                            </Label>
+                                   VerticalTextAlignment="Center" />
                         </Grid>
                     </SwipeView>
                 </DataTemplate>

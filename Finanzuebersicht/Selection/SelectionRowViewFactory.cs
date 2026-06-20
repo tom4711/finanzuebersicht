@@ -23,7 +23,7 @@ internal static class SelectionRowViewFactory
             VerticalOptions = LayoutOptions.Center,
             TextColor = ColorResourceHelper.GetThemeColor(
                 "TextPrimary", "TextPrimaryDark",
-                Color.FromArgb("#000000"), Color.FromArgb("#FFFFFF"))
+                Color.FromArgb("#1C1C1E"), Color.FromArgb("#FFFFFF"))
         };
 
         var check = new Label
@@ -61,23 +61,12 @@ internal static class SelectionRowViewFactory
         };
         Grid.SetColumn(label, 0);
         Grid.SetColumn(check, 1);
-        Grid.SetRowSpan(separator, 1);
 
-        var button = new Button
-        {
-            BackgroundColor = Colors.Transparent,
-            BorderWidth = 0,
-            Padding = 0,
-            HorizontalOptions = LayoutOptions.Fill,
-            VerticalOptions = LayoutOptions.Fill
-        };
-        button.Clicked += async (_, _) => await onSelectedAsync(row);
+        var tap = new TapGestureRecognizer();
+        tap.Tapped += async (_, _) => await onSelectedAsync(row);
+        rowGrid.GestureRecognizers.Add(tap);
 
-        return new Grid
-        {
-            HeightRequest = RowHeight,
-            Children = { rowGrid, button }
-        };
+        return rowGrid;
     }
 
     public static double RowHeightRequest => RowHeight;

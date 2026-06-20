@@ -27,7 +27,7 @@ public class SelectionPopup : Popup<object>
             .Cast<object>()
             .Select(item => new SelectionRow(
                 item,
-                SelectionDisplayHelper.GetDisplayText(item, displayMemberPath),
+                LocalizedSelectionDisplay.GetDisplayText(item, displayMemberPath),
                 ReferenceEquals(item, selectedItem) || Equals(item, selectedItem)))
             .ToList();
 
