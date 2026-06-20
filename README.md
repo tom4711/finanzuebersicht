@@ -151,6 +151,7 @@ See [Quick Start (docs/QUICK_START.md)](docs/QUICK_START.md) for a concise guide
 ```
 Finanzuebersicht/                  ← MAUI App Entry Point (iOS, macOS, Windows)
 ├── App.xaml, AppShell.xaml, MauiProgram.cs
+├── Controls/                      ← SelectionField (Picker-Workaround Mac Catalyst)
 
 Finanzuebersicht.Presentation/     ← Presentation Layer (MVVM)
 ├── DependencyInjection/           ← AddPresentationViewModels(...)
@@ -193,6 +194,7 @@ Finanzuebersicht.Tests/            ← xUnit Tests (net10.0)
 
 | Dokument | Inhalt |
 |----------|--------|
+| [CHANGELOG.md](CHANGELOG.md) | Versionshistorie |
 | [docs/GUIDE.md](docs/GUIDE.md) | Entwickler-Leitfaden (Deutsch): Setup, Architektur, Konventionen |
 | [docs/QUICK_START.md](docs/QUICK_START.md) | Quick Start (Englisch) |
 | [docs/ROADMAP.md](docs/ROADMAP.md) | Geplante Features und Milestones |
@@ -203,7 +205,7 @@ Finanzuebersicht.Tests/            ← xUnit Tests (net10.0)
 
 ## Versionierung & CI
 
-- Nerdbank.GitVersioning (`version.json`) steuert Versionsnummern (aktuell Basis `1.11`)
+- Nerdbank.GitVersioning (`version.json`) steuert Versionsnummern (aktuell Basis `1.15`)
 - CI / Pre-Release / Release Workflows in `.github/workflows/`
 
 ### Full MAUI build (macCatalyst)

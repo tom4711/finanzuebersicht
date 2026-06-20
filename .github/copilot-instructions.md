@@ -10,7 +10,7 @@ Personal finance app built with **.NET 10** and **.NET MAUI**, targeting **macOS
 Data is persisted locally as JSON. Architecture: **Clean Architecture + MVVM**.
 Languages: **German and English** (`AppResources.resx` / `AppResources.de.resx`).
 
-Current version baseline: `version.json` → `1.11` (patch = git height via Nerdbank.GitVersioning).
+Current version baseline: `version.json` → `1.15` (patch = git height via Nerdbank.GitVersioning).
 
 ## Build & Run
 
@@ -138,11 +138,15 @@ Layered clean architecture with MVVM (`CommunityToolkit.Mvvm` source generators)
 - Colors in `Resources/Styles/Colors.xaml` — use `AppThemeBinding`, no hardcoded colors in XAML
 - Localization: add keys to `AppResources.resx` + `AppResources.de.resx` + `ResourceKeys.cs`
 
+### Mac Catalyst UI (SelectionField)
+
+Native `Picker` controls freeze on **macOS 27 Beta** when scrolling inside picker dialogs in `ScrollView` forms. Workaround: **`SelectionField`** + **`SelectionPopup`** (`Finanzuebersicht/Controls/`, `Finanzuebersicht/Views/Popups/`). Used across detail pages, filters, and import preview. `DatePicker` remains native. Revert to native `Picker` when MAUI SR6 ([#33146](https://github.com/dotnet/maui/pull/33146)) is available. Details: `.cursor/rules/maccatalyst-picker-investigation.mdc`
+
 ## Versioning
 
 Automatic **SemVer** via **Nerdbank.GitVersioning** (`version.json`):
 
-- Version = `<major>.<minor>.<git-height>` (e.g. `1.11.5`)
+- Version = `<major>.<minor>.<git-height>` (e.g. `1.15.5`)
 - Bump: edit `version.json` or `nbgv set-version <version>`
 - Current: `nbgv get-version`
 - Stable releases: `main` and `release/v*` branches
@@ -194,7 +198,8 @@ Finanzuebersicht.Presentation/       ← net10.0
 Finanzuebersicht/                    ← net10.0-ios, net10.0-maccatalyst
 ├── MauiProgram.cs
 ├── AppShell.xaml
-├── Views/                         ← XAML pages
+├── Controls/                      ← SelectionField (Mac Catalyst picker workaround)
+├── Views/                         ← XAML pages + Popups/SelectionPopup
 ├── Converters/
 ├── Charts/
 ├── Resources/Strings/             ← AppResources.resx, AppResources.de.resx

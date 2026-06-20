@@ -61,6 +61,8 @@ internal static class SelectionRowViewFactory
         };
         Grid.SetColumn(label, 0);
         Grid.SetColumn(check, 1);
+        Grid.SetRowSpan(separator, 1);
+        Grid.SetColumnSpan(separator, 2);
 
         var tap = new TapGestureRecognizer();
         tap.Tapped += async (_, _) => await onSelectedAsync(row);

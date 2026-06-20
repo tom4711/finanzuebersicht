@@ -1,65 +1,39 @@
 ---
-description: Mac Catalyst Picker/DatePicker freeze beim Touchpad-Scroll — Branch fix/recurring-interval-picker, Vergleichstest macOS 26 vs 27 Beta
+description: Mac Catalyst Picker/DatePicker freeze — SelectionField-Workaround (merged)
 alwaysApply: false
 ---
 
-# Mac Catalyst Picker — laufende Untersuchung
+# Mac Catalyst Picker — Workaround (umgesetzt)
 
-**Branch:** `fix/recurring-interval-picker` (von `main`)
+**Status:** `SelectionField` + `SelectionPopup` auf `develop`/`main` (PR #218–#221). Native `Picker` in Formularen ersetzt.
 
-## Symptom
+## Symptom (macOS 27 Beta)
 
-Auf Mac Catalyst hängen **alle** `Picker`/`DatePicker` in `ScrollView`-Formularen, sobald man im offenen Auswahl-Dialog mit dem **Touchpad scrollt**. Mausklicks funktionieren; „Done“ oft noch klickbar bis zum Freeze.
+Auf Mac Catalyst hängen **native `Picker`** in `ScrollView`-Formularen beim Scrollen im Auswahl-Dialog (Touchpad und externes Mausrad). Auf **macOS 26.6 stable** ok.
 
-Betroffene Seiten u. a.: `RecurringTransactionDetailPage`, `TransactionDetailPage`, `AccountDetailPage`, `TransferDetailPage`.
+`DatePicker` bleibt nativ — auf getesteten Systemen ohne Freeze.
 
-## Bereits versucht (Branch-Stand)
+## Lösung (aktuell)
 
-1. **Intervall:** `RecurrenceIntervalOption` + normaler Picker (wie `AccountTypeOption`) statt Enum+Converter
-2. **Buttons statt Picker** — verworfen (schlechte UX, Auswahl nicht sichtbar)
-3. **`SuppressParentScrollWhileFocusedBehavior`** — kein Effekt, wieder entfernt
-4. **`UpdateMode=WhenFinished`** app-weit:
-   - `Styles.xaml` für Picker/DatePicker/TimePicker
-   - `MauiProgram.cs` Handler-Mapper (iOS/Mac Catalyst)
+- **`SelectionField`** (`Finanzuebersicht/Controls/`) — tappbares Feld mit aktuellem Wert
+- **`SelectionPopup`** (`Finanzuebersicht/Views/Popups/`) — scrollbare Button-Liste, Outside-Tap schließt
+- **`SelectionDisplayHelper`** / **`SelectionRowViewFactory`** — gemeinsame Anzeige-Logik
+- Scroll-Hinweis (▼) auf langen Formularen: `SettingsPage`, `RecurringTransactionDetailPage`
 
-**Ergebnis auf macOS 27 Beta (darwin 27):** Problem bleibt.
+Betroffene Seiten u. a.: Transaktion, Dauerauftrag, Konto, Kategorie, Umbuchung, Import-Vorschau, Dashboard-/Cashflow-Filter.
 
-## Wahrscheinliche Ursache
+## Ursache & Rollback
 
-Kombination aus **MAUI Mac Catalyst** (Issues [#10208](https://github.com/dotnet/maui/issues/10208), [#33229](https://github.com/dotnet/maui/issues/33229)) und **macOS 26+**. Fix [dotnet/maui#33146](https://github.com/dotnet/maui/pull/33146) erst in **.NET 10 SR6** — Projekt nutzt **MAUI 10.0.70**.
+Kombination **MAUI Mac Catalyst** ([#10208](https://github.com/dotnet/maui/issues/10208), [#33229](https://github.com/dotnet/maui/issues/33229)) + **macOS 27 Beta**. Fix [dotnet/maui#33146](https://github.com/dotnet/maui/pull/33146) in **.NET 10 SR6** — Projekt nutzt **MAUI 10.0.70**.
 
-## Vergleichstest (iMac macOS 26 stable vs. Mac macOS 27 Beta)
+**Rollback:** Wenn MAUI/macOS-Bug gefixt ist, native `Picker` wieder einsetzen und `SelectionField` entfernen.
 
-```bash
-git fetch && git checkout fix/recurring-interval-picker
-dotnet build Finanzuebersicht/Finanzuebersicht.csproj -f net10.0-maccatalyst -c Debug
-# arm64 oder x64 je nach iMac
-cp -R Finanzuebersicht/bin/Debug/net10.0-maccatalyst/maccatalyst-arm64/Finanzübersicht.app /Applications/
-open /Applications/Finanzübersicht.app
-sw_vers   # Version notieren
-```
+## Vergleichstest (Referenz)
 
-| Test | Seite | Ergebnis 26 stable (iMac) | Ergebnis 27 Beta (MacBook) |
-|------|-------|---------------------------|----------------------------|
-| Intervall-Picker + Scroll | Dauerauftrag bearbeiten | ✅ ok (Scrollrad + Magic Mouse Touch) | ❌ hängt |
-| Kategorie-Picker + Scroll | Transaktion bearbeiten | ✅ ok (Scrollrad + Magic Mouse Touch) | ❌ hängt |
-| DatePicker + Scroll | Dauerauftrag Startdatum | ✅ ok (Scrollrad + Magic Mouse Touch) | ❌ hängt |
-
-**Testumgebung 26 stable:** macOS 26.6 (25G5028f), x86_64 iMac, Branch `fix/recurring-interval-picker`, MAUI 10.0.70.  
-**Input 26 stable:** Maus mit Scrollrad und Apple Magic Mouse (Touch-Scroll) — beides ohne Freeze.
-
-**Testumgebung 27 Beta:** MacBook, dieselbe externe Maus wie am iMac (zuvor dort ok).  
-**Input 27 Beta:** Touchpad-Scroll **und** Mausrad der externen Maus im Picker-Dialog — **beides hängt**.
-
-**Interpretation:** 26 stable ok, 27 Beta mit **allen Scroll-Eingaben** kaputt (nicht nur Touchpad) → **Regression macOS 27 Beta + MAUI Mac Catalyst Picker** (kein App-Logikfehler). Known issue dokumentieren; MAUI SR6 (#33146) im Auge behalten.
-
-## Nächste Schritte (Stand 2026-06-13)
-
-- **SelectionField** implementiert: Popup-Liste als Ersatz für native `Picker` in Formularen (zurück zu `Picker` wenn MAUI/macOS-Bug gefixt)
-- Erprobt auf `RecurringTransactionDetailPage` (Intervall/Kategorie/Konto)
-- Rollout auf weitere Formularseiten nach erfolgreichem Test
-- **Known issue** native Picker auf macOS 27 Beta weiter dokumentiert
-- MAUI **SR6** prüfen, wenn verfügbar
+| Test | macOS 26.6 stable | macOS 27 Beta |
+|------|-------------------|---------------|
+| Picker + Scroll | ✅ ok | ❌ hängt |
+| DatePicker + Scroll | ✅ ok | ⚠️ ggf. betroffen; auf MacBook getestet ok |
 
 ## Build-Hinweis
 

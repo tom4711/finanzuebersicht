@@ -4,7 +4,7 @@
 
 > **Hinweis:** Die Milestone-Bezeichnungen (v1.14, v1.2, v2.0) sind thematische GitHub-Planungslabels, keine sequenziellen Release-Versionen. Tatsächliche Releases (v1.0, v1.6, v1.12 …) werden durch Git-Commit-Höhe via Nerdbank.GitVersioning bestimmt.
 
-**Aktueller Stand:** Release **v1.13** (Latest). Nächste geplante UX-Releases: **v1.14–v1.17** (vor v2.0).
+**Aktueller Stand:** Release **v1.15** (Latest). Nächste geplante UX-Releases: **v1.16–v1.17** (vor v2.0).
 
 ---
 
@@ -71,27 +71,27 @@ Kleines Update: Mitigation für Mac-Catalyst-Picker-Freeze (`UpdateMode=WhenFini
 
 ---
 
-## 🎯 v1.14 — Erste Schritte & Vertrauen *(geplant)* · [Milestone](https://github.com/tom4711/finanzuebersicht/milestone/18)
+## ✅ v1.14 — Erste Schritte & Vertrauen *(abgeschlossen)* · [Milestone](https://github.com/tom4711/finanzuebersicht/milestone/18)
 
 Fokus: Onboarding, einheitliche Empty States, Aktion-Feedback, Saldo-Vertrauen.
 
-| Issue | Thema | Priorität |
-|-------|-------|-----------|
-| [#227](https://github.com/tom4711/finanzuebersicht/issues/227) | Onboarding für neue Nutzer | A |
-| [#228](https://github.com/tom4711/finanzuebersicht/issues/228) | Leere Zustände vereinheitlichen | A |
-| [#229](https://github.com/tom4711/finanzuebersicht/issues/229) | Feedback nach Speichern/Löschen (optional Rückgängig) | A |
-| [#214](https://github.com/tom4711/finanzuebersicht/issues/214) | Manueller Saldo-Abgleich (Ist vs. berechnet) | A |
+| Issue | Thema | Status |
+|-------|-------|--------|
+| [#227](https://github.com/tom4711/finanzuebersicht/issues/227) | Onboarding für neue Nutzer | ✅ Closed |
+| [#228](https://github.com/tom4711/finanzuebersicht/issues/228) | Leere Zustände vereinheitlichen | ✅ Closed |
+| [#229](https://github.com/tom4711/finanzuebersicht/issues/229) | Feedback nach Speichern/Löschen (optional Rückgängig) | ✅ Closed |
+| [#214](https://github.com/tom4711/finanzuebersicht/issues/214) | Manueller Saldo-Abgleich (Ist vs. berechnet) | ✅ Closed |
 
 ---
 
-## 🎯 v1.15 — Sparziele & Planung *(geplant)* · [Milestone](https://github.com/tom4711/finanzuebersicht/milestone/19)
+## ✅ v1.15 — Sparziele & Planung *(abgeschlossen)* · [Milestone](https://github.com/tom4711/finanzuebersicht/milestone/19)
 
-| Issue | Thema | Priorität |
-|-------|-------|-----------|
-| [#230](https://github.com/tom4711/finanzuebersicht/issues/230) | Sparziele bearbeiten, sicher löschen, Beitrag buchen | A |
-| [#231](https://github.com/tom4711/finanzuebersicht/issues/231) | Cashflow besser auffindbar | B |
-| [#232](https://github.com/tom4711/finanzuebersicht/issues/232) | Fällige Daueraufträge — kompaktere Dashboard-Aktionen | B |
-| [#233](https://github.com/tom4711/finanzuebersicht/issues/233) | Dashboard Informationshierarchie entschlacken | C |
+| Issue | Thema | Status |
+|-------|-------|--------|
+| [#230](https://github.com/tom4711/finanzuebersicht/issues/230) | Sparziele bearbeiten, sicher löschen, Beitrag buchen | ✅ Closed |
+| [#231](https://github.com/tom4711/finanzuebersicht/issues/231) | Cashflow besser auffindbar | ✅ Closed |
+| [#232](https://github.com/tom4711/finanzuebersicht/issues/232) | Fällige Daueraufträge — kompaktere Dashboard-Aktionen | ✅ Closed |
+| [#233](https://github.com/tom4711/finanzuebersicht/issues/233) | Dashboard Informationshierarchie entschlacken | ✅ Closed |
 
 ---
 
