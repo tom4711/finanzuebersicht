@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<views:BaseContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:views="clr-namespace:Finanzuebersicht.Views"
+             xmlns:vm="clr-namespace:Finanzuebersicht.ViewModels"
+             xmlns:loc="clr-namespace:Finanzuebersicht.Extensions"
+             xmlns:conv="clr-namespace:Finanzuebersicht.Converters"
+             xmlns:controls="clr-namespace:Finanzuebersicht.Controls"
+             x:Class="Finanzuebersicht.Views.SparZielDetailPage"
+             x:DataType="vm:SparZielDetailViewModel"
+             Title="{Binding PageTitle}">
+
+    <views:BaseContentPage.Resources>
+        <conv:DecimalCurrencyConverter x:Key="Currency" />
+        <conv:ProzentToWidthConverter x:Key="ProzentToWidth" />
+    </views:BaseContentPage.Resources>
+
+    <ScrollView Padding="16">
+        <VerticalStackLayout Spacing="20">
+
+            <VerticalStackLayout Spacing="8">
+                <Label Text="{Binding FortschrittText}" FontSize="14" TextColor="Gray" />
+                <ProgressBar Progress="{Binding FortschrittProzent, Converter={StaticResource ProzentToWidth}}"
+                             ProgressColor="{AppThemeBinding Light={StaticResource Einnahme}, Dark={StaticResource EinnahmeDark}}"
+                             BackgroundColor="{AppThemeBinding Light=#E5E5EA, Dark=#3A3A3C}"
+                             SemanticProperties.Description="{loc:Translate A11y_SparZielBalken}" />
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Spacing="4">
+                <Label Text="{loc:Translate Lbl_Titel}" FontSize="13" TextColor="Gray" />
+                <Entry Text="{Binding Titel}" Placeholder="{loc:Translate Hint_ZielTitel}" FontSize="16" />
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Spacing="4">
+                <Label Text="{loc:Translate Lbl_Icon}" FontSize="13" TextColor="Gray" />
+                <Entry Text="{Binding Icon}" FontSize="24" MaxLength="2" />
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Spacing="4">
+                <Label Text="{loc:Translate Lbl_ZielBetrag}" FontSize="13" TextColor="Gray" />
+                <Entry Text="{Binding ZielBetragText}" Keyboard="Numeric" FontSize="16" />
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Spacing="4">
+                <Label Text="{loc:Translate Lbl_AktuellerBetrag}" FontSize="13" TextColor="Gray" />
+                <Entry Text="{Binding AktuellerBetragText}" Keyboard="Numeric" FontSize="16" />
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Spacing="4">
+                <Label Text="{loc:Translate Lbl_MonatlicheSparrate}" FontSize="13" TextColor="Gray" />
+                <Entry Text="{Binding MonatlicheSparrateText}" Keyboard="Numeric" FontSize="16" />
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Spacing="4">
+                <Grid ColumnDefinitions="*, Auto" ColumnSpacing="8">
+                    <Label Text="{loc:Translate Lbl_Faelligkeit}"
+                           FontSize="13"
+                           TextColor="Gray"
+                           VerticalTextAlignment="Center" />
+                    <Switch Grid.Column="1" IsToggled="{Binding UseFaelligkeit}" />
+                </Grid>
+                <DatePicker Date="{Binding Faelligkeitsdatum}"
+                            IsVisible="{Binding HasFaelligkeit}"
+                            controls:DatePickerProperties.ImmediateUpdate="True"
+                            FontSize="16" />
+            </VerticalStackLayout>
+
+            <Button Text="{loc:Translate Btn_BeitragBuchen}"
+                    Command="{Binding BookContributionCommand}"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                    TextColor="White"
+                    CornerRadius="12"
+                    HeightRequest="44" />
+
+            <Button Text="{loc:Translate Btn_Speichern}"
+                    Command="{Binding SaveCommand}"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                    TextColor="White"
+                    CornerRadius="12"
+                    HeightRequest="50"
+                    FontSize="16"
+                    FontAttributes="Bold"
+                    Margin="0,8,0,0" />
+
+            <Button Text="{loc:Translate Btn_Loeschen}"
+                    Command="{Binding DeleteCommand}"
+                    BackgroundColor="{AppThemeBinding Light=#E5E5EA, Dark=#3A3A3C}"
+                    TextColor="{AppThemeBinding Light={StaticResource Ausgabe}, Dark={StaticResource AusgabeDark}}"
+                    CornerRadius="12"
+                    HeightRequest="44" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+</views:BaseContentPage>

@@ -1,4 +1,5 @@
 using System.Globalization;
+using Finanzuebersicht.Core.Services;
 
 namespace Finanzuebersicht.Converters;
 
@@ -42,12 +43,9 @@ public class DecimalCurrencyConverter : IValueConverter
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
         if (value is decimal betrag)
-        {
-            var ci = culture ?? CultureInfo.CurrentCulture;
-            return betrag.ToString("C", ci);
-        }
+            return betrag.ToString("C", CurrencyCulture.Instance);
 
-        return 0m.ToString("C", culture ?? CultureInfo.CurrentCulture);
+        return 0m.ToString("C", CurrencyCulture.Instance);
     }
 
     public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
@@ -60,13 +58,12 @@ public class BilanzDisplayConverter : IValueConverter
     {
         if (value is decimal bilanz)
         {
-            var ci = culture ?? CultureInfo.CurrentCulture;
             var abs = Math.Abs(bilanz);
             var sign = bilanz >= 0 ? "+" : "-";
-            return $"{sign}{abs.ToString("C", ci)}";
+            return $"{sign}{abs.ToString("C", CurrencyCulture.Instance)}";
         }
 
-        return 0m.ToString("C", culture ?? CultureInfo.CurrentCulture);
+        return 0m.ToString("C", CurrencyCulture.Instance);
     }
 
     public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)

@@ -4,6 +4,9 @@ namespace Finanzuebersicht.Presentation.Services;
 
 public interface ILocalizationService
 {
+    /// <summary>Raised after UI culture and resources were updated.</summary>
+    event Action? LanguageChanged;
+
     /// <summary>Initialisiert ResourceManager und setzt gespeicherte oder Gerätesprache.</summary>
     void Initialize();
 

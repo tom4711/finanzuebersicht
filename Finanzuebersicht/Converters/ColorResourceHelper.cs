@@ -18,9 +18,23 @@ internal static class ColorResourceHelper
 
     public static Color GetThemeColor(string lightResourceKey, string darkResourceKey, Color lightFallback, Color darkFallback)
     {
-        var isDarkTheme = global::Microsoft.Maui.Controls.Application.Current?.RequestedTheme == AppTheme.Dark;
+        var isDarkTheme = IsDarkThemeActive();
         return isDarkTheme
             ? GetColor(darkResourceKey, darkFallback)
             : GetColor(lightResourceKey, lightFallback);
+    }
+
+    private static bool IsDarkThemeActive()
+    {
+        var app = global::Microsoft.Maui.Controls.Application.Current;
+        if (app is null)
+            return false;
+
+        return app.RequestedTheme switch
+        {
+            AppTheme.Dark => true,
+            AppTheme.Light => false,
+            _ => app.PlatformAppTheme == AppTheme.Dark
+        };
     }
 }

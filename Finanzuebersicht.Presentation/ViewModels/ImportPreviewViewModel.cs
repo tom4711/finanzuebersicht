@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Finanzuebersicht.Core.Services;
 using Finanzuebersicht.Models;
 using Finanzuebersicht.Navigation;
 using Finanzuebersicht.Presentation.Services;
@@ -265,7 +266,7 @@ public partial class ImportPreviewRowItemViewModel : ObservableObject
         {
             var tx = _row.Transaction;
             if (tx == null) return "—";
-            var ci = CultureInfo.CurrentCulture;
+            var ci = CurrencyCulture.Instance;
             var abs = Math.Abs(tx.Betrag);
             var formatted = abs.ToString("C", ci);
             var sign = tx.Typ == TransactionType.Einnahme ? "+" : "-";
