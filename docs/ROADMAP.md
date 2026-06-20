@@ -4,7 +4,7 @@
 
 > **Hinweis:** Die Milestone-Bezeichnungen (v1.14, v1.2, v2.0) sind thematische GitHub-Planungslabels, keine sequenziellen Release-Versionen. Tatsächliche Releases (v1.0, v1.6, v1.12 …) werden durch Git-Commit-Höhe via Nerdbank.GitVersioning bestimmt.
 
-**Aktueller Stand:** Release **v1.14** (Latest). Nächste geplante UX-Releases: **v1.15–v1.17** (vor v2.0).
+**Aktueller Stand:** Release **v1.15** (Latest). Nächste geplante UX-Releases: **v1.16–v1.17** (vor v2.0).
 
 ---
 
@@ -84,14 +84,14 @@ Fokus: Onboarding, einheitliche Empty States, Aktion-Feedback, Saldo-Vertrauen.
 
 ---
 
-## 🎯 v1.15 — Sparziele & Planung *(geplant)* · [Milestone](https://github.com/tom4711/finanzuebersicht/milestone/19)
+## ✅ v1.15 — Sparziele & Planung *(abgeschlossen)* · [Milestone](https://github.com/tom4711/finanzuebersicht/milestone/19)
 
-| Issue | Thema | Priorität |
-|-------|-------|-----------|
-| [#230](https://github.com/tom4711/finanzuebersicht/issues/230) | Sparziele bearbeiten, sicher löschen, Beitrag buchen | A |
-| [#231](https://github.com/tom4711/finanzuebersicht/issues/231) | Cashflow besser auffindbar | B |
-| [#232](https://github.com/tom4711/finanzuebersicht/issues/232) | Fällige Daueraufträge — kompaktere Dashboard-Aktionen | B |
-| [#233](https://github.com/tom4711/finanzuebersicht/issues/233) | Dashboard Informationshierarchie entschlacken | C |
+| Issue | Thema | Status |
+|-------|-------|--------|
+| [#230](https://github.com/tom4711/finanzuebersicht/issues/230) | Sparziele bearbeiten, sicher löschen, Beitrag buchen | ✅ Closed |
+| [#231](https://github.com/tom4711/finanzuebersicht/issues/231) | Cashflow besser auffindbar | ✅ Closed |
+| [#232](https://github.com/tom4711/finanzuebersicht/issues/232) | Fällige Daueraufträge — kompaktere Dashboard-Aktionen | ✅ Closed |
+| [#233](https://github.com/tom4711/finanzuebersicht/issues/233) | Dashboard Informationshierarchie entschlacken | ✅ Closed |
 
 ---
 

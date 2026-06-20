@@ -1,4 +1,5 @@
 using System.Globalization;
+using Finanzuebersicht.Core.Services;
 using Finanzuebersicht.Models;
 
 namespace Finanzuebersicht.Converters;
@@ -7,7 +8,7 @@ public class BetragDisplayConverter : IValueConverter
 {
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        var ci = culture ?? CultureInfo.CurrentCulture;
+        var ci = CurrencyCulture.Instance;
 
         if (value is Transaction t)
         {

@@ -115,6 +115,10 @@ public partial class TransactionDetailViewModel(
         {
             ApplyTemplateDraft(template);
         }
+        else if (query.TryGetValue("SparZielContribution", out var contributionVal) && contributionVal is SparZiel sparZiel)
+        {
+            ApplySparZielContribution(sparZiel);
+        }
     }
 
     [RelayCommand]
@@ -295,6 +299,17 @@ public partial class TransactionDetailViewModel(
         _selectedAccountId = source.AccountId;
         _ = SetKategorieAsync(source.KategorieId);
         _ = SetAccountAsync(source.AccountId);
+    }
+
+    private void ApplySparZielContribution(SparZiel sparZiel)
+    {
+        _existingTransaction = null;
+        _selectedSparZielId = sparZiel.Id;
+        Titel = sparZiel.Titel;
+        Typ = TransactionType.Einnahme;
+        Datum = _clock.Today;
+        if (sparZiel.MonatlicheSparrate is > 0)
+            BetragText = sparZiel.MonatlicheSparrate.Value.ToString("F2", System.Globalization.CultureInfo.CurrentCulture);
     }
 
     private void ApplyTemplateDraft(TransactionTemplate template)

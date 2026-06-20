@@ -250,6 +250,14 @@ Please restart the app.</value></data>
   <!-- Budgeting & Forecasting -->
   <data name="Nav_SparZiele" xml:space="preserve"><value>Savings</value></data>
   <data name="Title_SparZiele" xml:space="preserve"><value>Savings Goals</value></data>
+  <data name="Title_SparZielBearbeiten" xml:space="preserve"><value>Edit Savings Goal</value></data>
+  <data name="Btn_BeitragBuchen" xml:space="preserve"><value>Book Contribution</value></data>
+  <data name="Btn_Buchen" xml:space="preserve"><value>Book</value></data>
+  <data name="Lbl_Cashflow30Tage" xml:space="preserve"><value>Next 30 Days</value></data>
+  <data name="Lbl_CashflowNetto" xml:space="preserve"><value>Net Projection</value></data>
+  <data name="Fmt_CashflowSummary" xml:space="preserve"><value>Income {0} · Expenses {1}</value></data>
+  <data name="Fmt_SparZielFortschritt" xml:space="preserve"><value>{0} of {1}</value></data>
+  <data name="Lbl_Jahresdetails" xml:space="preserve"><value>Year Details</value></data>
   <data name="Lbl_MonatlichesBudget" xml:space="preserve"><value>Monthly Budget</value></data>
   <data name="Lbl_ZielBetrag" xml:space="preserve"><value>Target Amount</value></data>
   <data name="Lbl_AktuellerBetrag" xml:space="preserve"><value>Current Amount</value></data>
@@ -272,6 +280,9 @@ Please restart the app.</value></data>
   <data name="A11y_FilterUmschalten" xml:space="preserve"><value>Toggle filters</value></data>
   <data name="Lbl_DauerauftraegeFaellig" xml:space="preserve"><value>🔔 {0} recurring transactions due soon</value></data>
   <data name="Lbl_DauerauftraegeFaellig_Singular" xml:space="preserve"><value>🔔 {0} recurring transaction due soon</value></data>
+  <data name="Hint_HeuteFaellig" xml:space="preserve"><value>Due today</value></data>
+  <data name="Hint_UeberfaelligSeitTagen" xml:space="preserve"><value>Overdue by {0} days</value></data>
+  <data name="Hint_FaelligInTagen" xml:space="preserve"><value>Due in {0} days</value></data>
   <data name="Lbl_OhneKategorie" xml:space="preserve"><value>No category</value></data>
   <data name="Lbl_BudgetVon" xml:space="preserve"><value>of {0}</value></data>
   <data name="Lbl_Von" xml:space="preserve"><value>of</value></data>

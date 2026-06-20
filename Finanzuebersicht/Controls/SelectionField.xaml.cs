@@ -1,8 +1,9 @@
+using System.ComponentModel;
 using System.Collections;
 using System.Linq;
 using CommunityToolkit.Maui.Extensions;
-using Finanzuebersicht.Converters;
 using Finanzuebersicht.Selection;
+using Finanzuebersicht.Services;
 using Finanzuebersicht.Views.Popups;
 
 namespace Finanzuebersicht.Controls;
@@ -23,9 +24,6 @@ public partial class SelectionField : ContentView
 
     public static readonly BindableProperty ResolvedDisplayTextProperty =
         BindableProperty.Create(nameof(ResolvedDisplayText), typeof(string), typeof(SelectionField), string.Empty);
-
-    public static readonly BindableProperty ResolvedTextColorProperty =
-        BindableProperty.Create(nameof(ResolvedTextColor), typeof(Color), typeof(SelectionField), Colors.Gray);
 
     public IEnumerable? ItemsSource
     {
@@ -57,17 +55,25 @@ public partial class SelectionField : ContentView
         set => SetValue(ResolvedDisplayTextProperty, value);
     }
 
-    public Color ResolvedTextColor
-    {
-        get => (Color)GetValue(ResolvedTextColorProperty);
-        set => SetValue(ResolvedTextColorProperty, value);
-    }
-
     public SelectionField()
     {
         InitializeComponent();
         UpdateResolvedDisplay();
     }
+
+    protected override void OnParentSet()
+    {
+        base.OnParentSet();
+        LocalizationResourceManager.Current.PropertyChanged -= OnLocalizationChanged;
+        if (Parent is not null)
+        {
+            LocalizationResourceManager.Current.PropertyChanged += OnLocalizationChanged;
+            UpdateResolvedDisplay();
+        }
+    }
+
+    private void OnLocalizationChanged(object? sender, PropertyChangedEventArgs e)
+        => UpdateResolvedDisplay();
 
     private static void OnSelectionChanged(BindableObject bindable, object oldValue, object newValue)
     {
@@ -75,10 +81,16 @@ public partial class SelectionField : ContentView
             field.UpdateResolvedDisplay();
     }
 
+    protected override void OnBindingContextChanged()
+    {
+        base.OnBindingContextChanged();
+        UpdateResolvedDisplay();
+    }
+
     protected override void OnPropertyChanged(string? propertyName = null)
     {
         base.OnPropertyChanged(propertyName);
-        if (propertyName is nameof(SelectedItem) or nameof(Placeholder) or nameof(DisplayMemberPath))
+        if (propertyName is nameof(SelectedItem) or nameof(Placeholder) or nameof(DisplayMemberPath) or nameof(ItemsSource))
             UpdateResolvedDisplay();
     }
 
@@ -86,17 +98,11 @@ public partial class SelectionField : ContentView
     {
         if (SelectedItem is not null)
         {
-            ResolvedDisplayText = SelectionDisplayHelper.GetDisplayText(SelectedItem, DisplayMemberPath);
-            ResolvedTextColor = ColorResourceHelper.GetThemeColor(
-                "TextPrimary", "TextPrimaryDark",
-                Color.FromArgb("#000000"), Color.FromArgb("#FFFFFF"));
+            ResolvedDisplayText = LocalizedSelectionDisplay.GetDisplayText(SelectedItem, DisplayMemberPath);
             return;
         }
 
         ResolvedDisplayText = string.IsNullOrWhiteSpace(Placeholder) ? "—" : Placeholder;
-        ResolvedTextColor = ColorResourceHelper.GetThemeColor(
-            "Gray500", "Gray600",
-            Color.FromArgb("#AEAEB2"), Color.FromArgb("#8E8E93"));
     }
 
     private async void OnTapped(object? sender, TappedEventArgs e)

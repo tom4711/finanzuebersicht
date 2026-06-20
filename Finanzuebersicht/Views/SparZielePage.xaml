@@ -32,10 +32,24 @@
                     <VerticalStackLayout BindableLayout.ItemsSource="{Binding SparZiele}" Spacing="12">
                         <BindableLayout.ItemTemplate>
                             <DataTemplate x:DataType="models:SparZielSummary">
-                                <Border StrokeShape="RoundRectangle 12"
-                                        Stroke="{AppThemeBinding Light=#E5E5EA, Dark=#3A3A3C}"
-                                        BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1C1C1E}"
-                                        Padding="16">
+                                <SwipeView>
+                                    <SwipeView.RightItems>
+                                        <SwipeItems>
+                                            <SwipeItem Text="{loc:Translate Btn_Loeschen}"
+                                                       BackgroundColor="{AppThemeBinding Light={StaticResource Ausgabe}, Dark={StaticResource AusgabeDark}}"
+                                                       Command="{Binding Source={RelativeSource AncestorType={x:Type vm:SparZieleViewModel}}, Path=DeleteSparZielCommand}"
+                                                       CommandParameter="{Binding SparZiel.Id}" />
+                                        </SwipeItems>
+                                    </SwipeView.RightItems>
+                                    <Border StrokeShape="RoundRectangle 12"
+                                            Stroke="{AppThemeBinding Light=#E5E5EA, Dark=#3A3A3C}"
+                                            BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1C1C1E}"
+                                            Padding="16">
+                                        <Border.GestureRecognizers>
+                                            <TapGestureRecognizer
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:SparZieleViewModel}}, Path=OpenSparZielCommand}"
+                                                CommandParameter="{Binding .}" />
+                                        </Border.GestureRecognizers>
                                     <VerticalStackLayout Spacing="10">
 
                                         <!-- Header: Icon, Titel, Beträge -->
@@ -85,19 +99,9 @@
                                                    Text="{Binding PrognostiziertesDatum, StringFormat='{0:dd.MM.yyyy}'}" />
                                         </HorizontalStackLayout>
 
-                                        <!-- Löschen-Button -->
-                                        <Button Text="{loc:Translate Btn_Loeschen}"
-                                                FontSize="13"
-                                                BackgroundColor="{AppThemeBinding Light={StaticResource Ausgabe}, Dark={StaticResource AusgabeDark}}"
-                                                TextColor="White"
-                                                CornerRadius="8"
-                                                HeightRequest="36"
-                                                HorizontalOptions="End"
-                                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:SparZieleViewModel}}, Path=DeleteSparZielCommand}"
-                                                CommandParameter="{Binding SparZiel.Id}" />
-
                                     </VerticalStackLayout>
-                                </Border>
+                                    </Border>
+                                </SwipeView>
                             </DataTemplate>
                         </BindableLayout.ItemTemplate>
                     </VerticalStackLayout>

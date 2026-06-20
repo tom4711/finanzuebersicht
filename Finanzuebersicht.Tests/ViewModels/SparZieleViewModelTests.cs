@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Finanzuebersicht.Application.UseCases.SparZiele;
 using Finanzuebersicht.Models;
+using Finanzuebersicht.Navigation;
 using Finanzuebersicht.Presentation.Services;
 using Finanzuebersicht.ViewModels;
 
@@ -85,6 +86,7 @@ public class SparZieleViewModelTests
             new LoadSparZieleUseCase(repository, transactionRepository),
             new SaveSparZielUseCase(repository),
             new DeleteSparZielUseCase(repository),
+            Substitute.For<INavigationService>(),
             dialogService,
             localizationService,
             Substitute.For<IFeedbackService>(),

@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Finanzuebersicht.Application.UseCases.SparZiele;
 using Finanzuebersicht.Models;
+using Finanzuebersicht.Navigation;
 using Finanzuebersicht.Presentation.Services;
 using Finanzuebersicht.Resources.Strings;
 using Microsoft.Extensions.Logging;
@@ -14,6 +15,7 @@ public partial class SparZieleViewModel : ObservableObject, IAutoLoadViewModel
     private readonly LoadSparZieleUseCase _loadUseCase;
     private readonly SaveSparZielUseCase _saveUseCase;
     private readonly DeleteSparZielUseCase _deleteUseCase;
+    private readonly INavigationService _navigationService;
     private readonly IDialogService _dialogService;
     private readonly ILocalizationService _loc;
     private readonly IFeedbackService _feedbackService;
@@ -56,6 +58,7 @@ public partial class SparZieleViewModel : ObservableObject, IAutoLoadViewModel
         LoadSparZieleUseCase loadUseCase,
         SaveSparZielUseCase saveUseCase,
         DeleteSparZielUseCase deleteUseCase,
+        INavigationService navigationService,
         IDialogService dialogService,
         ILocalizationService localizationService,
         IFeedbackService feedbackService,
@@ -65,6 +68,7 @@ public partial class SparZieleViewModel : ObservableObject, IAutoLoadViewModel
         _loadUseCase = loadUseCase;
         _saveUseCase = saveUseCase;
         _deleteUseCase = deleteUseCase;
+        _navigationService = navigationService;
         _dialogService = dialogService;
         _loc = localizationService;
         _feedbackService = feedbackService;
@@ -176,6 +180,15 @@ public partial class SparZieleViewModel : ObservableObject, IAutoLoadViewModel
                 _loc.GetString(ResourceKeys.Err_SpeichernFehlgeschlagen, ex.Message),
                 _loc.GetString(ResourceKeys.Btn_OK));
         }
+    }
+
+    [RelayCommand]
+    private async Task OpenSparZiel(SparZielSummary summary)
+    {
+        await _navigationService.GoToAsync(Routes.SparZielDetail, new Dictionary<string, object>
+        {
+            ["SparZiel"] = summary.SparZiel
+        });
     }
 
     [RelayCommand]

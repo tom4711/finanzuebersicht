@@ -1,5 +1,23 @@
 # Änderungsverlauf
 
+## [1.15] - 2026-06-20
+
+### Hinzugefügt
+
+- Sparziel-Detailseite: bearbeiten, löschen, Beitrag buchen (#230)
+- Dashboard-Karte „Nächste 30 Tage“ für Cashflow-Vorschau (#231)
+- Kompaktere Dauerauftrag-Aktionen auf dem Dashboard (#232)
+- Dashboard Summary-Karte und einklappbare Budget-/Jahresabschnitte (#233)
+- Fällige Daueraufträge mit 7-Tage-Vorschau und lokalisierten Hinweisen
+- `LanguageChanged`-Event und feste EUR-Formatierung (`CurrencyCulture`) unabhängig von UI-Sprache
+
+### Behoben
+
+- Dauerauftrag- und Sparziel-Startdatum: `DatePicker` mit sofortiger Binding-Aktualisierung
+- Kontoauswahl-Dropdown lesbar in Light Mode; „Alle Konten“ in EN lokalisiert
+- Sprachwechsel aktualisiert Dauerauftrag-Hinweise und formatierte Beträge sofort
+- Sparziel-Fortschritt nach „Beitrag buchen“; Summary-Karte beim Monat/Jahr-Wechsel
+
 ## [1.14] - 2026-06-18
 
 ### Hinzugefügt

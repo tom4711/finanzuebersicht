@@ -23,7 +23,7 @@ internal static class SelectionRowViewFactory
             VerticalOptions = LayoutOptions.Center,
             TextColor = ColorResourceHelper.GetThemeColor(
                 "TextPrimary", "TextPrimaryDark",
-                Color.FromArgb("#000000"), Color.FromArgb("#FFFFFF"))
+                Color.FromArgb("#1C1C1E"), Color.FromArgb("#FFFFFF"))
         };
 
         var check = new Label

@@ -1,6 +1,7 @@
 using Finanzuebersicht.Application.UseCases.Accounts;
 using Finanzuebersicht.Application.UseCases.Dashboard;
 using Finanzuebersicht.Application.UseCases.RecurringTransactions;
+using Finanzuebersicht.Core.Services;
 using Finanzuebersicht.Navigation;
 using Finanzuebersicht.Models;
 using Finanzuebersicht.Tests.TestHelpers;
@@ -113,6 +114,48 @@ public class DashboardViewModelTests
         Assert.True(notified);
     }
 
+    [Fact]
+    public async Task LoadDashboard_PopulatesCashflowPreview()
+    {
+        var accountRepository = Substitute.For<IAccountRepository>();
+        accountRepository.GetAccountsAsync().Returns(Task.FromResult(new List<Account>()));
+
+        var transactionRepository = Substitute.For<ITransactionRepository>();
+        transactionRepository.GetTransactionsAsync(Arg.Any<DateTime>(), Arg.Any<DateTime>())
+            .Returns(Task.FromResult(new List<Transaction>
+            {
+                new()
+                {
+                    Typ = TransactionType.Einnahme,
+                    Betrag = 500m,
+                    Datum = new DateTime(2026, 3, 20),
+                    KategorieId = "cat-1",
+                    Titel = "Gehalt"
+                }
+            }));
+
+        var viewModel = CreateSut(accountRepository, transactionRepository);
+        await viewModel.LoadDashboardCommand.ExecuteAsync(null);
+
+        Assert.True(viewModel.HasCashflowPreview);
+        Assert.Equal(500m, viewModel.CashflowProjectedIncome);
+    }
+
+    [Fact]
+    public void ToggleBudgetSection_PersistsExpandedState()
+    {
+        var settings = Substitute.For<ISettingsService>();
+        settings.Get(SettingsKeys.DashboardBudgetExpanded, "true").Returns("true");
+
+        var viewModel = CreateSut(settings);
+        Assert.True(viewModel.IsBudgetSectionExpanded);
+
+        viewModel.ToggleBudgetSectionCommand.Execute(null);
+
+        Assert.False(viewModel.IsBudgetSectionExpanded);
+        settings.Received(1).Set(SettingsKeys.DashboardBudgetExpanded, "false");
+    }
+
     private static DashboardViewModel CreateSut()
     {
         var accountRepository = Substitute.For<IAccountRepository>();
@@ -126,6 +169,22 @@ public class DashboardViewModelTests
     private static DashboardViewModel CreateSut(
         IAccountRepository accountRepository,
         ITransactionRepository transactionRepository)
+        => CreateSut(accountRepository, transactionRepository, Substitute.For<ISettingsService>());
+
+    private static DashboardViewModel CreateSut(ISettingsService settingsService)
+    {
+        var accountRepository = Substitute.For<IAccountRepository>();
+        accountRepository.GetAccountsAsync().Returns(Task.FromResult(new List<Account>()));
+        var transactionRepository = Substitute.For<ITransactionRepository>();
+        transactionRepository.GetTransactionsAsync(Arg.Any<DateTime>(), Arg.Any<DateTime>())
+            .Returns(Task.FromResult(new List<Transaction>()));
+        return CreateSut(accountRepository, transactionRepository, settingsService);
+    }
+
+    private static DashboardViewModel CreateSut(
+        IAccountRepository accountRepository,
+        ITransactionRepository transactionRepository,
+        ISettingsService settingsService)
     {
         var categoryRepository = Substitute.For<ICategoryRepository>();
         categoryRepository.GetCategoriesAsync().Returns(Task.FromResult(new List<Category>
@@ -151,6 +210,7 @@ public class DashboardViewModelTests
             new LoadDashboardMonthUseCase(categoryRepository, transactionRepository, recurringTransactionRepository, budgetRepository),
             new LoadDashboardYearUseCase(transactionRepository, categoryRepository),
             new LoadForecastUseCase(forecastService),
+            new LoadCashflowOutlookUseCase(transactionRepository, recurringTransactionRepository, clock),
             new GetDueRecurringWithHintsUseCase(recurringTransactionRepository),
             new BookDueRecurringInstanceUseCase(recurringTransactionRepository, transactionRepository, accountRepository),
             new SkipDueRecurringInstanceUseCase(new AddRecurringExceptionUseCase(recurringTransactionRepository)),
@@ -161,6 +221,7 @@ public class DashboardViewModelTests
             transactionRepository,
             accountRepository,
             new GetAccountBalancesUseCase(accountRepository, transactionRepository),
+            settingsService,
             clock);
     }
 }

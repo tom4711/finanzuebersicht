@@ -352,7 +352,7 @@ public partial class TransactionsViewModel(
         var kategorien = await _categoryRepository.GetCategoriesAsync();
         var items = new ObservableCollection<KategorieFilterItem>
         {
-            new(null, _loc.GetString(ResourceKeys.Lbl_AlleKategorien))
+            new(null, _loc.GetString(ResourceKeys.Lbl_AlleKategorien), ResourceKeys.Lbl_AlleKategorien)
         };
         foreach (var k in kategorien.OrderBy(k => k.Name))
             items.Add(new KategorieFilterItem(k.Id, $"{k.Icon} {k.Name}"));
@@ -366,7 +366,7 @@ public partial class TransactionsViewModel(
         var konten = await _accountRepository.GetAccountsAsync();
         var items = new ObservableCollection<KategorieFilterItem>
         {
-            new(null, _loc.GetString(ResourceKeys.Lbl_AlleKonten))
+            new(null, _loc.GetString(ResourceKeys.Lbl_AlleKonten), ResourceKeys.Lbl_AlleKonten)
         };
         foreach (var konto in konten.OrderBy(k => k.Name))
             items.Add(new KategorieFilterItem(konto.Id, konto.Name));

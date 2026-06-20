@@ -46,7 +46,7 @@ public static class MauiProgram
 			Microsoft.Maui.Handlers.DatePickerHandler.Mapper.AppendToMapping("WhenFinishedSelection", (handler, view) =>
 			{
 				if (view is Microsoft.Maui.Controls.DatePicker datePicker)
-					datePicker.On<iOS>().SetUpdateMode(UpdateMode.WhenFinished);
+					Finanzuebersicht.Controls.DatePickerProperties.ApplyUpdateMode(datePicker);
 			});
 			Microsoft.Maui.Handlers.TimePickerHandler.Mapper.AppendToMapping("WhenFinishedSelection", (handler, view) =>
 			{
@@ -108,6 +108,7 @@ public static class MauiProgram
 		builder.Services.AddTransient<AccountDetailPage>();
 		builder.Services.AddTransient<SettingsPage>();
 		builder.Services.AddTransient<SparZielePage>();
+		builder.Services.AddTransient<SparZielDetailPage>();
 		builder.Services.AddTransient<BackupListPage>();
 		builder.Services.AddTransient<ImportPreviewPage>();
 		builder.Services.AddTransient<CashflowPage>();

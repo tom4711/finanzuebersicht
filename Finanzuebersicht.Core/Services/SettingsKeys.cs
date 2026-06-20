@@ -41,5 +41,15 @@ namespace Finanzuebersicht.Core.Services
         /// Whether the first-run onboarding wizard was completed (true/false).
         /// </summary>
         public const string OnboardingCompleted = "OnboardingCompleted";
+
+        /// <summary>
+        /// Whether the dashboard budget section is expanded (true/false).
+        /// </summary>
+        public const string DashboardBudgetExpanded = "DashboardBudgetExpanded";
+
+        /// <summary>
+        /// Whether the dashboard year details section is expanded (true/false).
+        /// </summary>
+        public const string DashboardYearDetailsExpanded = "DashboardYearDetailsExpanded";
     }
 }
