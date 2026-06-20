@@ -26,25 +26,25 @@ dotnet workload install maui
 
 ### Mac Catalyst (lokal starten)
 
-`dotnet run` und `-t:Run` scheitern wegen macOS-Sandboxing — die `.app` nach `/Applications` kopieren:
+`dotnet run` und `-t:Run` scheitern wegen macOS-Sandboxing — Debug-Builds landen automatisch in `~/Applications`:
 
 ```bash
 dotnet build Finanzuebersicht/Finanzuebersicht.csproj -f net10.0-maccatalyst
+open ~/Applications/Finanzübersicht.app
+```
 
-# Apple Silicon (arm64) — typisch auf modernen Macs
-cp -R Finanzuebersicht/bin/Debug/net10.0-maccatalyst/maccatalyst-arm64/Finanzübersicht.app /Applications/
-open /Applications/Finanzübersicht.app
+Manuell kopieren (Apple Silicon `arm64`, Intel `x64`):
 
-# Intel (x64)
-cp -R Finanzuebersicht/bin/Debug/net10.0-maccatalyst/maccatalyst-x64/Finanzübersicht.app /Applications/
+```bash
+cp -R Finanzuebersicht/bin/Debug/net10.0-maccatalyst/maccatalyst-arm64/Finanzübersicht.app ~/Applications/
+open ~/Applications/Finanzübersicht.app
 ```
 
 **Ein-Liner nach jedem Build (arm64):**
 
 ```bash
 dotnet build Finanzuebersicht/Finanzuebersicht.csproj -f net10.0-maccatalyst \
-  && cp -R Finanzuebersicht/bin/Debug/net10.0-maccatalyst/maccatalyst-arm64/Finanzübersicht.app /Applications/ \
-  && open /Applications/Finanzübersicht.app
+  && open ~/Applications/Finanzübersicht.app
 ```
 
 > Nur das MAUI-Projekt bauen, nicht die ganze Solution mit `-f net10.0-maccatalyst` — sonst werden auch `net10.0`-only-Projekte (Tests, Core, …) auf das Plattform-TFM gezwungen.

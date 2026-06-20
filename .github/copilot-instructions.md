@@ -32,23 +32,27 @@ dotnet build Finanzuebersicht/Finanzuebersicht.csproj -f net10.0-ios
 
 ### Running on macOS (Mac Catalyst)
 
-`dotnet run` and `-t:Run` fail due to macOS sandboxing. Copy the `.app` to `/Applications` first:
+`dotnet run` and `-t:Run` fail due to macOS sandboxing. Debug builds copy the `.app` to `~/Applications` automatically; start it with:
 
 ```bash
-# Apple Silicon (arm64) — typical on modern Macs
-cp -R Finanzuebersicht/bin/Debug/net10.0-maccatalyst/maccatalyst-arm64/Finanzübersicht.app /Applications/
-open /Applications/Finanzübersicht.app
+dotnet build Finanzuebersicht/Finanzuebersicht.csproj -f net10.0-maccatalyst -c Debug
+open ~/Applications/Finanzübersicht.app
+```
 
-# Intel (x64)
-cp -R Finanzuebersicht/bin/Debug/net10.0-maccatalyst/maccatalyst-x64/Finanzübersicht.app /Applications/
+> Dev-signed builds may fail to launch from system `/Applications` on macOS 26+ (Launch Constraint). Use `~/Applications` or open directly from the build output (`maccatalyst-arm64/Finanzübersicht.app`).
+
+Manual copy (if needed — Apple Silicon `arm64`, Intel `x64`):
+
+```bash
+cp -R Finanzuebersicht/bin/Debug/net10.0-maccatalyst/maccatalyst-arm64/Finanzübersicht.app ~/Applications/
+open ~/Applications/Finanzübersicht.app
 ```
 
 One-liner after build (adjust `arm64` / `x64` as needed):
 
 ```bash
 dotnet build Finanzuebersicht/Finanzuebersicht.csproj -f net10.0-maccatalyst -c Debug \
-  && cp -R Finanzuebersicht/bin/Debug/net10.0-maccatalyst/maccatalyst-arm64/Finanzübersicht.app /Applications/ \
-  && open /Applications/Finanzübersicht.app
+  && open ~/Applications/Finanzübersicht.app
 ```
 
 ## Architecture

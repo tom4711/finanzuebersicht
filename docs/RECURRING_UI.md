@@ -20,11 +20,10 @@ Kurzbeschreibung der UI-Funktion zum Verschieben einzelner Instanzen eines Dauer
 dotnet build Finanzuebersicht/Finanzuebersicht.csproj -f net10.0-maccatalyst
 ```
 
-2. App installieren und starten:
+2. App starten (Debug-Build kopiert automatisch nach `~/Applications`):
 
 ```bash
-cp -R Finanzuebersicht/bin/Debug/net10.0-maccatalyst/maccatalyst-arm64/Finanzübersicht.app /Applications/
-open /Applications/Finanzübersicht.app
+open ~/Applications/Finanzübersicht.app
 ```
 
 3. In der App: **Daueraufträge** → Dauerauftrag auswählen → **Instanz verschieben**
