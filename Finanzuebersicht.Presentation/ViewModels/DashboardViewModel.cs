@@ -9,11 +9,12 @@ using Finanzuebersicht.Core.Services;
 using Finanzuebersicht.Models;
 using Finanzuebersicht.Navigation;
 using Finanzuebersicht.Presentation.Accessibility;
+using Finanzuebersicht.Presentation;
 using Finanzuebersicht.Resources.Strings;
 using Microsoft.Extensions.Logging;
 
 namespace Finanzuebersicht.ViewModels;
-public partial class DashboardViewModel : MonthNavigationViewModel, ILocalizableViewModel
+public partial class DashboardViewModel : MonthNavigationViewModel, ILocalizableViewModel, ICurrencyRefreshViewModel
 {
     private readonly LoadDashboardMonthUseCase _loadDashboardMonthUseCase;
     private readonly LoadDashboardYearUseCase _loadDashboardYearUseCase;
@@ -372,6 +373,7 @@ public partial class DashboardViewModel : MonthNavigationViewModel, ILocalizable
     [RelayCommand]
     private async Task LoadDashboard()
     {
+        CurrencyRefreshRegistry.Register(this);
         if (IsLoading) return;
         IsLoading = true;
         try
@@ -818,6 +820,45 @@ public partial class DashboardViewModel : MonthNavigationViewModel, ILocalizable
     }
 
     public void RefreshLocalizedStrings() => UpdateChartAccessibilitySummaries();
+
+    public void RefreshCurrencyDisplay()
+    {
+        OnPropertyChanged(nameof(GesamtEinnahmen));
+        OnPropertyChanged(nameof(GesamtAusgaben));
+        OnPropertyChanged(nameof(Bilanz));
+        OnPropertyChanged(nameof(BudgetGesamt));
+        OnPropertyChanged(nameof(BudgetVerbraucht));
+        OnPropertyChanged(nameof(BudgetRest));
+        OnPropertyChanged(nameof(BudgetTagesbudget));
+        OnPropertyChanged(nameof(ForecastTotal));
+        OnPropertyChanged(nameof(ForecastBarValue));
+        OnPropertyChanged(nameof(JahrBudgetTotal));
+        OnPropertyChanged(nameof(JahrGesamtAusgaben));
+        OnPropertyChanged(nameof(SelectedAccountSaldo));
+        OnPropertyChanged(nameof(GesamtSaldo));
+        OnPropertyChanged(nameof(SummarySaldo));
+        OnPropertyChanged(nameof(CashflowNetAmount));
+        OnPropertyChanged(nameof(CashflowProjectedIncome));
+        OnPropertyChanged(nameof(CashflowProjectedExpenses));
+        OnPropertyChanged(nameof(TrendProzent));
+
+        if (KategorieAusgaben.Count > 0)
+            KategorieAusgaben = new ObservableCollection<CategorySummary>(KategorieAusgaben);
+        if (KategorieEinnahmen.Count > 0)
+            KategorieEinnahmen = new ObservableCollection<CategorySummary>(KategorieEinnahmen);
+        CurrencyDisplayRefresh.Rebind(BudgetHinweise);
+        if (JahrKategorien.Count > 0)
+            JahrKategorien = CurrencyDisplayRefresh.Clone(JahrKategorien);
+        if (KontenUebersicht.Count > 0)
+            KontenUebersicht = CurrencyDisplayRefresh.Clone(KontenUebersicht);
+        if (DueRecurringItems.Count > 0)
+            DueRecurringItems = CurrencyDisplayRefresh.Clone(DueRecurringItems);
+
+        if (JahrMonate.Count > 0)
+            JahrMonate = [.. JahrMonate];
+
+        UpdateChartAccessibilitySummaries();
+    }
 
     private void UpdateChartAccessibilitySummaries()
     {

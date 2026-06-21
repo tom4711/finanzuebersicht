@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.Input;
 using Finanzuebersicht.Application.UseCases.Transactions;
 using Finanzuebersicht.Models;
 using Finanzuebersicht.Navigation;
+using Finanzuebersicht.Presentation;
 using Finanzuebersicht.Presentation.Services;
 using Finanzuebersicht.Resources.Strings;
 using System.Linq;
@@ -30,7 +31,7 @@ public partial class TransactionsViewModel(
     IImportSessionStore? importSessionStore = null,
     LoadTransactionTemplatesUseCase? loadTransactionTemplatesUseCase = null,
     DeleteTransactionTemplateUseCase? deleteTransactionTemplateUseCase = null,
-    UseTransactionTemplateUseCase? useTransactionTemplateUseCase = null) : MonthNavigationViewModel, IAutoLoadViewModel
+    UseTransactionTemplateUseCase? useTransactionTemplateUseCase = null) : MonthNavigationViewModel, IAutoLoadViewModel, ICurrencyRefreshViewModel
 {
     private readonly DeleteTransactionUseCase _deleteTransactionUseCase = deleteTransactionUseCase;
     private readonly RestoreTransactionUseCase _restoreTransactionUseCase = restoreTransactionUseCase;
@@ -381,6 +382,7 @@ public partial class TransactionsViewModel(
     [RelayCommand]
     private async Task LoadTransaktionen()
     {
+        CurrencyRefreshRegistry.Register(this);
         if (IsLoading) return;
         IsLoading = true;
 
@@ -631,6 +633,14 @@ public partial class TransactionsViewModel(
 
             await _dialogService.ShowAlertAsync(errTitle, msg, okError);
         }
+    }
+
+    public void RefreshCurrencyDisplay()
+    {
+        CurrencyDisplayRefresh.RebindTransactionGroups(TransaktionsGruppen);
+        CurrencyDisplayRefresh.RebindTransactionGroups(SearchErgebnisGruppen);
+        if (TransactionTemplates.Count > 0)
+            TransactionTemplates = CurrencyDisplayRefresh.Clone(TransactionTemplates);
     }
 
     private static Transaction CloneTransaction(Transaction source) => new()

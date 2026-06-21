@@ -4,13 +4,14 @@ using CommunityToolkit.Mvvm.Input;
 using Finanzuebersicht.Application.UseCases.SparZiele;
 using Finanzuebersicht.Models;
 using Finanzuebersicht.Navigation;
+using Finanzuebersicht.Presentation;
 using Finanzuebersicht.Presentation.Services;
 using Finanzuebersicht.Resources.Strings;
 using Microsoft.Extensions.Logging;
 
 namespace Finanzuebersicht.ViewModels;
 
-public partial class SparZieleViewModel : ObservableObject, IAutoLoadViewModel
+public partial class SparZieleViewModel : ObservableObject, IAutoLoadViewModel, ICurrencyRefreshViewModel
 {
     private readonly LoadSparZieleUseCase _loadUseCase;
     private readonly SaveSparZielUseCase _saveUseCase;
@@ -79,6 +80,7 @@ public partial class SparZieleViewModel : ObservableObject, IAutoLoadViewModel
     [RelayCommand]
     private async Task LoadSparZiele()
     {
+        CurrencyRefreshRegistry.Register(this);
         if (IsLoading) return;
         IsLoading = true;
         try
@@ -216,5 +218,14 @@ public partial class SparZieleViewModel : ObservableObject, IAutoLoadViewModel
                 _loc.GetString(ResourceKeys.Err_LoeschenFehlgeschlagen, ex.Message),
                 _loc.GetString(ResourceKeys.Btn_OK));
         }
+    }
+
+    public void RefreshCurrencyDisplay()
+    {
+        OnPropertyChanged(nameof(NeuesZielBetrag));
+        OnPropertyChanged(nameof(NeuerAktuellerBetrag));
+        OnPropertyChanged(nameof(NeueMonatlicheSparrate));
+        if (SparZiele.Count > 0)
+            SparZiele = CurrencyDisplayRefresh.Clone(SparZiele);
     }
 }

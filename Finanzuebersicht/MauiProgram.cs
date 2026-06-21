@@ -119,6 +119,7 @@ public static class MauiProgram
 #endif
 
 		var app = builder.Build();
+		_ = app.Services.GetRequiredService<IAppEvents>();
 
 		return app;
 	}

@@ -36,8 +36,8 @@
 		<!-- Debug: Sandbox-freie Entitlements damit Ad-hoc-Sign ohne TeamID startet -->
 		<CodesignEntitlements Condition="'$(Configuration)' == 'Debug' AND $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">Platforms/MacCatalyst/Entitlements.Debug.plist</CodesignEntitlements>
 
-		<!-- Debug: Mit Apple Development Zertifikat signieren -->
-		<CodesignKey Condition="'$(Configuration)' == 'Debug' AND $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">Apple Development</CodesignKey>
+		<!-- Debug: Ad-hoc-Signatur (Launch Constraint auf macOS 26+ blockiert Apple Development aus Applications) -->
+		<CodesignKey Condition="'$(Configuration)' == 'Debug' AND $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">-</CodesignKey>
 
 		<!-- iOS: Entitlements und Signing -->
 		<CodesignEntitlements Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">Platforms/iOS/Entitlements.plist</CodesignEntitlements>

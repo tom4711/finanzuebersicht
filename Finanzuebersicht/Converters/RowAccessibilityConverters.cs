@@ -1,7 +1,6 @@
 using System.Globalization;
 using Finanzuebersicht.Core.Services;
 using Finanzuebersicht.Models;
-using Finanzuebersicht.Presentation.Resources.Strings;
 using Finanzuebersicht.Resources.Strings;
 using Finanzuebersicht.Services;
 using Finanzuebersicht.ViewModels;

@@ -64,7 +64,6 @@ public partial class DashboardPage : ContentPage
 
         App.DataChanged += OnAppDataChanged;
         App.LanguageChanged += OnLanguageChanged;
-        App.CurrencyChanged += OnLanguageChanged;
     }
 
     protected override void OnDisappearing()
@@ -72,12 +71,13 @@ public partial class DashboardPage : ContentPage
         base.OnDisappearing();
         App.DataChanged -= OnAppDataChanged;
         App.LanguageChanged -= OnLanguageChanged;
-        App.CurrencyChanged -= OnLanguageChanged;
     }
 
     private void OnLanguageChanged()
     {
         _vm.LoadDashboardCommand.Execute(null);
+        if (BindingContext is ILocalizableViewModel locVm)
+            locVm.RefreshLocalizedStrings();
     }
 
     private void OnAppDataChanged()
