@@ -1,5 +1,43 @@
 # Änderungsverlauf
 
+## [1.17] - 2026-06-13
+
+### Hinzugefügt
+
+- Barrierefreiheit: Chart-Text-Zusammenfassungen und VoiceOver-Labels für Listenzeilen (#235, #237)
+- SelectionField A11y und Scroll-Hinweise auf Detailseiten (#239)
+- Verwaltung-Segment als Button-Toggle; Währungsanzeige zur Laufzeit (`CurrencyRefreshRegistry`)
+- Dashboard: einheitliche Kacheln, aufklappbare Monats-/Jahres-Sektionen
+- Verwaltung: Kategorien und Konten im Sparziele-Kartenstil
+
+### Behoben
+
+- Review-Follow-ups v1.17 (Währung, Transaktions-A11y)
+- `LoadKategorien`-Command ohne bool-Parameter (CI/RelayCommand)
+- Prognose-Kachel ohne leeres Aufklappen
+
+## [1.16] - 2026-06-20
+
+### Hinzugefügt
+
+- Anzeige-Währung (EUR/USD/GBP/CHF) in Einstellungen und Onboarding, getrennt von UI-Sprache (#253)
+- `IDisplayCurrencyService` und `App.CurrencyChanged` für sofortige Betrags-Aktualisierung
+- Lokalisierung von Seitentiteln und Enum-Labels (Kontotyp, Transaktionstyp) (#234)
+- Verwaltung: Dashboard-Segment Kategorien/Konten mit klarerem Tab-Titel (#236)
+- Dashboard Runde 2: Summary oben, einklappbare Sekundärbereiche (#252)
+- Einheitliche Tab-Icons in Empty States statt Emoji (#240)
+
+### Geändert
+
+- Hardcoded XAML-Farben durch zentrale `Colors.xaml`-Tokens ersetzt (#254)
+- Transaktionen: beschriftete Buttons „Filter“ / „Umbuchen“ statt Emoji (#238)
+- Debug-Build installiert nach `~/Applications` (macOS 26+ Dev-Signatur)
+
+### Behoben
+
+- Fällige Daueraufträge im Dashboard standardmäßig aufgeklappt
+- Währungswechsel aktualisiert Salden (Konto-Detail) und Import-Beträge ohne Seitenwechsel
+
 ## [1.15] - 2026-06-20
 
 ### Hinzugefügt
