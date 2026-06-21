@@ -227,7 +227,16 @@ public partial class DashboardViewModel : MonthNavigationViewModel, ILocalizable
     private bool isBudgetSectionExpanded;
 
     [ObservableProperty]
-    private bool isYearDetailsExpanded;
+    private bool isYearMonthTrendExpanded;
+
+    [ObservableProperty]
+    private bool isYearCategoriesExpanded;
+
+    [ObservableProperty]
+    private bool isMonthExpensesSectionExpanded;
+
+    [ObservableProperty]
+    private bool isMonthIncomeSectionExpanded;
 
     [ObservableProperty]
     private bool isDueDetailsExpanded;
@@ -252,7 +261,10 @@ public partial class DashboardViewModel : MonthNavigationViewModel, ILocalizable
     public bool ShowSummaryBilanz => IsMonthView && HasMonthData;
 
     public string BudgetSectionChevron => IsBudgetSectionExpanded ? "▼" : "▶";
-    public string YearDetailsChevron => IsYearDetailsExpanded ? "▼" : "▶";
+    public string YearMonthTrendChevron => IsYearMonthTrendExpanded ? "▼" : "▶";
+    public string YearCategoriesChevron => IsYearCategoriesExpanded ? "▼" : "▶";
+    public string MonthExpensesSectionChevron => IsMonthExpensesSectionExpanded ? "▼" : "▶";
+    public string MonthIncomeSectionChevron => IsMonthIncomeSectionExpanded ? "▼" : "▶";
     public string DueDetailsChevron => IsDueDetailsExpanded ? "▼" : "▶";
     public string AccountsSectionChevron => IsAccountsSectionExpanded ? "▼" : "▶";
     public string CashflowSectionChevron => IsCashflowSectionExpanded ? "▼" : "▶";
@@ -281,7 +293,13 @@ public partial class DashboardViewModel : MonthNavigationViewModel, ILocalizable
 
     partial void OnIsBudgetSectionExpandedChanged(bool value) => OnPropertyChanged(nameof(BudgetSectionChevron));
 
-    partial void OnIsYearDetailsExpandedChanged(bool value) => OnPropertyChanged(nameof(YearDetailsChevron));
+    partial void OnIsYearMonthTrendExpandedChanged(bool value) => OnPropertyChanged(nameof(YearMonthTrendChevron));
+
+    partial void OnIsYearCategoriesExpandedChanged(bool value) => OnPropertyChanged(nameof(YearCategoriesChevron));
+
+    partial void OnIsMonthExpensesSectionExpandedChanged(bool value) => OnPropertyChanged(nameof(MonthExpensesSectionChevron));
+
+    partial void OnIsMonthIncomeSectionExpandedChanged(bool value) => OnPropertyChanged(nameof(MonthIncomeSectionChevron));
 
     partial void OnIsDueDetailsExpandedChanged(bool value)
     {
@@ -354,7 +372,10 @@ public partial class DashboardViewModel : MonthNavigationViewModel, ILocalizable
         _settingsService = settingsService;
         _logger = logger;
         IsBudgetSectionExpanded = ReadExpandedSetting(settingsService, SettingsKeys.DashboardBudgetExpanded);
-        IsYearDetailsExpanded = ReadExpandedSetting(settingsService, SettingsKeys.DashboardYearDetailsExpanded);
+        IsYearMonthTrendExpanded = ReadExpandedSetting(settingsService, SettingsKeys.DashboardYearMonthTrendExpanded);
+        IsYearCategoriesExpanded = ReadExpandedSetting(settingsService, SettingsKeys.DashboardYearCategoriesExpanded, defaultExpanded: true);
+        IsMonthExpensesSectionExpanded = ReadExpandedSetting(settingsService, SettingsKeys.DashboardMonthExpensesExpanded, defaultExpanded: true);
+        IsMonthIncomeSectionExpanded = ReadExpandedSetting(settingsService, SettingsKeys.DashboardMonthIncomeExpanded, defaultExpanded: true);
         IsDueDetailsExpanded = ReadExpandedSetting(settingsService, SettingsKeys.DashboardDueDetailsExpanded, defaultExpanded: true);
         IsAccountsSectionExpanded = ReadExpandedSetting(settingsService, SettingsKeys.DashboardAccountsExpanded);
         IsCashflowSectionExpanded = ReadExpandedSetting(settingsService, SettingsKeys.DashboardCashflowExpanded);
@@ -663,10 +684,31 @@ public partial class DashboardViewModel : MonthNavigationViewModel, ILocalizable
     }
 
     [RelayCommand]
-    private void ToggleYearDetails()
+    private void ToggleYearMonthTrend()
     {
-        IsYearDetailsExpanded = !IsYearDetailsExpanded;
-        _settingsService.Set(SettingsKeys.DashboardYearDetailsExpanded, IsYearDetailsExpanded.ToString().ToLowerInvariant());
+        IsYearMonthTrendExpanded = !IsYearMonthTrendExpanded;
+        _settingsService.Set(SettingsKeys.DashboardYearMonthTrendExpanded, IsYearMonthTrendExpanded.ToString().ToLowerInvariant());
+    }
+
+    [RelayCommand]
+    private void ToggleYearCategories()
+    {
+        IsYearCategoriesExpanded = !IsYearCategoriesExpanded;
+        _settingsService.Set(SettingsKeys.DashboardYearCategoriesExpanded, IsYearCategoriesExpanded.ToString().ToLowerInvariant());
+    }
+
+    [RelayCommand]
+    private void ToggleMonthExpensesSection()
+    {
+        IsMonthExpensesSectionExpanded = !IsMonthExpensesSectionExpanded;
+        _settingsService.Set(SettingsKeys.DashboardMonthExpensesExpanded, IsMonthExpensesSectionExpanded.ToString().ToLowerInvariant());
+    }
+
+    [RelayCommand]
+    private void ToggleMonthIncomeSection()
+    {
+        IsMonthIncomeSectionExpanded = !IsMonthIncomeSectionExpanded;
+        _settingsService.Set(SettingsKeys.DashboardMonthIncomeExpanded, IsMonthIncomeSectionExpanded.ToString().ToLowerInvariant());
     }
 
     [RelayCommand]

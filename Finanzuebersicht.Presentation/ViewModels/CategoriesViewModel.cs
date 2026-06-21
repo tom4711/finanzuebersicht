@@ -44,11 +44,19 @@ public partial class CategoriesViewModel(
     public System.Windows.Input.ICommand AutoLoadCommand => LoadKategorienCommand;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsKategorienVisible))]
+    [NotifyPropertyChangedFor(nameof(IsKontenVisible))]
+    [NotifyPropertyChangedFor(nameof(IsKategorienEmpty))]
     private ObservableCollection<Category> kategorien = [];
+
+    public bool IsKategorienEmpty => Kategorien.Count == 0;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(ShowGesamtSaldoHeader))]
+    [NotifyPropertyChangedFor(nameof(IsKontenEmpty))]
     private ObservableCollection<AccountListItem> konten = [];
+
+    public bool IsKontenEmpty => Konten.Count == 0;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(ShowGesamtSaldoHeader))]

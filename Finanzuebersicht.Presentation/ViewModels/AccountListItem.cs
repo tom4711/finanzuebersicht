@@ -22,9 +22,20 @@ public class AccountListItem
 
     public string Name => Account.Name;
     public AccountType Type => Account.Type;
+    public string Icon => Type switch
+    {
+        AccountType.Girokonto => "🏦",
+        AccountType.Tagesgeld => "🐷",
+        AccountType.Kreditkarte => "💳",
+        AccountType.Bargeld => "💵",
+        AccountType.Depot => "📈",
+        _ => "🏷️"
+    };
     public bool IsSystemAccount => Account.IsSystemAccount;
     public bool IsArchived => Account.IsArchived;
     public bool CanDelete => Account.CanDelete;
     public bool CanArchive => Account.CanArchive;
     public bool ShowBalanceBreakdown => !string.IsNullOrWhiteSpace(BalanceBreakdownText);
+    public bool HasStatusBadge => IsSystemAccount || IsArchived;
+    public double CardOpacity => IsArchived ? 0.65 : 1.0;
 }

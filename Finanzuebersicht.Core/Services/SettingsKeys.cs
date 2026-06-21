@@ -53,6 +53,26 @@ namespace Finanzuebersicht.Core.Services
         public const string DashboardYearDetailsExpanded = "DashboardYearDetailsExpanded";
 
         /// <summary>
+        /// Whether the dashboard year month trend chart is expanded (true/false).
+        /// </summary>
+        public const string DashboardYearMonthTrendExpanded = "DashboardYearMonthTrendExpanded";
+
+        /// <summary>
+        /// Whether the dashboard year category breakdown is expanded (true/false).
+        /// </summary>
+        public const string DashboardYearCategoriesExpanded = "DashboardYearCategoriesExpanded";
+
+        /// <summary>
+        /// Whether the dashboard month expense categories section is expanded (true/false).
+        /// </summary>
+        public const string DashboardMonthExpensesExpanded = "DashboardMonthExpensesExpanded";
+
+        /// <summary>
+        /// Whether the dashboard month income categories section is expanded (true/false).
+        /// </summary>
+        public const string DashboardMonthIncomeExpanded = "DashboardMonthIncomeExpanded";
+
+        /// <summary>
         /// Whether due recurring action cards are expanded on the dashboard (true/false).
         /// </summary>
         public const string DashboardDueDetailsExpanded = "DashboardDueDetailsExpanded";

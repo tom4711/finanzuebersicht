@@ -71,80 +71,83 @@
                     </Grid>
                 </Border>
 
-                <!-- Fällige Daueraufträge – kompakter Hinweis -->
+                <!-- Fällige Daueraufträge -->
                 <Border StrokeShape="RoundRectangle 12"
                         Stroke="{StaticResource ReminderBannerBorder}"
                         BackgroundColor="{AppThemeBinding Light={StaticResource ReminderBannerBackground}, Dark={StaticResource ReminderBannerBackgroundDark}}"
-                        Padding="12,10"
+                        Padding="14"
                         IsVisible="{Binding HasDueItems}"
                         SemanticProperties.Description="{Binding DueRecurringText}"
                         SemanticProperties.Hint="{loc:Translate A11y_DauerauftraegeBannerHint}">
-                    <Grid ColumnDefinitions="*, Auto, Auto" ColumnSpacing="8">
-                        <Label Grid.Column="0"
-                               Text="{Binding DueRecurringText}"
-                               FontSize="14" VerticalTextAlignment="Center"
-                               TextColor="{AppThemeBinding Light={StaticResource ReminderBannerText}, Dark={StaticResource ReminderBannerTextDark}}">
-                            <Label.GestureRecognizers>
-                                <TapGestureRecognizer Command="{Binding NavigateToDauerauftraegeCommand}" />
-                            </Label.GestureRecognizers>
-                        </Label>
-                        <Label Grid.Column="1"
-                               Text="{Binding DueDetailsChevron}"
-                               FontSize="14"
-                               VerticalTextAlignment="Center"
-                               TextColor="{AppThemeBinding Light={StaticResource ReminderBannerText}, Dark={StaticResource ReminderBannerTextDark}}">
-                            <Label.GestureRecognizers>
-                                <TapGestureRecognizer Command="{Binding ToggleDueDetailsCommand}" />
-                            </Label.GestureRecognizers>
-                        </Label>
-                        <Label Grid.Column="2" Text="›" FontSize="20" FontAttributes="Bold"
-                               VerticalTextAlignment="Center"
-                               AutomationProperties.IsInAccessibleTree="False"
-                               TextColor="{AppThemeBinding Light={StaticResource ReminderBannerText}, Dark={StaticResource ReminderBannerTextDark}}">
-                            <Label.GestureRecognizers>
-                                <TapGestureRecognizer Command="{Binding NavigateToDauerauftraegeCommand}" />
-                            </Label.GestureRecognizers>
-                        </Label>
-                    </Grid>
+                    <VerticalStackLayout Spacing="12">
+                        <Grid ColumnDefinitions="*, Auto, Auto" ColumnSpacing="8">
+                            <Label Grid.Column="0"
+                                   Text="{Binding DueRecurringText}"
+                                   FontSize="14" VerticalTextAlignment="Center"
+                                   TextColor="{AppThemeBinding Light={StaticResource ReminderBannerText}, Dark={StaticResource ReminderBannerTextDark}}">
+                                <Label.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding NavigateToDauerauftraegeCommand}" />
+                                </Label.GestureRecognizers>
+                            </Label>
+                            <Label Grid.Column="1"
+                                   Text="{Binding DueDetailsChevron}"
+                                   FontSize="14"
+                                   VerticalTextAlignment="Center"
+                                   TextColor="{AppThemeBinding Light={StaticResource ReminderBannerText}, Dark={StaticResource ReminderBannerTextDark}}">
+                                <Label.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding ToggleDueDetailsCommand}" />
+                                </Label.GestureRecognizers>
+                            </Label>
+                            <Label Grid.Column="2" Text="›" FontSize="20" FontAttributes="Bold"
+                                   VerticalTextAlignment="Center"
+                                   AutomationProperties.IsInAccessibleTree="False"
+                                   TextColor="{AppThemeBinding Light={StaticResource ReminderBannerText}, Dark={StaticResource ReminderBannerTextDark}}">
+                                <Label.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding NavigateToDauerauftraegeCommand}" />
+                                </Label.GestureRecognizers>
+                            </Label>
+                        </Grid>
+                        <BoxView HeightRequest="1"
+                                 Color="{StaticResource ReminderBannerBorder}"
+                                 Opacity="0.45"
+                                 IsVisible="{Binding ShowDueDetailsList}" />
+                        <VerticalStackLayout Spacing="12"
+                                             IsVisible="{Binding ShowDueDetailsList}"
+                                             BindableLayout.ItemsSource="{Binding DueRecurringItems}">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="recurring:DueRecurringItem">
+                                    <VerticalStackLayout Spacing="8">
+                                        <Label Text="{Binding Recurring.Titel}" FontSize="15" FontAttributes="Bold"
+                                               TextColor="{AppThemeBinding Light={StaticResource ReminderBannerText}, Dark={StaticResource ReminderBannerTextDark}}" />
+                                        <Label Text="{Binding Hint}" FontSize="13"
+                                               TextColor="{AppThemeBinding Light={StaticResource ReminderBannerText}, Dark={StaticResource ReminderBannerTextDark}}"
+                                               Opacity="0.85" />
+                                        <Button Text="{loc:Translate Btn_Buchen}"
+                                                FontSize="14"
+                                                HeightRequest="44"
+                                                HorizontalOptions="Fill"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:DashboardViewModel}}, Path=BookDueRecurringCommand}"
+                                                CommandParameter="{Binding .}" />
+                                        <Grid ColumnDefinitions="*, *" ColumnSpacing="8">
+                                            <Button Grid.Column="0"
+                                                    Text="{loc:Translate Btn_TerminUeberspringen}"
+                                                    FontSize="12"
+                                                    HeightRequest="44"
+                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:DashboardViewModel}}, Path=SkipDueRecurringCommand}"
+                                                    CommandParameter="{Binding .}" />
+                                            <Button Grid.Column="1"
+                                                    Text="{loc:Translate Btn_TerminVerschieben}"
+                                                    FontSize="12"
+                                                    HeightRequest="44"
+                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:DashboardViewModel}}, Path=ShiftDueRecurringCommand}"
+                                                    CommandParameter="{Binding .}" />
+                                        </Grid>
+                                    </VerticalStackLayout>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </VerticalStackLayout>
+                    </VerticalStackLayout>
                 </Border>
-
-                <VerticalStackLayout Spacing="8"
-                                     IsVisible="{Binding ShowDueDetailsList}"
-                                     BindableLayout.ItemsSource="{Binding DueRecurringItems}">
-                    <BindableLayout.ItemTemplate>
-                        <DataTemplate x:DataType="recurring:DueRecurringItem">
-                            <Border StrokeShape="RoundRectangle 10"
-                                    Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray900}}"
-                                    BackgroundColor="{AppThemeBinding Light={StaticResource CardBackground}, Dark={StaticResource CardBackgroundDark}}"
-                                    Padding="12">
-                                <VerticalStackLayout Spacing="8">
-                                    <Label Text="{Binding Recurring.Titel}" FontSize="15" FontAttributes="Bold" />
-                                    <Label Text="{Binding Hint}" FontSize="13" TextColor="{AppThemeBinding Light={StaticResource TextTertiary}, Dark={StaticResource Gray600}}" />
-                                    <Button Text="{loc:Translate Btn_Buchen}"
-                                            FontSize="14"
-                                            HeightRequest="44"
-                                            HorizontalOptions="Fill"
-                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:DashboardViewModel}}, Path=BookDueRecurringCommand}"
-                                            CommandParameter="{Binding .}" />
-                                    <Grid ColumnDefinitions="*, *" ColumnSpacing="8">
-                                        <Button Grid.Column="0"
-                                                Text="{loc:Translate Btn_TerminUeberspringen}"
-                                                FontSize="12"
-                                                HeightRequest="44"
-                                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:DashboardViewModel}}, Path=SkipDueRecurringCommand}"
-                                                CommandParameter="{Binding .}" />
-                                        <Button Grid.Column="1"
-                                                Text="{loc:Translate Btn_TerminVerschieben}"
-                                                FontSize="12"
-                                                HeightRequest="44"
-                                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:DashboardViewModel}}, Path=ShiftDueRecurringCommand}"
-                                                CommandParameter="{Binding .}" />
-                                    </Grid>
-                                </VerticalStackLayout>
-                            </Border>
-                        </DataTemplate>
-                    </BindableLayout.ItemTemplate>
-                </VerticalStackLayout>
 
                 <!-- Kontenübersicht (einklappbar) -->
                 <Border Style="{StaticResource DashboardSectionCard}"
@@ -576,13 +579,37 @@
                 <Border Style="{StaticResource DashboardSectionCard}"
                         IsVisible="{Binding KategorieAusgaben, Converter={StaticResource CountToBool}}">
                     <VerticalStackLayout Spacing="12">
-                  <Label Text="{loc:Translate Lbl_AusgabenNachKategorie}" FontSize="16" FontAttributes="Bold"
-                      SemanticProperties.HeadingLevel="Level2" />
+                        <Grid ColumnDefinitions="*, Auto, Auto" ColumnSpacing="8">
+                            <Grid.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding ToggleMonthExpensesSectionCommand}" />
+                            </Grid.GestureRecognizers>
+                            <Label Grid.Column="0"
+                                   Text="{loc:Translate Lbl_AusgabenNachKategorie}"
+                                   FontSize="16"
+                                   FontAttributes="Bold"
+                                   SemanticProperties.HeadingLevel="Level2"
+                                   VerticalTextAlignment="Center" />
+                            <Label Grid.Column="1"
+                                   Text="{Binding GesamtAusgaben, Converter={StaticResource Currency}}"
+                                   FontSize="14"
+                                   FontAttributes="Bold"
+                                   IsVisible="{Binding IsMonthExpensesSectionExpanded, Converter={StaticResource InvertBool}}"
+                                   TextColor="{AppThemeBinding Light={StaticResource Ausgabe}, Dark={StaticResource AusgabeDark}}"
+                                   VerticalTextAlignment="Center" />
+                            <Label Grid.Column="2"
+                                   Text="{Binding MonthExpensesSectionChevron}"
+                                   FontSize="14"
+                                   TextColor="{AppThemeBinding Light={StaticResource TextTertiary}, Dark={StaticResource Gray600}}"
+                                   VerticalTextAlignment="Center" />
+                        </Grid>
+                        <BoxView Style="{StaticResource DashboardSectionDivider}"
+                                 IsVisible="{Binding IsMonthExpensesSectionExpanded}" />
+                        <VerticalStackLayout Spacing="12"
+                                             IsVisible="{Binding IsMonthExpensesSectionExpanded}">
 
                 <!-- Donut-Diagramm Monatsausgaben -->
                 <GraphicsView x:Name="MonthDonutChart"
                               HeightRequest="200"
-                              IsVisible="{Binding KategorieAusgaben, Converter={StaticResource CountToBool}}"
                               SemanticProperties.Description="{Binding MonthDonutAccessibilitySummary}"
                               Margin="0,4,0,0" />
 
@@ -642,6 +669,7 @@
                         </DataTemplate>
                     </BindableLayout.ItemTemplate>
                 </VerticalStackLayout>
+                        </VerticalStackLayout>
                     </VerticalStackLayout>
                 </Border>
 
@@ -649,8 +677,32 @@
                 <Border Style="{StaticResource DashboardSectionCard}"
                         IsVisible="{Binding KategorieEinnahmen, Converter={StaticResource CountToBool}}">
                     <VerticalStackLayout Spacing="12">
-                  <Label Text="{loc:Translate Lbl_EinnahmenNachKategorie}" FontSize="16" FontAttributes="Bold"
-                      SemanticProperties.HeadingLevel="Level2" />
+                        <Grid ColumnDefinitions="*, Auto, Auto" ColumnSpacing="8">
+                            <Grid.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding ToggleMonthIncomeSectionCommand}" />
+                            </Grid.GestureRecognizers>
+                            <Label Grid.Column="0"
+                                   Text="{loc:Translate Lbl_EinnahmenNachKategorie}"
+                                   FontSize="16"
+                                   FontAttributes="Bold"
+                                   SemanticProperties.HeadingLevel="Level2"
+                                   VerticalTextAlignment="Center" />
+                            <Label Grid.Column="1"
+                                   Text="{Binding GesamtEinnahmen, Converter={StaticResource Currency}}"
+                                   FontSize="14"
+                                   FontAttributes="Bold"
+                                   IsVisible="{Binding IsMonthIncomeSectionExpanded, Converter={StaticResource InvertBool}}"
+                                   TextColor="{AppThemeBinding Light={StaticResource Einnahme}, Dark={StaticResource EinnahmeDark}}"
+                                   VerticalTextAlignment="Center" />
+                            <Label Grid.Column="2"
+                                   Text="{Binding MonthIncomeSectionChevron}"
+                                   FontSize="14"
+                                   TextColor="{AppThemeBinding Light={StaticResource TextTertiary}, Dark={StaticResource Gray600}}"
+                                   VerticalTextAlignment="Center" />
+                        </Grid>
+                        <BoxView Style="{StaticResource DashboardSectionDivider}"
+                                 IsVisible="{Binding IsMonthIncomeSectionExpanded}" />
+                        <VerticalStackLayout IsVisible="{Binding IsMonthIncomeSectionExpanded}">
 
                 <VerticalStackLayout BindableLayout.ItemsSource="{Binding KategorieEinnahmen}"
                                      Spacing="0">
@@ -673,25 +725,24 @@
                         </DataTemplate>
                     </BindableLayout.ItemTemplate>
                 </VerticalStackLayout>
+                        </VerticalStackLayout>
                     </VerticalStackLayout>
                 </Border>
 
-                <!-- Forecast nächster Monat -->
-                <Border StrokeShape="RoundRectangle 12"
-                        Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray900}}"
-                        BackgroundColor="{AppThemeBinding Light=#F2F2F7, Dark=#2C2C2E}"
-                        Padding="12"
-                        Margin="0,8,0,0"
+                <!-- Forecast nächster Monat (nur Hinweis, kein Aufklappen — keine Zusatzdetails) -->
+                <Border Style="{StaticResource DashboardSectionCard}"
                         IsVisible="{Binding HasForecast}">
                     <Grid ColumnDefinitions="*, Auto">
                         <Label Grid.Column="0"
                                Text="{loc:Translate Lbl_ForecastNaechsterMonat}"
-                               FontSize="13"
-                               TextColor="{AppThemeBinding Light=#8E8E93, Dark=#636366}"
+                               FontSize="16"
+                               FontAttributes="Bold"
+                               SemanticProperties.HeadingLevel="Level2"
                                VerticalTextAlignment="Center" />
                         <Label Grid.Column="1"
                                Text="{Binding ForecastTotal, Converter={StaticResource Currency}}"
-                               FontSize="15" FontAttributes="Bold"
+                               FontSize="15"
+                               FontAttributes="Bold"
                                TextColor="{AppThemeBinding Light={StaticResource Warning}, Dark={StaticResource WarningDark}}"
                                VerticalTextAlignment="Center" />
                     </Grid>
@@ -735,43 +786,68 @@
                     </VerticalStackLayout>
                 </Border>
 
-                <!-- Balkendiagramm Monatsvergleich -->
+                <!-- Monatsverlauf -->
                 <Border Style="{StaticResource DashboardSectionCard}"
                         IsVisible="{Binding HasYearData}">
                     <VerticalStackLayout Spacing="12">
                         <Grid ColumnDefinitions="*, Auto">
                             <Grid.GestureRecognizers>
-                                <TapGestureRecognizer Command="{Binding ToggleYearDetailsCommand}" />
+                                <TapGestureRecognizer Command="{Binding ToggleYearMonthTrendCommand}" />
                             </Grid.GestureRecognizers>
                             <Label Grid.Column="0"
-                                   Text="{loc:Translate Lbl_Jahresdetails}"
+                                   Text="{loc:Translate Lbl_AusgabenProMonat}"
                                    FontSize="16"
                                    FontAttributes="Bold"
                                    SemanticProperties.HeadingLevel="Level2"
                                    VerticalTextAlignment="Center" />
                             <Label Grid.Column="1"
-                                   Text="{Binding YearDetailsChevron}"
+                                   Text="{Binding YearMonthTrendChevron}"
                                    FontSize="14"
                                    TextColor="{AppThemeBinding Light={StaticResource TextTertiary}, Dark={StaticResource Gray600}}"
                                    VerticalTextAlignment="Center" />
                         </Grid>
                         <BoxView Style="{StaticResource DashboardSectionDivider}"
-                                 IsVisible="{Binding IsYearDetailsExpanded}" />
-                <VerticalStackLayout IsVisible="{Binding IsYearDetailsExpanded}" Spacing="12">
-                  <Label Text="{loc:Translate Lbl_AusgabenProMonat}" FontSize="16" FontAttributes="Bold"
-                      SemanticProperties.HeadingLevel="Level2" />
+                                 IsVisible="{Binding IsYearMonthTrendExpanded}" />
+                        <GraphicsView x:Name="YearBarChart"
+                                      HeightRequest="150"
+                                      IsVisible="{Binding IsYearMonthTrendExpanded}"
+                                      SemanticProperties.Description="{Binding YearBarAccessibilitySummary}"
+                                      Margin="0,4,0,0" />
+                    </VerticalStackLayout>
+                </Border>
 
-                <GraphicsView x:Name="YearBarChart"
-                              HeightRequest="150"
-                              SemanticProperties.Description="{Binding YearBarAccessibilitySummary}"
-                              Margin="0,4,0,8" />
+                <!-- Ausgaben nach Kategorie (Jahr) -->
+                <Border Style="{StaticResource DashboardSectionCard}"
+                        IsVisible="{Binding HasYearData}">
+                    <VerticalStackLayout Spacing="12">
+                        <Grid ColumnDefinitions="*, Auto, Auto" ColumnSpacing="8">
+                            <Grid.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding ToggleYearCategoriesCommand}" />
+                            </Grid.GestureRecognizers>
+                            <Label Grid.Column="0"
+                                   Text="{loc:Translate Lbl_AusgabenNachKategorie}"
+                                   FontSize="16"
+                                   FontAttributes="Bold"
+                                   SemanticProperties.HeadingLevel="Level2"
+                                   VerticalTextAlignment="Center" />
+                            <Label Grid.Column="1"
+                                   Text="{Binding JahrGesamtAusgaben, Converter={StaticResource Currency}}"
+                                   FontSize="14"
+                                   FontAttributes="Bold"
+                                   IsVisible="{Binding IsYearCategoriesExpanded, Converter={StaticResource InvertBool}}"
+                                   TextColor="{AppThemeBinding Light={StaticResource Ausgabe}, Dark={StaticResource AusgabeDark}}"
+                                   VerticalTextAlignment="Center" />
+                            <Label Grid.Column="2"
+                                   Text="{Binding YearCategoriesChevron}"
+                                   FontSize="14"
+                                   TextColor="{AppThemeBinding Light={StaticResource TextTertiary}, Dark={StaticResource Gray600}}"
+                                   VerticalTextAlignment="Center" />
+                        </Grid>
+                        <BoxView Style="{StaticResource DashboardSectionDivider}"
+                                 IsVisible="{Binding IsYearCategoriesExpanded}" />
+                        <VerticalStackLayout Spacing="12"
+                                             IsVisible="{Binding IsYearCategoriesExpanded}">
 
-                <!-- Kategorien im Jahr -->
-                  <Label Text="{loc:Translate Lbl_AusgabenNachKategorie}" FontSize="16" FontAttributes="Bold"
-                      SemanticProperties.HeadingLevel="Level2"
-                      IsVisible="{Binding JahrKategorien, Converter={StaticResource CountToBool}}" />
-
-                <!-- Donut-Diagramm Jahreskategorien -->
                 <GraphicsView x:Name="YearDonutChart"
                               HeightRequest="200"
                               IsVisible="{Binding JahrKategorien, Converter={StaticResource CountToBool}}"
@@ -803,7 +879,7 @@
                         </DataTemplate>
                     </BindableLayout.ItemTemplate>
                 </VerticalStackLayout>
-                </VerticalStackLayout>
+                        </VerticalStackLayout>
                     </VerticalStackLayout>
                 </Border>
 
