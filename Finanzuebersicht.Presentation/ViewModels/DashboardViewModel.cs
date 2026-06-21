@@ -657,11 +657,7 @@ public partial class DashboardViewModel : MonthNavigationViewModel, ILocalizable
             CashflowProjectedIncome = data.ProjectedIncome;
             CashflowProjectedExpenses = data.ProjectedExpenses;
             CashflowNotableDays = data.Days.Count(d => d.IsNotable);
-            CashflowSummaryText = string.Format(
-                System.Globalization.CultureInfo.CurrentCulture,
-                _loc.GetString(ResourceKeys.Fmt_CashflowSummary),
-                data.ProjectedIncome.ToString("C", CurrencyCulture.Instance),
-                data.ProjectedExpenses.ToString("C", CurrencyCulture.Instance));
+            UpdateCashflowSummaryText();
         }
         catch (Exception ex)
         {
@@ -863,7 +859,12 @@ public partial class DashboardViewModel : MonthNavigationViewModel, ILocalizable
         await _navigationService.GoToAsync(Routes.Cashflow);
     }
 
-    public void RefreshLocalizedStrings() => UpdateChartAccessibilitySummaries();
+    public void RefreshLocalizedStrings()
+    {
+        OnPropertyChanged(nameof(SummarySaldoLabel));
+        OnPropertyChanged(nameof(DueRecurringText));
+        UpdateChartAccessibilitySummaries();
+    }
 
     public void RefreshCurrencyDisplay()
     {
@@ -884,6 +885,7 @@ public partial class DashboardViewModel : MonthNavigationViewModel, ILocalizable
         OnPropertyChanged(nameof(CashflowNetAmount));
         OnPropertyChanged(nameof(CashflowProjectedIncome));
         OnPropertyChanged(nameof(CashflowProjectedExpenses));
+        UpdateCashflowSummaryText();
         OnPropertyChanged(nameof(TrendProzent));
 
         if (KategorieAusgaben.Count > 0)
@@ -902,6 +904,17 @@ public partial class DashboardViewModel : MonthNavigationViewModel, ILocalizable
             JahrMonate = [.. JahrMonate];
 
         UpdateChartAccessibilitySummaries();
+    }
+
+    private void UpdateCashflowSummaryText()
+    {
+        CashflowSummaryText = HasCashflowPreview
+            ? string.Format(
+                System.Globalization.CultureInfo.CurrentCulture,
+                _loc.GetString(ResourceKeys.Fmt_CashflowSummary),
+                CashflowProjectedIncome.ToString("C", CurrencyCulture.Instance),
+                CashflowProjectedExpenses.ToString("C", CurrencyCulture.Instance))
+            : string.Empty;
     }
 
     private void UpdateChartAccessibilitySummaries()

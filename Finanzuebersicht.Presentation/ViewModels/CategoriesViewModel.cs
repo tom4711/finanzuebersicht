@@ -160,6 +160,7 @@ public partial class CategoriesViewModel(
         {
             await _deleteCategoryUseCase.ExecuteAsync(kategorie.Id);
             Kategorien.Remove(kategorie);
+            OnPropertyChanged(nameof(IsKategorienEmpty));
             _appEvents.NotifyDataChanged();
             await _feedbackService.ShowSnackbarAsync(_loc.GetString(ResourceKeys.Msg_Geloescht));
         }
@@ -188,6 +189,8 @@ public partial class CategoriesViewModel(
         {
             await _deleteAccountUseCase.ExecuteAsync(konto.Account.Id);
             Konten.Remove(konto);
+            OnPropertyChanged(nameof(IsKontenEmpty));
+            OnPropertyChanged(nameof(ShowGesamtSaldoHeader));
             _appEvents.NotifyDataChanged();
             await _feedbackService.ShowSnackbarAsync(_loc.GetString(ResourceKeys.Msg_Geloescht));
         }
