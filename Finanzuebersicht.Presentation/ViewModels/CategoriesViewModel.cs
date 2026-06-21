@@ -76,10 +76,10 @@ public partial class CategoriesViewModel(
     public void RefreshLocalizedStrings()
     {
         OnPropertyChanged(nameof(FabAccessibilityDescription));
-        _ = LoadKategorien();
+        _ = LoadKategorienCore();
     }
 
-    public void RefreshCurrencyDisplay() => _ = LoadKategorien(force: true);
+    public void RefreshCurrencyDisplay() => _ = LoadKategorienCore(force: true);
 
     [ObservableProperty]
     private bool isLoading;
@@ -91,7 +91,9 @@ public partial class CategoriesViewModel(
     private void ShowKonten() => SelectedSectionIndex = 1;
 
     [RelayCommand]
-    private async Task LoadKategorien(bool force = false)
+    private Task LoadKategorien() => LoadKategorienCore();
+
+    private async Task LoadKategorienCore(bool force = false)
     {
         CurrencyRefreshRegistry.Register(this);
         if (!force && IsLoading) return;
