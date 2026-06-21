@@ -4,7 +4,7 @@
 
 > **Hinweis:** Die Milestone-Bezeichnungen (v1.14, v1.2, v2.0) sind thematische GitHub-Planungslabels, keine sequenziellen Release-Versionen. Tatsächliche Releases (v1.0, v1.6, v1.12 …) werden durch Git-Commit-Höhe via Nerdbank.GitVersioning bestimmt.
 
-**Aktueller Stand:** Release **v1.15** (Latest). Nächste geplante UX-Releases: **v1.16–v1.17** (vor v2.0).
+**Aktueller Stand:** Release **v1.16** (Latest). Nächster geplanter UX-Release: **v1.17** (vor v2.0).
 
 ---
 
@@ -95,17 +95,17 @@ Fokus: Onboarding, einheitliche Empty States, Aktion-Feedback, Saldo-Vertrauen.
 
 ---
 
-## 🎯 v1.16 — UI-Konsistenz & Lokalisierung *(geplant)* · [Milestone](https://github.com/tom4711/finanzuebersicht/milestone/20)
+## ✅ v1.16 — UI-Konsistenz & Lokalisierung *(abgeschlossen)* · [Milestone](https://github.com/tom4711/finanzuebersicht/milestone/20)
 
-| Issue | Thema | Priorität |
-|-------|-------|-----------|
-| [#252](https://github.com/tom4711/finanzuebersicht/issues/252) | Dashboard Runde 2 — weniger Karten, klarer erster Blick | B |
-| [#253](https://github.com/tom4711/finanzuebersicht/issues/253) | Anzeige-Währung beim Erststart (getrennt von Sprache) | B |
-| [#254](https://github.com/tom4711/finanzuebersicht/issues/254) | Hardcoded XAML-Farben → zentrale Theme-Ressourcen | B |
-| [#234](https://github.com/tom4711/finanzuebersicht/issues/234) | Seitentitel und Enum-Labels lokalisieren | B |
-| [#236](https://github.com/tom4711/finanzuebersicht/issues/236) | Verwaltung Kategorien/Konten — Segment klarer | B |
-| [#238](https://github.com/tom4711/finanzuebersicht/issues/238) | Filter und Umbuchung mit Text statt Emoji | B |
-| [#240](https://github.com/tom4711/finanzuebersicht/issues/240) | Einheitliches Icon-Set statt Emoji | C |
+| Issue | Thema | Status |
+|-------|-------|--------|
+| [#252](https://github.com/tom4711/finanzuebersicht/issues/252) | Dashboard Runde 2 — weniger Karten, klarer erster Blick | ✅ Closed |
+| [#253](https://github.com/tom4711/finanzuebersicht/issues/253) | Anzeige-Währung beim Erststart (getrennt von Sprache) | ✅ Closed |
+| [#254](https://github.com/tom4711/finanzuebersicht/issues/254) | Hardcoded XAML-Farben → zentrale Theme-Ressourcen | ✅ Closed |
+| [#234](https://github.com/tom4711/finanzuebersicht/issues/234) | Seitentitel und Enum-Labels lokalisieren | ✅ Closed |
+| [#236](https://github.com/tom4711/finanzuebersicht/issues/236) | Verwaltung Kategorien/Konten — Segment klarer | ✅ Closed |
+| [#238](https://github.com/tom4711/finanzuebersicht/issues/238) | Filter und Umbuchung mit Text statt Emoji | ✅ Closed |
+| [#240](https://github.com/tom4711/finanzuebersicht/issues/240) | Einheitliches Icon-Set statt Emoji | ✅ Closed |
 
 ---
 

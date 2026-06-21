@@ -67,6 +67,7 @@ public sealed class DisplayCurrencyService : IDisplayCurrencyService
         if (string.IsNullOrEmpty(code))
             code = _settings.Get("Currency", "EUR");
 
+        code = code.Trim().ToUpperInvariant();
         return CultureByCode.ContainsKey(code) ? code : "EUR";
     }
 
