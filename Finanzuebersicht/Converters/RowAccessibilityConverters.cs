@@ -3,24 +3,22 @@ using Finanzuebersicht.Core.Services;
 using Finanzuebersicht.Models;
 using Finanzuebersicht.Resources.Strings;
 using Finanzuebersicht.Services;
-using Finanzuebersicht.ViewModels;
 
 namespace Finanzuebersicht.Converters;
 
-public class TransactionRowAccessibilityConverter : IValueConverter
+public class TransactionRowAccessibilityConverter : IMultiValueConverter
 {
-    public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+    public object? Convert(object[] values, Type targetType, object? parameter, CultureInfo culture)
     {
-        if (value is not Transaction tx)
+        if (values.Length < 1 || values[0] is not Transaction tx)
             return string.Empty;
 
-        Dictionary<string, string>? accountMap = null;
-        Dictionary<string, string>? categoryMap = null;
-        if (parameter is TransactionsViewModel vm)
-        {
-            accountMap = vm.AccountMap;
-            categoryMap = vm.CategoryNameMap;
-        }
+        IReadOnlyDictionary<string, string>? categoryMap = values.Length >= 2
+            ? values[1] as IReadOnlyDictionary<string, string>
+            : null;
+        IReadOnlyDictionary<string, string>? accountMap = values.Length >= 3
+            ? values[2] as IReadOnlyDictionary<string, string>
+            : null;
 
         var amount = FormatTransactionAmount(tx);
         var account = ResolveName(accountMap, tx.AccountId, LocalizationResourceManager.Current[ResourceKeys.Lbl_AlleKonten]);
@@ -36,7 +34,7 @@ public class TransactionRowAccessibilityConverter : IValueConverter
             date);
     }
 
-    public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
+    public object[] ConvertBack(object value, Type[] targetTypes, object? parameter, CultureInfo culture)
         => throw new NotImplementedException();
 
     internal static string FormatTransactionAmount(Transaction tx)

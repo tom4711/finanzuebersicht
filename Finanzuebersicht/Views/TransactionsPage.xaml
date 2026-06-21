@@ -27,8 +27,14 @@
              Reused in search results. Month view uses same structure
              wrapped in SwipeView (see CollectionView below). -->
         <DataTemplate x:Key="TransactionRowTemplate" x:DataType="models:Transaction">
-            <Grid ColumnDefinitions="44, *, Auto" Padding="16,10" ColumnSpacing="12"
-                  SemanticProperties.Description="{Binding ., Converter={StaticResource TransactionAccessibility}, ConverterParameter={Binding Source={RelativeSource AncestorType={x:Type views:BaseContentPage}}, Path=BindingContext}}">
+            <Grid ColumnDefinitions="44, *, Auto" Padding="16,10" ColumnSpacing="12">
+                <SemanticProperties.Description>
+                    <MultiBinding Converter="{StaticResource TransactionAccessibility}">
+                        <Binding Path="." />
+                        <Binding Source="{RelativeSource AncestorType={x:Type vm:TransactionsViewModel}}" Path="CategoryNameMap" />
+                        <Binding Source="{RelativeSource AncestorType={x:Type vm:TransactionsViewModel}}" Path="AccountMap" />
+                    </MultiBinding>
+                </SemanticProperties.Description>
                 <Grid.GestureRecognizers>
                     <TapGestureRecognizer
                         Command="{Binding Source={RelativeSource AncestorType={x:Type vm:TransactionsViewModel}}, Path=GoToDetailCommand}"
@@ -297,8 +303,14 @@
                                                    CommandParameter="{Binding .}" />
                                     </SwipeItems>
                                 </SwipeView.RightItems>
-                                <Grid ColumnDefinitions="44, *, Auto" Padding="16,10" ColumnSpacing="12"
-                                      SemanticProperties.Description="{Binding ., Converter={StaticResource TransactionAccessibility}, ConverterParameter={Binding Source={RelativeSource AncestorType={x:Type views:BaseContentPage}}, Path=BindingContext}}">
+                                <Grid ColumnDefinitions="44, *, Auto" Padding="16,10" ColumnSpacing="12">
+                                    <SemanticProperties.Description>
+                                        <MultiBinding Converter="{StaticResource TransactionAccessibility}">
+                                            <Binding Path="." />
+                                            <Binding Source="{RelativeSource AncestorType={x:Type vm:TransactionsViewModel}}" Path="CategoryNameMap" />
+                                            <Binding Source="{RelativeSource AncestorType={x:Type vm:TransactionsViewModel}}" Path="AccountMap" />
+                                        </MultiBinding>
+                                    </SemanticProperties.Description>
                                     <Grid.GestureRecognizers>
                                         <TapGestureRecognizer
                                             Command="{Binding Source={RelativeSource AncestorType={x:Type vm:TransactionsViewModel}}, Path=GoToDetailCommand}"
