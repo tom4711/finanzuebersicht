@@ -7,4 +7,6 @@ namespace Finanzuebersicht.Presentation.Services;
 public interface IAppEvents
 {
     void NotifyDataChanged();
+
+    event Action? CurrencyChanged;
 }

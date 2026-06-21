@@ -3,6 +3,8 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Finanzuebersicht.Application.UseCases.Dashboard;
 using Finanzuebersicht.Models;
+using Finanzuebersicht.Presentation;
+using Finanzuebersicht.Presentation.Services;
 using Finanzuebersicht.Resources.Strings;
 using Microsoft.Extensions.Logging;
 
@@ -13,7 +15,7 @@ public partial class CashflowViewModel(
     IAccountRepository accountRepository,
     ILocalizationService localizationService,
     IDialogService dialogService,
-    ILogger<CashflowViewModel>? logger = null) : ObservableObject, IAutoLoadViewModel
+    ILogger<CashflowViewModel>? logger = null) : ObservableObject, IAutoLoadViewModel, ICurrencyRefreshViewModel
 {
     private readonly LoadCashflowOutlookUseCase _loadCashflowOutlookUseCase = loadCashflowOutlookUseCase;
     private readonly IAccountRepository _accountRepository = accountRepository;
@@ -59,6 +61,7 @@ public partial class CashflowViewModel(
     [RelayCommand]
     private async Task LoadCashflow()
     {
+        CurrencyRefreshRegistry.Register(this);
         if (IsLoading) return;
         IsLoading = true;
         try
@@ -99,5 +102,13 @@ public partial class CashflowViewModel(
 
         AvailableKonten = items;
         SelectedKontoFilterItem = items[0];
+    }
+
+    public void RefreshCurrencyDisplay()
+    {
+        OnPropertyChanged(nameof(ProjectedIncome));
+        OnPropertyChanged(nameof(ProjectedExpenses));
+        if (Days.Count > 0)
+            Days = CurrencyDisplayRefresh.Clone(Days);
     }
 }

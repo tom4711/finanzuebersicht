@@ -16,6 +16,7 @@
         <conv:BoolToOpacityConverter x:Key="BoolToOpacity" />
         <conv:BetragDisplayConverter x:Key="BetragDisplay" />
         <conv:AktivTextConverter x:Key="AktivText" />
+        <conv:RecurringRowAccessibilityConverter x:Key="RecurringAccessibility" />
     </views:BaseContentPage.Resources>
 
     <Grid>
@@ -54,7 +55,8 @@
                         </SwipeView.RightItems>
 
                         <Grid ColumnDefinitions="44, *, Auto" Padding="16,12" ColumnSpacing="12"
-                              Opacity="{Binding Aktiv, Converter={StaticResource BoolToOpacity}}">
+                              Opacity="{Binding Aktiv, Converter={StaticResource BoolToOpacity}}"
+                              SemanticProperties.Description="{Binding ., Converter={StaticResource RecurringAccessibility}}">
                             <Grid.GestureRecognizers>
                                 <TapGestureRecognizer
                                     Command="{Binding Source={RelativeSource AncestorType={x:Type vm:RecurringTransactionsViewModel}}, Path=GoToDetailCommand}"

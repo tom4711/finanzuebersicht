@@ -10,13 +10,15 @@
              x:DataType="vm:TransferDetailViewModel"
              Title="{loc:Translate Title_Umbuchung}">
 
-    <ScrollView Padding="16">
+    <Grid RowDefinitions="*, Auto">
+    <ScrollView Grid.Row="0" Padding="16">
         <VerticalStackLayout Spacing="20">
             <VerticalStackLayout Spacing="4">
                 <Label Text="{loc:Translate Lbl_VonKonto}" FontSize="13" TextColor="Gray" />
                 <controls:SelectionField ItemsSource="{Binding Accounts}"
                                          SelectedItem="{Binding SourceAccount, Mode=TwoWay}"
                                          DisplayMemberPath="Name"
+                                         FieldLabel="{loc:Translate Lbl_VonKonto}"
                                          Placeholder="{loc:Translate Hint_KontoWaehlen}" />
             </VerticalStackLayout>
 
@@ -25,6 +27,7 @@
                 <controls:SelectionField ItemsSource="{Binding Accounts}"
                                          SelectedItem="{Binding TargetAccount, Mode=TwoWay}"
                                          DisplayMemberPath="Name"
+                                         FieldLabel="{loc:Translate Lbl_NachKonto}"
                                          Placeholder="{loc:Translate Hint_KontoWaehlen}" />
             </VerticalStackLayout>
 
@@ -58,4 +61,12 @@
                     Margin="0,20,0,0" />
         </VerticalStackLayout>
     </ScrollView>
+        <Label Grid.Row="1"
+               Text="▼"
+               FontSize="10"
+               HorizontalTextAlignment="Center"
+               Padding="0,2,0,6"
+               InputTransparent="True"
+               TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray600}}" />
+    </Grid>
 </views:BaseContentPage>

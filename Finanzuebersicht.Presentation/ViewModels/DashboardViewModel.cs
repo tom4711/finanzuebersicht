@@ -8,11 +8,13 @@ using Finanzuebersicht.Application.UseCases.RecurringTransactions;
 using Finanzuebersicht.Core.Services;
 using Finanzuebersicht.Models;
 using Finanzuebersicht.Navigation;
+using Finanzuebersicht.Presentation.Accessibility;
+using Finanzuebersicht.Presentation;
 using Finanzuebersicht.Resources.Strings;
 using Microsoft.Extensions.Logging;
 
 namespace Finanzuebersicht.ViewModels;
-public partial class DashboardViewModel : MonthNavigationViewModel
+public partial class DashboardViewModel : MonthNavigationViewModel, ILocalizableViewModel, ICurrencyRefreshViewModel
 {
     private readonly LoadDashboardMonthUseCase _loadDashboardMonthUseCase;
     private readonly LoadDashboardYearUseCase _loadDashboardYearUseCase;
@@ -117,6 +119,15 @@ public partial class DashboardViewModel : MonthNavigationViewModel
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasYearData))]
     private List<MonthSummary> jahrMonate = [];
+
+    [ObservableProperty]
+    private string monthDonutAccessibilitySummary = string.Empty;
+
+    [ObservableProperty]
+    private string yearBarAccessibilitySummary = string.Empty;
+
+    [ObservableProperty]
+    private string yearDonutAccessibilitySummary = string.Empty;
 
     // --- Allgemein ---
 
@@ -362,6 +373,7 @@ public partial class DashboardViewModel : MonthNavigationViewModel
     [RelayCommand]
     private async Task LoadDashboard()
     {
+        CurrencyRefreshRegistry.Register(this);
         if (IsLoading) return;
         IsLoading = true;
         try
@@ -525,6 +537,8 @@ public partial class DashboardViewModel : MonthNavigationViewModel
         {
             HasForecast = false;
         }
+
+        UpdateChartAccessibilitySummaries();
     }
 
     private async Task LadeJahrAsync()
@@ -564,6 +578,8 @@ public partial class DashboardViewModel : MonthNavigationViewModel
             ForecastBarMonth = 0;
             ForecastBarValue = 0;
         }
+
+        UpdateChartAccessibilitySummaries();
     }
 
     [RelayCommand]
@@ -801,5 +817,55 @@ public partial class DashboardViewModel : MonthNavigationViewModel
     private async Task NavigateToCashflow()
     {
         await _navigationService.GoToAsync(Routes.Cashflow);
+    }
+
+    public void RefreshLocalizedStrings() => UpdateChartAccessibilitySummaries();
+
+    public void RefreshCurrencyDisplay()
+    {
+        OnPropertyChanged(nameof(GesamtEinnahmen));
+        OnPropertyChanged(nameof(GesamtAusgaben));
+        OnPropertyChanged(nameof(Bilanz));
+        OnPropertyChanged(nameof(BudgetGesamt));
+        OnPropertyChanged(nameof(BudgetVerbraucht));
+        OnPropertyChanged(nameof(BudgetRest));
+        OnPropertyChanged(nameof(BudgetTagesbudget));
+        OnPropertyChanged(nameof(ForecastTotal));
+        OnPropertyChanged(nameof(ForecastBarValue));
+        OnPropertyChanged(nameof(JahrBudgetTotal));
+        OnPropertyChanged(nameof(JahrGesamtAusgaben));
+        OnPropertyChanged(nameof(SelectedAccountSaldo));
+        OnPropertyChanged(nameof(GesamtSaldo));
+        OnPropertyChanged(nameof(SummarySaldo));
+        OnPropertyChanged(nameof(CashflowNetAmount));
+        OnPropertyChanged(nameof(CashflowProjectedIncome));
+        OnPropertyChanged(nameof(CashflowProjectedExpenses));
+        OnPropertyChanged(nameof(TrendProzent));
+
+        if (KategorieAusgaben.Count > 0)
+            KategorieAusgaben = new ObservableCollection<CategorySummary>(KategorieAusgaben);
+        if (KategorieEinnahmen.Count > 0)
+            KategorieEinnahmen = new ObservableCollection<CategorySummary>(KategorieEinnahmen);
+        CurrencyDisplayRefresh.Rebind(BudgetHinweise);
+        if (JahrKategorien.Count > 0)
+            JahrKategorien = CurrencyDisplayRefresh.Clone(JahrKategorien);
+        if (KontenUebersicht.Count > 0)
+            KontenUebersicht = CurrencyDisplayRefresh.Clone(KontenUebersicht);
+        if (DueRecurringItems.Count > 0)
+            DueRecurringItems = CurrencyDisplayRefresh.Clone(DueRecurringItems);
+
+        if (JahrMonate.Count > 0)
+            JahrMonate = [.. JahrMonate];
+
+        UpdateChartAccessibilitySummaries();
+    }
+
+    private void UpdateChartAccessibilitySummaries()
+    {
+        var culture = CurrencyCulture.Instance;
+        MonthDonutAccessibilitySummary = ChartAccessibilitySummaryBuilder.BuildCategoryDonutSummary(KategorieAusgaben, _loc, culture);
+        YearDonutAccessibilitySummary = ChartAccessibilitySummaryBuilder.BuildCategoryDonutSummary(JahrKategorien, _loc, culture);
+        YearBarAccessibilitySummary = ChartAccessibilitySummaryBuilder.BuildMonthBarSummary(
+            JahrMonate, _loc, culture, ForecastBarMonth, ForecastBarValue);
     }
 }
