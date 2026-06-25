@@ -19,15 +19,45 @@ public partial class AboutViewModel : ObservableObject
         _logger = logger;
 
         var infoVersion = _appAssembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? "unbekannt";
-
-        AppVersion = infoVersion.Contains('+')
-            ? infoVersion[..infoVersion.IndexOf('+')]
-            : infoVersion;
-        BuildInfo = infoVersion.Contains('+')
-            ? infoVersion[(infoVersion.IndexOf('+') + 1)..]
-            : string.Empty;
+        (AppVersion, BuildInfo) = ParseVersionDisplay(infoVersion);
 
         PopulateLibraries();
+    }
+
+    /// <summary>
+    /// Maps Nerdbank informational version (e.g. <c>1.17.9+ea2311c9de</c>) to user-facing
+    /// release line (<c>1.17</c>) and build metadata (<c>9 · ea2311c9de</c>).
+    /// </summary>
+    public static (string AppVersion, string BuildInfo) ParseVersionDisplay(string infoVersion)
+    {
+        var core = infoVersion;
+        string? metadata = null;
+
+        var plusIdx = infoVersion.IndexOf('+');
+        var minusIdx = infoVersion.IndexOf('-');
+        if (plusIdx >= 0)
+        {
+            core = infoVersion[..plusIdx];
+            metadata = infoVersion[(plusIdx + 1)..];
+        }
+        else if (minusIdx >= 0)
+        {
+            core = infoVersion[..minusIdx];
+            metadata = infoVersion[(minusIdx + 1)..];
+        }
+
+        if (Version.TryParse(core, out var version))
+        {
+            var appVersion = $"{version.Major}.{version.Minor}";
+            var buildParts = new List<string>();
+            if (version.Build > 0)
+                buildParts.Add(version.Build.ToString());
+            if (!string.IsNullOrWhiteSpace(metadata))
+                buildParts.Add(metadata);
+            return (appVersion, string.Join(" · ", buildParts));
+        }
+
+        return (core, metadata ?? string.Empty);
     }
 
     private void PopulateLibraries()
