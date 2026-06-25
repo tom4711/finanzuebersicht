@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.Input;
 using Finanzuebersicht.Application.UseCases.RecurringTransactions;
 using Finanzuebersicht.Models;
 using Finanzuebersicht.Navigation;
+using Finanzuebersicht.Presentation;
 using Finanzuebersicht.Presentation.Services;
 using Finanzuebersicht.Resources.Strings;
 using Microsoft.Extensions.Logging;
@@ -19,7 +20,7 @@ public partial class RecurringTransactionsViewModel(
     IDialogService dialogService,
     IFeedbackService feedbackService,
     IAppEvents appEvents,
-    ILogger<RecurringTransactionsViewModel>? logger = null) : ObservableObject, IAutoLoadViewModel
+    ILogger<RecurringTransactionsViewModel>? logger = null) : ObservableObject, IAutoLoadViewModel, ICurrencyRefreshViewModel
 {
     private readonly DeleteRecurringTransactionUseCase _deleteRecurringTransactionUseCase = deleteRecurringTransactionUseCase;
     private readonly LoadRecurringTransactionsUseCase _loadRecurringTransactionsUseCase = loadRecurringTransactionsUseCase;
@@ -42,6 +43,7 @@ public partial class RecurringTransactionsViewModel(
     [RelayCommand]
     private async Task LoadDauerauftraege()
     {
+        CurrencyRefreshRegistry.Register(this);
         if (IsLoading) return;
         IsLoading = true;
 
@@ -108,5 +110,11 @@ public partial class RecurringTransactionsViewModel(
         }
 
         await _navigationService.GoToAsync(Routes.RecurringTransactionDetail, parameter);
+    }
+
+    public void RefreshCurrencyDisplay()
+    {
+        if (Dauerauftraege.Count > 0)
+            Dauerauftraege = CurrencyDisplayRefresh.Clone(Dauerauftraege);
     }
 }

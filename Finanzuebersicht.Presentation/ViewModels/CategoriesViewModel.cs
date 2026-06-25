@@ -7,6 +7,7 @@ using Finanzuebersicht.Application.UseCases.Categories;
 using Finanzuebersicht.Core.Services;
 using Finanzuebersicht.Models;
 using Finanzuebersicht.Navigation;
+using Finanzuebersicht.Presentation;
 using Finanzuebersicht.Presentation.Services;
 using Finanzuebersicht.Resources.Strings;
 using Microsoft.Extensions.Logging;
@@ -25,7 +26,7 @@ public partial class CategoriesViewModel(
     IDialogService dialogService,
     IFeedbackService feedbackService,
     IAppEvents appEvents,
-    ILogger<CategoriesViewModel>? logger = null) : ObservableObject, IAutoLoadViewModel, ILocalizableViewModel
+    ILogger<CategoriesViewModel>? logger = null) : ObservableObject, IAutoLoadViewModel, ILocalizableViewModel, ICurrencyRefreshViewModel
 {
     private readonly DeleteCategoryUseCase _deleteCategoryUseCase = deleteCategoryUseCase;
     private readonly LoadCategoriesUseCase _loadCategoriesUseCase = loadCategoriesUseCase;
@@ -43,11 +44,19 @@ public partial class CategoriesViewModel(
     public System.Windows.Input.ICommand AutoLoadCommand => LoadKategorienCommand;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsKategorienVisible))]
+    [NotifyPropertyChangedFor(nameof(IsKontenVisible))]
+    [NotifyPropertyChangedFor(nameof(IsKategorienEmpty))]
     private ObservableCollection<Category> kategorien = [];
+
+    public bool IsKategorienEmpty => Kategorien.Count == 0;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(ShowGesamtSaldoHeader))]
+    [NotifyPropertyChangedFor(nameof(IsKontenEmpty))]
     private ObservableCollection<AccountListItem> konten = [];
+
+    public bool IsKontenEmpty => Konten.Count == 0;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(ShowGesamtSaldoHeader))]
@@ -75,8 +84,10 @@ public partial class CategoriesViewModel(
     public void RefreshLocalizedStrings()
     {
         OnPropertyChanged(nameof(FabAccessibilityDescription));
-        _ = LoadKategorien();
+        _ = LoadKategorienCore();
     }
+
+    public void RefreshCurrencyDisplay() => _ = LoadKategorienCore(force: true);
 
     [ObservableProperty]
     private bool isLoading;
@@ -88,9 +99,12 @@ public partial class CategoriesViewModel(
     private void ShowKonten() => SelectedSectionIndex = 1;
 
     [RelayCommand]
-    private async Task LoadKategorien()
+    private Task LoadKategorien() => LoadKategorienCore();
+
+    private async Task LoadKategorienCore(bool force = false)
     {
-        if (IsLoading) return;
+        CurrencyRefreshRegistry.Register(this);
+        if (!force && IsLoading) return;
         IsLoading = true;
 
         try
@@ -146,6 +160,7 @@ public partial class CategoriesViewModel(
         {
             await _deleteCategoryUseCase.ExecuteAsync(kategorie.Id);
             Kategorien.Remove(kategorie);
+            OnPropertyChanged(nameof(IsKategorienEmpty));
             _appEvents.NotifyDataChanged();
             await _feedbackService.ShowSnackbarAsync(_loc.GetString(ResourceKeys.Msg_Geloescht));
         }
@@ -174,6 +189,8 @@ public partial class CategoriesViewModel(
         {
             await _deleteAccountUseCase.ExecuteAsync(konto.Account.Id);
             Konten.Remove(konto);
+            OnPropertyChanged(nameof(IsKontenEmpty));
+            OnPropertyChanged(nameof(ShowGesamtSaldoHeader));
             _appEvents.NotifyDataChanged();
             await _feedbackService.ShowSnackbarAsync(_loc.GetString(ResourceKeys.Msg_Geloescht));
         }

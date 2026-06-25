@@ -356,6 +356,19 @@ Please restart the app.</value></data>
   <data name="A11y_HintBetrag" xml:space="preserve"><value>Enter amount, e.g. 12.50</value></data>
   <data name="A11y_HintTitel" xml:space="preserve"><value>Short description of the transaction</value></data>
   <data name="A11y_HintBudget" xml:space="preserve"><value>Leave empty for no budget limit</value></data>
+  <data name="A11y_ChartLeer" xml:space="preserve"><value>No data</value></data>
+  <data name="A11y_ChartCategorySegment" xml:space="preserve"><value>{0} {1}, {2}</value></data>
+  <data name="A11y_ChartUndWeitere" xml:space="preserve"><value>and {0} more</value></data>
+  <data name="A11y_ChartMonthSegment" xml:space="preserve"><value>{0} {1}</value></data>
+  <data name="A11y_ChartForecastSegment" xml:space="preserve"><value>{0} forecast {1}</value></data>
+  <data name="A11y_TransaktionZeile" xml:space="preserve"><value>{0}, {1}, {2}, account {3}, {4}</value></data>
+  <data name="A11y_KategorieZeile" xml:space="preserve"><value>{0}, {1}</value></data>
+  <data name="A11y_KontoZeile" xml:space="preserve"><value>{0}, {1}, balance {2}, {3}</value></data>
+  <data name="A11y_DauerauftragZeile" xml:space="preserve"><value>{0}, {1}, {2}, {3}</value></data>
+  <data name="A11y_SparZielZeile" xml:space="preserve"><value>{0}, {1} of {2}, {3} percent</value></data>
+  <data name="A11y_SelectionField" xml:space="preserve"><value>{0}, {1}, tap to change</value></data>
+  <data name="A11y_SelectionFieldLeer" xml:space="preserve"><value>{0}, tap to select</value></data>
+  <data name="A11y_SegmentUmschalten" xml:space="preserve"><value>Switch view</value></data>
   <data name="RecurrenceInterval_Daily" xml:space="preserve"><value>Daily</value></data>
   <data name="RecurrenceInterval_Weekly" xml:space="preserve"><value>Weekly</value></data>
   <data name="RecurrenceInterval_Monthly" xml:space="preserve"><value>Monthly</value></data>

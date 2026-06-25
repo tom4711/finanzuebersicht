@@ -6,5 +6,9 @@ namespace Finanzuebersicht.Services;
 /// </summary>
 public class MauiAppEvents : IAppEvents
 {
+    public MauiAppEvents() => App.CurrencyChanged += () => CurrencyChanged?.Invoke();
+
+    public event Action? CurrencyChanged;
+
     public void NotifyDataChanged() => App.NotifyDataChanged();
 }

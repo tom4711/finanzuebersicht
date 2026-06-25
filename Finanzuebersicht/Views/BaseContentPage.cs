@@ -23,7 +23,7 @@ public abstract class BaseContentPage : ContentPage
     {
         base.OnAppearing();
         App.LanguageChanged += OnLanguageChanged;
-        App.CurrencyChanged += OnLanguageChanged;
+        App.CurrencyChanged += OnCurrencyChanged;
         if (BindingContext is IAutoLoadViewModel vm && vm.ShouldAutoLoad)
             vm.AutoLoadCommand.Execute(null);
     }
@@ -31,7 +31,7 @@ public abstract class BaseContentPage : ContentPage
     protected override void OnDisappearing()
     {
         App.LanguageChanged -= OnLanguageChanged;
-        App.CurrencyChanged -= OnLanguageChanged;
+        App.CurrencyChanged -= OnCurrencyChanged;
         base.OnDisappearing();
     }
 
@@ -42,5 +42,14 @@ public abstract class BaseContentPage : ContentPage
 
         if (BindingContext is IAutoLoadViewModel vm && vm.ShouldAutoLoad)
             vm.AutoLoadCommand.Execute(null);
+    }
+
+    private void OnCurrencyChanged()
+    {
+        if (BindingContext is ICurrencyRefreshViewModel)
+            return;
+
+        if (BindingContext is ILocalizableViewModel locVm)
+            locVm.RefreshLocalizedStrings();
     }
 }

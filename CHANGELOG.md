@@ -1,5 +1,21 @@
 # Änderungsverlauf
 
+## [1.17] - 2026-06-21
+
+### Hinzugefügt
+
+- Barrierefreiheit: Chart-Text-Zusammenfassungen und VoiceOver-Labels für Listenzeilen (#235, #237)
+- SelectionField A11y und Scroll-Hinweise auf Detailseiten (#239)
+- Verwaltung-Segment als Button-Toggle; Währungsanzeige zur Laufzeit (`CurrencyRefreshRegistry`)
+- Dashboard: einheitliche Kacheln, aufklappbare Monats-/Jahres-Sektionen
+- Verwaltung: Kategorien und Konten im Sparziele-Kartenstil
+
+### Behoben
+
+- Review-Follow-ups v1.17 (Währung, Transaktions-A11y)
+- `LoadKategorien`-Command ohne bool-Parameter (CI/RelayCommand)
+- Prognose-Kachel ohne leeres Aufklappen
+
 ## [1.16] - 2026-06-20
 
 ### Hinzugefügt

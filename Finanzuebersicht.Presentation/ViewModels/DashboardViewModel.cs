@@ -8,11 +8,13 @@ using Finanzuebersicht.Application.UseCases.RecurringTransactions;
 using Finanzuebersicht.Core.Services;
 using Finanzuebersicht.Models;
 using Finanzuebersicht.Navigation;
+using Finanzuebersicht.Presentation.Accessibility;
+using Finanzuebersicht.Presentation;
 using Finanzuebersicht.Resources.Strings;
 using Microsoft.Extensions.Logging;
 
 namespace Finanzuebersicht.ViewModels;
-public partial class DashboardViewModel : MonthNavigationViewModel
+public partial class DashboardViewModel : MonthNavigationViewModel, ILocalizableViewModel, ICurrencyRefreshViewModel
 {
     private readonly LoadDashboardMonthUseCase _loadDashboardMonthUseCase;
     private readonly LoadDashboardYearUseCase _loadDashboardYearUseCase;
@@ -118,6 +120,15 @@ public partial class DashboardViewModel : MonthNavigationViewModel
     [NotifyPropertyChangedFor(nameof(HasYearData))]
     private List<MonthSummary> jahrMonate = [];
 
+    [ObservableProperty]
+    private string monthDonutAccessibilitySummary = string.Empty;
+
+    [ObservableProperty]
+    private string yearBarAccessibilitySummary = string.Empty;
+
+    [ObservableProperty]
+    private string yearDonutAccessibilitySummary = string.Empty;
+
     // --- Allgemein ---
 
     [ObservableProperty]
@@ -216,7 +227,16 @@ public partial class DashboardViewModel : MonthNavigationViewModel
     private bool isBudgetSectionExpanded;
 
     [ObservableProperty]
-    private bool isYearDetailsExpanded;
+    private bool isYearMonthTrendExpanded;
+
+    [ObservableProperty]
+    private bool isYearCategoriesExpanded;
+
+    [ObservableProperty]
+    private bool isMonthExpensesSectionExpanded;
+
+    [ObservableProperty]
+    private bool isMonthIncomeSectionExpanded;
 
     [ObservableProperty]
     private bool isDueDetailsExpanded;
@@ -241,7 +261,10 @@ public partial class DashboardViewModel : MonthNavigationViewModel
     public bool ShowSummaryBilanz => IsMonthView && HasMonthData;
 
     public string BudgetSectionChevron => IsBudgetSectionExpanded ? "▼" : "▶";
-    public string YearDetailsChevron => IsYearDetailsExpanded ? "▼" : "▶";
+    public string YearMonthTrendChevron => IsYearMonthTrendExpanded ? "▼" : "▶";
+    public string YearCategoriesChevron => IsYearCategoriesExpanded ? "▼" : "▶";
+    public string MonthExpensesSectionChevron => IsMonthExpensesSectionExpanded ? "▼" : "▶";
+    public string MonthIncomeSectionChevron => IsMonthIncomeSectionExpanded ? "▼" : "▶";
     public string DueDetailsChevron => IsDueDetailsExpanded ? "▼" : "▶";
     public string AccountsSectionChevron => IsAccountsSectionExpanded ? "▼" : "▶";
     public string CashflowSectionChevron => IsCashflowSectionExpanded ? "▼" : "▶";
@@ -270,7 +293,13 @@ public partial class DashboardViewModel : MonthNavigationViewModel
 
     partial void OnIsBudgetSectionExpandedChanged(bool value) => OnPropertyChanged(nameof(BudgetSectionChevron));
 
-    partial void OnIsYearDetailsExpandedChanged(bool value) => OnPropertyChanged(nameof(YearDetailsChevron));
+    partial void OnIsYearMonthTrendExpandedChanged(bool value) => OnPropertyChanged(nameof(YearMonthTrendChevron));
+
+    partial void OnIsYearCategoriesExpandedChanged(bool value) => OnPropertyChanged(nameof(YearCategoriesChevron));
+
+    partial void OnIsMonthExpensesSectionExpandedChanged(bool value) => OnPropertyChanged(nameof(MonthExpensesSectionChevron));
+
+    partial void OnIsMonthIncomeSectionExpandedChanged(bool value) => OnPropertyChanged(nameof(MonthIncomeSectionChevron));
 
     partial void OnIsDueDetailsExpandedChanged(bool value)
     {
@@ -343,7 +372,10 @@ public partial class DashboardViewModel : MonthNavigationViewModel
         _settingsService = settingsService;
         _logger = logger;
         IsBudgetSectionExpanded = ReadExpandedSetting(settingsService, SettingsKeys.DashboardBudgetExpanded);
-        IsYearDetailsExpanded = ReadExpandedSetting(settingsService, SettingsKeys.DashboardYearDetailsExpanded);
+        IsYearMonthTrendExpanded = ReadExpandedSetting(settingsService, SettingsKeys.DashboardYearMonthTrendExpanded);
+        IsYearCategoriesExpanded = ReadExpandedSetting(settingsService, SettingsKeys.DashboardYearCategoriesExpanded, defaultExpanded: true);
+        IsMonthExpensesSectionExpanded = ReadExpandedSetting(settingsService, SettingsKeys.DashboardMonthExpensesExpanded, defaultExpanded: true);
+        IsMonthIncomeSectionExpanded = ReadExpandedSetting(settingsService, SettingsKeys.DashboardMonthIncomeExpanded, defaultExpanded: true);
         IsDueDetailsExpanded = ReadExpandedSetting(settingsService, SettingsKeys.DashboardDueDetailsExpanded, defaultExpanded: true);
         IsAccountsSectionExpanded = ReadExpandedSetting(settingsService, SettingsKeys.DashboardAccountsExpanded);
         IsCashflowSectionExpanded = ReadExpandedSetting(settingsService, SettingsKeys.DashboardCashflowExpanded);
@@ -364,6 +396,7 @@ public partial class DashboardViewModel : MonthNavigationViewModel
     [RelayCommand]
     private async Task LoadDashboard()
     {
+        CurrencyRefreshRegistry.Register(this);
         if (IsLoading) return;
         IsLoading = true;
         try
@@ -527,6 +560,8 @@ public partial class DashboardViewModel : MonthNavigationViewModel
         {
             HasForecast = false;
         }
+
+        UpdateChartAccessibilitySummaries();
     }
 
     private async Task LadeJahrAsync()
@@ -566,6 +601,8 @@ public partial class DashboardViewModel : MonthNavigationViewModel
             ForecastBarMonth = 0;
             ForecastBarValue = 0;
         }
+
+        UpdateChartAccessibilitySummaries();
     }
 
     [RelayCommand]
@@ -620,11 +657,7 @@ public partial class DashboardViewModel : MonthNavigationViewModel
             CashflowProjectedIncome = data.ProjectedIncome;
             CashflowProjectedExpenses = data.ProjectedExpenses;
             CashflowNotableDays = data.Days.Count(d => d.IsNotable);
-            CashflowSummaryText = string.Format(
-                System.Globalization.CultureInfo.CurrentCulture,
-                _loc.GetString(ResourceKeys.Fmt_CashflowSummary),
-                data.ProjectedIncome.ToString("C", CurrencyCulture.Instance),
-                data.ProjectedExpenses.ToString("C", CurrencyCulture.Instance));
+            UpdateCashflowSummaryText();
         }
         catch (Exception ex)
         {
@@ -649,10 +682,31 @@ public partial class DashboardViewModel : MonthNavigationViewModel
     }
 
     [RelayCommand]
-    private void ToggleYearDetails()
+    private void ToggleYearMonthTrend()
     {
-        IsYearDetailsExpanded = !IsYearDetailsExpanded;
-        _settingsService.Set(SettingsKeys.DashboardYearDetailsExpanded, IsYearDetailsExpanded.ToString().ToLowerInvariant());
+        IsYearMonthTrendExpanded = !IsYearMonthTrendExpanded;
+        _settingsService.Set(SettingsKeys.DashboardYearMonthTrendExpanded, IsYearMonthTrendExpanded.ToString().ToLowerInvariant());
+    }
+
+    [RelayCommand]
+    private void ToggleYearCategories()
+    {
+        IsYearCategoriesExpanded = !IsYearCategoriesExpanded;
+        _settingsService.Set(SettingsKeys.DashboardYearCategoriesExpanded, IsYearCategoriesExpanded.ToString().ToLowerInvariant());
+    }
+
+    [RelayCommand]
+    private void ToggleMonthExpensesSection()
+    {
+        IsMonthExpensesSectionExpanded = !IsMonthExpensesSectionExpanded;
+        _settingsService.Set(SettingsKeys.DashboardMonthExpensesExpanded, IsMonthExpensesSectionExpanded.ToString().ToLowerInvariant());
+    }
+
+    [RelayCommand]
+    private void ToggleMonthIncomeSection()
+    {
+        IsMonthIncomeSectionExpanded = !IsMonthIncomeSectionExpanded;
+        _settingsService.Set(SettingsKeys.DashboardMonthIncomeExpanded, IsMonthIncomeSectionExpanded.ToString().ToLowerInvariant());
     }
 
     [RelayCommand]
@@ -803,5 +857,72 @@ public partial class DashboardViewModel : MonthNavigationViewModel
     private async Task NavigateToCashflow()
     {
         await _navigationService.GoToAsync(Routes.Cashflow);
+    }
+
+    public void RefreshLocalizedStrings()
+    {
+        OnPropertyChanged(nameof(SummarySaldoLabel));
+        OnPropertyChanged(nameof(DueRecurringText));
+        UpdateChartAccessibilitySummaries();
+    }
+
+    public void RefreshCurrencyDisplay()
+    {
+        OnPropertyChanged(nameof(GesamtEinnahmen));
+        OnPropertyChanged(nameof(GesamtAusgaben));
+        OnPropertyChanged(nameof(Bilanz));
+        OnPropertyChanged(nameof(BudgetGesamt));
+        OnPropertyChanged(nameof(BudgetVerbraucht));
+        OnPropertyChanged(nameof(BudgetRest));
+        OnPropertyChanged(nameof(BudgetTagesbudget));
+        OnPropertyChanged(nameof(ForecastTotal));
+        OnPropertyChanged(nameof(ForecastBarValue));
+        OnPropertyChanged(nameof(JahrBudgetTotal));
+        OnPropertyChanged(nameof(JahrGesamtAusgaben));
+        OnPropertyChanged(nameof(SelectedAccountSaldo));
+        OnPropertyChanged(nameof(GesamtSaldo));
+        OnPropertyChanged(nameof(SummarySaldo));
+        OnPropertyChanged(nameof(CashflowNetAmount));
+        OnPropertyChanged(nameof(CashflowProjectedIncome));
+        OnPropertyChanged(nameof(CashflowProjectedExpenses));
+        UpdateCashflowSummaryText();
+        OnPropertyChanged(nameof(TrendProzent));
+
+        if (KategorieAusgaben.Count > 0)
+            KategorieAusgaben = new ObservableCollection<CategorySummary>(KategorieAusgaben);
+        if (KategorieEinnahmen.Count > 0)
+            KategorieEinnahmen = new ObservableCollection<CategorySummary>(KategorieEinnahmen);
+        CurrencyDisplayRefresh.Rebind(BudgetHinweise);
+        if (JahrKategorien.Count > 0)
+            JahrKategorien = CurrencyDisplayRefresh.Clone(JahrKategorien);
+        if (KontenUebersicht.Count > 0)
+            KontenUebersicht = CurrencyDisplayRefresh.Clone(KontenUebersicht);
+        if (DueRecurringItems.Count > 0)
+            DueRecurringItems = CurrencyDisplayRefresh.Clone(DueRecurringItems);
+
+        if (JahrMonate.Count > 0)
+            JahrMonate = [.. JahrMonate];
+
+        UpdateChartAccessibilitySummaries();
+    }
+
+    private void UpdateCashflowSummaryText()
+    {
+        CashflowSummaryText = HasCashflowPreview
+            ? string.Format(
+                System.Globalization.CultureInfo.CurrentCulture,
+                _loc.GetString(ResourceKeys.Fmt_CashflowSummary),
+                CashflowProjectedIncome.ToString("C", CurrencyCulture.Instance),
+                CashflowProjectedExpenses.ToString("C", CurrencyCulture.Instance))
+            : string.Empty;
+    }
+
+    private void UpdateChartAccessibilitySummaries()
+    {
+        var culture = CurrencyCulture.Instance;
+        MonthDonutAccessibilitySummary = ChartAccessibilitySummaryBuilder.BuildCategoryDonutSummary(KategorieAusgaben, _loc, culture);
+        YearDonutAccessibilitySummary = ChartAccessibilitySummaryBuilder.BuildCategoryDonutSummary(JahrKategorien, _loc, culture);
+        YearBarAccessibilitySummary = ChartAccessibilitySummaryBuilder.BuildMonthBarSummary(
+            JahrMonate, _loc, culture, ForecastBarMonth, ForecastBarValue);
     }
 }

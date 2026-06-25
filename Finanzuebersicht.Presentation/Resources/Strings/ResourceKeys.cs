@@ -407,4 +407,17 @@ public static class ResourceKeys
     public const string A11y_HintBetrag = nameof(A11y_HintBetrag);
     public const string A11y_HintTitel = nameof(A11y_HintTitel);
     public const string A11y_HintBudget = nameof(A11y_HintBudget);
+    public const string A11y_ChartLeer = nameof(A11y_ChartLeer);
+    public const string A11y_ChartCategorySegment = nameof(A11y_ChartCategorySegment);
+    public const string A11y_ChartUndWeitere = nameof(A11y_ChartUndWeitere);
+    public const string A11y_ChartMonthSegment = nameof(A11y_ChartMonthSegment);
+    public const string A11y_ChartForecastSegment = nameof(A11y_ChartForecastSegment);
+    public const string A11y_TransaktionZeile = nameof(A11y_TransaktionZeile);
+    public const string A11y_KategorieZeile = nameof(A11y_KategorieZeile);
+    public const string A11y_KontoZeile = nameof(A11y_KontoZeile);
+    public const string A11y_DauerauftragZeile = nameof(A11y_DauerauftragZeile);
+    public const string A11y_SparZielZeile = nameof(A11y_SparZielZeile);
+    public const string A11y_SelectionField = nameof(A11y_SelectionField);
+    public const string A11y_SelectionFieldLeer = nameof(A11y_SelectionFieldLeer);
+    public const string A11y_SegmentUmschalten = nameof(A11y_SegmentUmschalten);
 }

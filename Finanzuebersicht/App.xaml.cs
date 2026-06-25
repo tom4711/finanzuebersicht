@@ -1,4 +1,5 @@
 ﻿using Finanzuebersicht.Core.Services;
+using Finanzuebersicht.Presentation;
 using Finanzuebersicht.Services;
 
 namespace Finanzuebersicht;
@@ -28,7 +29,11 @@ public partial class App : global::Microsoft.Maui.Controls.Application
 		// Sprache vor InitializeComponent setzen, damit XAML-Bindings korrekt aufgelöst werden
 		localizationService.Initialize();
 		localizationService.LanguageChanged += () => LanguageChanged?.Invoke();
-		displayCurrency.Changed += () => CurrencyChanged?.Invoke();
+		displayCurrency.Changed += () =>
+		{
+			CurrencyChanged?.Invoke();
+			CurrencyRefreshRegistry.RefreshAll();
+		};
 
 		InitializeComponent();
 		_recurringGenerationService = recurringGenerationService;
