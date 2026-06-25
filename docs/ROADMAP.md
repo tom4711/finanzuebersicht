@@ -4,7 +4,7 @@
 
 > **Hinweis:** Die Milestone-Bezeichnungen (v1.14, v1.2, v2.0) sind thematische GitHub-Planungslabels, keine sequenziellen Release-Versionen. Tatsächliche Releases (v1.0, v1.6, v1.12 …) werden durch Git-Commit-Höhe via Nerdbank.GitVersioning bestimmt.
 
-**Aktueller Stand:** Release **v1.16** (Latest). Nächster geplanter UX-Release: **v1.17** (vor v2.0).
+**Aktueller Stand:** Release **v1.17** (Latest). Nächster thematischer Backlog: **v1.18** (vor v2.0).
 
 ---
 
@@ -109,13 +109,15 @@ Fokus: Onboarding, einheitliche Empty States, Aktion-Feedback, Saldo-Vertrauen.
 
 ---
 
-## 🎯 v1.17 — Barrierefreiheit & Mac-Formulare *(geplant)* · [Milestone](https://github.com/tom4711/finanzuebersicht/milestone/21)
+## ✅ v1.17 — Barrierefreiheit & Mac-Formulare *(abgeschlossen)* · [Milestone](https://github.com/tom4711/finanzuebersicht/milestone/21)
 
-| Issue | Thema | Priorität |
-|-------|-------|-----------|
-| [#235](https://github.com/tom4711/finanzuebersicht/issues/235) | Charts mit Text-Zusammenfassung (Screenreader) | B |
-| [#237](https://github.com/tom4711/finanzuebersicht/issues/237) | Listenzeilen für VoiceOver beschriften | B |
-| [#239](https://github.com/tom4711/finanzuebersicht/issues/239) | Mac Catalyst: SelectionField in Scroll-Formularen | B |
+| Issue | Thema | Status |
+|-------|-------|--------|
+| [#235](https://github.com/tom4711/finanzuebersicht/issues/235) | Charts mit Text-Zusammenfassung (Screenreader) | ✅ Closed |
+| [#237](https://github.com/tom4711/finanzuebersicht/issues/237) | Listenzeilen für VoiceOver beschriften | ✅ Closed |
+| [#239](https://github.com/tom4711/finanzuebersicht/issues/239) | Mac Catalyst: SelectionField in Scroll-Formularen | ✅ Closed |
+
+Weitere Umsetzungen in v1.17: Live-Währungsrefresh (`CurrencyRefreshRegistry`), Dashboard-Kacheln (Monat/Jahr), Verwaltung Kategorien/Konten im Sparziele-Kartenstil.
 
 ---
 
@@ -130,6 +132,7 @@ Größere Features — Priorisierung nach Abschluss von v1.14–v1.17.
 | [#244](https://github.com/tom4711/finanzuebersicht/issues/244) | Daueraufträge mit variablem Betrag | M |
 | [#243](https://github.com/tom4711/finanzuebersicht/issues/243) | CloudKit-Sync zwischen Geräten | XL |
 | [#245](https://github.com/tom4711/finanzuebersicht/issues/245) | Open Banking / automatischer Bank-Import | XL |
+| [#258](https://github.com/tom4711/finanzuebersicht/issues/258) | Dashboard-Kacheln individuell anordnen (Idee) | M |
 
 ---
 
