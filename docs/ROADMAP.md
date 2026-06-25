@@ -123,7 +123,7 @@ Weitere Umsetzungen in v1.17: Live-Währungsrefresh (`CurrencyRefreshRegistry`),
 
 ## 💡 v1.18 — Ideen & Langfrist *(Backlog, vor v2)* · [Milestone](https://github.com/tom4711/finanzuebersicht/milestone/22)
 
-Größere Features — Priorisierung nach Abschluss von v1.14–v1.17.
+Größere Features — Priorisierung für v1.18.
 
 | Issue | Thema | Aufwand |
 |-------|-------|---------|
