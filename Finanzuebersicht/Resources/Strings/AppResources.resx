@@ -268,6 +268,9 @@ Please restart the app.</value></data>
   <data name="Btn_BeitragBuchen" xml:space="preserve"><value>Book Contribution</value></data>
   <data name="Btn_Buchen" xml:space="preserve"><value>Book</value></data>
   <data name="Lbl_Cashflow30Tage" xml:space="preserve"><value>Next 30 Days</value></data>
+  <data name="Lbl_DashboardInsightRows" xml:space="preserve"><value>Compact rows</value></data>
+  <data name="Lbl_Insights" xml:space="preserve"><value>Insights</value></data>
+  <data name="Fmt_BudgetUeberLimitCount" xml:space="preserve"><value>{0} over budget</value></data>
   <data name="Lbl_CashflowNetto" xml:space="preserve"><value>Net Projection</value></data>
   <data name="Fmt_CashflowSummary" xml:space="preserve"><value>Income {0} · Expenses {1}</value></data>
   <data name="Fmt_SparZielFortschritt" xml:space="preserve"><value>{0} of {1}</value></data>

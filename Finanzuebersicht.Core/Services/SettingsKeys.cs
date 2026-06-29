@@ -93,6 +93,11 @@ namespace Finanzuebersicht.Core.Services
         public const string DashboardFilterExpanded = "DashboardFilterExpanded";
 
         /// <summary>
+        /// Whether compact insight rows are shown on the dashboard (true/false).
+        /// </summary>
+        public const string DashboardInsightRowsEnabled = "DashboardInsightRowsEnabled";
+
+        /// <summary>
         /// ISO currency code for amount display formatting (EUR, CHF, USD, GBP).
         /// </summary>
         public const string DisplayCurrency = "DisplayCurrency";

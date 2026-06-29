@@ -35,6 +35,8 @@ public class LoadDashboardMonthUseCaseTests
         Assert.Equal(1200m, result.Bilanz);
         Assert.Single(result.KategorieEinnahmen);
         Assert.Single(result.KategorieAusgaben);
+        Assert.Equal(100m, result.KategorieAusgaben[0].PercentageAmount);
+        Assert.Equal(100m, result.KategorieEinnahmen[0].PercentageAmount);
         await recurringRepository.DidNotReceiveWithAnyArgs().GetRecurringTransactionsAsync();
     }
 

@@ -162,7 +162,7 @@ public partial class DashboardViewModel : MonthNavigationViewModel, ILocalizable
     [NotifyPropertyChangedFor(nameof(IsYearView))]
     [NotifyPropertyChangedFor(nameof(ShowMonthView))]
     [NotifyPropertyChangedFor(nameof(ShowYearView))]
-    [NotifyPropertyChangedFor(nameof(ShowDashboardSummary))]
+    [NotifyPropertyChangedFor(nameof(ShowHeroSaldo))]
     [NotifyPropertyChangedFor(nameof(ShowSummaryBilanz))]
     private bool isMonthView = true;
 
@@ -250,7 +250,32 @@ public partial class DashboardViewModel : MonthNavigationViewModel, ILocalizable
     [ObservableProperty]
     private bool isFilterSectionExpanded;
 
-    public bool ShowDashboardSummary => HasKontenUebersicht || HasSelectedAccountSaldo || (IsMonthView && HasMonthData);
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ShowKontenInsightRow))]
+    [NotifyPropertyChangedFor(nameof(ShowBudgetInsightRow))]
+    [NotifyPropertyChangedFor(nameof(ShowCashflowInsightRow))]
+    private bool showInsightRows;
+
+    [ObservableProperty]
+    private string kontenCompactSummary = string.Empty;
+
+    [ObservableProperty]
+    private string budgetInsightDetail = string.Empty;
+
+    [ObservableProperty]
+    private string dueRecurringCompactDetail = string.Empty;
+
+    public bool ShowHeroSaldo => HasKontenUebersicht || HasSelectedAccountSaldo;
+
+    public bool ShowKontenInsightRow => ShowInsightRows && HasKontenUebersicht;
+
+    public bool ShowBudgetInsightRow => ShowInsightRows && HasBudgetHinweise && BudgetHinweise.Any(b => b.IstWarnung || b.IstAusgeschoepft);
+
+    public bool ShowCashflowInsightRow => ShowInsightRows && HasCashflowPreview;
+
+    public string CashflowInsightDetail => HasCashflowPreview
+        ? CashflowNetAmount.ToString("C", CurrencyCulture.Instance)
+        : string.Empty;
 
     public decimal SummarySaldo => HasSelectedAccountSaldo ? SelectedAccountSaldo : GesamtSaldo;
 
@@ -259,6 +284,8 @@ public partial class DashboardViewModel : MonthNavigationViewModel, ILocalizable
         : _loc.GetString(ResourceKeys.Lbl_Gesamtsaldo);
 
     public bool ShowSummaryBilanz => IsMonthView && HasMonthData;
+
+    public bool ShowMonthKpis => IsMonthView && HasMonthData;
 
     public string BudgetSectionChevron => IsBudgetSectionExpanded ? "▼" : "▶";
     public string YearMonthTrendChevron => IsYearMonthTrendExpanded ? "▼" : "▶";
@@ -319,19 +346,37 @@ public partial class DashboardViewModel : MonthNavigationViewModel, ILocalizable
 
     partial void OnIsFilterSectionExpandedChanged(bool value) => OnPropertyChanged(nameof(FilterSectionChevron));
 
+    partial void OnShowInsightRowsChanged(bool value)
+    {
+        _settingsService.Set(SettingsKeys.DashboardInsightRowsEnabled, value.ToString().ToLowerInvariant());
+        OnPropertyChanged(nameof(ShowKontenInsightRow));
+        OnPropertyChanged(nameof(ShowBudgetInsightRow));
+        OnPropertyChanged(nameof(ShowCashflowInsightRow));
+    }
+
+    partial void OnKontenUebersichtChanged(ObservableCollection<AccountOverviewItem> value) => UpdateInsightSummaries();
+
+    partial void OnBudgetHinweiseChanged(ObservableCollection<BudgetHintSummary> value) => UpdateInsightSummaries();
+
+    partial void OnDueRecurringItemsChanged(ObservableCollection<DueRecurringItem> value) => UpdateInsightSummaries();
+
     partial void OnGesamtSaldoChanged(decimal value)
     {
         OnPropertyChanged(nameof(SummarySaldo));
-        OnPropertyChanged(nameof(ShowDashboardSummary));
+        OnPropertyChanged(nameof(ShowHeroSaldo));
     }
 
     partial void OnSelectedAccountSaldoChanged(decimal value)
     {
         OnPropertyChanged(nameof(SummarySaldo));
-        OnPropertyChanged(nameof(ShowDashboardSummary));
+        OnPropertyChanged(nameof(ShowHeroSaldo));
     }
 
-    partial void OnBilanzChanged(decimal value) => OnPropertyChanged(nameof(ShowSummaryBilanz));
+    partial void OnBilanzChanged(decimal value)
+    {
+        OnPropertyChanged(nameof(ShowSummaryBilanz));
+        OnPropertyChanged(nameof(ShowMonthKpis));
+    }
 
     public DashboardViewModel(
         LoadDashboardMonthUseCase loadDashboardMonthUseCase,
@@ -375,11 +420,12 @@ public partial class DashboardViewModel : MonthNavigationViewModel, ILocalizable
         IsYearMonthTrendExpanded = ReadExpandedSetting(settingsService, SettingsKeys.DashboardYearMonthTrendExpanded);
         IsYearCategoriesExpanded = ReadExpandedSetting(settingsService, SettingsKeys.DashboardYearCategoriesExpanded, defaultExpanded: true);
         IsMonthExpensesSectionExpanded = ReadExpandedSetting(settingsService, SettingsKeys.DashboardMonthExpensesExpanded, defaultExpanded: true);
-        IsMonthIncomeSectionExpanded = ReadExpandedSetting(settingsService, SettingsKeys.DashboardMonthIncomeExpanded, defaultExpanded: true);
-        IsDueDetailsExpanded = ReadExpandedSetting(settingsService, SettingsKeys.DashboardDueDetailsExpanded, defaultExpanded: true);
+        IsMonthIncomeSectionExpanded = ReadExpandedSetting(settingsService, SettingsKeys.DashboardMonthIncomeExpanded);
+        IsDueDetailsExpanded = ReadExpandedSetting(settingsService, SettingsKeys.DashboardDueDetailsExpanded);
         IsAccountsSectionExpanded = ReadExpandedSetting(settingsService, SettingsKeys.DashboardAccountsExpanded);
         IsCashflowSectionExpanded = ReadExpandedSetting(settingsService, SettingsKeys.DashboardCashflowExpanded);
         IsFilterSectionExpanded = ReadExpandedSetting(settingsService, SettingsKeys.DashboardFilterExpanded);
+        ShowInsightRows = ReadExpandedSetting(settingsService, SettingsKeys.DashboardInsightRowsEnabled);
         UpdateJahrAnzeige();
     }
 
@@ -421,9 +467,14 @@ public partial class DashboardViewModel : MonthNavigationViewModel, ILocalizable
         finally
         {
             IsLoading = false;
-            OnPropertyChanged(nameof(ShowDashboardSummary));
+            UpdateInsightSummaries();
+            OnPropertyChanged(nameof(ShowHeroSaldo));
             OnPropertyChanged(nameof(ShowSummaryBilanz));
+            OnPropertyChanged(nameof(ShowMonthKpis));
             OnPropertyChanged(nameof(SummarySaldoLabel));
+            OnPropertyChanged(nameof(ShowBudgetInsightRow));
+            OnPropertyChanged(nameof(ShowCashflowInsightRow));
+            OnPropertyChanged(nameof(CashflowInsightDetail));
         }
     }
 
@@ -480,6 +531,30 @@ public partial class DashboardViewModel : MonthNavigationViewModel, ILocalizable
                     Saldo = b.Saldo,
                     AnteilProzent = maxAbs > 0 ? Math.Abs(b.Saldo) / maxAbs * 100 : 0
                 }));
+        UpdateInsightSummaries();
+    }
+
+    private void UpdateInsightSummaries()
+    {
+        var culture = CurrencyCulture.Instance;
+        KontenCompactSummary = string.Join(" · ",
+            KontenUebersicht.Take(3).Select(k => $"{k.Name} {k.Saldo.ToString("C", culture)}"));
+
+        var budgetWarnings = BudgetHinweise.Where(b => b.IstWarnung || b.IstAusgeschoepft).ToList();
+        BudgetInsightDetail = budgetWarnings.Count switch
+        {
+            0 => string.Empty,
+            1 => budgetWarnings[0].CategoryName,
+            _ => _loc.GetString(ResourceKeys.Fmt_BudgetUeberLimitCount, budgetWarnings.Count)
+        };
+
+        DueRecurringCompactDetail = DueRecurringItems.FirstOrDefault()?.Recurring.Titel ?? string.Empty;
+
+        OnPropertyChanged(nameof(ShowHeroSaldo));
+        OnPropertyChanged(nameof(ShowKontenInsightRow));
+        OnPropertyChanged(nameof(ShowBudgetInsightRow));
+        OnPropertyChanged(nameof(ShowCashflowInsightRow));
+        OnPropertyChanged(nameof(CashflowInsightDetail));
     }
 
     [RelayCommand]
@@ -562,6 +637,9 @@ public partial class DashboardViewModel : MonthNavigationViewModel, ILocalizable
         }
 
         UpdateChartAccessibilitySummaries();
+        OnPropertyChanged(nameof(ShowMonthKpis));
+        OnPropertyChanged(nameof(ShowSummaryBilanz));
+        OnPropertyChanged(nameof(ShowBudgetInsightRow));
     }
 
     private async Task LadeJahrAsync()
@@ -672,6 +750,8 @@ public partial class DashboardViewModel : MonthNavigationViewModel, ILocalizable
         OnPropertyChanged(nameof(ShowCashflowCompact));
         OnPropertyChanged(nameof(ShowCashflowExpanded));
         OnPropertyChanged(nameof(ShowCashflowEmptyLink));
+        OnPropertyChanged(nameof(ShowCashflowInsightRow));
+        OnPropertyChanged(nameof(CashflowInsightDetail));
     }
 
     [RelayCommand]
@@ -863,6 +943,7 @@ public partial class DashboardViewModel : MonthNavigationViewModel, ILocalizable
     {
         OnPropertyChanged(nameof(SummarySaldoLabel));
         OnPropertyChanged(nameof(DueRecurringText));
+        UpdateInsightSummaries();
         UpdateChartAccessibilitySummaries();
     }
 
