@@ -263,8 +263,8 @@
                            FontAttributes="Bold"
                            TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}" />
 
-                    <CollectionView ItemsSource="{Binding About.Libraries}" SelectionMode="None">
-                        <CollectionView.ItemTemplate>
+                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding About.Libraries}" Spacing="0">
+                        <BindableLayout.ItemTemplate>
                             <DataTemplate x:DataType="vm:LibraryInfo">
                                 <VerticalStackLayout Padding="0,4">
                                     <Label Text="{Binding Name}"
@@ -275,8 +275,8 @@
                                            TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}" />
                                 </VerticalStackLayout>
                             </DataTemplate>
-                        </CollectionView.ItemTemplate>
-                    </CollectionView>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
 
                           <Label Text="{loc:Translate Lbl_FrameworkInfo}"
                               FontSize="12"

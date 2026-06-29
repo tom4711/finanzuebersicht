@@ -82,7 +82,7 @@ public partial class AboutViewModel : ObservableObject
                 Libraries.Add(new LibraryInfo(referenceName, $"Version {reference.Version}"));
             }
 
-            var knownAssemblies = new[] { "CommunityToolkit.Mvvm", "CommunityToolkit.Maui", "Nerdbank.GitVersioning" };
+            var knownAssemblies = new[] { "CommunityToolkit.Mvvm", "CommunityToolkit.Maui" };
             foreach (var knownAssembly in knownAssemblies)
             {
                 try

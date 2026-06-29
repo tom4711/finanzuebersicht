@@ -105,12 +105,14 @@
 		<Exec Command="mkdir -p &quot;$HOME/Applications&quot; &amp;&amp; rm -rf &quot;$HOME/Applications/$(ApplicationTitle).app&quot; &amp;&amp; ditto &quot;$(AppBundleDir)&quot; &quot;$HOME/Applications/$(ApplicationTitle).app&quot;" />
 	</Target>
 
-	<!-- Release: actool erzeugt Icons unter obj/.../actool/bundle, ohne RID-Pfad fehlen sie im .app -->
+	<!-- actool-Icons vor Codesign ins .app (Release legt sie sonst nur unter obj/ ab) -->
 	<Target Name="CopyMacCatalystActoolAssets"
-			AfterTargets="Build"
+			BeforeTargets="_CodesignAppBundle"
+			DependsOnTargets="_CoreCompileImageAssets"
 			Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">
 		<PropertyGroup>
-			<_FinanzAppBundle>$(OutputPath)$(RuntimeIdentifier)/$(ApplicationTitle).app</_FinanzAppBundle>
+			<_FinanzAppBundle Condition="'$(AppBundleDir)' != ''">$(AppBundleDir)</_FinanzAppBundle>
+			<_FinanzAppBundle Condition="'$(_FinanzAppBundle)' == ''">$(OutputPath)$(RuntimeIdentifier)/$(ApplicationTitle).app</_FinanzAppBundle>
 			<_ActoolBundleDir Condition="Exists('$(IntermediateOutputPath)$(RuntimeIdentifier)/actool/bundle')">$(IntermediateOutputPath)$(RuntimeIdentifier)/actool/bundle</_ActoolBundleDir>
 			<_ActoolBundleDir Condition="'$(_ActoolBundleDir)' == '' And Exists('$(IntermediateOutputPath)actool/bundle')">$(IntermediateOutputPath)actool/bundle</_ActoolBundleDir>
 		</PropertyGroup>
@@ -121,8 +123,6 @@
 			  SourceFiles="@(_ActoolAsset)"
 			  DestinationFolder="$(_FinanzAppBundle)/Contents/Resources"
 			  SkipUnchangedFiles="true" />
-		<Exec Condition="'@(_ActoolAsset)' != ''"
-			  Command="codesign --force --deep --sign - &quot;$(_FinanzAppBundle)&quot;" />
 	</Target>
 
 	<!-- Set MAUI version properties from Nerdbank.GitVersioning at build time -->

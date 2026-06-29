@@ -1,6 +1,7 @@
 ﻿using Finanzuebersicht.Core.Services;
 using Finanzuebersicht.Presentation;
 using Finanzuebersicht.Services;
+using Microsoft.Extensions.Logging;
 
 namespace Finanzuebersicht;
 
@@ -21,10 +22,12 @@ public partial class App : global::Microsoft.Maui.Controls.Application
 	private readonly IRecurringGenerationService _recurringGenerationService;
 	private readonly InitializationService _initService;
 	private readonly ThemeService _themeService;
+	private readonly ILogger<App>? _logger;
 	private readonly string _savedTheme;
 
 	public App(InitializationService initService, IRecurringGenerationService recurringGenerationService, ISettingsService settings,
-		ThemeService themeService, ILocalizationService localizationService, IDisplayCurrencyService displayCurrency)
+		ThemeService themeService, ILocalizationService localizationService, IDisplayCurrencyService displayCurrency,
+		ILogger<App>? logger = null)
 	{
 		// Sprache vor InitializeComponent setzen, damit XAML-Bindings korrekt aufgelöst werden
 		localizationService.Initialize();
@@ -39,6 +42,7 @@ public partial class App : global::Microsoft.Maui.Controls.Application
 		_recurringGenerationService = recurringGenerationService;
 		_initService = initService;
 		_themeService = themeService;
+		_logger = logger;
 
 		// Gespeichertes Theme anwenden (MAUI-Ebene)
 		_savedTheme = settings.Get("Theme", "System");
@@ -52,9 +56,16 @@ public partial class App : global::Microsoft.Maui.Controls.Application
 		// UIKit-Style nach Window-Erstellung setzen
 		window.Created += (_, _) => _themeService.Apply(_savedTheme);
 
-		window.Resumed += async (s, e) =>
+		window.Resumed += async (_, _) =>
 		{
-			await _recurringGenerationService.GeneratePendingRecurringTransactionsAsync();
+			try
+			{
+				await _recurringGenerationService.GeneratePendingRecurringTransactionsAsync();
+			}
+			catch (Exception ex)
+			{
+				_logger?.LogError(ex, "Dauerauftrag-Generierung bei Resume fehlgeschlagen");
+			}
 		};
 
 		return window;
@@ -63,7 +74,14 @@ public partial class App : global::Microsoft.Maui.Controls.Application
 	protected override async void OnStart()
 	{
 		base.OnStart();
-		await _initService.InitializeAsync();
-		await _recurringGenerationService.GeneratePendingRecurringTransactionsAsync();
+		try
+		{
+			await _initService.InitializeAsync();
+			await _recurringGenerationService.GeneratePendingRecurringTransactionsAsync();
+		}
+		catch (Exception ex)
+		{
+			_logger?.LogError(ex, "App-Initialisierung fehlgeschlagen");
+		}
 	}
 }
