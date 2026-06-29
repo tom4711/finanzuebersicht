@@ -40,19 +40,15 @@ Hinweis: Die Benutzeroberfläche unterstützt Deutsch und Englisch; weitere Spra
 
 ### Dashboard
 
-Einheitliche Kacheln mit Kontenübersicht, Cashflow-Hinweis, Monats- und Jahresansicht sowie Budget- und Kategorie-Charts.
+Hero-Saldo, Monats-KPIs und eine Analytics-Karte mit Budget-Balken, Donut-Chart und Kategorieliste. Monat/Jahr-Umschalter in der Karte; fällige Daueraufträge als Hinweis mit Schnellaktionen.
 
-| Monatsübersicht | Konten & 30-Tage-Vorschau |
+| Monatsansicht | Jahresansicht |
 |:---:|:---:|
-| ![Dashboard Übersicht](docs/screenshots/dashboard-uebersicht.png) | ![Dashboard Kontenübersicht](docs/screenshots/dashboard-kontenuebersicht.png) |
+| ![Dashboard Monatsansicht](docs/screenshots/dashboard-monat.png) | ![Dashboard Jahresansicht](docs/screenshots/dashboard-jahr.png) |
 
-| Monatsdetails | Jahresansicht |
-|:---:|:---:|
-| ![Dashboard Monatsdetails](docs/screenshots/dashboard-monat.png) | ![Dashboard Jahresansicht](docs/screenshots/dashboard-jahr.png) |
+Fällige Daueraufträge aufklappen und direkt buchen, überspringen oder verschieben:
 
-Cashflow-Vorschau für die nächsten 30 Tage (inkl. geplanter Daueraufträge):
-
-![Cashflow-Vorschau](docs/screenshots/cashflow.png)
+![Dauerauftrag auf dem Dashboard](docs/screenshots/dashboard-dauerauftrag.png)
 
 ### Transaktionen & Import
 
