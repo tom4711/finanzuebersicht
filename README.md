@@ -36,15 +36,19 @@ Hinweis: Die Benutzeroberfläche unterstützt Deutsch und Englisch; weitere Spra
 
 ## Screenshots
 
-*Dark Mode auf macOS (Mac Catalyst)*
+*Dark Mode auf macOS (Mac Catalyst), v1.17*
 
 ### Dashboard
 
-Kontenübersicht mit Gesamtsaldo, Monatsansicht mit Budget-Hinweisen und Kategorie-Charts, Jahresansicht mit Monatsbalken.
+Einheitliche Kacheln mit Kontenübersicht, Cashflow-Hinweis, Monats- und Jahresansicht sowie Budget- und Kategorie-Charts.
 
-| Kontenübersicht | Monatsansicht | Jahresansicht |
-|:---:|:---:|:---:|
-| ![Dashboard mit Kontenübersicht](docs/screenshots/dashboard-kontenuebersicht.png) | ![Dashboard Monatsansicht](docs/screenshots/dashboard-monat.png) | ![Dashboard Jahresansicht](docs/screenshots/dashboard-jahr.png) |
+| Monatsübersicht | Konten & 30-Tage-Vorschau |
+|:---:|:---:|
+| ![Dashboard Übersicht](docs/screenshots/dashboard-uebersicht.png) | ![Dashboard Kontenübersicht](docs/screenshots/dashboard-kontenuebersicht.png) |
+
+| Monatsdetails | Jahresansicht |
+|:---:|:---:|
+| ![Dashboard Monatsdetails](docs/screenshots/dashboard-monat.png) | ![Dashboard Jahresansicht](docs/screenshots/dashboard-jahr.png) |
 
 Cashflow-Vorschau für die nächsten 30 Tage (inkl. geplanter Daueraufträge):
 
@@ -72,29 +76,33 @@ Liste mit Vorlagen, Filter, Swipe-Aktionen, Umbuchung zwischen Konten und CSV-Im
 
 ### Verwaltung
 
-Kategorien und Konten verwalten — inkl. Gesamtsaldo und Anfangssaldo.
+Kategorien und Konten im einheitlichen Kartenlayout — inkl. Gesamtsaldo, Typ-Icons und Archivieren.
 
-| Kategorien | Konten | Konto bearbeiten |
-|:---:|:---:|:---:|
-| ![Kategorien](docs/screenshots/verwaltung-kategorien.png) | ![Konten](docs/screenshots/verwaltung-konten.png) | ![Anfangssaldo](docs/screenshots/konto-bearbeiten.png) |
+| Kategorien | Konten |
+|:---:|:---:|
+| ![Kategorien](docs/screenshots/verwaltung-kategorien.png) | ![Konten](docs/screenshots/verwaltung-konten.png) |
 
-Neue Kategorie mit Icon, Farbe und optionalem Monatsbudget:
+Konto bearbeiten (Anfangssaldo):
 
-![Neue Kategorie](docs/screenshots/kategorie-neu.png)
+![Anfangssaldo](docs/screenshots/konto-bearbeiten.png)
 
 ### Sparziele
 
-Fortschritt zu Sparzielen und neues Ziel anlegen.
+Fortschritt zu Sparzielen mit Prognose.
 
-| Übersicht | Neues Ziel |
-|:---:|:---:|
-| ![Sparziele](docs/screenshots/sparziele.png) | ![Neues Sparziel](docs/screenshots/sparziel-neu.png) |
+![Sparziele](docs/screenshots/sparziele.png)
+
+Neues Sparziel anlegen:
+
+![Neues Sparziel](docs/screenshots/sparziel-neu.png)
 
 ### Einstellungen
 
-Darstellung, Sprache, Speicherort, Backup & Restore und App-Info.
+Darstellung, Sprache, Anzeige-Währung, Speicherort, Backup & Restore und App-Info.
 
-![Einstellungen](docs/screenshots/einstellungen.png)
+| Allgemein | Über & Bibliotheken |
+|:---:|:---:|
+| ![Einstellungen](docs/screenshots/einstellungen.png) | ![Einstellungen Über](docs/screenshots/einstellungen-ueber.png) |
 
 ## Plattformen
 
