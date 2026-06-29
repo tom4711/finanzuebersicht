@@ -1,5 +1,23 @@
 # Änderungsverlauf
 
+## [1.18] - 2026-06-29
+
+### Hinzugefügt
+
+- Dashboard: Zwei-Zonen-Layout mit Hero-Saldo, Monats-KPIs und einer Analytics-Karte (Monat/Jahr)
+- Donut-Chart mit Kategorie-Legende (Betrag und Prozent nebeneinander)
+- Optionale kompakte Insight-Zeilen (Konten, Budget-Warnung, 30-Tage-Prognose)
+
+### Geändert
+
+- README-Dashboard-Screenshots für das neue Layout
+
+### Behoben
+
+- Kategorie-Prozente in der Monatsansicht (zeigten zuvor 0 %)
+- Dauerauftrag-Hinweis: Chevron bleibt zum Auf- und Zuklappen sichtbar
+- Mac Catalyst: Einstellungen stabil, App bleibt nach Fenster-Schließen aktiv, Release-Icons im Build
+
 ## [1.17] - 2026-06-21
 
 ### Hinzugefügt

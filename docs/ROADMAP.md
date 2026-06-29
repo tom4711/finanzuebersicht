@@ -4,7 +4,7 @@
 
 > **Hinweis:** Die Milestone-Bezeichnungen (v1.14, v1.2, v2.0) sind thematische GitHub-Planungslabels, keine sequenziellen Release-Versionen. Tatsächliche Releases (v1.0, v1.6, v1.12 …) werden durch Git-Commit-Höhe via Nerdbank.GitVersioning bestimmt.
 
-**Aktueller Stand:** Release **v1.17** (Latest). Nächster thematischer Backlog: **v1.18** (vor v2.0).
+**Aktueller Stand:** Release **v1.18** (Latest). Nächster thematischer Backlog: **Milestone 22** (vor v2.0).
 
 ---
 
@@ -121,9 +121,19 @@ Weitere Umsetzungen in v1.17: Live-Währungsrefresh (`CurrencyRefreshRegistry`),
 
 ---
 
-## 💡 v1.18 — Ideen & Langfrist *(Backlog, vor v2)* · [Milestone](https://github.com/tom4711/finanzuebersicht/milestone/22)
+## ✅ v1.18 — Dashboard UX *(abgeschlossen)*
 
-Größere Features — Priorisierung für v1.18.
+- Zwei-Zonen-Layout: Hero-Saldo, KPIs, eine Analytics-Karte für Monat/Jahr
+- Budget-Balken, Donut mit Kategorie-Legende (Betrag + Prozent)
+- Fällige Daueraufträge als schlanker, aufklappbarer Hinweis mit Schnellaktionen
+- Optionale kompakte Insight-Zeilen (umschaltbar)
+- Mac Catalyst: Einstellungen-Stabilität, App-Lifecycle, Release-Icons
+
+---
+
+## 💡 Weiterer Backlog — Milestone 22 *(vor v2)* · [Milestone](https://github.com/tom4711/finanzuebersicht/milestone/22)
+
+Größere Features — Priorisierung nach v1.18.
 
 | Issue | Thema | Aufwand |
 |-------|-------|---------|

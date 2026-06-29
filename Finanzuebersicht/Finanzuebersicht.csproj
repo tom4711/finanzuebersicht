@@ -134,7 +134,7 @@
 			<ApplicationVersion></ApplicationVersion>
 		</PropertyGroup>
 		<PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) != 'windows'">
-			<!-- User-facing release line (v1.17) — git height goes to CFBundleVersion via BuildVersionSimple -->
+			<!-- User-facing release line — git height goes to CFBundleVersion via BuildVersionSimple -->
 			<ApplicationDisplayVersion>$(MajorMinorVersion)</ApplicationDisplayVersion>
 			<ApplicationVersion>$(BuildVersionSimple)</ApplicationVersion>
 		</PropertyGroup>
