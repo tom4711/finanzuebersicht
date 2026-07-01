@@ -269,7 +269,7 @@ public partial class DashboardViewModel : MonthNavigationViewModel, ILocalizable
 
     public bool ShowKontenInsightRow => ShowInsightRows && HasKontenUebersicht;
 
-    public bool ShowBudgetInsightRow => ShowInsightRows && HasBudgetHinweise && BudgetHinweise.Any(b => b.IstWarnung || b.IstAusgeschoepft);
+    public bool ShowBudgetInsightRow => ShowInsightRows && GetBudgetWarnings().Any();
 
     public bool ShowCashflowInsightRow => ShowInsightRows && HasCashflowPreview;
 
@@ -349,16 +349,7 @@ public partial class DashboardViewModel : MonthNavigationViewModel, ILocalizable
     partial void OnShowInsightRowsChanged(bool value)
     {
         _settingsService.Set(SettingsKeys.DashboardInsightRowsEnabled, value.ToString().ToLowerInvariant());
-        OnPropertyChanged(nameof(ShowKontenInsightRow));
-        OnPropertyChanged(nameof(ShowBudgetInsightRow));
-        OnPropertyChanged(nameof(ShowCashflowInsightRow));
     }
-
-    partial void OnKontenUebersichtChanged(ObservableCollection<AccountOverviewItem> value) => UpdateInsightSummaries();
-
-    partial void OnBudgetHinweiseChanged(ObservableCollection<BudgetHintSummary> value) => UpdateInsightSummaries();
-
-    partial void OnDueRecurringItemsChanged(ObservableCollection<DueRecurringItem> value) => UpdateInsightSummaries();
 
     partial void OnGesamtSaldoChanged(decimal value)
     {
@@ -468,13 +459,9 @@ public partial class DashboardViewModel : MonthNavigationViewModel, ILocalizable
         {
             IsLoading = false;
             UpdateInsightSummaries();
-            OnPropertyChanged(nameof(ShowHeroSaldo));
             OnPropertyChanged(nameof(ShowSummaryBilanz));
             OnPropertyChanged(nameof(ShowMonthKpis));
             OnPropertyChanged(nameof(SummarySaldoLabel));
-            OnPropertyChanged(nameof(ShowBudgetInsightRow));
-            OnPropertyChanged(nameof(ShowCashflowInsightRow));
-            OnPropertyChanged(nameof(CashflowInsightDetail));
         }
     }
 
@@ -531,8 +518,10 @@ public partial class DashboardViewModel : MonthNavigationViewModel, ILocalizable
                     Saldo = b.Saldo,
                     AnteilProzent = maxAbs > 0 ? Math.Abs(b.Saldo) / maxAbs * 100 : 0
                 }));
-        UpdateInsightSummaries();
     }
+
+    private IEnumerable<BudgetHintSummary> GetBudgetWarnings() =>
+        BudgetHinweise.Where(b => b.IstWarnung || b.IstAusgeschoepft);
 
     private void UpdateInsightSummaries()
     {
@@ -540,7 +529,7 @@ public partial class DashboardViewModel : MonthNavigationViewModel, ILocalizable
         KontenCompactSummary = string.Join(" · ",
             KontenUebersicht.Take(3).Select(k => $"{k.Name} {k.Saldo.ToString("C", culture)}"));
 
-        var budgetWarnings = BudgetHinweise.Where(b => b.IstWarnung || b.IstAusgeschoepft).ToList();
+        var budgetWarnings = GetBudgetWarnings().ToList();
         BudgetInsightDetail = budgetWarnings.Count switch
         {
             0 => string.Empty,
