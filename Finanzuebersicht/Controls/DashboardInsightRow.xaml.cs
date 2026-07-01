@@ -11,7 +11,8 @@ public partial class DashboardInsightRow : ContentView
         BindableProperty.Create(nameof(Detail), typeof(string), typeof(DashboardInsightRow), string.Empty);
 
     public static readonly BindableProperty TapCommandProperty =
-        BindableProperty.Create(nameof(TapCommand), typeof(ICommand), typeof(DashboardInsightRow));
+        BindableProperty.Create(nameof(TapCommand), typeof(ICommand), typeof(DashboardInsightRow),
+            propertyChanged: OnTapCommandChanged);
 
     public string Title
     {
@@ -33,6 +34,8 @@ public partial class DashboardInsightRow : ContentView
 
     public bool HasDetail => !string.IsNullOrWhiteSpace(Detail);
 
+    public bool IsInteractive => TapCommand?.CanExecute(null) == true;
+
     public DashboardInsightRow()
     {
         InitializeComponent();
@@ -44,4 +47,18 @@ public partial class DashboardInsightRow : ContentView
         if (propertyName == nameof(Detail))
             OnPropertyChanged(nameof(HasDetail));
     }
+
+    private static void OnTapCommandChanged(BindableObject bindable, object oldValue, object newValue)
+    {
+        var row = (DashboardInsightRow)bindable;
+        row.OnPropertyChanged(nameof(IsInteractive));
+
+        if (oldValue is ICommand oldCommand)
+            oldCommand.CanExecuteChanged -= row.OnTapCommandCanExecuteChanged;
+        if (newValue is ICommand newCommand)
+            newCommand.CanExecuteChanged += row.OnTapCommandCanExecuteChanged;
+    }
+
+    private void OnTapCommandCanExecuteChanged(object? sender, EventArgs e)
+        => OnPropertyChanged(nameof(IsInteractive));
 }

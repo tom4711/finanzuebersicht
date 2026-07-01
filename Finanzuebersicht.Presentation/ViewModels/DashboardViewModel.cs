@@ -984,6 +984,7 @@ public partial class DashboardViewModel : MonthNavigationViewModel, ILocalizable
         if (JahrMonate.Count > 0)
             JahrMonate = [.. JahrMonate];
 
+        UpdateInsightSummaries();
         UpdateChartAccessibilitySummaries();
     }
 
