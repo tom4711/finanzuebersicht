@@ -36,19 +36,19 @@ Hinweis: Die Benutzeroberfläche unterstützt Deutsch und Englisch; weitere Spra
 
 ## Screenshots
 
-*Dark Mode auf macOS (Mac Catalyst)*
+*Dark Mode auf macOS (Mac Catalyst), v1.18*
 
 ### Dashboard
 
-Kontenübersicht mit Gesamtsaldo, Monatsansicht mit Budget-Hinweisen und Kategorie-Charts, Jahresansicht mit Monatsbalken.
+Hero-Saldo, Monats-KPIs und eine Analytics-Karte mit Budget-Balken, Donut-Chart und Kategorieliste. Monat/Jahr-Umschalter in der Karte; fällige Daueraufträge als Hinweis mit Schnellaktionen.
 
-| Kontenübersicht | Monatsansicht | Jahresansicht |
-|:---:|:---:|:---:|
-| ![Dashboard mit Kontenübersicht](docs/screenshots/dashboard-kontenuebersicht.png) | ![Dashboard Monatsansicht](docs/screenshots/dashboard-monat.png) | ![Dashboard Jahresansicht](docs/screenshots/dashboard-jahr.png) |
+| Monatsansicht | Jahresansicht |
+|:---:|:---:|
+| ![Dashboard Monatsansicht](docs/screenshots/dashboard-monat.png) | ![Dashboard Jahresansicht](docs/screenshots/dashboard-jahr.png) |
 
-Cashflow-Vorschau für die nächsten 30 Tage (inkl. geplanter Daueraufträge):
+Fällige Daueraufträge aufklappen und direkt buchen, überspringen oder verschieben:
 
-![Cashflow-Vorschau](docs/screenshots/cashflow.png)
+![Dauerauftrag auf dem Dashboard](docs/screenshots/dashboard-dauerauftrag.png)
 
 ### Transaktionen & Import
 
@@ -72,29 +72,33 @@ Liste mit Vorlagen, Filter, Swipe-Aktionen, Umbuchung zwischen Konten und CSV-Im
 
 ### Verwaltung
 
-Kategorien und Konten verwalten — inkl. Gesamtsaldo und Anfangssaldo.
+Kategorien und Konten im einheitlichen Kartenlayout — inkl. Gesamtsaldo, Typ-Icons und Archivieren.
 
-| Kategorien | Konten | Konto bearbeiten |
-|:---:|:---:|:---:|
-| ![Kategorien](docs/screenshots/verwaltung-kategorien.png) | ![Konten](docs/screenshots/verwaltung-konten.png) | ![Anfangssaldo](docs/screenshots/konto-bearbeiten.png) |
+| Kategorien | Konten |
+|:---:|:---:|
+| ![Kategorien](docs/screenshots/verwaltung-kategorien.png) | ![Konten](docs/screenshots/verwaltung-konten.png) |
 
-Neue Kategorie mit Icon, Farbe und optionalem Monatsbudget:
+Konto bearbeiten (Anfangssaldo):
 
-![Neue Kategorie](docs/screenshots/kategorie-neu.png)
+![Anfangssaldo](docs/screenshots/konto-bearbeiten.png)
 
 ### Sparziele
 
-Fortschritt zu Sparzielen und neues Ziel anlegen.
+Fortschritt zu Sparzielen mit Prognose.
 
-| Übersicht | Neues Ziel |
-|:---:|:---:|
-| ![Sparziele](docs/screenshots/sparziele.png) | ![Neues Sparziel](docs/screenshots/sparziel-neu.png) |
+![Sparziele](docs/screenshots/sparziele.png)
+
+Neues Sparziel anlegen:
+
+![Neues Sparziel](docs/screenshots/sparziel-neu.png)
 
 ### Einstellungen
 
-Darstellung, Sprache, Speicherort, Backup & Restore und App-Info.
+Darstellung, Sprache, Anzeige-Währung, Speicherort, Backup & Restore und App-Info.
 
-![Einstellungen](docs/screenshots/einstellungen.png)
+| Allgemein | Über & Bibliotheken |
+|:---:|:---:|
+| ![Einstellungen](docs/screenshots/einstellungen.png) | ![Einstellungen Über](docs/screenshots/einstellungen-ueber.png) |
 
 ## Plattformen
 
@@ -204,7 +208,7 @@ Finanzuebersicht.Tests/            ← xUnit Tests (net10.0)
 
 ## Versionierung & CI
 
-- Nerdbank.GitVersioning (`version.json`) steuert Versionsnummern (aktuell Basis `1.16`)
+- Nerdbank.GitVersioning (`version.json`) steuert Versionsnummern (aktuell Basis `1.18`)
 - CI / Pre-Release / Release Workflows in `.github/workflows/`
 
 ### Full MAUI build (macCatalyst)

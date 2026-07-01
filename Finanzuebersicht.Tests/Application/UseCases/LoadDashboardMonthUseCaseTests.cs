@@ -35,7 +35,51 @@ public class LoadDashboardMonthUseCaseTests
         Assert.Equal(1200m, result.Bilanz);
         Assert.Single(result.KategorieEinnahmen);
         Assert.Single(result.KategorieAusgaben);
+        Assert.Equal(100m, result.KategorieAusgaben[0].PercentageAmount);
+        Assert.Equal(100m, result.KategorieEinnahmen[0].PercentageAmount);
         await recurringRepository.DidNotReceiveWithAnyArgs().GetRecurringTransactionsAsync();
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_ComputesCategoryPercentagesAcrossMultipleCategories()
+    {
+        var categoryRepository = Substitute.For<ICategoryRepository>();
+        var transactionRepository = Substitute.For<ITransactionRepository>();
+        var recurringRepository = Substitute.For<IRecurringTransactionRepository>();
+
+        categoryRepository.GetCategoriesAsync().Returns(new List<Category>
+        {
+            new() { Id = "cat-income-a", Name = "Gehalt", Typ = TransactionType.Einnahme },
+            new() { Id = "cat-income-b", Name = "Nebenjob", Typ = TransactionType.Einnahme },
+            new() { Id = "cat-expense-a", Name = "Miete", Typ = TransactionType.Ausgabe },
+            new() { Id = "cat-expense-b", Name = "Essen", Typ = TransactionType.Ausgabe }
+        });
+
+        transactionRepository.GetTransactionsAsync(Arg.Any<DateTime>(), Arg.Any<DateTime>())
+            .Returns(new List<Transaction>
+            {
+                new() { Typ = TransactionType.Einnahme, Betrag = 3000m, KategorieId = "cat-income-a", AccountId = "acc-1" },
+                new() { Typ = TransactionType.Einnahme, Betrag = 1000m, KategorieId = "cat-income-b", AccountId = "acc-1" },
+                new() { Typ = TransactionType.Ausgabe, Betrag = 900m, KategorieId = "cat-expense-a", AccountId = "acc-2" },
+                new() { Typ = TransactionType.Ausgabe, Betrag = 300m, KategorieId = "cat-expense-b", AccountId = "acc-2" }
+            });
+
+        var useCase = new LoadDashboardMonthUseCase(categoryRepository, transactionRepository, recurringRepository, Substitute.For<IBudgetRepository>());
+
+        var result = await useCase.ExecuteAsync(new DateTime(2026, 3, 1), new DateTime(2026, 3, 15));
+
+        Assert.Equal(2, result.KategorieEinnahmen.Count);
+        Assert.Equal(2, result.KategorieAusgaben.Count);
+
+        var gehalt = result.KategorieEinnahmen.Single(c => c.CategoryId == "cat-income-a");
+        var nebenjob = result.KategorieEinnahmen.Single(c => c.CategoryId == "cat-income-b");
+        Assert.Equal(75m, gehalt.PercentageAmount);
+        Assert.Equal(25m, nebenjob.PercentageAmount);
+
+        var miete = result.KategorieAusgaben.Single(c => c.CategoryId == "cat-expense-a");
+        var essen = result.KategorieAusgaben.Single(c => c.CategoryId == "cat-expense-b");
+        Assert.Equal(75m, miete.PercentageAmount);
+        Assert.Equal(25m, essen.PercentageAmount);
     }
 
     [Fact]

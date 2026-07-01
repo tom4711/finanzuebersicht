@@ -21,8 +21,8 @@ public class AboutViewModelTests
         var assembly = CreateAssemblyWithInformationalVersion("1.2.3+abc");
         var sut = new AboutViewModel(assembly);
 
-        Assert.Equal("1.2.3", sut.AppVersion);
-        Assert.Equal("abc", sut.BuildInfo);
+        Assert.Equal("1.2", sut.AppVersion);
+        Assert.Equal("3 · abc", sut.BuildInfo);
     }
 
     [Fact]
@@ -31,7 +31,20 @@ public class AboutViewModelTests
         var assembly = CreateAssemblyWithInformationalVersion("1.2.3+abc");
         var sut = new AboutViewModel(assembly);
 
-        Assert.Equal("1.2.3+abc", $"{sut.AppVersion}+{sut.BuildInfo}");
+        Assert.Equal("1.2", sut.AppVersion);
+        Assert.Equal("3 · abc", sut.BuildInfo);
+    }
+
+    [Theory]
+    [InlineData("1.17.9+ea2311c9de", "1.17", "9 · ea2311c9de")]
+    [InlineData("1.17.4", "1.17", "4")]
+    [InlineData("1.17", "1.17", "")]
+    public void ParseVersionDisplay_MapsNerdbankVersions(string input, string expectedVersion, string expectedBuild)
+    {
+        var (appVersion, buildInfo) = AboutViewModel.ParseVersionDisplay(input);
+
+        Assert.Equal(expectedVersion, appVersion);
+        Assert.Equal(expectedBuild, buildInfo);
     }
 
     [Fact]

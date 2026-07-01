@@ -250,6 +250,9 @@ public static class ResourceKeys
     public const string Btn_BeitragBuchen = nameof(Btn_BeitragBuchen);
     public const string Btn_Buchen = nameof(Btn_Buchen);
     public const string Lbl_Cashflow30Tage = nameof(Lbl_Cashflow30Tage);
+    public const string Lbl_DashboardInsightRows = nameof(Lbl_DashboardInsightRows);
+    public const string Lbl_Insights = nameof(Lbl_Insights);
+    public const string Fmt_BudgetUeberLimitCount = nameof(Fmt_BudgetUeberLimitCount);
     public const string Lbl_CashflowNetto = nameof(Lbl_CashflowNetto);
     public const string Fmt_CashflowSummary = nameof(Fmt_CashflowSummary);
     public const string Fmt_SparZielFortschritt = nameof(Fmt_SparZielFortschritt);

@@ -19,6 +19,9 @@
 		<!-- App Identifier -->
 		<ApplicationId>com.thomasmenzl.finanzuebersicht</ApplicationId>
 
+		<!-- Nerdbank.GitVersioning: eigene MAUI-Versionierung unten (MajorMinor für Anzeige) -->
+		<NBGV_SetMauiVersionProperties>false</NBGV_SetMauiVersionProperties>
+
 		<!-- Versions (overridden at build time by Nerdbank.GitVersioning target below) -->
 		<ApplicationDisplayVersion>0.1.0</ApplicationDisplayVersion>
 		<ApplicationVersion>1</ApplicationVersion>
@@ -102,11 +105,38 @@
 		<Exec Command="mkdir -p &quot;$HOME/Applications&quot; &amp;&amp; rm -rf &quot;$HOME/Applications/$(ApplicationTitle).app&quot; &amp;&amp; ditto &quot;$(AppBundleDir)&quot; &quot;$HOME/Applications/$(ApplicationTitle).app&quot;" />
 	</Target>
 
-	<!-- Set MAUI version properties from Nerdbank.GitVersioning at build time -->
-	<Target Name="SetMauiVersionFromNBGV" BeforeTargets="Build;_GenerateBundleInfoPlist;_DetectAppManifest" DependsOnTargets="GetBuildVersion">
+	<!-- actool-Icons vor Codesign ins .app (Release legt sie sonst nur unter obj/ ab) -->
+	<Target Name="CopyMacCatalystActoolAssets"
+			BeforeTargets="_CodesignAppBundle"
+			DependsOnTargets="_CoreCompileImageAssets"
+			Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">
 		<PropertyGroup>
-			<ApplicationDisplayVersion>$(BuildVersionSimple)</ApplicationDisplayVersion>
-			<ApplicationVersion Condition="'$(BuildNumber)' != '' and '$(BuildNumber)' != '0'">$(BuildNumber)</ApplicationVersion>
+			<_FinanzAppBundle Condition="'$(AppBundleDir)' != ''">$(AppBundleDir)</_FinanzAppBundle>
+			<_FinanzAppBundle Condition="'$(_FinanzAppBundle)' == ''">$(OutputPath)$(RuntimeIdentifier)/$(ApplicationTitle).app</_FinanzAppBundle>
+			<_ActoolBundleDir Condition="Exists('$(IntermediateOutputPath)$(RuntimeIdentifier)/actool/bundle')">$(IntermediateOutputPath)$(RuntimeIdentifier)/actool/bundle</_ActoolBundleDir>
+			<_ActoolBundleDir Condition="'$(_ActoolBundleDir)' == '' And Exists('$(IntermediateOutputPath)actool/bundle')">$(IntermediateOutputPath)actool/bundle</_ActoolBundleDir>
+		</PropertyGroup>
+		<ItemGroup Condition="'$(_ActoolBundleDir)' != '' And Exists('$(_FinanzAppBundle)')">
+			<_ActoolAsset Include="$(_ActoolBundleDir)/*" />
+		</ItemGroup>
+		<Copy Condition="'@(_ActoolAsset)' != ''"
+			  SourceFiles="@(_ActoolAsset)"
+			  DestinationFolder="$(_FinanzAppBundle)/Contents/Resources"
+			  SkipUnchangedFiles="true" />
+	</Target>
+
+	<!-- Set MAUI version properties from Nerdbank.GitVersioning at build time -->
+	<Target Name="SetMauiVersionFromNBGV"
+			BeforeTargets="Build;_GenerateBundleInfoPlist;_DetectAppManifest;_CompileAppManifest;MauiGeneratePackageAppxManifest"
+			DependsOnTargets="GetBuildVersion">
+		<PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">
+			<ApplicationDisplayVersion>$(BuildVersion)</ApplicationDisplayVersion>
+			<ApplicationVersion></ApplicationVersion>
+		</PropertyGroup>
+		<PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) != 'windows'">
+			<!-- User-facing release line — git height goes to CFBundleVersion via BuildVersionSimple -->
+			<ApplicationDisplayVersion>$(MajorMinorVersion)</ApplicationDisplayVersion>
+			<ApplicationVersion>$(BuildVersionSimple)</ApplicationVersion>
 		</PropertyGroup>
 	</Target>
 

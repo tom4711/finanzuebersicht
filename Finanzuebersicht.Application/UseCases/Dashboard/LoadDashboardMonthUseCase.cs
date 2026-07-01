@@ -142,6 +142,9 @@ public class LoadDashboardMonthUseCase(
             .OrderByDescending(k => k.Total)
             .ToList();
 
+        ApplyCategoryPercentages(kategorieAusgaben, gesamtAusgaben);
+        ApplyCategoryPercentages(kategorieEinnahmen, gesamtEinnahmen);
+
         return new DashboardMonthData
         {
             IstPrognose = istPrognose,
@@ -158,6 +161,15 @@ public class LoadDashboardMonthUseCase(
         => budgets.FirstOrDefault(b => b.KategorieId == categoryId && b.Jahr == year && b.Monat == month)
             ?? budgets.FirstOrDefault(b => b.KategorieId == categoryId && b.Jahr == null && b.Monat == month)
             ?? budgets.FirstOrDefault(b => b.KategorieId == categoryId && b.Jahr == null && b.Monat == null);
+
+    private static void ApplyCategoryPercentages(List<CategorySummary> items, decimal total)
+    {
+        if (total <= 0)
+            return;
+
+        foreach (var item in items)
+            item.PercentageAmount = item.Total / total * 100;
+    }
 
     private static bool OccursInRange(RecurringTransaction da, DateTime rangeStart, DateTime rangeEnd)
     {
